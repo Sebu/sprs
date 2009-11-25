@@ -9,7 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    GLWidget *seb =  new GLWidget(ui->widget);
+    GLWidget *seb =  new GLWidget(ui->imageWidget);
+    this->connect(ui->pushButton,SIGNAL(clicked()),seb,SLOT(changeImage()));
 
 
 

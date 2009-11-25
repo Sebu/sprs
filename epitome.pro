@@ -4,7 +4,7 @@
 QT += opengl
 TARGET = epitome
 TEMPLATE = app
-LIBS = -lcv
+LIBS = -lcv -lhighgui
 SOURCES += main.cpp \
     mainwindow.cpp \
     glwidget.cpp
