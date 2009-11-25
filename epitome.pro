@@ -1,18 +1,13 @@
-#-------------------------------------------------
-#
+# -------------------------------------------------
 # Project created by QtCreator 2009-11-25T17:37:11
-#
-#-------------------------------------------------
-
-QT       += opengl
-
+# -------------------------------------------------
+QT += opengl
 TARGET = epitome
 TEMPLATE = app
-
-
-SOURCES += main.cpp\
-        mainwindow.cpp
-
-HEADERS  += mainwindow.h
-
-FORMS    += mainwindow.ui
+LIBS = -lcv
+SOURCES += main.cpp \
+    mainwindow.cpp \
+    glwidget.cpp
+HEADERS += mainwindow.h \
+    glwidget.h
+FORMS += mainwindow.ui
