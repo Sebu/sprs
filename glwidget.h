@@ -19,19 +19,16 @@ public:
     GLWidget(QWidget *parent)
             : QGLWidget(parent), image(NULL) { setMinimumSize(300,300); }
 
-    int loadTexture_Ipl(IplImage *image, GLuint *text) {
-
+    int iplToGl(IplImage *image, GLuint *tex) {
         if (image==NULL) return -1;
 
-        glGenTextures(1, text);
-
-        glBindTexture( GL_TEXTURE_2D, *text ); //bind the texture to it's array
+        glGenTextures(1, tex);
+        glBindTexture( GL_TEXTURE_2D, *tex );
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_BGR, GL_UNSIGNED_BYTE, image->imageData);
+//        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_BGR, GL_UNSIGNED_BYTE, image->imageData);
         return 0;
 
     }
@@ -49,7 +46,7 @@ public slots:
 
 
         unsigned int texImage;
-        loadTexture_Ipl(image, &texImage);
+        iplToGl(image, &texImage);
         glBindTexture( GL_TEXTURE_2D, texImage );
 
     }
@@ -77,10 +74,10 @@ protected:
 
         //Attempts to draw texture to the opened window.
         glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 0.0f);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, 0.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f, 1.0f, 0.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, 0.0f);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, 1.0f, 0.0f);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, 1.0f, 0.0f);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f, -1.0f, 0.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, -1.0f, 0.0f);
         glEnd();
     }
 };
