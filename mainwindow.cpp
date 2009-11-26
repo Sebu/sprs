@@ -5,15 +5,25 @@
 #include "glwidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+        : QMainWindow(parent), image(NULL), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    GLWidget *seb =  new GLWidget(ui->imageWidget);
-    this->connect(ui->pushButton,SIGNAL(clicked()),seb,SLOT(changeImage()));
+    imageWidget =  new GLWidget(ui->imageWidget);
+
+    this->connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(changeImage()));
 
 
 
+
+}
+void MainWindow::changeImage()
+{
+    if (image!=NULL) cvReleaseImage(&image);
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "/home/seb", tr("Image Files (*.png *.jpg *.bmp)"));
+    image =  cvLoadImage(fileName.toAscii());
+
+    this->imageWidget->fromIpl(image);
 
 }
 

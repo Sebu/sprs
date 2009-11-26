@@ -8,24 +8,24 @@
 
 class GLWidget : public QGLWidget
 {
-    Q_OBJECT        // must include this if you use Qt signals/slots
+Q_OBJECT
 
 public:
-    IplImage *image;
-
+    unsigned int texImage;
 
 
 public:
     GLWidget(QWidget *parent)
-            : QGLWidget(parent), image(NULL) { setMinimumSize(300,300); }
+            : QGLWidget(parent) {
+        glGenTextures(1, &texImage);
+        setMinimumSize(300,300);
+    }
 
-    int iplToGl(IplImage *image, GLuint *tex) {
+    int fromIpl(IplImage *image) {
         if (image==NULL) return -1;
 
-        glGenTextures(1, tex);
-        glBindTexture( GL_TEXTURE_2D, *tex );
+        glBindTexture( GL_TEXTURE_2D, texImage );
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_BGR, GL_UNSIGNED_BYTE, image->imageData);
-//        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
@@ -34,22 +34,7 @@ public:
     }
 
 public slots:
-    void changeImage()
-    {
-        if (image!=NULL) cvReleaseImage(&image);
-        QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "/home/seb", tr("Image Files (*.png *.jpg *.bmp)"));
-        image =  cvLoadImage(fileName.toAscii()); //cvCreateImage(cvSize(400,400), IPL_DEPTH_8U, 3);
 
-
-        cvLine(image, cvPoint(1,10), cvPoint(100,100), cvScalar(100,100,100), 1);
-        cvRectangle(image, cvPoint(100,100), cvPoint(200,200), cvScalar(255,0,0), 1);
-
-
-        unsigned int texImage;
-        iplToGl(image, &texImage);
-        glBindTexture( GL_TEXTURE_2D, texImage );
-
-    }
 
 protected:
     void initializeGL()
