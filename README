@@ -1,0 +1,9 @@
+
+qt4 + opengl image widget + opencv
+
+I   ... image
+I'  ... reconstruction
+B   ... block
+M   ... match
+
+1. KLT feature tracker (from opencv)
