@@ -43,7 +43,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="mapWidget" native="true">
+        <widget class="QWidget" name="otherWidget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
@@ -87,7 +87,7 @@
      <x>0</x>
      <y>0</y>
      <width>860</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

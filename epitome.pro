@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2009-11-25T17:37:11
 # -------------------------------------------------
-QT += opengl
+QT += opengl webkit
 TARGET = epitome
 TEMPLATE = app
 LIBS = -lcv -lhighgui

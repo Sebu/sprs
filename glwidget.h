@@ -22,6 +22,7 @@ public:
     }
 
     int fromIpl(IplImage *image) {
+        makeCurrent();
         if (image==NULL) return -1;
 
         glBindTexture( GL_TEXTURE_2D, texImage );

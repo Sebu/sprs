@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow
 public:
     IplImage *image;
     GLWidget *imageWidget;
+    GLWidget *otherWidget;
 
 
     MainWindow(QWidget *parent = 0);
