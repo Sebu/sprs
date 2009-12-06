@@ -2,15 +2,20 @@
 #include "ui_mainwindow.h"
 
 #include <QGLWidget>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+
 #include "glwidget.h"
+#include "patch.h"
+#include "cv_ext.h"
 
 MainWindow::MainWindow(QWidget *parent)
-        : QMainWindow(parent), image(NULL), ui(new Ui::MainWindow)
+        : QMainWindow(parent), _image(NULL), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    imageWidget =  new GLWidget(ui->imageWidget);
-    otherWidget =  new GLWidget(ui->otherWidget);
+    _imageWidget =  new GLWidget(ui->imageWidget);
+    _otherWidget =  new GLWidget(ui->otherWidget);
 
     this->connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(changeImage()));
 
@@ -19,69 +24,25 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
-IplImage* sub_image(IplImage *image, CvRect roi)
-{
-    IplImage *result;
-    // set ROI, you may use following two funs:
-    //cvSetImageROI( image, cvRect( 0, 0, image->width, image->height ));
 
-    cvSetImageROI(image,roi);
-    // sub-image
-    result = cvCreateImage( cvSize(roi.width, roi.height), image->depth, image->nChannels );
-    cvCopy(image,result);
-    cvResetImageROI(image); // release image ROI
-    return result;
-}
 
-float histogram_mean(IplImage* img) {
-    float mean= 0.0f;
 
-    /*
-    int hist_size = 256;
-
-    float s_ranges[] = { 0, 255 };
-    float* ranges[] = { s_ranges };
-
-    IplImage* red = cvCreateImage( cvSize(img->width, img->height), img->depth, 1 );
-
-    cvSplit(img, red, NULL, NULL, NULL);
-
-    CvHistogram* hist = cvCreateHist( 1, &hist_size, CV_HIST_ARRAY, ranges, 1);
-    cvCalcHist( &img, hist, 0, 0 );
-
-    for(int i = 0; i < hist_size; i++ ) {
-        float* bins = cvGetHistValue_1D(hist,i);
-        mean += bins[0];
-        //printf("%f ", bins[0]);
-    }
-    //printf("\n");
-    cvReleaseHist(&hist);
-    */
-    mean = cvAvg(img).val[0]/256.0f; // /= (float)hist_size;
-
-    printf("%f \n", mean);
-    return mean;
-}
 
 void MainWindow::changeImage()
 {
 
-    if (image!=NULL) cvReleaseImage(&image);
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "/home/seb", tr("Image Files (*.png *.jpg *.bmp)"));
-    image =  cvLoadImage(fileName.toAscii());
+    if (_image!=NULL) cvReleaseImage(&_image);
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "/home/seb/Bilder", tr("Image Files (*.png *.jpg *.bmp)"));
+    _image =  cvLoadImage(fileName.toAscii());
 
-    int w = 16; //image->width;
-    int h = 16; //image->height;
-    int offsetx = 16;
-    int offsety = 16;
+    int w = 16;
+    int h = 16;
 
-    IplImage* gray = cvCreateImage( cvSize(image->width, image->height), IPL_DEPTH_8U, 1);
-    cvCvtColor(image, gray, CV_BGR2GRAY);
-    //cvConvertImage( image, gray );
+    IplImage* gray = cvCreateImage( cvSize(_image->width, _image->height), IPL_DEPTH_8U, 1);
+    cvCvtColor(_image, gray, CV_BGR2GRAY);
 
-    IplImage* patch1 = sub_image(gray, cvRect(0,0,w,h));
-    IplImage* patch2 = sub_image(gray, cvRect(offsetx,offsety,w,h));
 
+    Patch* patch1 = new Patch( sub_image(gray, cvRect(0,0,w,h)) );
 
 
  /*
@@ -113,24 +74,11 @@ void MainWindow::changeImage()
 
     }
 */
-    IplImage* mean_dist = cvCreateImage( cvSize(image->width-w, image->height-h), IPL_DEPTH_32F, 1);
 
-    float patch_mean = histogram_mean(patch1);
+    this->_seedmap = new SeedMap(_image,4,4);
 
-
-    for(int x=0; x<image->width-w; x+=w/4){
-      for(int y=0; y<image->height-h; y+=h/4){
-        IplImage* patch = sub_image(gray, cvRect(x,y,w,h));
-        float mean = patch_mean / histogram_mean(patch);
-        //printf("%i, %i, %f\n",x, y, mean);
-        cvRectangle(mean_dist, cvPoint(x/4,y/4), cvPoint(x/4,y/4), cvScalarAll(mean), 1);
-      }
-    }
-
-
-
-    this->imageWidget->fromIpl(image);
-    this->otherWidget->fromIpl(mean_dist);
+    this->_imageWidget->fromIpl(_image);
+    this->_otherWidget->fromIpl( _seedmap->orientIpl(patch1->_orientHist.peak()) );
 
 }
 

@@ -1,13 +1,23 @@
 # -------------------------------------------------
 # Project created by QtCreator 2009-11-25T17:37:11
 # -------------------------------------------------
-QT += opengl webkit
+QT += opengl \
+    webkit
 TARGET = epitome
 TEMPLATE = app
-LIBS = -lcv -lhighgui
+LIBS = -lcv \
+    -lhighgui
 SOURCES += main.cpp \
     mainwindow.cpp \
-    glwidget.cpp
+    glwidget.cpp \
+    patch.cpp \
+    seedmap.cpp \
+    cv_ext.cpp \
+    orientationhistogram.cpp
 HEADERS += mainwindow.h \
-    glwidget.h
+    glwidget.h \
+    patch.h \
+    seedmap.h \
+    cv_ext.h \
+    orientationhistogram.h
 FORMS += mainwindow.ui
