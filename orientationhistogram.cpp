@@ -42,7 +42,7 @@ OrientHist::OrientHist(IplImage* image, int numBins) : _bins(0), _numBins(numBin
 
             int dir = (atan2(dx,dy)+PI) * 180.0f/PI;
 
-            float magnitude = sqrt(dx*dx + dy*dy);
+            float magnitude =1.0f; // sqrt(dx*dx + dy*dy);
 
             float threshold = 0.0f;
 
@@ -53,6 +53,4 @@ OrientHist::OrientHist(IplImage* image, int numBins) : _bins(0), _numBins(numBin
         }
     }
 
-    //for(int i=0; i<numBins; i++) printf("%i ", _bins[i]);
-    //printf("\n");
 }

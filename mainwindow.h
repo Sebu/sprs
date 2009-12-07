@@ -18,8 +18,8 @@ class MainWindow : public QMainWindow
 public:
     IplImage* _image;
     SeedMap*  _seedmap;
-    GLWidget* _imageWidget;
-    GLWidget* _otherWidget;
+    AlbumWidget* _imageWidget;
+    AlbumWidget* _otherWidget;
 
 
     MainWindow(QWidget *parent = 0);

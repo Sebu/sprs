@@ -14,11 +14,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    _imageWidget =  new GLWidget(ui->imageWidget);
-    _otherWidget =  new GLWidget(ui->otherWidget);
+    _imageWidget =  new AlbumWidget(ui->imageWidget);
 
-    this->connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(changeImage()));
-
+    this->connect( ui->pushButton, SIGNAL(clicked()),         this, SLOT(changeImage()) );
+    this->connect( ui->prevButton, SIGNAL(clicked()), _imageWidget, SLOT(prev())        );
+    this->connect( ui->nextButton, SIGNAL(clicked()), _imageWidget, SLOT(next())        );
 
 
 
@@ -77,8 +77,9 @@ void MainWindow::changeImage()
 
     this->_seedmap = new SeedMap(_image,4,4);
 
-    this->_imageWidget->fromIpl(_image);
-    this->_otherWidget->fromIpl( _seedmap->orientIpl(patch1->_orientHist.peak()) );
+    this->_imageWidget->fromIpl(_image , "gray");
+    this->_imageWidget->fromIpl( _seedmap->meanIpl(), "seeds histogram means" );
+    this->_imageWidget->fromIpl( _seedmap->orientIpl(patch1->_orientHist.peak()), "seeds orientation" );
 
 }
 

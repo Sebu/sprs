@@ -6,56 +6,31 @@
 #include <QGLWidget>
 #include <QtGui>
 
-class GLWidget : public QGLWidget
+class AlbumWidget : public QGLWidget
 {
 Q_OBJECT
 
 public:
-    unsigned int texImage;
 
 
-public:
-    GLWidget(QWidget *parent)
-            : QGLWidget(parent) {
-        glGenTextures(1, &texImage);
+    AlbumWidget(QWidget *parent)
+            : QGLWidget(parent), _pos(0) {
+
         setMinimumSize(400,400);
     }
 
-    int fromIpl(IplImage *image) {
-        makeCurrent();
-        if (image==NULL) return -1;
-
-        glBindTexture( GL_TEXTURE_2D, texImage );
-
-        GLenum input_format;
-
-        switch(image->nChannels) {
-            case 1: input_format = GL_LUMINANCE; break;
-            case 3: input_format = GL_BGR; break;
-            case 4: input_format = GL_BGRA; break;
-            default: input_format = GL_BGR; break;
-        }
-
-        GLenum channel_depth;
-
-        switch(image->depth) {
-            case IPL_DEPTH_8U: channel_depth  = GL_UNSIGNED_BYTE; break;
-            case IPL_DEPTH_32F: channel_depth = GL_FLOAT; break;
-            default: channel_depth = GL_UNSIGNED_BYTE; break;
-        }
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, input_format, channel_depth, image->imageData);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-
-        return 0;
-
-    }
+    int fromIpl(IplImage *image, QString caption="none");
 
 public slots:
-
+    void next();
+    void prev();
 
 protected:
+    QList<unsigned int>  _texImages;
+    int _pos;
+
+    void validatePos();
+
     void initializeGL()
     {
         glEnable(GL_TEXTURE_2D);
@@ -64,7 +39,7 @@ protected:
 
     void resizeGL(int w, int h)
     {
-        glViewport(0, 0, (GLint)w, (GLint)h);
+        glViewport(0, 0, w, h);
     }
 
     void paintGL()
