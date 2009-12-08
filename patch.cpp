@@ -2,15 +2,7 @@
 #include "cv_ext.h"
 
 
-bool Patch::match(Patch& other) {
-
-
-    float colorScale = this->histMean() - other.histMean();
-
-    if(colorScale>1.25f) return false;
-
-//    float orientationError = this->_orientHist->compare(other._orientHist);
-
+float Patch::reconError(const Patch& other) {
     IplImage* diff = cvCreateImage( cvSize(this->_w, this->_h),
                                     this->_patchImage->depth, this->_patchImage->nChannels );
 
@@ -19,26 +11,45 @@ bool Patch::match(Patch& other) {
 
     cvAbsDiff(this->_patchImage, other._patchImage, diff);
 
+    //
     float scaleFactor = 1.0 / (255.0*255.0);
-    cvMul(diff, diff, mul, scaleFactor);
+    cvMul(diff, diff, mul, scaleFactor );
 
 
     float alpha = 1.0f; // 0 <= alpha <= 2
     float beta  = .2f;
 
-    // reconError =  ( cvSum(mul).val[0] ) / ( pow( variance , alpha) + beta );
-    float reconError =  ( (float)cvSum(mul).val[0] ) /  beta ;
-
     cvReleaseImage(&diff);
     cvReleaseImage(&mul);
 
-    std::cout << reconError << std::endl;
+    // reconError =  ( cvSum(mul).val[0] ) / ( pow( variance , alpha) + beta );
+    return ( (float)cvSum(mul).val[0] ) /  beta ;
+}
 
-    //   TODO: magic number
-    return (reconError<1.1f);
+bool Patch::match(Patch& other) {
+
+    // 4.1 translation, color scale
+    // atm actually only contrast scale
+    // drop when over bright
+
+    float colorScale = this->histMean() - other.histMean();
+    if(colorScale>1.25f) return false;
+
+    // 4.1 rotation, orientation/gradient histogram
+    float orientationError = this->_orientHist->compare(other._orientHist);
+
+    // 4 reconstruction error
+    float reconError = 0.0f; // reconError(other);
+
+    std::cout <<  orientationError << reconError << std::endl;
+
+    // TODO: magic number
+    return (orientationError<1.1f);
     //return 0;
 
 
+    // 4.1 KLT matching
+/*
     int N = 10;
     CvPoint2D32f frame1_features[N];
     IplImage* eig_image = cvCreateImage( cvSize(_w, _h), IPL_DEPTH_32F, 1);
@@ -65,12 +76,7 @@ bool Patch::match(Patch& other) {
     cvReleaseImage(&eig_image);
     cvReleaseImage(&temp_image);
 
-    for( int i = 0; i < N; i++) {
-//        int radius = _w/25.0f;
-//        cvCircle(image, cvPoint((int)(frame1_features[i].x + 0.5f),(int)(frame1_features[i].y  + 0.5f)), radius,	cvScalar(255,0,0));
-//        cvCircle(gray, cvPoint((int)(frame2_features[i].x + offsetx + 0.5f),(int)(frame2_features[i].y + offsety + 0.5f)), radius,	cvScalar(255,0,0));
-
-    }
+*/
 
 }
 

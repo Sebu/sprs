@@ -20,7 +20,7 @@ public:
 
     Patch(IplImage* sourceImage, int x=0, int y=0, int w=16, int h=16);
 
-
+    float reconError(const Patch& other);
     bool match(Patch& patch);
 
     float histMean() { return _histMean; }
