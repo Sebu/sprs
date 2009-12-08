@@ -1,5 +1,23 @@
 #include "cv_ext.h"
 
+
+
+IplImage* copy_block(IplImage *src, IplImage* dest, CvRect roi)
+{
+    // change ROI
+    cvSetImageROI(src, roi);
+    cvSetImageROI(dest, roi);
+
+    cvCopy(src, dest);
+
+    // release image ROI
+    cvResetImageROI(src);
+    cvResetImageROI(dest);
+
+    return dest;
+}
+
+
 IplImage* sub_image(IplImage *image, CvRect roi)
 {
     IplImage *result;

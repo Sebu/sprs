@@ -14,16 +14,23 @@ public:
     int _height;
 
     QList<Patch*> _seeds;
-    IplImage* _image;
+    QList<Patch*> _matches;
+
+    IplImage* _sourceImage;
+
+    IplImage* _epitome_ipl;
     IplImage* _mean_ipl;
     IplImage* _orient_ipl;
 
     SeedMap(IplImage* image, int xoffset, int yoffset );
-
     void setImage(IplImage* image);
 
     Patch* at(int x, int y);
 
+    void match(Patch& patch);
+
+    // debug
+    IplImage* epitomeIpl();
     IplImage* meanIpl();
     IplImage* orientIpl(float delta=1.0f);
 
