@@ -7,7 +7,7 @@
 
 
 SeedMap::SeedMap( IplImage* image, int xgrid, int ygrid )
-    : _xgrid(xgrid), _ygrid(ygrid), _sourceImage(0), _epitome_ipl(0), _mean_ipl(0), _orient_ipl(0)
+    : _xgrid(xgrid), _ygrid(ygrid), _sourceImage(0)
 {
     setImage(image);
 }
@@ -17,6 +17,10 @@ void SeedMap::match(Patch &patch) {
     foreach (Patch* seed, this->_seeds ) {
         if ( patch.match(*seed) ) {
             _matches.append(seed);
+            //            std::cout << patch._x << " " << patch._y << " " << seed->_x << " " << seed->_y << std::endl;
+            Transform* t = new Transform(patch._x, patch._y, seed->_x, seed->_y,seed);
+            _transforms.append(t);
+
             break; // take first match
         }
 
@@ -30,43 +34,56 @@ Patch* SeedMap::at(int x, int y) {
 }
 
 
-IplImage* SeedMap::epitomeIpl() {
-    if (!_epitome_ipl) _epitome_ipl = cvCreateImage( cvSize(_sourceImage->width, _sourceImage->height), IPL_DEPTH_8U, 1);
+IplImage* SeedMap::reconstructIpl() {
+    _debugImages["reconstuct"] = cvCreateImage( cvSize(_sourceImage->width, _sourceImage->height), IPL_DEPTH_8U, 1);
 
-    foreach (Patch* match, _matches) {
-        copy_block(_sourceImage, _epitome_ipl, cvRect(match->_x, match->_y, match->_w, match->_h ) );
-//        int radius = _sourceImage->width/25.0f;
-//        cvCircle(_sourceImage, cvPoint((int)(match->_x + 0.5f),(int)(match->_y  + 0.5f)), radius, cvScalar(255,0,0));
+    foreach (Transform* t, _transforms) {
+        //        std::cout << t->_seedX << " " << t->_seedY << " " << t->_x << " "  << t->_y << std::endl;
+        int w = t->_seed->_w;
+        int h = t->_seed->_h;
+
+        copy_block(t->_seed->_sourceImage, _debugImages["reconstuct"] , cvRect(t->_seedX, t->_seedY, w, h), cvRect(t->_x, t->_y, w, h) );
     }
 
+    return _debugImages["reconstuct"];
+}
 
-    return _epitome_ipl;
+
+IplImage* SeedMap::epitomeIpl() {
+    _debugImages["epitome"] = cvCreateImage( cvSize(_sourceImage->width, _sourceImage->height), IPL_DEPTH_8U, 1);
+
+    foreach (Patch* match, _matches) {
+        //        std::cout << match->_x << " " << match->_x  << std::endl;
+        copy_block(_sourceImage, _debugImages["epitome"], cvRect(match->_x, match->_y, match->_w, match->_h ) );
+    }
+
+    return _debugImages["epitome"];
 }
 
 
 IplImage* SeedMap::meanIpl() {
-    if (!_mean_ipl) _mean_ipl = cvCreateImage( cvSize(_width, _height), IPL_DEPTH_32F, 1);
+    _debugImages["mean"] = cvCreateImage( cvSize(_width, _height), IPL_DEPTH_32F, 1);
 
     for(int y=0; y<_height; y++){
         for(int x=0; x<_width; x++){
             float mean = this->at(x,y)->histMean();
-            cvSet2D( _mean_ipl, y, x, cvScalarAll(mean) );
+            cvSet2D( _debugImages["mean"] , y, x, cvScalarAll(mean) );
         }
     }
-    return _mean_ipl;
+    return _debugImages["mean"] ;
 }
 
 
 IplImage* SeedMap::orientIpl(float delta) {
-    if (!_orient_ipl) _orient_ipl = cvCreateImage( cvSize(_width, _height), IPL_DEPTH_32F, 1);
-
+    _debugImages["orient"] = cvCreateImage( cvSize(_width, _height), IPL_DEPTH_32F, 1);
     for(int y=0; y<_height; y++){
         for(int x=0; x<_width; x++){
+
             float max_f = at(x,y)->_orientHist->peak();
-            cvSet2D( _orient_ipl, y, x, cvScalarAll(delta-max_f) );
+            cvSet2D( _debugImages["orient"], y, x, cvScalarAll(delta-max_f) );
         }
     }
-    return _orient_ipl;
+    return _debugImages["orient"];
 }
 
 
@@ -74,23 +91,49 @@ IplImage* SeedMap::orientIpl(float delta) {
 void SeedMap::setImage(IplImage* image) {
     _sourceImage = image;
 
+    IplImage* currentImage = image;
+
     int w = 16;
     int h = 16;
 
-    _width = (image->width-w) / _xgrid;
-    _height = (image->height-h) / _ygrid;
+    foreach(IplImage* image, _debugImages) {
+        if(!image) cvReleaseImage(&image);
+    }
 
     this->_seeds.clear(); // remove all old patches
 
-    if(!_epitome_ipl) cvReleaseImage(&_epitome_ipl);
-    if(!_mean_ipl) cvReleaseImage(&_mean_ipl);
-    if(!_orient_ipl) cvReleaseImage(&_orient_ipl);
+    float scale = 1.5f;
+    float scaleWidth  = _sourceImage->width;
+    float scaleHeight = _sourceImage->height;
 
-    // generate new patches
-    for(int y=0; y<_height; y++){
-        for(int x=0; x<_width; x++){
-            Patch* seed = new Patch( _sourceImage, x*_xgrid, y*_ygrid, w, h );
-            this->_seeds.append(seed);
+    // TODO: create image scales :) 1.5, 1.5^2, 1.5^3
+
+    for (int i=0; i<1; i++) {
+
+
+
+        _width = (currentImage->width-w) / _xgrid;
+        _height = (currentImage->height-h) / _ygrid;
+
+        // generate new patches
+        for(int y=0; y<_height; y++){
+            for(int x=0; x<_width; x++){
+                Patch* seed = new Patch( currentImage, x*_xgrid, y*_ygrid, w, h );
+                seed->_scale = scale;
+                this->_seeds.append(seed);
+            }
         }
+
+        scale *= 1.5f;
+        scaleWidth  = _sourceImage->width / scale;
+        scaleHeight = _sourceImage->height / scale;
+        currentImage = cvCreateImage( cvSize(scaleWidth, scaleWidth), IPL_DEPTH_8U, 1);
+        cvResize(_sourceImage, currentImage);
+
     }
+
+
+
+
+
 }

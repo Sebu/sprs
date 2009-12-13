@@ -2,8 +2,11 @@
 #define SEEDMAP_H
 
 #include <QList>
-#include "patch.h"
+#include <QHash>
 #include <opencv/cv.h>
+
+#include "patch.h"
+#include "transformmap.h"
 
 class SeedMap
 {
@@ -16,11 +19,12 @@ public:
     QList<Patch*> _seeds;
     QList<Patch*> _matches;
 
+    QList<Transform*> _transforms;
+
+
     IplImage* _sourceImage;
 
-    IplImage* _epitome_ipl;
-    IplImage* _mean_ipl;
-    IplImage* _orient_ipl;
+    QHash<QString, IplImage*> _debugImages;
 
     SeedMap(IplImage* image, int xoffset, int yoffset );
     void setImage(IplImage* image);
@@ -30,6 +34,7 @@ public:
     void match(Patch& patch);
 
     // debug
+    IplImage* reconstructIpl();
     IplImage* epitomeIpl();
     IplImage* meanIpl();
     IplImage* orientIpl(float delta=1.0f);

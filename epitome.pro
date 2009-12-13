@@ -13,11 +13,13 @@ SOURCES += main.cpp \
     patch.cpp \
     seedmap.cpp \
     cv_ext.cpp \
-    orientationhistogram.cpp
+    orientationhistogram.cpp \
+    transformmap.cpp
 HEADERS += mainwindow.h \
     glwidget.h \
     patch.h \
     seedmap.h \
     cv_ext.h \
-    orientationhistogram.h
+    orientationhistogram.h \
+    transformmap.h
 FORMS += mainwindow.ui

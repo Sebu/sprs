@@ -14,6 +14,8 @@ private:
 public:
     int _x, _y, _w, _h;
 
+    float _scale;
+
     IplImage* _patchImage;
     IplImage* _sourceImage;
     OrientHist* _orientHist;

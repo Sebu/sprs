@@ -2,11 +2,12 @@
 
 
 
-IplImage* copy_block(IplImage *src, IplImage* dest, CvRect roi)
+IplImage* copy_block(IplImage *src, IplImage* dest, CvRect roiSrc, CvRect roiDest)
 {
+    if (roiDest.height == 0) roiDest = roiSrc;
     // change ROI
-    cvSetImageROI(src, roi);
-    cvSetImageROI(dest, roi);
+    cvSetImageROI(src, roiSrc);
+    cvSetImageROI(dest, roiDest);
 
     cvCopy(src, dest);
 

@@ -46,7 +46,7 @@ void MainWindow::changeImage()
     this->_seedmap = new SeedMap( gray, 4, 4);
 
     int maxX = gray->width  / w;
-    int maxY = gray->height / (h*2);
+    int maxY = gray->height / (h*1);
 
     for (int y=0; y<maxY; y++){
         for(int x=0; x<maxX; x++) {
@@ -60,6 +60,7 @@ void MainWindow::changeImage()
     this->_imageWidget->fromIpl( _seedmap->meanIpl(), "seeds histogram means" );
     this->_imageWidget->fromIpl( _seedmap->orientIpl(), "seeds orientation" );
     this->_imageWidget->fromIpl( _seedmap->epitomeIpl() , "test epitome");
+    this->_imageWidget->fromIpl( _seedmap->reconstructIpl() , "reconstruction");
 
 }
 

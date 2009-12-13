@@ -29,6 +29,7 @@ OrientHist::OrientHist(IplImage* image, int numBins) : _bins(0), _numBins(numBin
 
     _bins = new int[_numBins];
 
+    // init with 0
     for(int i=0; i<numBins; i++) _bins[i]=0;
 
     for(int y=0; y<image->height-1; y++) {
@@ -42,15 +43,16 @@ OrientHist::OrientHist(IplImage* image, int numBins) : _bins(0), _numBins(numBin
 
             int dir = (atan2(dx,dy)+PI) * 180.0f/PI;
 
-            float magnitude =1.0f; // sqrt(dx*dx + dy*dy);
+            float magnitude = sqrt(dx*dx + dy*dy);
 
-            float threshold = 0.0f;
+            float threshold = 2.0f;
 
             if(magnitude > threshold ) {
                 _bins[ dir / (360/numBins) ]++;
             }
 
         }
+
     }
 
 }

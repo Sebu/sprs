@@ -3,54 +3,58 @@
 
 
 float Patch::reconError(const Patch& other) {
+
+
     IplImage* diff = cvCreateImage( cvSize(this->_w, this->_h),
                                     this->_patchImage->depth, this->_patchImage->nChannels );
 
     IplImage* mul = cvCreateImage( cvSize(this->_w, this->_h),
-                                    this->_patchImage->depth, this->_patchImage->nChannels );
+                                   this->_patchImage->depth, this->_patchImage->nChannels );
+
 
     cvAbsDiff(this->_patchImage, other._patchImage, diff);
 
     //
-    float scaleFactor = 1.0 / (255.0*255.0);
+    float scaleFactor = 1.0f / (255.0f*255.0f);
     cvMul(diff, diff, mul, scaleFactor );
 
-
     float alpha = 1.0f; // 0 <= alpha <= 2
-    float beta  = .2f;
+    float beta  = .00002f;
+
+    float sum = (float)cvSum(mul).val[0];
 
     cvReleaseImage(&diff);
     cvReleaseImage(&mul);
 
     // reconError =  ( cvSum(mul).val[0] ) / ( pow( variance , alpha) + beta );
-    return ( (float)cvSum(mul).val[0] ) /  beta ;
+    return sum /  beta ;
 }
 
 bool Patch::match(Patch& other) {
+
 
     // 4.1 translation, color scale
     // atm actually only contrast scale
     // drop when over bright
 
-    float colorScale = this->histMean() - other.histMean();
+    float colorScale = this->histMean() / other.histMean();
     if(colorScale>1.25f) return false;
 
     // 4.1 rotation, orientation/gradient histogram
-    float orientationError = this->_orientHist->compare(other._orientHist);
+    float orientationError = this->_orientHist->minDiff(other._orientHist);
 
     // 4 reconstruction error
-    float reconError = 0.0f; // reconError(other);
+    float reconstuctionError =  reconError(other);
 
-    std::cout <<  orientationError << reconError << std::endl;
+//    std::cout <<  "color: " << colorScale << "\t\t orient.: " << orientationError << "\t\t error: " << reconstuctionError << std::endl;
 
     // TODO: magic number
-    return (orientationError<1.1f);
-    //return 0;
-
+    if (orientationError>300) return false;
 
     // 4.1 KLT matching
-/*
-    int N = 10;
+
+
+    int N = 20;
     CvPoint2D32f frame1_features[N];
     IplImage* eig_image = cvCreateImage( cvSize(_w, _h), IPL_DEPTH_32F, 1);
     IplImage* temp_image = cvCreateImage( cvSize(_w, _h), IPL_DEPTH_32F, 1);
@@ -76,7 +80,22 @@ bool Patch::match(Patch& other) {
     cvReleaseImage(&eig_image);
     cvReleaseImage(&temp_image);
 
-*/
+    CvPoint2D32f srcTri[3], dstTri[3];
+    CvMat* warp_mat = cvCreateMat(2,3,CV_32FC1);
+
+    int index = 0;
+    for (int i=0; i<N; i++) {
+        if(optical_flow_found_feature[i]) {
+            srcTri[i] = frame1_features[i];
+            dstTri[i] = frame2_features[i];
+        }
+        if (index==2) break;
+        index++;
+    }
+    cvGetAffineTransform( srcTri, dstTri, warp_mat );
+//    cvWarpAffine( src, dst, warp_mat );
+
+    return true;
 
 }
 
