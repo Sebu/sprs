@@ -11,6 +11,8 @@
 class SeedMap
 {
 public:
+    int _patchW;
+    int _patchH;
     int _xgrid;
     int _ygrid;
     int _width;
@@ -26,7 +28,7 @@ public:
 
     QHash<QString, IplImage*> _debugImages;
 
-    SeedMap(IplImage* image, int xoffset, int yoffset );
+    SeedMap( IplImage* image, int w, int h, int xgrid, int ygrid );
     void setImage(IplImage* image);
 
     Patch* at(int x, int y);

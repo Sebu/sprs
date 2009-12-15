@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
-    <height>592</height>
+    <width>825</width>
+    <height>557</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QWidget" name="centralWidget">
    <property name="minimumSize">
     <size>
-     <width>600</width>
-     <height>339</height>
+     <width>825</width>
+     <height>498</height>
     </size>
    </property>
    <widget class="QWidget" name="verticalLayoutWidget">
@@ -26,21 +26,70 @@
       <x>0</x>
       <y>0</y>
       <width>791</width>
-      <height>461</height>
+      <height>462</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMinAndMaxSize</enum>
+     </property>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetNoConstraint</enum>
+       </property>
        <item>
         <widget class="QWidget" name="imageWidget" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>600</width>
+           <height>400</height>
+          </size>
          </property>
         </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <item>
+          <widget class="QSpinBox" name="blockSpin">
+           <property name="minimum">
+            <number>4</number>
+           </property>
+           <property name="value">
+            <number>16</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="stepSpin">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>16</number>
+           </property>
+           <property name="value">
+            <number>4</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="errorSpin">
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.600000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -53,6 +102,9 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMaximumSize</enum>
+       </property>
        <item>
         <widget class="QPushButton" name="pushButton">
          <property name="text">
@@ -62,12 +114,6 @@
        </item>
        <item>
         <widget class="QPushButton" name="prevButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
          <property name="text">
           <string>&lt;</string>
          </property>
@@ -75,12 +121,6 @@
        </item>
        <item>
         <widget class="QPushButton" name="nextButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
          <property name="text">
           <string>&gt;</string>
          </property>
@@ -109,7 +149,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>860</width>
+     <width>825</width>
      <height>24</height>
     </rect>
    </property>

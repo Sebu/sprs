@@ -32,35 +32,48 @@ void MainWindow::changeImage()
 {
 
     if (_image!=NULL) cvReleaseImage(&_image);
+
     QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "/home/seb/Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
+
+    if(fileName=="") return;
+
     _image =  cvLoadImage(fileName.toAscii());
 
-    int w = 16;
-    int h = 16;
+    int w = ui->blockSpin->value();
+    int h = ui->blockSpin->value();
 
     IplImage* gray = cvCreateImage( cvSize(_image->width, _image->height), IPL_DEPTH_8U, 1);
     cvCvtColor(_image, gray, CV_BGR2GRAY);
 
 
 
-    this->_seedmap = new SeedMap( gray, 4, 4);
+    this->_seedmap = new SeedMap( gray,  w, h, ui->stepSpin->value(), ui->stepSpin->value());
 
     int maxX = gray->width  / w;
-    int maxY = gray->height / (h*1);
+    int maxY = gray->height / h;
 
     for (int y=0; y<maxY; y++){
         for(int x=0; x<maxX; x++) {
             Patch* patch = new Patch( gray, x*w, y*h, w, h );
+            patch->_debugAlbum = this->_imageWidget;
             this->_seedmap->match(*patch);
             free(patch);
         }
     }
 
-    this->_imageWidget->fromIpl(_image , "gray");
-    this->_imageWidget->fromIpl( _seedmap->meanIpl(), "seeds histogram means" );
-    this->_imageWidget->fromIpl( _seedmap->orientIpl(), "seeds orientation" );
-    this->_imageWidget->fromIpl( _seedmap->epitomeIpl() , "test epitome");
-    this->_imageWidget->fromIpl( _seedmap->reconstructIpl() , "reconstruction");
+    IplImage* reconstruction = _seedmap->reconstructIpl();
+    IplImage* error = cvCreateImage( cvSize(_image->width, _image->height), IPL_DEPTH_8U, 1);
+    cvSub(gray,reconstruction,error);
+
+
+    _imageWidget->fromIpl( _image,                        "image" );
+//    _imageWidget->fromIpl( _seedmap->meanIpl(),           "seeds histogram means" );
+//    _imageWidget->fromIpl( _seedmap->orientIpl(),         "seeds orientation" );
+    _imageWidget->fromIpl( _seedmap->epitomeIpl() ,       "test epitome" );
+    _imageWidget->fromIpl( error,                          "error");
+    _imageWidget->fromIpl( gray,                          "gray");
+    _imageWidget->fromIpl( reconstruction,                "reconstruction" );
+
 
 }
 

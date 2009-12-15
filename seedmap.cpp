@@ -6,8 +6,8 @@
 #include "cv_ext.h"
 
 
-SeedMap::SeedMap( IplImage* image, int xgrid, int ygrid )
-    : _xgrid(xgrid), _ygrid(ygrid), _sourceImage(0)
+SeedMap::SeedMap( IplImage* image, int w, int h, int xgrid, int ygrid )
+    : _patchW(w), _patchH(h), _xgrid(xgrid), _ygrid(ygrid), _sourceImage(0)
 {
     setImage(image);
 }
@@ -15,12 +15,10 @@ SeedMap::SeedMap( IplImage* image, int xgrid, int ygrid )
 
 void SeedMap::match(Patch &patch) {
     foreach (Patch* seed, this->_seeds ) {
-        if ( patch.match(*seed) ) {
+        Transform*t = patch.match(*seed);
+        if ( t ) {
             _matches.append(seed);
-            //            std::cout << patch._x << " " << patch._y << " " << seed->_x << " " << seed->_y << std::endl;
-            Transform* t = new Transform(patch._x, patch._y, seed->_x, seed->_y,seed);
             _transforms.append(t);
-
             break; // take first match
         }
 
@@ -36,13 +34,17 @@ Patch* SeedMap::at(int x, int y) {
 
 IplImage* SeedMap::reconstructIpl() {
     _debugImages["reconstuct"] = cvCreateImage( cvSize(_sourceImage->width, _sourceImage->height), IPL_DEPTH_8U, 1);
+    cvZero(_debugImages["reconstuct"]);
 
     foreach (Transform* t, _transforms) {
         //        std::cout << t->_seedX << " " << t->_seedY << " " << t->_x << " "  << t->_y << std::endl;
         int w = t->_seed->_w;
         int h = t->_seed->_h;
 
-        copy_block(t->_seed->_sourceImage, _debugImages["reconstuct"] , cvRect(t->_seedX, t->_seedY, w, h), cvRect(t->_x, t->_y, w, h) );
+        IplImage* reconstruction = t->reconstruct();
+
+        copyBlock(reconstruction, _debugImages["reconstuct"] , cvRect(0, 0, w, h), cvRect(t->_x, t->_y, w, h) );
+        cvReleaseImage(&reconstruction);
     }
 
     return _debugImages["reconstuct"];
@@ -54,7 +56,7 @@ IplImage* SeedMap::epitomeIpl() {
 
     foreach (Patch* match, _matches) {
         //        std::cout << match->_x << " " << match->_x  << std::endl;
-        copy_block(_sourceImage, _debugImages["epitome"], cvRect(match->_x, match->_y, match->_w, match->_h ) );
+        copyBlock(_sourceImage, _debugImages["epitome"], cvRect(match->_x, match->_y, match->_w, match->_h ) );
     }
 
     return _debugImages["epitome"];
@@ -93,8 +95,8 @@ void SeedMap::setImage(IplImage* image) {
 
     IplImage* currentImage = image;
 
-    int w = 16;
-    int h = 16;
+    int w = _patchW;
+    int h = _patchH;
 
     foreach(IplImage* image, _debugImages) {
         if(!image) cvReleaseImage(&image);
@@ -109,8 +111,6 @@ void SeedMap::setImage(IplImage* image) {
     // TODO: create image scales :) 1.5, 1.5^2, 1.5^3
 
     for (int i=0; i<1; i++) {
-
-
 
         _width = (currentImage->width-w) / _xgrid;
         _height = (currentImage->height-h) / _ygrid;
@@ -131,9 +131,6 @@ void SeedMap::setImage(IplImage* image) {
         cvResize(_sourceImage, currentImage);
 
     }
-
-
-
 
 
 }

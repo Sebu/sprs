@@ -25,7 +25,7 @@ public:
             if (sum<min) { min=sum; angle=j*10; }
         }
 
-        return min; // angle;
+        return angle;
     }
 
     int diff(OrientHist* other, int offset=0) {

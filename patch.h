@@ -4,6 +4,10 @@
 #include <opencv/cv.h>
 
 #include "orientationhistogram.h"
+#include "glwidget.h"
+#include "transformmap.h"
+
+class Transform;
 
 class Patch
 {
@@ -20,10 +24,16 @@ public:
     IplImage* _sourceImage;
     OrientHist* _orientHist;
 
+    AlbumWidget* _debugAlbum;
+
+    CvMat* _warpMat;
+
     Patch(IplImage* sourceImage, int x=0, int y=0, int w=16, int h=16);
 
-    float reconError(const Patch& other);
-    bool match(Patch& patch);
+
+    float reconError(Transform*);
+    bool trackFeatures(IplImage*);
+    Transform* match(Patch&);
 
     float histMean() { return _histMean; }
     void setHistMean(float hist_mean) { this->_histMean = hist_mean; }

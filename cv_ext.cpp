@@ -2,7 +2,7 @@
 
 
 
-IplImage* copy_block(IplImage *src, IplImage* dest, CvRect roiSrc, CvRect roiDest)
+IplImage* copyBlock(IplImage *src, IplImage* dest, CvRect roiSrc, CvRect roiDest)
 {
     if (roiDest.height == 0) roiDest = roiSrc;
     // change ROI
@@ -19,7 +19,7 @@ IplImage* copy_block(IplImage *src, IplImage* dest, CvRect roiSrc, CvRect roiDes
 }
 
 
-IplImage* sub_image(IplImage *image, CvRect roi)
+IplImage* subImage(IplImage *image, CvRect roi)
 {
     IplImage *result;
     cvSetImageROI(image,roi);
@@ -31,7 +31,7 @@ IplImage* sub_image(IplImage *image, CvRect roi)
     return result;
 }
 
-float histogram_mean(IplImage* img) {
+float histogramMean(IplImage* img) {
 
 /*
     int hist_size = 256;
@@ -56,5 +56,5 @@ float histogram_mean(IplImage* img) {
 //    mean =  // /= (float)hist_size;
 */
 
-    return cvAvg(img).val[0]/256.0f;
+    return cvAvg(img).val[0]; // /256.0f;
 }

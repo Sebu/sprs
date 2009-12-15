@@ -12,6 +12,7 @@ void AlbumWidget::prev() {
     validatePos();
 
     makeCurrent();
+
     unsigned int tex = _texImages.at(_pos);
     glBindTexture( GL_TEXTURE_2D, tex );
     update();
