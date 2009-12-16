@@ -1,9 +1,10 @@
 #include "glwidget.h"
 
+#include <iostream>
 
 void AlbumWidget::validatePos() {
-    if (_pos<0) _pos = _texImages.size()-1;
-    else if (_pos == _texImages.size()) _pos=0;
+    if (_pos<0) _pos = _values.size()-1;
+    else if (_pos == _values.size()) _pos=0;
 
 }
 
@@ -13,7 +14,7 @@ void AlbumWidget::prev() {
 
     makeCurrent();
 
-    unsigned int tex = _texImages.at(_pos);
+    unsigned int tex = _values.at(_pos);
     glBindTexture( GL_TEXTURE_2D, tex );
     update();
 }
@@ -23,7 +24,7 @@ void AlbumWidget::next() {
     validatePos();
 
     makeCurrent();
-    unsigned int tex = _texImages.at(_pos);
+    unsigned int tex = _values.at(_pos);
     glBindTexture( GL_TEXTURE_2D, tex );
     update();
 }
@@ -36,11 +37,18 @@ int AlbumWidget::fromIpl(IplImage *image, QString caption) {
 
     unsigned int tex;
 
-    glGenTextures(1, &tex);
+    if (!_texImages.contains(caption)) {
+        glGenTextures(1, &tex);
+    } else {
+        tex = _texImages[caption];
+    }
+    _texImages[caption] = tex;
+
+    _values = _texImages.values();
+    _pos = _values.size();
+
     glBindTexture( GL_TEXTURE_2D, tex );
 
-    _pos = _texImages.size();
-    _texImages.append(tex);
 
     GLenum input_format;
 

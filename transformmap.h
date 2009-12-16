@@ -21,6 +21,7 @@ public:
     Transform(int x, int  y, int  seedX, int  seedY, Patch* seed);
 
     IplImage* rotate();
+    IplImage* warp();
     IplImage* reconstruct();
 };
 

@@ -1,7 +1,5 @@
 
 #include <opencv/cv.h>
-#include <stdio.h>
-
 #include "seedmap.h"
 #include "cv_ext.h"
 
@@ -12,17 +10,58 @@ SeedMap::SeedMap( IplImage* image, int w, int h, int xgrid, int ygrid )
     setImage(image);
 }
 
+void SeedMap::testPatch(int x, int y) {
+    Patch* patch = new Patch( _sourceImage, x*_patchW, y*_patchH, _patchW, _patchH );
+    this->match(*patch);
+    free(patch);
+}
 
 void SeedMap::match(Patch &patch) {
+
+    patch.findFeatures();
+
+    QList<Transform*> localTransforms;
+    Transform* t;
     foreach (Patch* seed, this->_seeds ) {
-        Transform*t = patch.match(*seed);
+        t = patch.match(*seed, _error);
         if ( t ) {
-            _matches.append(seed);
-            _transforms.append(t);
-            break; // take first match
+//            _matches.append(seed);
+              localTransforms.append(t);
+//            break; // take first match
         }
 
     }
+    _transforms.append(localTransforms.last());
+    IplImage* reconstruction = reconstructIpl();
+    _debugAlbum->fromIpl( reconstruction, "reconstruction" );
+    cvReleaseImage(&reconstruction);
+
+
+//  IplImage *warped = t->warp();
+
+/*
+    float va[][3] = { {t->_seed->_x,t->_seed->_y, 1},
+                     {t->_seed->_x+patch._w,t->_seed->_y, 1},
+                     {t->_seed->_x+patch._w,t->_seed->_y+patch._h, 1},
+                     {t->_seed->_x,t->_seed->_y+patch._h, 1} };
+
+    CvPoint points[4];
+    for (int i=0; i<4; i++) {
+        float tmp[] = { 0, 0 };
+        CvMat bla = cvMat(3, 1, CV_32FC1,va[i]);
+        CvMat result = cvMat(2, 1, CV_32FC1,tmp);
+        cvMatMul(t->_warpMat, &bla, &result);
+    }
+*/
+/*
+    cvRectangle(warped, cvPoint(t->_seed->_x,t->_seed->_y), cvPoint(t->_seed->_x+patch._w,t->_seed->_y+patch._h),cvScalarAll(255));
+    cvRectangle(warped, cvPoint(t->_x,t->_y), cvPoint(t->_x+patch._w,t->_y+patch._h),cvScalarAll(155));
+    _debugAlbumR->fromIpl(warped, "warped");
+*/
+//    cvReleaseImage(&warped);
+
+    _debugAlbum->updateGL();
+    _debugAlbumR->updateGL();
 
 }
 
@@ -53,9 +92,9 @@ IplImage* SeedMap::reconstructIpl() {
 
 IplImage* SeedMap::epitomeIpl() {
     _debugImages["epitome"] = cvCreateImage( cvSize(_sourceImage->width, _sourceImage->height), IPL_DEPTH_8U, 1);
+    cvZero(_debugImages["epitome"]);
 
     foreach (Patch* match, _matches) {
-        //        std::cout << match->_x << " " << match->_x  << std::endl;
         copyBlock(_sourceImage, _debugImages["epitome"], cvRect(match->_x, match->_y, match->_w, match->_h ) );
     }
 
@@ -104,16 +143,21 @@ void SeedMap::setImage(IplImage* image) {
 
     this->_seeds.clear(); // remove all old patches
 
-    float scale = 1.5f;
+    float scale = 1.0f;
     float scaleWidth  = _sourceImage->width;
     float scaleHeight = _sourceImage->height;
 
     // TODO: create image scales :) 1.5, 1.5^2, 1.5^3
 
-    for (int i=0; i<1; i++) {
+    for (int i=0; i<3; i++) {
+
+
 
         _width = (currentImage->width-w) / _xgrid;
         _height = (currentImage->height-h) / _ygrid;
+
+        IplImage* flipped = cvCloneImage(currentImage);
+        cvFlip( currentImage, flipped, 0);
 
         // generate new patches
         for(int y=0; y<_height; y++){
@@ -121,8 +165,13 @@ void SeedMap::setImage(IplImage* image) {
                 Patch* seed = new Patch( currentImage, x*_xgrid, y*_ygrid, w, h );
                 seed->_scale = scale;
                 this->_seeds.append(seed);
+
+                seed = new Patch( flipped, x*_xgrid, y*_ygrid, w, h );
+                seed->_scale = scale*-1.0;
+                this->_seeds.append(seed);
             }
         }
+
 
         scale *= 1.5f;
         scaleWidth  = _sourceImage->width / scale;

@@ -18,11 +18,15 @@ public:
     int _width;
     int _height;
 
+    float _error;
+
     QList<Patch*> _seeds;
     QList<Patch*> _matches;
 
     QList<Transform*> _transforms;
 
+    AlbumWidget* _debugAlbum;
+    AlbumWidget* _debugAlbumR;
 
     IplImage* _sourceImage;
 
@@ -33,6 +37,7 @@ public:
 
     Patch* at(int x, int y);
 
+    void testPatch(int x, int y);
     void match(Patch& patch);
 
     // debug
