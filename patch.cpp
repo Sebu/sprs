@@ -136,8 +136,6 @@ Transform* Patch::match(Patch& other, float error) {
     float orientation = this->_orientHist->minDiff(other._orientHist);
 
 
-
-
     // apply initial rotation
     CvPoint2D32f center = cvPoint2D32f( other._x+(_w/2), other._y+(_h/2) );
     cv2DRotationMatrix( center, orientation, 1.0f, transform->_rotMat );
@@ -151,10 +149,10 @@ Transform* Patch::match(Patch& other, float error) {
 
     if (reconstuctionError > error) { free(transform); return 0; }
 
-    std::cout << _x << " " << _y << " " <<  "color: " << transform->_colorScale << "\t\t orient.: " << orientation << "\t\t error: " << reconstuctionError;
-    std::cout << " " << other._scale;
-    if(_x==other._x && _y==other._y) std::cout << "\tfound myself!";
-    std::cout << std::endl;
+//    std::cout << _x << " " << _y << " " <<  "color: " << transform->_colorScale << "\t\t orient.: " << orientation << "\t\t error: " << reconstuctionError;
+//    std::cout << " " << other._scale;
+//    if(_x==other._x && _y==other._y) std::cout << "\tfound myself!";
+//    std::cout << std::endl;
 
     return transform;
 }

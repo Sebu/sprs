@@ -38,7 +38,8 @@ void MainWindow::changeImage() {
     _gray = cvCreateImage( cvSize(_image->width, _image->height), IPL_DEPTH_8U, 1);
 
     cvCvtColor(_image, _gray, CV_BGR2GRAY);
-
+    _imageWidget->fromIpl( _image,                        "image" );
+    _imageWidget->fromIpl( _gray,                          "gray");
 
 }
 
@@ -98,12 +99,11 @@ void MainWindow::calculate() {
     IplImage* error = cvCreateImage( cvSize(_image->width, _image->height), IPL_DEPTH_8U, 1);
     cvSub(_gray, reconstruction, error);
 
-    _imageWidget->fromIpl( _image,                        "image" );
 //    _imageWidget->fromIpl( _seedmap->meanIpl(),           "seeds histogram means" );
 //    _imageWidget->fromIpl( _seedmap->orientIpl(),         "seeds orientation" );
 //    _imageWidget->fromIpl( _seedmap->epitomeIpl() ,       "test epitome" );
     _imageWidget->fromIpl( error,                          "error");
-    _imageWidget->fromIpl( _gray,                          "gray");
+
     _imageWidget->fromIpl( reconstruction,                "reconstruction" );
 
 

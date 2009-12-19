@@ -27,17 +27,17 @@ void SeedMap::match(Patch &patch) {
         if ( t ) {
 //            _matches.append(seed);
               localTransforms.append(t);
-//            break; // take first match
+            break; // take first match
         }
 
     }
-    _transforms.append(localTransforms.last());
+    _transforms.append(localTransforms.first());
     IplImage* reconstruction = reconstructIpl();
     _debugAlbum->fromIpl( reconstruction, "reconstruction" );
     cvReleaseImage(&reconstruction);
 
 
-//  IplImage *warped = t->warp();
+  IplImage *warped = t->warp();
 
 /*
     float va[][3] = { {t->_seed->_x,t->_seed->_y, 1},
@@ -53,11 +53,11 @@ void SeedMap::match(Patch &patch) {
         cvMatMul(t->_warpMat, &bla, &result);
     }
 */
-/*
-    cvRectangle(warped, cvPoint(t->_seed->_x,t->_seed->_y), cvPoint(t->_seed->_x+patch._w,t->_seed->_y+patch._h),cvScalarAll(255));
-    cvRectangle(warped, cvPoint(t->_x,t->_y), cvPoint(t->_x+patch._w,t->_y+patch._h),cvScalarAll(155));
-    _debugAlbumR->fromIpl(warped, "warped");
-*/
+
+//    cvRectangle(warped, cvPoint(t->_seed->_x,t->_seed->_y), cvPoint(t->_seed->_x+patch._w,t->_seed->_y+patch._h),cvScalarAll(255));
+//    cvRectangle(warped, cvPoint(t->_x,t->_y), cvPoint(t->_x+patch._w,t->_y+patch._h),cvScalarAll(155));
+//    _debugAlbumR->fromIpl(warped, "warped");
+
 //    cvReleaseImage(&warped);
 
     _debugAlbum->updateGL();

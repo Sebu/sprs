@@ -5,7 +5,7 @@ QT += opengl \
     webkit
 TARGET = epitome
 TEMPLATE = app
-LIBS = -lcv \
+LIBS = -Lcv \
     -lhighgui
 SOURCES += main.cpp \
     mainwindow.cpp \
@@ -23,3 +23,6 @@ HEADERS += mainwindow.h \
     orientationhistogram.h \
     transformmap.h
 FORMS += mainwindow.ui
+QMAKE_CXXFLAGS += -pg
+QMAKE_LFLAGS += -pg
+CONFIG += debug

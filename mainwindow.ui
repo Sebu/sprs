@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1311</width>
-    <height>561</height>
+    <width>901</width>
+    <height>571</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,8 +37,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1281</width>
-      <height>462</height>
+      <width>867</width>
+      <height>439</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -73,7 +73,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="otherWidget" native="true"/>
+        <widget class="QWidget" name="otherWidget" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>400</width>
+           <height>400</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -91,12 +98,6 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
            <property name="minimum">
             <number>4</number>
            </property>
@@ -107,18 +108,6 @@
          </item>
          <item>
           <widget class="QSpinBox" name="stepSpin">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>50</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
            <property name="minimum">
             <number>1</number>
            </property>
@@ -132,12 +121,6 @@
          </item>
          <item>
           <widget class="QDoubleSpinBox" name="errorSpin">
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
@@ -152,13 +135,6 @@
         </layout>
        </item>
       </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="caption">
-       <property name="text">
-        <string>bla</string>
-       </property>
-      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
@@ -223,8 +199,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1311</width>
-     <height>24</height>
+     <width>901</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>

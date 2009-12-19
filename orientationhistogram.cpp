@@ -10,6 +10,30 @@ float OrientHist::peak() {
     }
     return max/35.0f;
 }
+
+int OrientHist::minDiff(OrientHist* other) {
+    int angle=0;
+
+    int min = INT_MAX;
+    for(int j=0; j < this->_numBins; j++) {
+        int sum = this->diff(other, j);
+//            std::cout << sum << std::endl;
+        if (sum<min) { min=sum; angle=j*10; }
+    }
+
+    return angle;
+}
+
+int OrientHist::diff(OrientHist* other, int offset) {
+    int sum=0;
+    for (int i=0; i < _numBins; i++){
+        sum += pow(this->_bins[i]-other->_bins[ (i+offset) % _numBins ], 2);
+
+        // std::cout << this->_bins[i] << " " << sum << std::endl;
+    }
+    return sum;
+}
+
 OrientHist::OrientHist(IplImage* image, int numBins) : _bins(0), _numBins(numBins)
 {
     //    for each pixel (x,y) in an image I
@@ -41,7 +65,7 @@ OrientHist::OrientHist(IplImage* image, int numBins) : _bins(0), _numBins(numBin
             float dx = pixel.val[0] - pixel_x.val[0];
             float dy = pixel.val[0] - pixel_y.val[0];
 
-            int dir = (atan2(dx,dy)+PI) * 180.0f/PI;
+            int dir = (cvFastArctan(dx,dy)); // +PI) * 180.0f/PI;
 
             float magnitude = sqrt(dx*dx + dy*dy);
 
