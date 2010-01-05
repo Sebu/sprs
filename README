@@ -1,9 +1,16 @@
 
-qt4 + opengl image widget + opencv
 
-I   ... image
-I'  ... reconstruction
-B   ... block
-M   ... match
+steeps
+1. find all matches
+2. minimize epitome chart
+3. create epitome atlas
 
-1. KLT feature tracker (from opencv)
+
+TODO:
+- use opencv2 c++ binding instead of c binding
+- vis. all matches
+- speedup steep one (some opencv profiling needed)
+- start steep two
+- steep three
+
+

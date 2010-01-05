@@ -16,11 +16,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    QString         _fileName;
-    IplImage*       _gray;
-    IplImage*       _image;
-    SeedMap*        _seedmap;
-    AlbumWidget*    _imageWidget;
+    QString         fileName;
+    cv::Mat         image;
+    SeedMap*        seedmap;
+    AlbumWidget*    imageWidget;
     AlbumWidget*    _otherWidget;
 
 
@@ -32,7 +31,8 @@ public:
 public slots:
     void changeImage();
     void calculate();
-    void singleStep();
+    void step();
+    bool singleStep();
 
 private:
     Ui::MainWindow *ui;

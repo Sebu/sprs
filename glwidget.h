@@ -19,7 +19,7 @@ public:
         setMinimumSize(400,400);
     }
 
-    int fromIpl(IplImage *image, QString caption="none");
+    int fromIpl(cv::Mat& image, QString caption="none");
 
 public slots:
     void next();

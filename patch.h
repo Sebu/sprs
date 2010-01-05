@@ -12,31 +12,32 @@ class Transform;
 class Patch
 {
 private:
-    float _histMean;
+    cv::Scalar histMean;
 
 
 public:
     int _x, _y, _w, _h;
 
     int count;
-    CvPoint2D32f* _pointsSrc;
+    std::vector<cv::Point2f> pointsSrc;
 
-    float _scale;
+    float scale;
 
+    QList<Transform*> matches;
 
-    IplImage* _patchImage;
-    IplImage* _sourceImage;
-    OrientHist* _orientHist;
+    cv::Mat patchImage;
+    cv::Mat sourceImage;
+    OrientHist* orientHist;
 
-    Patch(IplImage* sourceImage, int x=0, int y=0, int w=16, int h=16);
+    Patch(cv::Mat& sourceImage, int x=0, int y=0, int w=16, int h=16);
 
     void findFeatures();
     float reconError(Transform*);
     bool trackFeatures(Transform* t);
     Transform* match(Patch&, float error);
 
-    float histMean() { return _histMean; }
-    void setHistMean(float hist_mean) { this->_histMean = hist_mean; }
+    cv::Scalar getHistMean() { return histMean; }
+    void setHistMean(cv::Scalar _hist_mean) { this->histMean = _hist_mean; }
 
 };
 

@@ -23,17 +23,17 @@ public:
     QList<Patch*> _seeds;
     QList<Patch*> _matches;
 
-    QList<Transform*> _transforms;
+    QList<Transform*> transforms;
 
     AlbumWidget* _debugAlbum;
     AlbumWidget* _debugAlbumR;
 
-    IplImage* _sourceImage;
+    cv::Mat sourceImage;
 
-    QHash<QString, IplImage*> _debugImages;
+    QHash<QString, cv::Mat> debugImages;
 
-    SeedMap( IplImage* image, int w, int h, int xgrid, int ygrid );
-    void setImage(IplImage* image);
+    SeedMap( cv::Mat& image, int w, int h, int xgrid, int ygrid );
+    void setImage(cv::Mat& image);
 
     Patch* at(int x, int y);
 
@@ -41,10 +41,10 @@ public:
     void match(Patch& patch);
 
     // debug
-    IplImage* reconstructIpl();
-    IplImage* epitomeIpl();
-    IplImage* meanIpl();
-    IplImage* orientIpl(float delta=1.0f);
+    cv::Mat reconstructIpl();
+    cv::Mat epitomeIpl();
+    cv::Mat meanIpl();
+    cv::Mat orientIpl(float delta=1.0f);
 
 };
 

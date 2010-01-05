@@ -5,8 +5,8 @@
 
 const double PI = 3.14159265359;
 
-IplImage*   copyBlock(IplImage *src, IplImage* dest, CvRect roiSrc, CvRect roiDest=cvRect(0,0,0,0));
-IplImage*   subImage(IplImage *image, CvRect roi);
-float       histogramMean(IplImage* img);
+cv::Mat    copyBlock(cv::Mat& src, cv::Mat& dest, cv::Rect roiSrc, cv::Rect roiDest=cvRect(0,0,0,0));
+cv::Mat    subImage(cv::Mat& image, cv::Rect roi);
+cv::Scalar histogramMean(cv::Mat& img);
 
 #endif // CV_EXT_H

@@ -1,12 +1,11 @@
 # -------------------------------------------------
 # Project created by QtCreator 2009-11-25T17:37:11
 # -------------------------------------------------
-QT += opengl \
-    webkit
+QT += opengl 
 TARGET = epitome
 TEMPLATE = app
-LIBS = -Lcv \
-    -lhighgui
+LIBS = -lcv \
+    -lhighgui 
 SOURCES += main.cpp \
     mainwindow.cpp \
     glwidget.cpp \

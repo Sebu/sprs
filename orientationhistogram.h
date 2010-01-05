@@ -10,7 +10,7 @@ class OrientHist
 public:
     int* _bins;
     int _numBins;
-    OrientHist(IplImage* image, int numBins);
+    OrientHist(cv::Mat& image, int numBins);
 
     int minDiff(OrientHist* other);
     int diff(OrientHist* other, int offset=0);

@@ -34,7 +34,7 @@ int OrientHist::diff(OrientHist* other, int offset) {
     return sum;
 }
 
-OrientHist::OrientHist(IplImage* image, int numBins) : _bins(0), _numBins(numBins)
+OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins)
 {
     //    for each pixel (x,y) in an image I
     //      {
@@ -56,23 +56,23 @@ OrientHist::OrientHist(IplImage* image, int numBins) : _bins(0), _numBins(numBin
     // init with 0
     for(int i=0; i<numBins; i++) _bins[i]=0;
 
-    for(int y=0; y<image->height-1; y++) {
-        for (int x=0; x<image->width-1; x++) {
-            CvScalar pixel = cvGet2D(image, y, x);
-            CvScalar pixel_x = cvGet2D(image, y, x+1);
-            CvScalar pixel_y = cvGet2D(image, y+1, x);
+    for(int y=0; y<image.rows-1; y++) {
+        for (int x=0; x<image.cols-1; x++) {
+            cv::Vec3b pixel = image.at<cv::Vec3b>(y, x);
+            cv::Vec3b pixel_x = image.at<cv::Vec3b>(y, x+1);
+            cv::Vec3b pixel_y = image.at<cv::Vec3b>(y+1, x);
 
             float dx = pixel.val[0] - pixel_x.val[0];
             float dy = pixel.val[0] - pixel_y.val[0];
 
-            int dir = (cvFastArctan(dx,dy)); // +PI) * 180.0f/PI;
+            int dir = cv::fastAtan2(dx,dy);
 
             float magnitude = sqrt(dx*dx + dy*dy);
 
             float threshold = 2.0f;
 
             if(magnitude > threshold ) {
-                _bins[ dir / (360/numBins) ]++;
+                _bins[ dir / (360/numBins)  ]++;
             }
 
         }

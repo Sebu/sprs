@@ -29,9 +29,9 @@ void AlbumWidget::next() {
     update();
 }
 
-int AlbumWidget::fromIpl(IplImage *image, QString caption) {
+int AlbumWidget::fromIpl(cv::Mat& image, QString caption) {
     makeCurrent();
-    if (image==NULL) return -1;
+//    if (image==NULL) return -1;
 
 //    setToolTip(caption);
 
@@ -52,7 +52,7 @@ int AlbumWidget::fromIpl(IplImage *image, QString caption) {
 
     GLenum input_format;
 
-    switch(image->nChannels) {
+    switch(image.channels()) {
         case 1: input_format = GL_LUMINANCE; break;
         case 3: input_format = GL_BGR; break;
         case 4: input_format = GL_BGRA; break;
@@ -61,13 +61,14 @@ int AlbumWidget::fromIpl(IplImage *image, QString caption) {
 
     GLenum channel_depth;
 
-    switch(image->depth) {
-        case IPL_DEPTH_8U: channel_depth  = GL_UNSIGNED_BYTE; break;
-        case IPL_DEPTH_32F: channel_depth = GL_FLOAT; break;
+    switch(image.depth()) {
+        case CV_8U: channel_depth  = GL_UNSIGNED_BYTE; break;
+        case CV_32F: channel_depth = GL_FLOAT; break;
         default: channel_depth = GL_UNSIGNED_BYTE; break;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, input_format, channel_depth, image->imageData);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.cols, image.rows, 0, input_format, channel_depth, image.data);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 

@@ -3,53 +3,47 @@
 #include "cv_ext.h"
 
 Transform::Transform(int  x, int  y, int  seedX, int  seedY, Patch* seed)
-    : _x(x), _y(y), _seedX(seedX), _seedY(seedY), _seed(seed)
+    : _x(x), _y(y), _seedX(seedX), _seedY(seedY), seed(seed), colorScale(1.0f)
 {
-    _rotMat = cvCreateMat(2,3,CV_32FC1);
-    cvSetIdentity(_rotMat);
-    _warpMat = cvCreateMat(2,3,CV_32FC1);
-    cvSetIdentity(_warpMat);
+    rotMat = cv::Mat(2,3,CV_64FC1);
+    cv::setIdentity(rotMat);
+    warpMat = cv::Mat(2,3,CV_64FC1);
+    cv::setIdentity(warpMat);
 
 }
 
-IplImage* Transform::rotate() {
+cv::Mat Transform::rotate() {
 
-    IplImage* rotated = cvCloneImage(_seed->_sourceImage);
-    cvWarpAffine(_seed->_sourceImage, rotated, _rotMat );
+    cv::Mat rotated = seed->sourceImage.clone();
+    cv::warpAffine(seed->sourceImage, rotated, rotMat, seed->sourceImage.size());
 
     return rotated;
 
 }
 
-IplImage* Transform::warp() {
+cv::Mat Transform::warp() {
 
-
-    IplImage* rotated = rotate();
-    IplImage* warped = cvCloneImage(rotated);
+    cv::Mat rotated = rotate();
+    cv::Mat warped = rotated.clone();
     // warp image
-
-    cvWarpAffine(rotated, warped, _warpMat );
-
-    cvReleaseImage(&rotated);
+    cv::warpAffine(rotated, warped, warpMat, rotated.size());
 
     return warped;
 
 }
 
 
-IplImage* Transform::reconstruct() {
+cv::Mat Transform::reconstruct() {
 
-    IplImage* warped = warp();
+    cv::Mat warped = warp();
 
     // extract patch
-    IplImage* result = cvCreateImage( cvSize(_seed->_w, _seed->_h), _seed->_patchImage->depth, _seed->_patchImage->nChannels );
-    copyBlock(warped, result, cvRect(_seed->_x, _seed->_y, _seed->_w, _seed->_h), cvRect(0, 0, _seed->_w, _seed->_h));
+    cv::Mat result( seed->_w, seed->_h, seed->patchImage.type() );
+    copyBlock(warped, result, cvRect(seed->_x, seed->_y, seed->_w, seed->_h), cvRect(0, 0, seed->_w, seed->_h));
 
     // color scale
-    cvScale(result, result, _colorScale);
+    result *=  colorScale[0];
 
-
-    cvReleaseImage(&warped);
 
     return result;
 }

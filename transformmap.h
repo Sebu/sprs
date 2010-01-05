@@ -12,17 +12,17 @@ public:
     int _x, _y;
     int _seedX, _seedY;
 
-    CvMat* _warpMat;
-    CvMat* _rotMat;
+    cv::Mat warpMat;
+    cv::Mat rotMat;
 
-    float  _colorScale;
-    Patch* _seed;
+    cv::Scalar colorScale;
+    Patch* seed;
 
     Transform(int x, int  y, int  seedX, int  seedY, Patch* seed);
 
-    IplImage* rotate();
-    IplImage* warp();
-    IplImage* reconstruct();
+    cv::Mat rotate();
+    cv::Mat warp();
+    cv::Mat reconstruct();
 };
 
 #endif // TRANSFORMMAP_H
