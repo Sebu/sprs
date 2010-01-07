@@ -61,8 +61,8 @@ bool MainWindow::singleStep() {
         int w = ui->blockSpin->value();
         int h = ui->blockSpin->value();
 
-        maxX = (image.cols / w) -1;
-        maxY = (image.rows / h) -1;
+        maxX = (image.cols / w);
+        maxY = (image.rows / h);
 
     }
 

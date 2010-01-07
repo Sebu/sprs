@@ -31,6 +31,8 @@ public:
 
     Patch(cv::Mat& sourceImage, int x=0, int y=0, int w=16, int h=16);
 
+    bool isPatch();
+
     void findFeatures();
     float reconError(Transform*);
     bool trackFeatures(Transform* t);

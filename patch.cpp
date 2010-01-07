@@ -3,6 +3,10 @@
 #include "cv_ext.h"
 
 
+bool Patch::isPatch() {
+    return !(_x % _w) && !(_y % _h);
+}
+
 float Patch::reconError(Transform* t) {
 
     //    Patch* other = t->seed;
@@ -141,7 +145,7 @@ Transform* Patch::match(Patch& other, float error) {
 Patch::Patch(cv::Mat& _sourceImage, int x, int  y, int w, int h):
         histMean(0.0f), _x(x), _y(y), _w(w), _h(h), count(4), sourceImage(_sourceImage), matches(0)
 {
-    patchImage = sourceImage(cv::Rect(_x,_y,_w,_h));
+    patchImage = sourceImage(cv::Rect(_x,_y,_w,_h)).clone();
     cv::Mat grayPatch;
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);
     orientHist = new OrientHist(grayPatch, 36);

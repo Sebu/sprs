@@ -12,7 +12,7 @@ SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
 
 void SeedMap::testPatch(int x, int y) {
 
-    Patch* patch = this->at(x*(patchW/xgrid), y*(patchH/ygrid));
+    Patch* patch = this->patches.at(y * (sourceImage.cols/patchW) + x);
     this->match(*patch);
 
 }
@@ -90,7 +90,7 @@ void SeedMap::match(Patch &patch) {
 
 
 Patch* SeedMap::at(int x, int y) {
-    return this->seeds.at(y*_width + x);
+    return this->seeds.at(y*width + x);
 }
 
 
@@ -113,7 +113,7 @@ cv::Mat SeedMap::epitomeIpl() {
     //    _debugImages["epitome"] = cvCreateImage( _sourceImage.size(), CV_8UC1);
     //    cvZero(_debugImages["epitome"]);
     
-    foreach (Patch* match, _matches) {
+    foreach (Patch* match, matches) {
         //        copyBlock(_sourceImage, _debugImages["epitome"], cvRect(match->_x, match->_y, match->_w, match->_h ) );
     }
     
@@ -122,10 +122,10 @@ cv::Mat SeedMap::epitomeIpl() {
 
 
 cv::Mat SeedMap::meanIpl() {
-    debugImages["mean"] = cvCreateImage( cvSize(_width, _height), IPL_DEPTH_32F, 1);
+    debugImages["mean"] = cvCreateImage( cvSize(width, height), IPL_DEPTH_32F, 1);
     
-    for(int y=0; y<_height; y++){
-        for(int x=0; x<_width; x++){
+    for(int y=0; y<height; y++){
+        for(int x=0; x<width; x++){
             //            float mean = this->at(x,y)->getHistMean();
             //            cvSet2D( debugImages["mean"] , y, x, cvScalarAll(mean) );
         }
@@ -135,9 +135,9 @@ cv::Mat SeedMap::meanIpl() {
 
 
 cv::Mat SeedMap::orientIpl(float delta) {
-    debugImages["orient"] = cvCreateImage( cvSize(_width, _height), IPL_DEPTH_32F, 1);
-    for(int y=0; y<_height; y++){
-        for(int x=0; x<_width; x++){
+    debugImages["orient"] = cvCreateImage( cvSize(width, height), IPL_DEPTH_32F, 1);
+    for(int y=0; y<height; y++){
+        for(int x=0; x<width; x++){
             
             float max_f = at(x,y)->orientHist->peak();
             //            cvSet2D( debugImages["orient"], y, x, cvScalarAll(delta-max_f) );
@@ -167,18 +167,20 @@ void SeedMap::setImage(cv::Mat& image) {
     
     for (int i=0; i<1; i++) {
         
-        _width = (currentImage.cols-w) / xgrid;
-        _height = (currentImage.rows-h) / ygrid;
+        width = (currentImage.cols-w) / xgrid;
+        height = (currentImage.rows-h) / ygrid;
         
         //        cv::Mat flipped = currentImage.clone();
         //        cv::flip(currentImage, flipped, 0);
         
         // generate new patches
-        for(int y=0; y<_height; y++){
-            for(int x=0; x<_width; x++){
+        for(int y=0; y<height; y++){
+            for(int x=0; x<width; x++){
                 Patch* seed = new Patch( currentImage, x*xgrid, y*ygrid, w, h );
                 seed->scale = scale;
                 this->seeds.append(seed);
+                if (seed->isPatch())
+                    this->patches.append(seed);
                 
                 //                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
                 //                seed->scale = scale*-1.0;

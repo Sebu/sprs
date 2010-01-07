@@ -15,13 +15,14 @@ public:
     int patchH;
     int xgrid;
     int ygrid;
-    int _width;
-    int _height;
+    int width;
+    int height;
 
     float maxError;
 
     QList<Patch*> seeds;
-    QList<Patch*> _matches;
+    QList<Patch*> patches;
+    QList<Patch*> matches;
 
     QList<Transform*> transforms;
 
