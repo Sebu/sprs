@@ -11,16 +11,16 @@
 class SeedMap
 {
 public:
-    int _patchW;
-    int _patchH;
-    int _xgrid;
-    int _ygrid;
+    int patchW;
+    int patchH;
+    int xgrid;
+    int ygrid;
     int _width;
     int _height;
 
-    float _error;
+    float maxError;
 
-    QList<Patch*> _seeds;
+    QList<Patch*> seeds;
     QList<Patch*> _matches;
 
     QList<Transform*> transforms;

@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     _otherWidget =  new AlbumWidget(ui->otherWidget);
 
     this->connect( ui->loadButton, SIGNAL(clicked()),         this, SLOT(changeImage()) );
+    this->connect( ui->saveButton, SIGNAL(clicked()),         this, SLOT(saveImage()) );
     this->connect( ui->calcButton, SIGNAL(clicked()),         this, SLOT(calculate())   );
     this->connect( ui->stepButton, SIGNAL(clicked()),         this, SLOT(step())        );
     this->connect( ui->prevButton, SIGNAL(clicked()), imageWidget, SLOT(prev())        );
@@ -42,7 +43,7 @@ void MainWindow::changeImage() {
 
 void MainWindow::step() {
     for (int i=0; i<ui->stepSpin->value(); i++)
-       singleStep();
+        singleStep();
 }
 
 bool MainWindow::singleStep() {
@@ -55,13 +56,13 @@ bool MainWindow::singleStep() {
         this->seedmap = new SeedMap( image, ui->blockSpin->value(), ui->blockSpin->value(), ui->seedSpin->value(), ui->seedSpin->value());
         seedmap->_debugAlbum = this->imageWidget;
         seedmap->_debugAlbumR = this->_otherWidget;
-        seedmap->_error = ui->errorSpin->value();
+        seedmap->maxError = ui->errorSpin->value();
 
         int w = ui->blockSpin->value();
         int h = ui->blockSpin->value();
 
-        maxX = image.cols  / w;
-        maxY = image.rows / h;
+        maxX = (image.cols / w) -1;
+        maxY = (image.rows / h) -1;
 
     }
 
@@ -84,17 +85,21 @@ void MainWindow::calculate() {
     cv::Mat error( image.cols, image.rows, CV_8UC1);
     error = image - reconstruction;
 
-
     imageWidget->fromIpl( error,          "error");
-//  imageWidget->fromIpl( reconstruction, "reconstruction" );
 
-    // save image :)
-    QString name = fileName;
-    std::string saveName = "reconstruction" + name.remove(0, name.lastIndexOf("/")).toStdString();
-    std::cout << saveName << std::endl;
-    cv::imwrite(saveName, reconstruction);
     imageWidget->update();
 
+}
+
+void MainWindow::saveImage() {
+
+//    QString name = fileName;
+//    std::string saveName = "reconstruction" + name.remove(0, name.lastIndexOf("/")).toStdString();
+
+    QString saveName = QFileDialog::getSaveFileName(this,tr("Save Image"), "reconstruction/", tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
+    cv::Mat reconstruction(seedmap->reconstructIpl());
+    std::cout << saveName.toStdString() << std::endl;
+    cv::imwrite(saveName.toStdString(), reconstruction);
 }
 
 MainWindow::~MainWindow()

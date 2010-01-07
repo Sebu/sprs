@@ -5,16 +5,15 @@
 
 
 SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
-    : _patchW(w), _patchH(h), _xgrid(xgrid), _ygrid(ygrid)
+    : patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid)
 {
     setImage(image);
 }
 
 void SeedMap::testPatch(int x, int y) {
 
-    Patch* patch = new Patch( sourceImage, x*_patchW, y*_patchH, _patchW, _patchH );
+    Patch* patch = this->at(x*(patchW/xgrid), y*(patchH/ygrid));
     this->match(*patch);
-    delete patch;
 
 }
 
@@ -23,56 +22,62 @@ void SeedMap::match(Patch &patch) {
 
     patch.findFeatures();
 
+    if (patch.matches) return;
+
+    patch.matches = new QList<Transform*>;
+
     Transform* transform = 0;
-    foreach (Patch* seed, this->_seeds ) {
-        transform = patch.match(*seed, _error);
-        if ( transform ) {
-            patch.matches.append(transform);
-            //            break; // take first match
+    foreach (Patch* seed, this->seeds ) {
+        transform = patch.match(*seed, maxError);
+        if (transform) {
+            patch.matches->append(transform);
+            break; // take first match
         }
     }
-    if (!patch.matches.isEmpty()) {
-        transforms.append(patch.matches.first());
+    if (!patch.matches->isEmpty()) {
+        transforms.append(patch.matches->last());
 
         cv::Mat warped = this->sourceImage.clone(); //transform->warp();
-        cv::Mat warpM = cv::Mat::eye(3,3,CV_64FC1);
-        cv::Mat selection( warpM, cv::Rect(0,0,3,2) );
-        cv::Mat rotM;
+        cv::Mat warpInv = cv::Mat::eye(3,3,CV_64FC1);
+        cv::Mat selection( warpInv, cv::Rect(0,0,3,2) );
+        cv::Mat rotInv;
         // highlight block
         cv::rectangle(warped, cv::Point(patch._x, patch._y),
                       cv::Point(patch._x+patch._w, patch._y+patch._h),
                       cv::Scalar(0,255,0,100),2);
 
-        foreach (Transform* current, patch.matches) {
+        foreach (Transform* current, *patch.matches) {
 
-            double points[4][2] = { {current->seed->_x,    current->seed->_y},
-                                    {current->seed->_x+16, current->seed->_y},
-                                    {current->seed->_x+16, current->seed->_y+16},
-                                    {current->seed->_x,    current->seed->_y+16}
+            double points[4][2] = { {current->seed->_x, current->seed->_y},
+                                    {current->seed->_x+current->seed->_w, current->seed->_y},
+                                    {current->seed->_x+current->seed->_w, current->seed->_y+current->seed->_h},
+                                    {current->seed->_x,    current->seed->_y+current->seed->_h}
             };
 
             cv::Point newPoints[4];
 
             invertAffineTransform(current->warpMat, selection);
-            invertAffineTransform(current->rotMat, rotM);
+            invertAffineTransform(current->rotMat, rotInv);
 
             for(int i=0; i<4; i++ ) {
                 cv::Mat p = (cv::Mat_<double>(3,1) << points[i][0], points[i][1], 1);
 
-                cv::Mat a =  rotM * (warpM * p);
+                cv::Mat a =  rotInv * (warpInv * p);
 
                 newPoints[i].x = a.at<double>(0,0);
                 newPoints[i].y = a.at<double>(0,1);
 
             }
+            // highlight match
             for(int i=0; i<4; i++){
-                // highlight match
                 cv::line(warped, newPoints[i], newPoints[(i+1) % 4], cv::Scalar(0,0,255,100));
-
             }
+            cv::line(warped, newPoints[0], newPoints[1], cv::Scalar(255,0,0,100));
 
         }
         _debugAlbumR->fromIpl( warped, "preview" );
+    } else {
+        //        std::cout << "no match found O_o" << std::endl;
     }
 
     cv::Mat reconstruction(reconstructIpl());
@@ -85,7 +90,7 @@ void SeedMap::match(Patch &patch) {
 
 
 Patch* SeedMap::at(int x, int y) {
-    return this->_seeds.at(y*_width + x);
+    return this->seeds.at(y*_width + x);
 }
 
 
@@ -148,11 +153,11 @@ void SeedMap::setImage(cv::Mat& image) {
     
     cv::Mat currentImage = sourceImage;
     
-    int w = _patchW;
-    int h = _patchH;
+    int w = patchW;
+    int h = patchH;
     
     
-    this->_seeds.clear(); // remove all old patches
+    this->seeds.clear(); // remove all old patches
     
     float scale = 1.0f;
     float scaleWidth  = sourceImage.cols;
@@ -162,22 +167,22 @@ void SeedMap::setImage(cv::Mat& image) {
     
     for (int i=0; i<1; i++) {
         
-        _width = (currentImage.cols-w) / _xgrid;
-        _height = (currentImage.rows-h) / _ygrid;
+        _width = (currentImage.cols-w) / xgrid;
+        _height = (currentImage.rows-h) / ygrid;
         
-//        cv::Mat flipped = currentImage.clone();
-//        cv::flip(currentImage, flipped, 0);
+        //        cv::Mat flipped = currentImage.clone();
+        //        cv::flip(currentImage, flipped, 0);
         
         // generate new patches
         for(int y=0; y<_height; y++){
             for(int x=0; x<_width; x++){
-                Patch* seed = new Patch( currentImage, x*_xgrid, y*_ygrid, w, h );
+                Patch* seed = new Patch( currentImage, x*xgrid, y*ygrid, w, h );
                 seed->scale = scale;
-                this->_seeds.append(seed);
+                this->seeds.append(seed);
                 
-//                seed = new Patch( flipped, x*_xgrid, y*_ygrid, w, h );
-//                seed->scale = scale*-1.0;
-//                this->_seeds.append(seed);
+                //                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
+                //                seed->scale = scale*-1.0;
+                //                this->seeds.append(seed);
             }
         }
         

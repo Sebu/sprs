@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
-    <height>557</height>
+    <width>978</width>
+    <height>555</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>869</width>
+      <width>958</width>
       <height>480</height>
      </rect>
     </property>
@@ -90,6 +90,13 @@
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
+         <item>
+          <widget class="QCheckBox" name="onlyFirstMatchBox">
+           <property name="text">
+            <string>calc only first match</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QSpinBox" name="blockSpin">
            <property name="sizePolicy">
@@ -168,7 +175,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
        <property name="sizeConstraint">
         <enum>QLayout::SetMinimumSize</enum>
        </property>
@@ -176,6 +183,13 @@
         <widget class="QPushButton" name="loadButton">
          <property name="text">
           <string>load image</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="saveButton">
+         <property name="text">
+          <string>save image</string>
          </property>
         </widget>
        </item>
@@ -223,8 +237,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>917</width>
-     <height>24</height>
+     <width>978</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>

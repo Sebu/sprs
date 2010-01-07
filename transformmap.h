@@ -10,7 +10,7 @@ class Transform
 {
 public:
     int _x, _y;
-    int _seedX, _seedY;
+    int seedX, seedY;
 
     cv::Mat warpMat;
     cv::Mat rotMat;

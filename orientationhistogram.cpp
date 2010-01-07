@@ -17,7 +17,6 @@ int OrientHist::minDiff(OrientHist* other) {
     int min = INT_MAX;
     for(int j=0; j < this->_numBins; j++) {
         int sum = this->diff(other, j);
-//            std::cout << sum << std::endl;
         if (sum<min) { min=sum; angle=j*10; }
     }
 
@@ -58,18 +57,18 @@ OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
-            cv::Vec3b pixel = image.at<cv::Vec3b>(y, x);
-            cv::Vec3b pixel_x = image.at<cv::Vec3b>(y, x+1);
-            cv::Vec3b pixel_y = image.at<cv::Vec3b>(y+1, x);
+            uchar pixel = image.at<uchar>(y, x);
+            uchar pixel_x = image.at<uchar>(y, x+1);
+            uchar pixel_y = image.at<uchar>(y+1, x);
 
-            float dx = pixel.val[0] - pixel_x.val[0];
-            float dy = pixel.val[0] - pixel_y.val[0];
+            float dx = pixel - pixel_x;
+            float dy = pixel - pixel_y;
 
             int dir = cv::fastAtan2(dx,dy);
 
             float magnitude = sqrt(dx*dx + dy*dy);
 
-            float threshold = 2.0f;
+            float threshold = 1.0f;
 
             if(magnitude > threshold ) {
                 _bins[ dir / (360/numBins)  ]++;

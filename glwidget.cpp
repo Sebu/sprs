@@ -10,21 +10,21 @@ void AlbumWidget::validatePos() {
 
 void AlbumWidget::prev() {
     _pos--;
-    validatePos();
+//    validatePos();
 
     makeCurrent();
 
-    unsigned int tex = _values.at(_pos);
+    unsigned int tex = _values.at(_pos % _values.size());
     glBindTexture( GL_TEXTURE_2D, tex );
     update();
 }
 
 void AlbumWidget::next() {
     _pos++;
-    validatePos();
+//    validatePos();
 
     makeCurrent();
-    unsigned int tex = _values.at(_pos);
+    unsigned int tex = _values.at(_pos % _values.size());
     glBindTexture( GL_TEXTURE_2D, tex );
     update();
 }
@@ -45,7 +45,7 @@ int AlbumWidget::fromIpl(cv::Mat& image, QString caption) {
     _texImages[caption] = tex;
 
     _values = _texImages.values();
-    _pos = _values.size();
+     _pos = _values.size();
 
     glBindTexture( GL_TEXTURE_2D, tex );
 

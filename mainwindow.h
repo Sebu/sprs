@@ -29,6 +29,7 @@ public:
     void testPatch(int x, int y);
 
 public slots:
+    void saveImage();
     void changeImage();
     void calculate();
     void step();

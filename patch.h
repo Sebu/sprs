@@ -23,7 +23,7 @@ public:
 
     float scale;
 
-    QList<Transform*> matches;
+    QList<Transform*>* matches;
 
     cv::Mat patchImage;
     cv::Mat sourceImage;

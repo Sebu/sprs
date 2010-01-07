@@ -3,7 +3,7 @@
 #include "cv_ext.h"
 
 Transform::Transform(int  x, int  y, int  seedX, int  seedY, Patch* seed)
-    : _x(x), _y(y), _seedX(seedX), _seedY(seedY), seed(seed), colorScale(1.0f)
+    : _x(x), _y(y), seedX(seedX), seedY(seedY), seed(seed), colorScale(1.0f)
 {
     rotMat = cv::Mat(2,3,CV_64FC1);
     cv::setIdentity(rotMat);
@@ -42,7 +42,13 @@ cv::Mat Transform::reconstruct() {
     copyBlock(warped, result, cvRect(seed->_x, seed->_y, seed->_w, seed->_h), cvRect(0, 0, seed->_w, seed->_h));
 
     // color scale
-    result *=  colorScale[0];
+    std::vector<cv::Mat> planes;
+    split(result, planes);
+    for(unsigned int i=0; i<planes.size(); i++) {
+        planes[i] *= colorScale.val[i];
+    }
+    merge(planes, result);
+
 
 
     return result;
