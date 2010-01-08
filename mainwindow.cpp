@@ -19,8 +19,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->connect( ui->loadButton, SIGNAL(clicked()),         this, SLOT(changeImage()) );
     this->connect( ui->saveButton, SIGNAL(clicked()),         this, SLOT(saveImage()) );
-    this->connect( ui->calcButton, SIGNAL(clicked()),         this, SLOT(calculate())   );
-    this->connect( ui->stepButton, SIGNAL(clicked()),         this, SLOT(step())        );
+    this->connect( ui->calcButton, SIGNAL(clicked()),         this, SLOT(calculate())  );
+    this->connect( ui->stepButton, SIGNAL(clicked()),         this, SLOT(step())       );
     this->connect( ui->prevButton, SIGNAL(clicked()), imageWidget, SLOT(prev())        );
     this->connect( ui->nextButton, SIGNAL(clicked()), imageWidget, SLOT(next())        );
 
@@ -54,8 +54,8 @@ bool MainWindow::singleStep() {
     if(x==0 && y==0) {
 
         this->seedmap = new SeedMap( image, ui->blockSpin->value(), ui->blockSpin->value(), ui->seedSpin->value(), ui->seedSpin->value());
-        seedmap->_debugAlbum = this->imageWidget;
-        seedmap->_debugAlbumR = this->_otherWidget;
+        seedmap->debugAlbum = this->imageWidget;
+        seedmap->debugAlbumR = this->_otherWidget;
         seedmap->maxError = ui->errorSpin->value();
 
         int w = ui->blockSpin->value();
@@ -76,6 +76,10 @@ bool MainWindow::singleStep() {
 }
 
 void MainWindow::calculate() {
+    calculateTimed();
+}
+
+void MainWindow::calculateTimed() {
 
 
     while(singleStep()) {}
@@ -93,8 +97,8 @@ void MainWindow::calculate() {
 
 void MainWindow::saveImage() {
 
-//    QString name = fileName;
-//    std::string saveName = "reconstruction" + name.remove(0, name.lastIndexOf("/")).toStdString();
+    //    QString name = fileName;
+    //    std::string saveName = "reconstruction" + name.remove(0, name.lastIndexOf("/")).toStdString();
 
     QString saveName = QFileDialog::getSaveFileName(this,tr("Save Image"), "reconstruction/", tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
     cv::Mat reconstruction(seedmap->reconstructIpl());

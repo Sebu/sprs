@@ -75,16 +75,16 @@ void SeedMap::match(Patch &patch) {
             cv::line(warped, newPoints[0], newPoints[1], cv::Scalar(255,0,0,100));
 
         }
-        _debugAlbumR->fromIpl( warped, "preview" );
+        debugAlbumR->fromIpl( warped, "preview" );
     } else {
         //        std::cout << "no match found O_o" << std::endl;
     }
 
     cv::Mat reconstruction(reconstructIpl());
-    _debugAlbum->fromIpl( reconstruction, "reconstruction" );
+    debugAlbum->fromIpl( reconstruction, "reconstruction" );
 
-    _debugAlbum->updateGL();
-    _debugAlbumR->updateGL();
+    debugAlbum->updateGL();
+    debugAlbumR->updateGL();
     
 }
 

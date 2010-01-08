@@ -22,7 +22,7 @@ float Patch::reconError(Transform* t) {
     // atm actually only contrast scale
     // drop when over bright
     cv::Scalar reconstructionMean = histogramMean(reconstruction);
-    for(int i; i<4; i++)
+    for(int i=0; i<4; i++)
         t->colorScale.val[i] = this->getHistMean().val[i] / reconstructionMean.val[i];
     if(t->colorScale.val[0]>1.25f) return 100.0f;
     // correct color scale
@@ -60,14 +60,14 @@ void Patch::findFeatures() {
     cv::Mat grayImage;
     cv::cvtColor(patchImage, grayImage, CV_BGR2GRAY);
 
-    cv::goodFeaturesToTrack(grayImage, pointsSrc, count, .01, .005);
+    cv::goodFeaturesToTrack(grayImage, pointsSrc, count, .005, .01);
 
 }
 bool Patch::trackFeatures(Transform* t) {
 
     if(pointsSrc.size()<3) {
         std::cout << "bad pmatch" << std::endl;
-        return true;
+        return false;
     }
 
     std::vector<cv::Point2f>    pointsDest;
@@ -83,6 +83,8 @@ bool Patch::trackFeatures(Transform* t) {
     // gray required?
     cv::Mat grayPatch;
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);
+
+//    cv::imshow("SDSD", grayPatch);
 
     cv::Mat grayResult;
     cv::cvtColor(result, grayResult, CV_BGR2GRAY);

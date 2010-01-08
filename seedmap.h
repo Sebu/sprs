@@ -26,8 +26,8 @@ public:
 
     QList<Transform*> transforms;
 
-    AlbumWidget* _debugAlbum;
-    AlbumWidget* _debugAlbumR;
+    AlbumWidget* debugAlbum;
+    AlbumWidget* debugAlbumR;
 
     cv::Mat sourceImage;
 

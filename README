@@ -1,16 +1,18 @@
-
-
 steeps
 1. find all matches
 2. minimize epitome chart
 3. create epitome atlas
 
-
 TODO:
-- use opencv2 c++ binding instead of c binding
-- vis. all matches
+- more and exclude debug vis. (interface)
+- move calc. to thread
+- asserts/exceptions
+- commandline/lib 
+- serialize/save matches
 - speedup steep one (some opencv profiling needed)
 - start steep two
 - steep three
 
-
+DONE:
+- use opencv2 c++ binding instead of c binding
+- vis. all matches

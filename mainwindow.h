@@ -32,6 +32,7 @@ public slots:
     void saveImage();
     void changeImage();
     void calculate();
+    void calculateTimed();
     void step();
     bool singleStep();
 

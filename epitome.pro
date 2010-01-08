@@ -4,7 +4,9 @@
 QT += opengl 
 TARGET = epitome
 TEMPLATE = app
-LIBS = -lcv \
+
+INCLUDEPATH = /homes/wheel/seb/playground/include
+LIBS = -L/homes/wheel/seb/playground/lib -lcv \
     -lhighgui 
 SOURCES += main.cpp \
     mainwindow.cpp \
