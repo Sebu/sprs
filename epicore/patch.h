@@ -4,7 +4,6 @@
 #include <opencv/cv.h>
 
 #include "orientationhistogram.h"
-#include "glwidget.h"
 #include "transformmap.h"
 
 class Transform;
@@ -16,14 +15,14 @@ private:
 
 
 public:
-    int _x, _y, _w, _h;
+    int x_, y_, w_, h_;
 
     int count;
     std::vector<cv::Point2f> pointsSrc;
 
     float scale;
 
-    QList<Transform*>* matches;
+    std::vector<Transform*>* matches;
 
     cv::Mat patchImage;
     cv::Mat sourceImage;

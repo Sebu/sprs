@@ -4,7 +4,7 @@
 #include <QtGui/QMainWindow>
 
 #include "glwidget.h"
-#include "seedmap.h"
+#include <epicore/seedmap.h>
 
 namespace Ui
 {
@@ -19,8 +19,8 @@ public:
     QString         fileName;
     cv::Mat         image;
     SeedMap*        seedmap;
-    AlbumWidget*    imageWidget;
-    AlbumWidget*    _otherWidget;
+    AlbumWidget*    debugWidgetL;
+    AlbumWidget*    debugWidgetR;
 
 
     MainWindow(QWidget *parent = 0);

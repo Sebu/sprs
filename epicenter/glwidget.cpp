@@ -14,7 +14,7 @@ void AlbumWidget::prev() {
 
     makeCurrent();
 
-    unsigned int tex = _values.at(_pos % _values.size());
+    uint tex = _values.at(_pos % _values.size());
     glBindTexture( GL_TEXTURE_2D, tex );
     update();
 }
@@ -24,7 +24,7 @@ void AlbumWidget::next() {
 //    validatePos();
 
     makeCurrent();
-    unsigned int tex = _values.at(_pos % _values.size());
+    uint tex = _values.at(_pos % _values.size());
     glBindTexture( GL_TEXTURE_2D, tex );
     update();
 }
@@ -35,7 +35,7 @@ int AlbumWidget::fromIpl(cv::Mat& image, QString caption) {
 
 //    setToolTip(caption);
 
-    unsigned int tex;
+    uint tex;
 
     if (!_texImages.contains(caption)) {
         glGenTextures(1, &tex);

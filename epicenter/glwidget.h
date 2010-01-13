@@ -26,8 +26,8 @@ public slots:
     void prev();
 
 protected:
-    QHash<QString, unsigned int> _texImages;
-   QList<unsigned int>  _values;
+    QHash<QString, uint> _texImages;
+   QList<uint>  _values;
     int _pos;
 
     void validatePos();

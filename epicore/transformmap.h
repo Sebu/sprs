@@ -9,8 +9,8 @@ class Patch;
 class Transform
 {
 public:
-    int _x, _y;
-    int seedX, seedY;
+//    int _x, _y;
+//    int seedX, seedY;
 
     cv::Mat warpMat;
     cv::Mat rotMat;
@@ -18,7 +18,7 @@ public:
     cv::Scalar colorScale;
     Patch* seed;
 
-    Transform(int x, int  y, int  seedX, int  seedY, Patch* seed);
+    Transform(Patch* seed);
 
     cv::Mat rotate();
     cv::Mat warp();
