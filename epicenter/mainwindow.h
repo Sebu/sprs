@@ -16,7 +16,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    QString         fileName;
+    std::string     fileName;
     cv::Mat         image;
     SeedMap*        seedmap;
     AlbumWidget*    debugWidgetL;
@@ -32,7 +32,6 @@ public slots:
     void saveImage();
     void changeImage();
     void calculate();
-    void calculateTimed();
     void step();
     bool singleStep();
 

@@ -1,17 +1,46 @@
 
 #include <opencv/highgui.h>
+#include <fstream>
 #include "seedmap.h"
 #include "cv_ext.h"
 
 
 SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
-    : patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid)
+    : patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid), matchStep(0)
 {
     setImage(image);
 }
 
+// filename
+//
+void SeedMap::saveMatches(std::ofstream& ofs) {
+    ofs << patchW << " " << xgrid << " " << maxError << std::endl;
+    ofs << patches.size() << std::endl;
+
+    for(uint i=0; i<patches.size(); i++)
+        patches[i]->serialize(ofs);
+}
+
+void SeedMap::resetMatches() {
+    matchStep=0;
+    for(uint i=0; i<patches.size(); i++) {
+        Patch* patch = patches[i];
+        if(patch->matches) {
+            patches[i]->matches->clear();
+            delete patch->matches;
+        }
+    }
+}
+
+Patch* SeedMap::matchNext() {
+    if (matchStep>=patches.size()) return 0;
+    Patch* patch = patches[matchStep++];
+    match(*patch);
+    return patch;
+}
+
 Patch* SeedMap::getPatch(int x, int y) {
-    Patch* patch = this->patches[y * (sourceImage.cols/patchW) + x];
+    Patch* patch = patches[y * (sourceImage.cols/patchW) + x];
     return patch;
 }
 

@@ -1,14 +1,15 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 #include <QGLWidget>
+#include <fstream>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-
-
-#include "glwidget.h"
 #include <epicore/patch.h>
 #include <epicore/cv_ext.h>
+
+
+#include "ui_mainwindow.h"
+#include "mainwindow.h"
+#include "glwidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -33,12 +34,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::changeImage() {
 
-    fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "/home/seb/Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
+    fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "/home/seb/Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
     if(fileName=="") return;
 
-
-    image = cv::imread( fileName.toStdString() );
+    image = cv::imread( fileName );
     debugWidgetL->fromIpl( image, "image" );
+    this->seedmap = new SeedMap( image, ui->blockSpin->value(), ui->blockSpin->value(), ui->seedSpin->value(), ui->seedSpin->value());
+    seedmap->maxError = ui->errorSpin->value();
 
 }
 
@@ -48,25 +50,14 @@ void MainWindow::step() {
 }
 
 bool MainWindow::singleStep() {
-    static int x = 0;
-    static int y = 0;
-    static int maxX, maxY;
 
-    if(x==0 && y==0) {
-        
-        this->seedmap = new SeedMap( image, ui->blockSpin->value(), ui->blockSpin->value(), ui->seedSpin->value(), ui->seedSpin->value());
-        seedmap->maxError = ui->errorSpin->value();
-        
-        int w = ui->blockSpin->value();
-        int h = ui->blockSpin->value();
+    Patch* patch = seedmap->matchNext();
+    if (!patch) return false;
 
-        maxX = (image.cols / w);
-        maxY = (image.rows / h);
-    }
 
-    Patch* patch = seedmap->getPatch(x,y);
-    seedmap->match(*patch);
-
+    #pragma omp critical
+    {
+    // debug
     if (!patch->matches->empty()) {
 
         cv::Mat warped = seedmap->sourceImage.clone(); //transform->warp();
@@ -108,33 +99,33 @@ bool MainWindow::singleStep() {
             cv::line(warped, newPoints[0], newPoints[1], cv::Scalar(255,0,0,100));
 
         }
+
         debugWidgetR->fromIpl( warped, "preview" );
+        cv::Mat reconstruction(seedmap->debugReconstruction());
+        debugWidgetL->fromIpl( reconstruction, "reconstruction" );
+
+        debugWidgetL->updateGL();
+        debugWidgetR->updateGL();
     }
 
-    cv::Mat reconstruction(seedmap->debugReconstruction());
+    }
 
-    debugWidgetL->fromIpl( reconstruction, "reconstruction" );
-
-    debugWidgetL->updateGL();
-    debugWidgetR->updateGL();
-
-
-
-    x++;
-    if(x>=maxX) { x=0; y++; }
-    if(y>=maxY) { y=0; return false; }
 
     return true;
 }
 
 void MainWindow::calculate() {
-    calculateTimed();
-}
 
-void MainWindow::calculateTimed() {
+    seedmap->resetMatches();
 
-
+//    #pragma omp parallel for
     while(singleStep()) {}
+
+    std::ofstream ofs( (fileName + ".txt").c_str() );
+    ofs << "version 1.0" << std::endl;
+    ofs << fileName << std::endl;
+    seedmap->saveMatches(ofs);
+    ofs.close();
 
     // FANCY DEBUG outputs
     cv::Mat reconstruction(seedmap->debugReconstruction());

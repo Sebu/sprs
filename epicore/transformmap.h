@@ -9,8 +9,6 @@ class Patch;
 class Transform
 {
 public:
-//    int _x, _y;
-//    int seedX, seedY;
 
     cv::Mat warpMat;
     cv::Mat rotMat;
@@ -23,6 +21,8 @@ public:
     cv::Mat rotate();
     cv::Mat warp();
     cv::Mat reconstruct();
+
+    void serialize(std::ofstream&);
 };
 
 #endif // TRANSFORMMAP_H

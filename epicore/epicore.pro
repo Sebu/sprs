@@ -28,3 +28,5 @@ HEADERS += epicore.h\
           orientationhistogram.h \
           transformmap.h \
           epicore_global.h
+
+QMAKE_CXXFLAGS += -fopenmp

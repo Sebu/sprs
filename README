@@ -7,7 +7,6 @@ TODO:
 - more and exclude debug vis. (interface)
 - move calc. to thread
 - asserts/exceptions
-- commandline/lib 
 - serialize/save matches
 - speedup steep one (some opencv profiling needed)
 - start steep two

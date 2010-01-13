@@ -1,3 +1,4 @@
+#include <fstream>
 
 #include "transformmap.h"
 #include "cv_ext.h"
@@ -10,6 +11,13 @@ Transform::Transform(Patch* seed)
     warpMat = cv::Mat(2,3,CV_64FC1);
     cv::setIdentity(warpMat);
 
+}
+
+void Transform::serialize(std::ofstream& ofs) {
+    ofs << seed->x_ << " " << seed->y_ << std::endl;
+    ofs << "rotation" << std::endl;
+    ofs << "warp" << std::endl;
+    ofs << colorScale[0] << " " << colorScale[1] << " " << colorScale[2] << std::endl;
 }
 
 cv::Mat Transform::rotate() {

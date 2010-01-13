@@ -4,6 +4,7 @@
 #include <QList>
 #include <QHash>
 #include <opencv/cv.h>
+#include <fstream>
 
 #include "patch.h"
 #include "transformmap.h"
@@ -22,6 +23,8 @@ public:
 
     float maxError;
 
+    int matchStep;
+
     std::vector<Patch*> seeds;
     std::vector<Patch*> patches;
     std::vector<Patch*> matches;
@@ -38,6 +41,16 @@ public:
     void match(Patch& patch);
 
     void saveReconstruction(std::string filename);
+
+
+    // match tracking
+    void resetMatches();
+    void matchAll();
+    Patch* matchNext();
+    void saveMatches(std::ofstream& ofs);
+    void loadMatches();
+
+
 
     // debug
     std::map<std::string, cv::Mat> debugImages;

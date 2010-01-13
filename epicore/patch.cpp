@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "patch.h"
 #include "transformmap.h"
 #include "cv_ext.h"
@@ -5,6 +7,14 @@
 
 bool Patch::isPatch() {
     return !(x_ % w_) && !(y_ % h_);
+}
+
+void Patch::serialize(std::ofstream& ofs) {
+    ofs << x_ << " " << y_ << std::endl;
+    ofs << matches->size() << std::endl;
+    for(uint j=0; j<matches->size(); j++) {
+        matches->at(j)->serialize(ofs);
+    }
 }
 
 float Patch::reconError(Transform* t) {
@@ -16,7 +26,7 @@ float Patch::reconError(Transform* t) {
     // reconstruct
     cv::Mat reconstruction( t->reconstruct() );
 
-//    cv::imshow("reconstruction", reconstruction);
+    //    cv::imshow("reconstruction", reconstruction);
 
     // 4.1 translation, color scale
     // atm actually only contrast scale
@@ -70,12 +80,10 @@ bool Patch::trackFeatures(Transform* transform) {
 
     cv::Mat grayPatch;
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);
-//    cv::imshow("gray", grayPatch);
 
     cv::Mat grayRotated;
     cv::Mat rotated(transform->rotate());
     cv::cvtColor(rotated(cv::Rect(transform->seed->x_, transform->seed->y_, w_, h_)), grayRotated, CV_BGR2GRAY);
-//    cv::imshow("rotated", grayRotated);
 
     std::vector<cv::Point2f>    pointsDest;
     std::vector<uchar>          status;
