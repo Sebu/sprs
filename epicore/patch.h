@@ -25,7 +25,7 @@ public:
     std::vector<Transform*>* matches;
 
     cv::Mat patchImage;
-    cv::Mat sourceImage;
+    cv::Mat sourceImage_;
     OrientHist* orientHist;
 
     Patch(cv::Mat& sourceImage, int x=0, int y=0, int w=16, int h=16);

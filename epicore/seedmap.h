@@ -23,7 +23,7 @@ public:
 
     float maxError;
 
-    int matchStep;
+    uint matchStep;
 
     std::vector<Patch*> seeds;
     std::vector<Patch*> patches;
@@ -55,9 +55,7 @@ public:
     // debug
     std::map<std::string, cv::Mat> debugImages;
     cv::Mat debugReconstruction();
-    cv::Mat debugEpitome();
-    cv::Mat debugMean();
-    cv::Mat debugOrientation(float delta=1.0f);
+
 
 };
 

@@ -118,7 +118,7 @@ void MainWindow::calculate() {
 
     seedmap->resetMatches();
 
-//    #pragma omp parallel for
+//    #pragma omp parallel
     while(singleStep()) {}
 
     std::ofstream ofs( (fileName + ".txt").c_str() );

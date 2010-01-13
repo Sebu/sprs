@@ -10,6 +10,7 @@ TARGET = epicore
 TEMPLATE = lib
 
 DEFINES += EPICORE_LIBRARY
+debug:DEFINES += DEBUG
 
 LIBS += -lcv \
     -lhighgui

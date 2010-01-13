@@ -13,17 +13,27 @@ Transform::Transform(Patch* seed)
 
 }
 
+
 void Transform::serialize(std::ofstream& ofs) {
     ofs << seed->x_ << " " << seed->y_ << std::endl;
-    ofs << "rotation" << std::endl;
+
+    // omg O_o two times the same code
+    for (uint i=0; i<rotMat.rows; i++)
+        for(uint j=0; j<rotMat.cols; j++)
+            ofs << rotMat.at<double>(i,j) << " ";
+    ofs << " rotation" << std::endl;
+    for (uint i=0; i<warpMat.rows; i++)
+        for(uint j=0; j<warpMat.cols; j++)
+            ofs << warpMat.at<double>(i,j) << " ";
     ofs << "warp" << std::endl;
+
     ofs << colorScale[0] << " " << colorScale[1] << " " << colorScale[2] << std::endl;
 }
 
 cv::Mat Transform::rotate() {
 
-    cv::Mat rotated = seed->sourceImage.clone();
-    cv::warpAffine(seed->sourceImage, rotated, rotMat, seed->sourceImage.size());
+    cv::Mat rotated = seed->sourceImage_.clone();
+    cv::warpAffine(seed->sourceImage_, rotated, rotMat, seed->sourceImage_.size());
 
     return rotated;
 

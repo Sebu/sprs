@@ -55,7 +55,6 @@ void SeedMap::match(Patch& patch) {
     patch.findFeatures();
 
     if (!patch.matches) {
-
         patch.matches = new std::vector<Transform*>;
 
         Transform* transform = 0;
@@ -65,11 +64,9 @@ void SeedMap::match(Patch& patch) {
             transform = patch.match(*seed, maxError);
             if (transform) {
                 patch.matches->push_back(transform);
-
                 if (seed->isPatch())
                     seed->matches=patch.matches;
-
-//                break; // take first match
+                break; // take first match
             }
         }
     } else {
@@ -103,44 +100,6 @@ cv::Mat SeedMap::debugReconstruction() {
     }
     
     return debugImages["reconstuct"];
-}
-
-
-cv::Mat SeedMap::debugEpitome() {
-    //    _debugImages["epitome"] = cvCreateImage( _sourceImage.size(), CV_8UC1);
-    //    cvZero(_debugImages["epitome"]);
-    
-    /*    foreach (Patch* match, matches) {
-        //        copyBlock(_sourceImage, _debugImages["epitome"], cvRect(match->_x, match->_y, match->_w, match->_h ) );
-    }
-  */
-    return debugImages["epitome"];
-}
-
-
-cv::Mat SeedMap::debugMean() {
-    debugImages["mean"] = cvCreateImage( cvSize(width, height), IPL_DEPTH_32F, 1);
-    
-    for(int y=0; y<height; y++){
-        for(int x=0; x<width; x++){
-            //            float mean = this->at(x,y)->getHistMean();
-            //            cvSet2D( debugImages["mean"] , y, x, cvScalarAll(mean) );
-        }
-    }
-    return debugImages["mean"];
-}
-
-
-cv::Mat SeedMap::debugOrientation(float delta) {
-    debugImages["orient"] = cvCreateImage( cvSize(width, height), IPL_DEPTH_32F, 1);
-    for(int y=0; y<height; y++){
-        for(int x=0; x<width; x++){
-            
-            float max_f = getSeed(x,y)->orientHist->peak();
-            //            cvSet2D( debugImages["orient"], y, x, cvScalarAll(delta-max_f) );
-        }
-    }
-    return debugImages["orient"];
 }
 
 
