@@ -60,17 +60,21 @@ bool MainWindow::singleStep() {
     // debug
     if (!patch->matches->empty()) {
 
-        cv::Mat warped = seedmap->sourceImage.clone(); //transform->warp();
+        cv::Mat tmpImage = seedmap->sourceImage.clone(); // patch->matches->front()->warp();
         cv::Mat warpInv = cv::Mat::eye(3,3,CV_64FC1);
         cv::Mat selection( warpInv, cv::Rect(0,0,3,2) );
         cv::Mat rotInv;
         // highlight block
-        cv::rectangle(warped, cv::Point(patch->x_, patch->y_),
+        cv::rectangle(tmpImage, cv::Point(patch->x_, patch->y_),
                       cv::Point(patch->x_+patch->w_, patch->y_+patch->h_),
                       cv::Scalar(0,255,0,100),2);
 
+
         for(uint i=0; i<patch->matches->size(); i++) {
             Transform* current = patch->matches->at(i);
+            cv::rectangle(tmpImage, cv::Point(current->seed->x_, current->seed->y_),
+                          cv::Point(current->seed->x_+patch->w_, current->seed->y_+patch->h_),
+                          cv::Scalar(0,200,200,100),1);
 
             double points[4][2] = { {current->seed->x_, current->seed->y_},
                                     {current->seed->x_+current->seed->w_, current->seed->y_},
@@ -94,13 +98,13 @@ bool MainWindow::singleStep() {
             }
             // highlight match
             for(int i=0; i<4; i++){
-                cv::line(warped, newPoints[i], newPoints[(i+1) % 4], cv::Scalar(0,0,255,100));
+                cv::line(tmpImage, newPoints[i], newPoints[(i+1) % 4], cv::Scalar(0,0,255,100));
             }
-            cv::line(warped, newPoints[0], newPoints[1], cv::Scalar(255,0,0,100));
+            cv::line(tmpImage, newPoints[0], newPoints[1], cv::Scalar(255,0,0,100));
 
         }
 
-        debugWidgetR->fromIpl( warped, "preview" );
+        debugWidgetR->fromIpl( tmpImage, "preview" );
         cv::Mat reconstruction(seedmap->debugReconstruction());
         debugWidgetL->fromIpl( reconstruction, "reconstruction" );
 

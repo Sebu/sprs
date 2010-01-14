@@ -13,8 +13,9 @@ public:
     cv::Mat warpMat;
     cv::Mat rotMat;
 
-    cv::Scalar colorScale;
     Patch* seed;
+
+    cv::Scalar colorScale;
 
     Transform(Patch* seed);
 

@@ -22,10 +22,13 @@ public:
 
     float scale;
 
+    bool transformed;
+
     std::vector<Transform*>* matches;
 
     cv::Mat patchImage;
     cv::Mat sourceImage_;
+    cv::Mat grayPatch;
     OrientHist* orientHist;
 
     Patch(cv::Mat& sourceImage, int x=0, int y=0, int w=16, int h=16);
@@ -33,7 +36,7 @@ public:
     bool isPatch();
 
     void findFeatures();
-    float reconError(Transform*);
+    cv::Scalar reconError(Transform*);
     bool trackFeatures(Transform* t);
     Transform* match(Patch&, float error);
 

@@ -57,16 +57,21 @@ void SeedMap::match(Patch& patch) {
     if (!patch.matches) {
         patch.matches = new std::vector<Transform*>;
 
-        Transform* transform = 0;
+        #pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
+            Transform* transform = 0;
             Patch* seed = seeds[i];
 
             transform = patch.match(*seed, maxError);
             if (transform) {
+
+                #pragma omp critical
                 patch.matches->push_back(transform);
+
                 if (seed->isPatch())
                     seed->matches=patch.matches;
-                break; // take first match
+                //                break; // take first match
+
             }
         }
     } else {
@@ -126,8 +131,8 @@ void SeedMap::setImage(cv::Mat& image) {
         width = (currentImage.cols-w) / xgrid;
         height = (currentImage.rows-h) / ygrid;
         
-        //        cv::Mat flipped = currentImage.clone();
-        //        cv::flip(currentImage, flipped, 0);
+        cv::Mat flipped = currentImage.clone();
+        cv::flip(currentImage, flipped, 0);
         
         // generate new patches
         for(int y=0; y<height; y++){
@@ -138,18 +143,17 @@ void SeedMap::setImage(cv::Mat& image) {
                 if (seed->isPatch())
                     this->patches.push_back(seed);
                 
-                //                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
-                //                seed->scale = scale*-1.0;
-                //                this->seeds.append(seed);
+//                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
+//                seed->scale = scale*-1.0;
+//                this->seeds.push_back(seed);
             }
         }
         
         
-        //        scale *= 1.5f;
-        //        scaleWidth  = _sourceImage.cols / scale;
-        //        scaleHeight = _sourceImage.rows / scale;
-        //        currentImage = cvCreateImage( cvSize(scaleWidth, scaleWidth), IPL_DEPTH_8U, _sourceImage->nChannels);
-        //        cvResize(_sourceImage, currentImage);
+                scale *= 1.5f;
+                scaleWidth  = sourceImage.cols / scale;
+                scaleHeight = sourceImage.rows / scale;
+                cv::resize(sourceImage, currentImage, cv::Size(scaleWidth, scaleHeight) );
         
     }
     
