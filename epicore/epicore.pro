@@ -12,7 +12,8 @@ TEMPLATE = lib
 DEFINES += EPICORE_LIBRARY
 debug:DEFINES += DEBUG
 
-LIBS += -lcv \
+INCLUDEPATH += /homes/wheel/seb/playground/include 
+LIBS += -L/homes/wheel/seb/playground/lib -lcv \
     -lhighgui
 
 SOURCES += epicore.cpp \

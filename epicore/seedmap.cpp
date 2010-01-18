@@ -109,7 +109,7 @@ cv::Mat SeedMap::debugReconstruction() {
 
 
 
-void SeedMap::setImage(cv::Mat& image) {
+void SeedMap::setImage(cv::Mat& image, int depth) {
     sourceImage = image;
     
     cv::Mat currentImage = sourceImage;
@@ -126,7 +126,7 @@ void SeedMap::setImage(cv::Mat& image) {
     
     // TODO: create image scales :) 1.5, 1.5^2, 1.5^3
     
-    for (int i=0; i<1; i++) {
+    for (int i=0; i< depth; i++) {
         
         width = (currentImage.cols-w) / xgrid;
         height = (currentImage.rows-h) / ygrid;
@@ -143,9 +143,9 @@ void SeedMap::setImage(cv::Mat& image) {
                 if (seed->isPatch())
                     this->patches.push_back(seed);
                 
-//                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
-//                seed->scale = scale*-1.0;
-//                this->seeds.push_back(seed);
+                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
+                seed->scale = scale*-1.0;
+                this->seeds.push_back(seed);
             }
         }
         

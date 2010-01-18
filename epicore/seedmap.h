@@ -34,7 +34,7 @@ public:
     cv::Mat sourceImage;
 
     SeedMap( cv::Mat& image, int w, int h, int xgrid, int ygrid );
-    void setImage(cv::Mat& image);
+    void setImage(cv::Mat&, int depth=3);
 
     Patch* getSeed(int x, int y);
     Patch* getPatch(int x, int y);
