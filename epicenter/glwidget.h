@@ -25,6 +25,9 @@ public slots:
     void next();
     void prev();
 
+signals:
+     void clicked(int x, int y);
+
 protected:
     QHash<QString, uint> _texImages;
    QList<uint>  _values;
@@ -42,6 +45,8 @@ protected:
     {
         glViewport(0, 0, w, h);
     }
+
+    void mouseReleaseEvent (QMouseEvent*);
 
     void paintGL()
     {

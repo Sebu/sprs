@@ -2,18 +2,17 @@
 
 #include <iostream>
 
-void AlbumWidget::validatePos() {
-    if (_pos<0) _pos = _values.size()-1;
-    else if (_pos == _values.size()) _pos=0;
 
+void AlbumWidget::mouseReleaseEvent(QMouseEvent* event) {
+    emit clicked(event->pos().x(), event->pos().y());
 }
+
+
 
 void AlbumWidget::prev() {
     _pos--;
-//    validatePos();
 
     makeCurrent();
-
     uint tex = _values.at(_pos % _values.size());
     glBindTexture( GL_TEXTURE_2D, tex );
     update();
@@ -21,7 +20,6 @@ void AlbumWidget::prev() {
 
 void AlbumWidget::next() {
     _pos++;
-//    validatePos();
 
     makeCurrent();
     uint tex = _values.at(_pos % _values.size());
@@ -31,9 +29,6 @@ void AlbumWidget::next() {
 
 int AlbumWidget::fromIpl(cv::Mat& image, QString caption) {
     makeCurrent();
-//    if (image==NULL) return -1;
-
-//    setToolTip(caption);
 
     uint tex;
 

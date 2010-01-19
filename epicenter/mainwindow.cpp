@@ -20,12 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
     debugWidgetR =  new AlbumWidget(ui->otherWidget);
 
     this->connect( ui->loadButton, SIGNAL(clicked()),         this, SLOT(changeImage()) );
-    this->connect( ui->saveButton, SIGNAL(clicked()),         this, SLOT(saveImage()) );
-    this->connect( ui->calcButton, SIGNAL(clicked()),         this, SLOT(calculate())  );
-    this->connect( ui->stepButton, SIGNAL(clicked()),         this, SLOT(step())       );
+    this->connect( ui->saveButton, SIGNAL(clicked()),         this, SLOT(saveImage())   );
+    this->connect( ui->calcButton, SIGNAL(clicked()),         this, SLOT(calculate())   );
+    this->connect( ui->stepButton, SIGNAL(clicked()),         this, SLOT(step())        );
     this->connect( ui->prevButton, SIGNAL(clicked()), debugWidgetL, SLOT(prev())        );
     this->connect( ui->nextButton, SIGNAL(clicked()), debugWidgetL, SLOT(next())        );
-
+    this->connect( debugWidgetL, SIGNAL(clicked(int,int)), this, SLOT(singleStep(int,int))      );
 
 
 }
@@ -42,6 +42,10 @@ void MainWindow::changeImage() {
     this->seedmap = new SeedMap( image, ui->blockSpin->value(), ui->blockSpin->value(), ui->seedSpin->value(), ui->seedSpin->value());
     seedmap->maxError = ui->errorSpin->value();
 
+
+    seedmap->loadMatches(fileName);
+
+
 }
 
 void MainWindow::step() {
@@ -49,68 +53,55 @@ void MainWindow::step() {
         singleStep();
 }
 
-bool MainWindow::singleStep() {
 
-    Patch* patch = seedmap->matchNext();
+bool MainWindow::singleStep(int x, int y) {
+
+    Patch* patch = 0;
+    if(x==-1)
+        patch = seedmap->matchNext();
+    else {
+        int block = ui->blockSpin->value();
+        int xlocal = ((float)x/400.0) * (image.size().width / block);
+        int ylocal = ((float)y/400.0) * (image.size().height / block);
+
+        patch = seedmap->getPatch(xlocal,ylocal);
+        seedmap->match(*patch);
+    }
+
     if (!patch) return false;
 
 
-    #pragma omp critical
+#pragma omp critical
     {
-    // debug
-    if (!patch->matches->empty()) {
+        // debug
+        if (!patch->matches->empty()) {
 
-        cv::Mat tmpImage = seedmap->sourceImage.clone(); // patch->matches->front()->warp();
-        cv::Mat warpInv = cv::Mat::eye(3,3,CV_64FC1);
-        cv::Mat selection( warpInv, cv::Rect(0,0,3,2) );
-        cv::Mat rotInv;
-        // highlight block
-        cv::rectangle(tmpImage, cv::Point(patch->x_, patch->y_),
-                      cv::Point(patch->x_+patch->w_, patch->y_+patch->h_),
-                      cv::Scalar(0,255,0,100),2);
+            cv::Mat tmpImage = seedmap->sourceImage.clone(); // patch->matches->front()->warp();
+
+            // highlight block
+            cv::rectangle(tmpImage, cv::Point(patch->x_, patch->y_),
+                          cv::Point(patch->x_+patch->w_, patch->y_+patch->h_),
+                          cv::Scalar(0,255,0,100),2);
 
 
-        for(uint i=0; i<patch->matches->size(); i++) {
-            Transform* current = patch->matches->at(i);
-            cv::rectangle(tmpImage, cv::Point(current->seed->x_, current->seed->y_),
-                          cv::Point(current->seed->x_+patch->w_, current->seed->y_+patch->h_),
-                          cv::Scalar(0,200,200,100),1);
+            for(uint i=0; i<patch->matches->size(); i++) {
+                std::vector<cv::Point> newPoints = patch->matches->at(i)->getMatchbox();
 
-            double points[4][2] = { {current->seed->x_, current->seed->y_},
-                                    {current->seed->x_+current->seed->w_, current->seed->y_},
-                                    {current->seed->x_+current->seed->w_, current->seed->y_+current->seed->h_},
-                                    {current->seed->x_,    current->seed->y_+current->seed->h_}
-            };
-
-            cv::Point newPoints[4];
-
-            invertAffineTransform(current->warpMat, selection);
-            invertAffineTransform(current->rotMat, rotInv);
-
-            for(int i=0; i<4; i++ ) {
-                cv::Mat p = (cv::Mat_<double>(3,1) << points[i][0], points[i][1], 1);
-
-                cv::Mat a =  rotInv * (warpInv * p);
-
-                newPoints[i].x = a.at<double>(0,0);
-                newPoints[i].y = a.at<double>(0,1);
+                // highlight match
+                for(int i=0; i<4; i++){
+                    cv::line(tmpImage, newPoints[i], newPoints[(i+1) % 4], cv::Scalar(0,0,255,100));
+                }
+                cv::line(tmpImage, newPoints[0], newPoints[1], cv::Scalar(255,0,0,100));
 
             }
-            // highlight match
-            for(int i=0; i<4; i++){
-                cv::line(tmpImage, newPoints[i], newPoints[(i+1) % 4], cv::Scalar(0,0,255,100));
-            }
-            cv::line(tmpImage, newPoints[0], newPoints[1], cv::Scalar(255,0,0,100));
 
+            debugWidgetR->fromIpl( tmpImage, "preview" );
+            cv::Mat reconstruction(seedmap->debugReconstruction());
+            debugWidgetL->fromIpl( reconstruction, "reconstruction" );
+
+            debugWidgetL->updateGL();
+            debugWidgetR->updateGL();
         }
-
-        debugWidgetR->fromIpl( tmpImage, "preview" );
-        cv::Mat reconstruction(seedmap->debugReconstruction());
-        debugWidgetL->fromIpl( reconstruction, "reconstruction" );
-
-        debugWidgetL->updateGL();
-        debugWidgetR->updateGL();
-    }
 
     }
 
@@ -122,14 +113,8 @@ void MainWindow::calculate() {
 
     seedmap->resetMatches();
 
-//    #pragma omp parallel
+    //    #pragma omp parallel
     while(singleStep()) {}
-
-    std::ofstream ofs( (fileName + ".txt").c_str() );
-    ofs << "version 1.0" << std::endl;
-    ofs << fileName << std::endl;
-    seedmap->saveMatches(ofs);
-    ofs.close();
 
     // FANCY DEBUG outputs
     cv::Mat reconstruction(seedmap->debugReconstruction());
@@ -143,8 +128,13 @@ void MainWindow::calculate() {
 }
 
 void MainWindow::saveImage() {
-    QString saveName = QFileDialog::getSaveFileName(this,tr("Save Image"), "reconstruction/", tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
+    // save demo reconstruction
+    QString saveName = QFileDialog::getSaveFileName(this,tr("Save Image"), (fileName + ".recon.jpg").c_str(), tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
     seedmap->saveReconstruction(saveName.toStdString());
+
+    // save matches
+    seedmap->saveMatches(fileName);
+
 }
 
 MainWindow::~MainWindow()

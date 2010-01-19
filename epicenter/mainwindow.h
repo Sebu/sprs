@@ -33,7 +33,7 @@ public slots:
     void changeImage();
     void calculate();
     void step();
-    bool singleStep();
+    bool singleStep(int x=-1, int y=-1);
 
 private:
     Ui::MainWindow *ui;

@@ -11,14 +11,43 @@ SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
     setImage(image);
 }
 
+
+void SeedMap::loadMatches(std::string fileName) {
+    std::ifstream ifs( (fileName + ".txt").c_str() );
+
+    if (ifs) {
+        std::string version;
+        ifs >> version;
+        ifs.ignore(8192, '\n');
+        ifs >> fileName;
+        ifs.ignore(8192, '\n');
+
+        ifs >> patchW >> xgrid >> maxError;
+        ifs.ignore(8192, '\n');
+        int size;
+        ifs >> size;
+        ifs.ignore(8192, '\n');
+
+        for(uint i=0; i<size; i++)
+            patches[i]->deserialize(ifs);
+    }
+
+    ifs.close();
+}
+
 // filename
 //
-void SeedMap::saveMatches(std::ofstream& ofs) {
+void SeedMap::saveMatches(std::string fileName) {
+    std::ofstream ofs( (fileName + ".txt").c_str() );
+
+    ofs << "version 1.0" << std::endl;
+    ofs << fileName << std::endl;
     ofs << patchW << " " << xgrid << " " << maxError << std::endl;
     ofs << patches.size() << std::endl;
-
     for(uint i=0; i<patches.size(); i++)
         patches[i]->serialize(ofs);
+
+    ofs.close();
 }
 
 void SeedMap::resetMatches() {
@@ -28,6 +57,7 @@ void SeedMap::resetMatches() {
         if(patch->matches) {
             patches[i]->matches->clear();
             delete patch->matches;
+            patch->matches = 0;
         }
     }
 }
@@ -57,7 +87,7 @@ void SeedMap::match(Patch& patch) {
     if (!patch.matches) {
         patch.matches = new std::vector<Transform*>;
 
-        #pragma omp parallel for
+#pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
             Transform* transform = 0;
             Patch* seed = seeds[i];
@@ -65,7 +95,7 @@ void SeedMap::match(Patch& patch) {
             transform = patch.match(*seed, maxError);
             if (transform) {
 
-                #pragma omp critical
+#pragma omp critical
                 patch.matches->push_back(transform);
 
                 if (seed->isPatch())
@@ -95,10 +125,10 @@ cv::Mat SeedMap::debugReconstruction() {
 
         if (!patch->matches || patch->matches->empty()) continue;
 
-        Transform* t = patch->matches->back();
+        Transform* t = patch->matches->front();
 
-        int w = t->seed->w_;
-        int h = t->seed->h_;
+        int w = t->seedW;
+        int h = t->seedH;
         
         cv::Mat reconstruction(t->reconstruct());
         copyBlock(reconstruction, debugImages["reconstuct"] , cv::Rect(0, 0, w, h), cv::Rect(patch->x_, patch->y_, w, h) );
@@ -143,17 +173,17 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
                 if (seed->isPatch())
                     this->patches.push_back(seed);
                 
-                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
-                seed->scale = scale*-1.0;
-                this->seeds.push_back(seed);
+                //                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
+                //                seed->scale = scale*-1.0;
+                //                this->seeds.push_back(seed);
             }
         }
         
         
-                scale *= 1.5f;
-                scaleWidth  = sourceImage.cols / scale;
-                scaleHeight = sourceImage.rows / scale;
-                cv::resize(sourceImage, currentImage, cv::Size(scaleWidth, scaleHeight) );
+        scale *= 1.5f;
+        scaleWidth  = sourceImage.cols / scale;
+        scaleHeight = sourceImage.rows / scale;
+        cv::resize(sourceImage, currentImage, cv::Size(scaleWidth, scaleHeight) );
         
     }
     

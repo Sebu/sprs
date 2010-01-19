@@ -47,8 +47,9 @@ public:
     void resetMatches();
     void matchAll();
     Patch* matchNext();
-    void saveMatches(std::ofstream& ofs);
-    void loadMatches();
+    void saveMatches(std::string fileName);
+    void loadMatches(std::string fileName);
+
 
 
 

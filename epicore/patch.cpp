@@ -9,11 +9,32 @@ bool Patch::isPatch() {
     return ( !(x_ % w_) && !(y_ % h_) && !(scale>1.0) && !transformed);
 }
 
+void Patch::deserialize(std::ifstream& ifs) {
+    ifs >> x_ >> y_;
+    ifs.ignore(8192, '\n');
+    uint size;
+    ifs >> size;
+    ifs.ignore(8192, '\n');
+    if (size==-1) return;
+    matches = new std::vector<Transform*>;
+    for(uint j=0; j<size; j++) {
+        Transform* t = new Transform(0);
+        t->sourceImage = this->sourceImage_;
+        t->deserialize(ifs);
+        matches->push_back(t);
+
+    }
+}
+
 void Patch::serialize(std::ofstream& ofs) {
     ofs << x_ << " " << y_ << std::endl;
-    ofs << matches->size() << std::endl;
-    for(uint j=0; j<matches->size(); j++) {
-        matches->at(j)->serialize(ofs);
+    if (matches) {
+        ofs << matches->size() << std::endl;
+        for(uint j=0; j<matches->size(); j++) {
+            matches->at(j)->serialize(ofs);
+        }
+    } else {
+        ofs << -1 << std::endl;
     }
 }
 
@@ -77,7 +98,7 @@ bool Patch::trackFeatures(Transform* transform) {
 
     cv::Mat grayRotated;
     cv::Mat rotated(transform->rotate());
-    cv::cvtColor(rotated(cv::Rect(transform->seed->x_, transform->seed->y_, w_, h_)), grayRotated, CV_BGR2GRAY);
+    cv::cvtColor(rotated(cv::Rect(transform->seedX, transform->seedY, w_, h_)), grayRotated, CV_BGR2GRAY);
 
     std::vector<cv::Point2f>    pointsDest;
     std::vector<uchar>          status;
@@ -95,10 +116,10 @@ bool Patch::trackFeatures(Transform* transform) {
     int index = 0;
     for(uint i = 0; i < status.size(); i++) {
         if(status[i]) {
-            srcTri[index].x = pointsSrc[i].x + transform->seed->x_;
-            srcTri[index].y = pointsSrc[i].y + transform->seed->y_;
-            destTri[index].x = pointsDest[i].x + transform->seed->x_;
-            destTri[index].y = pointsDest[i].y + transform->seed->y_;
+            srcTri[index].x = pointsSrc[i].x + transform->seedX;
+            srcTri[index].y = pointsSrc[i].y + transform->seedY;
+            destTri[index].x = pointsDest[i].x + transform->seedX;
+            destTri[index].y = pointsDest[i].y + transform->seedY;
             index++;
         }
         if (index>2) break;
@@ -107,7 +128,7 @@ bool Patch::trackFeatures(Transform* transform) {
 
     cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
 
-    if(x_==transform->seed->x_ && y_==transform->seed->y_) {
+    if(x_==transform->seedX && y_==transform->seedY) {
         for (uint i=0; i<3; i++) {
             std::cout << srcTri[i].x << " " << srcTri[i].y << " ";
             std::cout << destTri[i].x << " " << destTri[i].y << " ";

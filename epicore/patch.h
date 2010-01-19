@@ -43,6 +43,7 @@ public:
     cv::Scalar getHistMean() { return histMean; }
     void setHistMean(cv::Scalar _hist_mean) { this->histMean = _hist_mean; }
 
+    void deserialize(std::ifstream&);
     void serialize(std::ofstream&);
 
 };
