@@ -5,10 +5,12 @@
 #include <signal.h>
 
 bool termCalculate=0;
+SeedMap* seedmap;
 
 void terminate (int param)
 {
    termCalculate = 1;
+   seedmap->termCalculate = 1;
 }
 
 int main(int argc, char *argv[])
@@ -22,14 +24,14 @@ int main(int argc, char *argv[])
     std::string fileName(argv[1]);
     
     cv::Mat image = cv::imread( fileName );
-    SeedMap seedmap( image, 16, 16, 4, 4);
-    seedmap.maxError = 0.6;
-    seedmap.loadMatches(fileName);
+    seedmap = new SeedMap( image, 16, 16, 4, 4);
+    seedmap->maxError = 0.6;
+    seedmap->loadMatches(fileName);
 
 
-    while(seedmap.matchNext() && !termCalculate) {}
+    while(seedmap->matchNext() && !termCalculate) {}
     
-    seedmap.saveReconstruction((fileName + ".recon.jpg").c_str());
-    seedmap.saveMatches(fileName);
+    seedmap->saveReconstruction((fileName + ".recon.jpg").c_str());
+    seedmap->saveMatches(fileName);
     
 }

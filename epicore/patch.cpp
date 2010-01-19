@@ -130,10 +130,10 @@ bool Patch::trackFeatures(Transform* transform) {
 
     if(x_==transform->seedX && y_==transform->seedY) {
         for (uint i=0; i<3; i++) {
-            std::cout << srcTri[i].x << " " << srcTri[i].y << " ";
-            std::cout << destTri[i].x << " " << destTri[i].y << " ";
+//            std::cout << srcTri[i].x << " " << srcTri[i].y << " ";
+//            std::cout << destTri[i].x << " " << destTri[i].y << " ";
         }
-        std::cout << std::endl;
+//        std::cout << std::endl;
 
     } else {
         transform->warpMat = tmp;
@@ -163,6 +163,7 @@ Transform* Patch::match(Patch& other, float error) {
     // 4 reconstruction error
     cv::Scalar reconstructionError =  reconError(transform);
 
+    /*
     if (x_==other.x_ && y_==other.y_) {
         // omg O_o two times the same code
         for (int i=0; i<transform->rotMat.rows; i++)
@@ -176,7 +177,7 @@ Transform* Patch::match(Patch& other, float error) {
         std::cout << orientation << " " << reconstructionError[0] << std::endl;
         std::cout << transform->colorScale[0] << " " << transform->colorScale[1] << " " << transform->colorScale[2] << std::endl;
     }
-
+*/
     if (reconstructionError[0] > error || reconstructionError[1] > error || reconstructionError[2] > error) {
 
         delete transform;

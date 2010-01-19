@@ -6,7 +6,7 @@
 
 
 SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
-    : patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid), matchStep(0)
+    : termCalculate(0), patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid), matchStep(0)
 {
     setImage(image);
 }
@@ -89,20 +89,28 @@ void SeedMap::match(Patch& patch) {
 
 #pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
-            Transform* transform = 0;
-            Patch* seed = seeds[i];
+            if(!termCalculate) {
+                Transform* transform = 0;
+                Patch* seed = seeds[i];
 
-            transform = patch.match(*seed, maxError);
-            if (transform) {
+                transform = patch.match(*seed, maxError);
+                if (transform) {
 
 #pragma omp critical
-                patch.matches->push_back(transform);
+                    patch.matches->push_back(transform);
 
-                if (seed->isPatch())
-                    seed->matches=patch.matches;
-                //                break; // take first match
-
+                    if (seed->isPatch())
+                        seed->matches=patch.matches;
+                    //                break; // take first match
+                }
             }
+
+        }
+        if(termCalculate) {
+            patch.matches->clear();
+            delete (patch.matches);
+            patch.matches = 0;
+
         }
     } else {
         std::cout << "shares matches" << std::endl;

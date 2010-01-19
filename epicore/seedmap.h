@@ -14,6 +14,8 @@
 class EPICORESHARED_EXPORT SeedMap
 {
 public:
+    bool termCalculate;
+
     int patchW;
     int patchH;
     int xgrid;
