@@ -8,6 +8,7 @@
 SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
     : termCalculate(0), patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid), matchStep(0)
 {
+
     setImage(image);
 }
 
@@ -87,11 +88,12 @@ void SeedMap::match(Patch& patch) {
     if (!patch.matches) {
         patch.matches = new std::vector<Transform*>;
 
-#pragma omp parallel for
+//#pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
             if(!termCalculate) {
                 Transform* transform = 0;
                 Patch* seed = seeds[i];
+
 
                 transform = patch.match(*seed, maxError);
                 if (transform) {
@@ -166,15 +168,19 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
     
     for (int i=0; i< depth; i++) {
         
-        width = (currentImage.cols-w) / xgrid;
+        width = (currentImage.cols) / xgrid;
         height = (currentImage.rows-h) / ygrid;
-        
+
         cv::Mat flipped = currentImage.clone();
         cv::flip(currentImage, flipped, 0);
         
         // generate new patches
         for(int y=0; y<height; y++){
             for(int x=0; x<width; x++){
+
+                if (x*xgrid+w > currentImage.cols)
+                    w = currentImage.cols - x*xgrid;
+
                 Patch* seed = new Patch( currentImage, x*xgrid, y*ygrid, w, h );
                 seed->scale = scale;
                 this->seeds.push_back(seed);
@@ -184,10 +190,12 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
                 //                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
                 //                seed->scale = scale*-1.0;
                 //                this->seeds.push_back(seed);
+                std::cout.flush();
             }
+            w = patchW;
         }
         
-        
+
         scale *= 1.5f;
         scaleWidth  = sourceImage.cols / scale;
         scaleHeight = sourceImage.rows / scale;

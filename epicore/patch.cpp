@@ -96,19 +96,28 @@ bool Patch::trackFeatures(Transform* transform) {
 
     if(pointsSrc.size()<3) return true;
 
+
     cv::Mat grayRotated;
     cv::Mat rotated(transform->rotate());
-    cv::cvtColor(rotated(cv::Rect(transform->seedX, transform->seedY, w_, h_)), grayRotated, CV_BGR2GRAY);
+
+    cv::cvtColor(rotated(cv::Rect(transform->seedX, transform->seedY, transform->seedW, transform->seedH)), grayRotated, CV_BGR2GRAY);
+
 
     std::vector<cv::Point2f>    pointsDest;
     std::vector<uchar>          status;
     std::vector<float>          err;
+
+
+    std::cout << transform->seedW << " " << std::endl;
+    std::cout.flush();
 
     cv::calcOpticalFlowPyrLK( grayPatch, grayRotated,
                               pointsSrc, pointsDest,
                               status, err,
                               cv::Size(3,3), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 40, 0.1));
     //                            cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 40, .1 ), 0 );
+
+
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -146,6 +155,9 @@ bool Patch::trackFeatures(Transform* transform) {
 Transform* Patch::match(Patch& other, float error) {
 
     Transform* transform = new Transform(&other);
+
+
+
 
     // 4.1 rotation, orientation/gradient histogram
     float orientation = this->orientHist->minDiff(other.orientHist);
@@ -201,8 +213,11 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int w, int h):
         histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), count(4), matches(0), sourceImage_(sourceImage),
         transformed(false)
 {
+
     patchImage = sourceImage_(cv::Rect(x_,y,w_,h_)).clone();
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);
     orientHist = new OrientHist(grayPatch, 36);
     setHistMean( cv::mean(patchImage) );
+
+
 }

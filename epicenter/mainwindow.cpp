@@ -34,14 +34,15 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::changeImage() {
 
-    fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "/home/seb/Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
+    fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "~/Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
     if(fileName=="") return;
 
     image = cv::imread( fileName );
     debugWidgetL->fromIpl( image, "image" );
     this->seedmap = new SeedMap( image, ui->blockSpin->value(), ui->blockSpin->value(), ui->seedSpin->value(), ui->seedSpin->value());
-    seedmap->maxError = ui->errorSpin->value();
 
+    seedmap->maxError = ui->errorSpin->value();
+    std::cout.flush();
 
     seedmap->loadMatches(fileName);
 

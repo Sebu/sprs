@@ -2,6 +2,7 @@
 # Project created by QtCreator 2010-01-12T18:57:11
 # -------------------------------------------------
 QT -= gui
+CONFIG += debug
 TARGET = epicore
 TEMPLATE = lib
 DEFINES += EPICORE_LIBRARY
