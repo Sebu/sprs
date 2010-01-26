@@ -16,14 +16,18 @@ SOURCES += epicore.cpp \
     seedmap.cpp \
     cv_ext.cpp \
     orientationhistogram.cpp \
-    transformmap.cpp \
-    matchconsumer.cpp
+    match.cpp \
+    matchconsumer.cpp \
+    matrix.cpp \
+    epitome.cpp
 HEADERS += epicore.h \
     patch.h \
     seedmap.h \
     cv_ext.h \
     orientationhistogram.h \
-    transformmap.h \
+    match.h \
     epicore_global.h \
-    matchconsumer.h
+    matchconsumer.h \
+    matrix.h \
+    epitome.h
 QMAKE_CXXFLAGS += -fopenmp

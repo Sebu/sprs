@@ -3,15 +3,74 @@
 #include <fstream>
 #include "seedmap.h"
 #include "cv_ext.h"
-
+#include "epitome.h"
 
 SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
     : termCalculate(0), patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid), matchStep(0)
 {
 
-    setImage(image);
+    setImage(image,3);
 }
 
+bool myfunction (Patch* i, Patch* j) { return (i->overlapedMatches.size() > j->overlapedMatches.size() ); }
+
+void SeedMap::generateEpitomes() {
+
+    std::list<Patch*> sortedPatches;
+    std::vector<Patch*> satisfied;
+
+
+    // crappy setup
+    for(uint i=0; i<patches.size(); i++) {
+        Patch* patch=patches[i];
+        sortedPatches.push_back(patch);
+        for(uint j=0; j<patch->matches->size(); j++) {
+            Match* m = patch->matches->at(j);
+            Polygon poly = m->getMatchbox();
+            for(int k=0; k<patches.size(); k++) {
+                Patch* p = patches[k];
+                if ( poly.intersect(p->hull) ) {
+                    m->overlapedPatches.push_back(p);
+                    p->overlapedMatches.push_back(m);
+                }
+
+            }
+        }
+    }
+
+    // sort patches by overlap count
+    sortedPatches.sort(myfunction);
+
+    // create epitomes
+    while(sortedPatches.size()!=0) {
+
+        std::list<Patch*> tmp;
+        Patch* patch = sortedPatches.front();
+        sortedPatches.pop_front();
+
+        Epitome* epi = new Epitome();
+
+        for(uint i=0; i < patch->overlapedMatches.size(); i++) {
+            Match* m = patch->overlapedMatches.at(i);
+            std::vector<Patch*>::iterator it=std::find(satisfied.begin(),satisfied.end(),m->patch);
+            if (satisfied.size()!=0 && (it!=satisfied.end() || (*it)==m->patch)) continue;
+            satisfied.push_back(m->patch);
+            tmp.push_back(patch);
+            foreach(Patch* over, m->overlapedPatches) {
+//                satisfied.push_back(over);
+                tmp.push_back(over);
+            }
+        }
+
+        while(tmp.size()!=0){
+            Patch* p = tmp.front();
+            epi->reconPatches.push_back(p);
+            tmp.remove(p);
+        }
+        epitomes.push_back(epi);
+    }
+
+}
 
 void SeedMap::loadMatches(std::string fileName) {
     std::ifstream ifs( (fileName + ".txt").c_str() );
@@ -29,7 +88,7 @@ void SeedMap::loadMatches(std::string fileName) {
         ifs >> size;
         ifs.ignore(8192, '\n');
 
-        for(uint i=0; i<size; i++)
+        for(int i=0; i<size; i++)
             patches[i]->deserialize(ifs);
     }
 
@@ -86,24 +145,25 @@ void SeedMap::match(Patch& patch) {
     patch.findFeatures();
 
     if (!patch.matches) {
-        patch.matches = new std::vector<Transform*>;
+        patch.matches = new std::vector<Match*>;
 
-//#pragma omp parallel for
+#pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
             if(!termCalculate) {
-                Transform* transform = 0;
+                Match* match = 0;
                 Patch* seed = seeds[i];
+                seed->transformed = false; // TODO: reset is better or move flag to match
 
-
-                transform = patch.match(*seed, maxError);
-                if (transform) {
+                match = patch.match(*seed, maxError);
+                if (match) {
+                    match->patch = &patch;
 
 #pragma omp critical
-                    patch.matches->push_back(transform);
+                    patch.matches->push_back(match);
 
                     if (seed->isPatch())
                         seed->matches=patch.matches;
-                    //                break; // take first match
+                    // break; // take first match
                 }
             }
 
@@ -115,7 +175,7 @@ void SeedMap::match(Patch& patch) {
 
         }
     } else {
-        std::cout << "shares matches" << std::endl;
+        std::cout << "shares " << patch.matches->size() <<  " matches @ " <<  patch.x_/16 << " " << patch.y_/16 << std::endl;
     }
 
     
@@ -126,22 +186,40 @@ Patch* SeedMap::getSeed(int x, int y) {
     return this->seeds.at(y*width + x);
 }
 
+cv::Mat SeedMap::debugEpitomeMap() {
+    cv::Mat image = debugImages["epitomemap"] = cv::Mat::zeros(sourceImage.size(), CV_8UC3);
+
+    foreach(Epitome* epi, epitomes) {
+        int color = 20;
+        foreach(Patch* patch, epi->reconPatches) {
+//            copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
+            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar::all(color), CV_FILLED);
+            color += 20;
+        }
+    }
+
+
+    return debugImages["epitomemap"];
+}
 
 cv::Mat SeedMap::debugReconstruction() {
     debugImages["reconstuct"] = cv::Mat::zeros(sourceImage.size(), CV_8UC3);
     
     for(uint i=0; i< patches.size(); i++) {
         Patch* patch = patches[i];
+        int w = patch->w_;
+        int h = patch->h_;
 
         if (!patch->matches || patch->matches->empty()) continue;
 
-        Transform* t = patch->matches->front();
 
-        int w = t->seedW;
-        int h = t->seedH;
-        
-        cv::Mat reconstruction(t->reconstruct());
+        Match* m = patch->matches->front();
+        cv::Mat reconstruction(m->reconstruct());
         copyBlock(reconstruction, debugImages["reconstuct"] , cv::Rect(0, 0, w, h), cv::Rect(patch->x_, patch->y_, w, h) );
+
+
+
+        
     }
     
     return debugImages["reconstuct"];
@@ -150,12 +228,19 @@ cv::Mat SeedMap::debugReconstruction() {
 
 
 void SeedMap::setImage(cv::Mat& image, int depth) {
-    sourceImage = image;
-    
-    cv::Mat currentImage = sourceImage;
-    
+
     int w = patchW;
     int h = patchH;
+
+    int rightBorder =  w - (image.cols % w);
+    int bottomBorder = h - (image.rows % h);
+
+    // add border to image
+    sourceImage = cv::Mat::zeros(image.size()+cv::Size(rightBorder,bottomBorder), image.type());
+    cv::Mat region(sourceImage, cv::Rect(cv::Point(0,0),image.size()));
+    sourceImage = image; //image.copyTo(region);
+
+    cv::Mat currentImage = sourceImage;
     
     
     this->seeds.clear(); // remove all old patches
@@ -164,12 +249,12 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
     float scaleWidth  = sourceImage.cols;
     float scaleHeight = sourceImage.rows;
     
-    // TODO: create image scales :) 1.5, 1.5^2, 1.5^3
-    
+
+
     for (int i=0; i< depth; i++) {
         
-        width = (currentImage.cols) / xgrid;
-        height = (currentImage.rows-h) / ygrid;
+        width =  ((scaleWidth-w) / xgrid); //+ 1;
+        height = ((scaleHeight-h) / ygrid); // + 1;
 
         cv::Mat flipped = currentImage.clone();
         cv::flip(currentImage, flipped, 0);
@@ -178,8 +263,6 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
         for(int y=0; y<height; y++){
             for(int x=0; x<width; x++){
 
-                if (x*xgrid+w > currentImage.cols)
-                    w = currentImage.cols - x*xgrid;
 
                 Patch* seed = new Patch( currentImage, x*xgrid, y*ygrid, w, h );
                 seed->scale = scale;
@@ -187,19 +270,18 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
                 if (seed->isPatch())
                     this->patches.push_back(seed);
                 
-                //                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
-                //                seed->scale = scale*-1.0;
-                //                this->seeds.push_back(seed);
-                std::cout.flush();
+//                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
+//                seed->scale = scale;
+//                this->seeds.push_back(seed);
+
             }
-            w = patchW;
         }
         
 
         scale *= 1.5f;
         scaleWidth  = sourceImage.cols / scale;
         scaleHeight = sourceImage.rows / scale;
-        cv::resize(sourceImage, currentImage, cv::Size(scaleWidth, scaleHeight) );
+//        cv::resize(sourceImage, currentImage, cv::Size(scaleWidth, scaleHeight) );
         
     }
     

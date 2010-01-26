@@ -7,8 +7,8 @@
 #include <fstream>
 
 #include "patch.h"
-#include "transformmap.h"
-
+#include "match.h"
+#include "epitome.h"
 #include "epicore_global.h"
 
 class EPICORESHARED_EXPORT SeedMap
@@ -29,9 +29,8 @@ public:
 
     std::vector<Patch*> seeds;
     std::vector<Patch*> patches;
-    std::vector<Patch*> matches;
+    std::list<Epitome*> epitomes;
 
-    std::vector<Transform*> transforms;
 
     cv::Mat sourceImage;
 
@@ -52,12 +51,14 @@ public:
     void saveMatches(std::string fileName);
     void loadMatches(std::string fileName);
 
-
+    // epitome generation
+    void generateEpitomes();
 
 
     // debug
     std::map<std::string, cv::Mat> debugImages;
     cv::Mat debugReconstruction();
+    cv::Mat debugEpitomeMap();
 
 
 };

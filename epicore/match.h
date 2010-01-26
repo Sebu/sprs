@@ -2,27 +2,36 @@
 #define TRANSFORMMAP_H
 
 
+#include <vector>
+#include "matrix.h"
 #include "patch.h"
 
 class Patch;
 
-class Transform
+class Match
 {
 private:
     Patch* seed;
 
 public:
+    Patch* patch;
     cv::Mat sourceImage;
 
     cv::Mat warpMat;
     cv::Mat rotMat;
+    cv::Mat scaleMat;
+
     cv::Scalar colorScale;
-    float scale;
+    cv::Scalar error;
+
     int seedX, seedY;
     int seedW, seedH;
+    float scale;
+
+    std::vector<Patch*> overlapedPatches;
 
 
-    Transform(Patch* seed=0);
+    Match(Patch* seed=0);
 
     void setSeed(Patch* seed);
 
@@ -30,7 +39,7 @@ public:
     cv::Mat warp();
     cv::Mat reconstruct();
 
-    std::vector<cv::Point> getMatchbox();
+    Polygon getMatchbox();
 
     void deserialize(std::ifstream&);
     void serialize(std::ofstream&);

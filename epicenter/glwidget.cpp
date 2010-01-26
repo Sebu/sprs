@@ -1,7 +1,7 @@
 #include "glwidget.h"
 
 #include <iostream>
-
+#include <X11/Xlib.h>
 
 void AlbumWidget::mouseReleaseEvent(QMouseEvent* event) {
     emit clicked(event->pos().x(), event->pos().y());
@@ -28,6 +28,7 @@ void AlbumWidget::next() {
 }
 
 int AlbumWidget::fromIpl(cv::Mat& image, QString caption) {
+
     makeCurrent();
 
     uint tex;

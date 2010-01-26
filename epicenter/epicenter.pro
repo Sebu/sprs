@@ -13,9 +13,11 @@ LIBS = -L../epicore \
     -lhighgui
 SOURCES += main.cpp \
     mainwindow.cpp \
-    glwidget.cpp
+    glwidget.cpp \
+    calculationthread.cpp
 HEADERS += mainwindow.h \
-    glwidget.h
+    glwidget.h \
+    calculationthread.h
 FORMS += mainwindow.ui
 QMAKE_CXXFLAGS += -pg \
     -fopenmp

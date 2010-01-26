@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>978</width>
-    <height>555</height>
+    <height>557</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>958</width>
+      <width>962</width>
       <height>480</height>
      </rect>
     </property>
@@ -175,7 +175,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0">
        <property name="sizeConstraint">
         <enum>QLayout::SetMinimumSize</enum>
        </property>
@@ -196,7 +196,14 @@
        <item>
         <widget class="QPushButton" name="calcButton">
          <property name="text">
-          <string>calculate</string>
+          <string>step1</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="step2Button">
+         <property name="text">
+          <string>step2</string>
          </property>
         </widget>
        </item>
@@ -238,7 +245,7 @@
      <x>0</x>
      <y>0</y>
      <width>978</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

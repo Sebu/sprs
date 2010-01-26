@@ -3,7 +3,6 @@
 
 #include <opencv/cv.h>
 
-const double PI = 3.14159265359;
 
 cv::Mat    copyBlock(cv::Mat& src, cv::Mat& dest, cv::Rect roiSrc, cv::Rect roiDest=cvRect(0,0,0,0));
 

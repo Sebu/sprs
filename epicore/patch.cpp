@@ -1,9 +1,13 @@
 #include <fstream>
 
 #include "patch.h"
-#include "transformmap.h"
+#include "match.h"
 #include "cv_ext.h"
 
+
+bool Patch::overlaps() {
+    return true;
+}
 
 bool Patch::isPatch() {
     return ( !(x_ % w_) && !(y_ % h_) && !(scale>1.0) && !transformed);
@@ -16,11 +20,12 @@ void Patch::deserialize(std::ifstream& ifs) {
     ifs >> size;
     ifs.ignore(8192, '\n');
     if (size==-1) return;
-    matches = new std::vector<Transform*>;
+    matches = new std::vector<Match*>;
     for(uint j=0; j<size; j++) {
-        Transform* t = new Transform(0);
+        Match* t = new Match(0);
         t->sourceImage = this->sourceImage_;
         t->deserialize(ifs);
+        t->patch = this;
         matches->push_back(t);
 
     }
@@ -38,7 +43,7 @@ void Patch::serialize(std::ofstream& ofs) {
     }
 }
 
-cv::Scalar Patch::reconError(Transform* t) {
+cv::Scalar Patch::reconError(Match* t) {
 
     float alpha = 1.0f; // 0 <= alpha <= 2
     float beta  = .02f;
@@ -77,6 +82,7 @@ cv::Scalar Patch::reconError(Transform* t) {
     cv::Scalar variance = cv::sum(varianceMap);
 
 
+
     // error equation
     cv::Scalar result;
     for (int i=0; i<3; i++)
@@ -87,12 +93,12 @@ cv::Scalar Patch::reconError(Transform* t) {
 
 void Patch::findFeatures() {
 
-    cv::goodFeaturesToTrack(grayPatch, pointsSrc, count, .01, .01);
+    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
     if(pointsSrc.size()<3)
         std::cout << "too bad features" << std::endl;
 
 }
-bool Patch::trackFeatures(Transform* transform) {
+bool Patch::trackFeatures(Match* transform) {
 
     if(pointsSrc.size()<3) return true;
 
@@ -107,9 +113,6 @@ bool Patch::trackFeatures(Transform* transform) {
     std::vector<uchar>          status;
     std::vector<float>          err;
 
-
-    std::cout << transform->seedW << " " << std::endl;
-    std::cout.flush();
 
     cv::calcOpticalFlowPyrLK( grayPatch, grayRotated,
                               pointsSrc, pointsDest,
@@ -145,16 +148,16 @@ bool Patch::trackFeatures(Transform* transform) {
 //        std::cout << std::endl;
 
     } else {
-        transform->warpMat = tmp;
-
+        cv::Mat selection( transform->warpMat, cv::Rect(0,0,3,2) );
+        tmp.copyTo(selection);
     }
 
     return true;
 
 }
-Transform* Patch::match(Patch& other, float error) {
+Match* Patch::match(Patch& other, float error) {
 
-    Transform* transform = new Transform(&other);
+    Match* match = new Match(&other);
 
 
 
@@ -165,34 +168,25 @@ Transform* Patch::match(Patch& other, float error) {
     // apply initial rotation TODO: float :D
     if ((int)orientation!=0) {
         cv::Point2f center( other.x_+(w_/2), other.y_+(h_/2) );
-        transform->rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
+
+        cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
+        cv::Mat selection( match->rotMat, cv::Rect(0,0,3,2) );
+        rotMat.copyTo(selection);
+
         other.transformed=true;
     }
 
     // 4.1 KLT matching
-    if (!trackFeatures(transform)) { delete transform; return 0; }
+    if (!trackFeatures(match)) { delete match; return 0; }
 
     // 4 reconstruction error
-    cv::Scalar reconstructionError =  reconError(transform);
+    cv::Scalar reconstructionError =  reconError(match);
 
-    /*
-    if (x_==other.x_ && y_==other.y_) {
-        // omg O_o two times the same code
-        for (int i=0; i<transform->rotMat.rows; i++)
-            for(int j=0; j<transform->rotMat.cols; j++)
-                std::cout << transform->rotMat.at<double>(i,j) << " ";
-        std::cout << " rotation" << std::endl;
-        for (int i=0; i<transform->warpMat.rows; i++)
-            for(int j=0; j<transform->warpMat.cols; j++)
-                std::cout << transform->warpMat.at<double>(i,j) << " ";
-        std::cout << "warp" << std::endl;
-        std::cout << orientation << " " << reconstructionError[0] << std::endl;
-        std::cout << transform->colorScale[0] << " " << transform->colorScale[1] << " " << transform->colorScale[2] << std::endl;
-    }
-*/
+    match->error = reconstructionError;
+
     if (reconstructionError[0] > error || reconstructionError[1] > error || reconstructionError[2] > error) {
 
-        delete transform;
+        delete match;
         return 0;
     }
 
@@ -200,19 +194,21 @@ Transform* Patch::match(Patch& other, float error) {
     // debug out
 #ifdef DEBUG
     std::cout << x_/h_ << " " << y_/h_ << " " <<
-            "color scale: " << transform->colorScale[0] << "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError[0];
+            "color scale: " << match->colorScale[0] << "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError[0];
     std::cout << " " << other.scale;
-    if(x_==other.x_ && y_==other.y_) std::cout << "\tfound myself!";
+    if(x_==other.x_ && y_==other.y_ && other.isPatch()) std::cout << "\tfound myself!";
     std::cout << std::endl;
 #endif
 
-    return transform;
+    return match;
 }
 
 Patch::Patch(cv::Mat& sourceImage, int x, int  y, int w, int h):
-        histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), count(4), matches(0), sourceImage_(sourceImage),
+        histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), matches(0), sourceImage_(sourceImage),
         transformed(false)
 {
+
+    hull = Polygon::square(x,y,w,h);
 
     patchImage = sourceImage_(cv::Rect(x_,y,w_,h_)).clone();
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);

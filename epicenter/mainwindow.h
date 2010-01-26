@@ -4,7 +4,7 @@
 #include <QtGui/QMainWindow>
 
 #include "glwidget.h"
-#include <epicore/seedmap.h>
+#include "calculationthread.h"
 
 namespace Ui
 {
@@ -17,23 +17,19 @@ class MainWindow : public QMainWindow
 
 public:
     std::string     fileName;
-    cv::Mat         image;
-    SeedMap*        seedmap;
     AlbumWidget*    debugWidgetL;
     AlbumWidget*    debugWidgetR;
+    CalculationThread calcThread;
 
 
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void testPatch(int x, int y);
+//    void testPatch(int x, int y);
 
 public slots:
     void saveImage();
     void changeImage();
-    void calculate();
-    void step();
-    bool singleStep(int x=-1, int y=-1);
 
 private:
     Ui::MainWindow *ui;

@@ -4,27 +4,29 @@
 #include <opencv/cv.h>
 
 #include "orientationhistogram.h"
-#include "transformmap.h"
+#include "match.h"
 
-class Transform;
+class Match;
 
 class Patch
 {
 private:
     cv::Scalar histMean;
+    std::vector<cv::Point2f> pointsSrc;
 
 
 public:
     int x_, y_, w_, h_;
-
-    int count;
-    std::vector<cv::Point2f> pointsSrc;
+    int id;
 
     float scale;
-
     bool transformed;
 
-    std::vector<Transform*>* matches;
+
+    std::vector<Match*> overlapedMatches;
+    Polygon hull;
+
+    std::vector<Match*>* matches;
 
     cv::Mat patchImage;
     cv::Mat sourceImage_;
@@ -35,10 +37,11 @@ public:
 
     bool isPatch();
 
+    bool overlaps();
     void findFeatures();
-    cv::Scalar reconError(Transform*);
-    bool trackFeatures(Transform* t);
-    Transform* match(Patch&, float error);
+    cv::Scalar reconError(Match*);
+    bool trackFeatures(Match* t);
+    Match* match(Patch&, float error);
 
     cv::Scalar getHistMean() { return histMean; }
     void setHistMean(cv::Scalar _hist_mean) { this->histMean = _hist_mean; }
