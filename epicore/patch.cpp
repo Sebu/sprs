@@ -46,7 +46,7 @@ void Patch::serialize(std::ofstream& ofs) {
 cv::Scalar Patch::reconError(Match* t) {
 
     float alpha = 1.0f; // 0 <= alpha <= 2
-    float beta  = .02f;
+    float beta  = .002f;
     cv::Mat diff;
 
     // reconstruct
@@ -92,7 +92,7 @@ void Patch::findFeatures() {
     variance = cv::sum(varianceMap);
 
     // track initial features
-    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
+    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .05, .01);
     if(pointsSrc.size()<3)
         std::cout << "too bad features" << std::endl;
 

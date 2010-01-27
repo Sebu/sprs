@@ -188,13 +188,14 @@ Patch* SeedMap::getSeed(int x, int y) {
 cv::Mat SeedMap::debugEpitomeMap() {
     cv::Mat image = debugImages["epitomemap"] = cv::Mat::zeros(sourceImage.size(), CV_8UC3);
 
+    int color = 0;
+    int step = 255/epitomes.size();
     foreach(Epitome* epi, epitomes) {
-        int color = 20;
         foreach(Patch* patch, epi->reconPatches) {
-            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar::all(color), 2);
-            copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
-            color += 20;
+//            copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
+            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar(color,255-color,color,255), CV_FILLED);
         }
+        color += step;
     }
 
 
