@@ -28,6 +28,8 @@ public:
     int seedW, seedH;
     float scale;
 
+//    Polygon hull;
+
     std::vector<Patch*> overlapedPatches;
 
 
