@@ -17,7 +17,7 @@ int OrientHist::minDiff(OrientHist* other) {
     int min = INT_MAX;
     for(int j=0; j < this->_numBins; j++) {
         int sum = this->diff(other, j);
-        if (sum<min) { min=sum; angle=j*10; }
+        if (sum<=min) { min=sum; angle=j*10; }
     }
 
     return angle;
@@ -33,6 +33,7 @@ int OrientHist::diff(OrientHist* other, int offset) {
 
 OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins)
 {
+
     // preuso code
     //    for each pixel (x,y) in an image I
     //      {
@@ -49,10 +50,15 @@ OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins
     //
     //      blur the initial histogram by [1 4 6 4 1] averaging filter.
 
+    cv::Mat contrast(image.size(), CV_32F);
+    cv::Mat direction(image.size(), CV_32F);
     _bins = new int[_numBins];
 
     // init with 0
     for(int i=0; i<numBins; i++) _bins[i]=0;
+
+    long sumContrast = 0 ;
+    long count = 0 ;
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
@@ -63,18 +69,23 @@ OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins
             float dx = pixel - pixel_x;
             float dy = pixel - pixel_y;
 
-            int dir = cv::fastAtan2(dx,dy);
 
-            float magnitude = sqrt(dx*dx + dy*dy);
+            direction.at<float>(y,x) = cv::fastAtan2(dx,dy);
 
-            float threshold = 1.0f;
-
-            if(magnitude > threshold ) {
-                _bins[ dir / (360/numBins)  ]++;
-            }
+            float ctmp = sqrt(dx*dx + dy*dy);
+            contrast.at<float>(y,x) = ctmp;
+            sumContrast += ctmp;
+            count++;
 
         }
-
     }
+
+    float threshold = (sumContrast / count) * 2.0f;
+
+    for(int y=0; y<image.rows-1; y++)
+        for (int x=0; x<image.cols-1; x++)
+            if(contrast.at<float>(y,x) > threshold )
+                _bins[ (int)direction.at<float>(y,x) / (360/numBins)  ]++;
+
 
 }

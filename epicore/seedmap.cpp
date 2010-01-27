@@ -192,8 +192,8 @@ cv::Mat SeedMap::debugEpitomeMap() {
     int step = 255/epitomes.size();
     foreach(Epitome* epi, epitomes) {
         foreach(Patch* patch, epi->reconPatches) {
-//            copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
-            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar(color,255-color,color,255), CV_FILLED);
+            copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
+//            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar(color,255-color,color,255), CV_FILLED);
         }
         color += step;
     }

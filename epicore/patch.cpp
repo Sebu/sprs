@@ -92,7 +92,7 @@ void Patch::findFeatures() {
     variance = cv::sum(varianceMap);
 
     // track initial features
-    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .05, .01);
+    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
     if(pointsSrc.size()<3)
         std::cout << "too bad features" << std::endl;
 
@@ -152,12 +152,12 @@ Match* Patch::match(Patch& other, float error) {
     float orientation = orientHist->minDiff(other.orientHist);
 
     // orientation still to different
-    if(orientHist->diff(other.orientHist,orientation/10) > 600) return 0;
+    if(orientHist->diff(other.orientHist,orientation/10) > 800) return 0;
 
     Match* match = new Match(&other);
 
     // apply initial rotation TODO: float :D
-    if ((int)orientation!=0) {
+    if ((int)orientation!=360) {
         cv::Point2f center( other.x_+(w_/2), other.y_+(h_/2) );
 
         cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
