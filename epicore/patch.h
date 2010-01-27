@@ -31,6 +31,7 @@ public:
     cv::Mat patchImage;
     cv::Mat sourceImage_;
     cv::Mat grayPatch;
+    cv::Scalar variance;
     OrientHist* orientHist;
 
     Patch(cv::Mat& sourceImage, int x=0, int y=0, int w=16, int h=16);

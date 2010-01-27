@@ -27,14 +27,13 @@ int OrientHist::diff(OrientHist* other, int offset) {
     int sum=0;
     for (int i=0; i < _numBins; i++){
         sum += pow(this->_bins[i]-other->_bins[ (i+offset) % _numBins ], 2);
-
-        // std::cout << this->_bins[i] << " " << sum << std::endl;
     }
     return sum;
 }
 
 OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins)
 {
+    // preuso code
     //    for each pixel (x,y) in an image I
     //      {
     //         find the gradient of the pixel

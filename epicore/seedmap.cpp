@@ -27,7 +27,7 @@ void SeedMap::generateEpitomes() {
         for(uint j=0; j<patch->matches->size(); j++) {
             Match* m = patch->matches->at(j);
             Polygon poly = m->getMatchbox();
-            for(int k=0; k<patches.size(); k++) {
+            for(uint k=0; k<patches.size(); k++) {
                 Patch* p = patches[k];
                 if ( poly.intersect(p->hull) ) {
                     m->overlapedPatches.push_back(p);
@@ -158,12 +158,11 @@ void SeedMap::match(Patch& patch) {
                 if (match) {
                     match->patch = &patch;
 
-#pragma omp critical
+                #pragma omp critical
                     patch.matches->push_back(match);
 
                     if (seed->isPatch())
                         seed->matches=patch.matches;
-                    // break; // take first match
                 }
             }
 
@@ -192,8 +191,8 @@ cv::Mat SeedMap::debugEpitomeMap() {
     foreach(Epitome* epi, epitomes) {
         int color = 20;
         foreach(Patch* patch, epi->reconPatches) {
-//            copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
-            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar::all(color), CV_FILLED);
+            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar::all(color), 2);
+            copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
             color += 20;
         }
     }
@@ -250,14 +249,14 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
     float scaleHeight = sourceImage.rows;
     
 
+    cv::Mat flipped = currentImage.clone();
+    cv::flip(currentImage, flipped, 0);
 
     for (int i=0; i< depth; i++) {
         
         width =  ((scaleWidth-w) / xgrid); //+ 1;
         height = ((scaleHeight-h) / ygrid); // + 1;
 
-        cv::Mat flipped = currentImage.clone();
-        cv::flip(currentImage, flipped, 0);
         
         // generate new patches
         for(int y=0; y<height; y++){

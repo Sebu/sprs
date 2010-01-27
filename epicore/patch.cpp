@@ -72,15 +72,7 @@ cv::Scalar Patch::reconError(Match* t) {
     // sqaure distance
     diff = cv::abs(this->patchImage - reconstruction);
     cv::pow(diff, 2, diff);
-
-
     cv::Scalar sum = cv::sum(diff);
-
-    cv::Mat mean( patchImage.size(), patchImage.type(), this->getHistMean() );
-    cv::Mat varianceMap = cv::abs( patchImage - mean );
-    cv::pow(varianceMap, 2, varianceMap);
-    cv::Scalar variance = cv::sum(varianceMap);
-
 
 
     // error equation
@@ -93,6 +85,13 @@ cv::Scalar Patch::reconError(Match* t) {
 
 void Patch::findFeatures() {
 
+    // precalculate variance
+    cv::Mat mean( patchImage.size(), patchImage.type(), this->getHistMean() );
+    cv::Mat varianceMap = cv::abs( patchImage - mean );
+    cv::pow(varianceMap, 2, varianceMap);
+    variance = cv::sum(varianceMap);
+
+    // track initial features
     cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
     if(pointsSrc.size()<3)
         std::cout << "too bad features" << std::endl;
@@ -118,9 +117,6 @@ bool Patch::trackFeatures(Match* transform) {
                               pointsSrc, pointsDest,
                               status, err,
                               cv::Size(3,3), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 40, 0.1));
-    //                            cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 40, .1 ), 0 );
-
-
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -141,12 +137,6 @@ bool Patch::trackFeatures(Match* transform) {
     cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
 
     if(x_==transform->seedX && y_==transform->seedY) {
-        for (uint i=0; i<3; i++) {
-//            std::cout << srcTri[i].x << " " << srcTri[i].y << " ";
-//            std::cout << destTri[i].x << " " << destTri[i].y << " ";
-        }
-//        std::cout << std::endl;
-
     } else {
         cv::Mat selection( transform->warpMat, cv::Rect(0,0,3,2) );
         tmp.copyTo(selection);
@@ -157,13 +147,14 @@ bool Patch::trackFeatures(Match* transform) {
 }
 Match* Patch::match(Patch& other, float error) {
 
-    Match* match = new Match(&other);
-
-
-
 
     // 4.1 rotation, orientation/gradient histogram
-    float orientation = this->orientHist->minDiff(other.orientHist);
+    float orientation = orientHist->minDiff(other.orientHist);
+
+    // orientation still to different
+    if(orientHist->diff(other.orientHist,orientation/10) > 600) return 0;
+
+    Match* match = new Match(&other);
 
     // apply initial rotation TODO: float :D
     if ((int)orientation!=0) {
@@ -184,17 +175,19 @@ Match* Patch::match(Patch& other, float error) {
 
     match->error = reconstructionError;
 
+    // reconstruction error too high? skip
     if (reconstructionError[0] > error || reconstructionError[1] > error || reconstructionError[2] > error) {
 
         delete match;
         return 0;
+
     }
 
 
     // debug out
 #ifdef DEBUG
     std::cout << x_/h_ << " " << y_/h_ << " " <<
-            "color scale: " << match->colorScale[0] << "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError[0];
+            "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError[0];
     std::cout << " " << other.scale;
     if(x_==other.x_ && y_==other.y_ && other.isPatch()) std::cout << "\tfound myself!";
     std::cout << std::endl;

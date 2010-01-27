@@ -69,9 +69,11 @@ bool CalculationThread::singleStep(int x, int y) {
             }
 
             // highlight match
-            for(int i=0; i<4; i++)
-                cv::line(tmpImage, hull.verts[i], hull.verts[(i+1) % 4], cv::Scalar(0,0,255,100));
+            for(int j=0; j<4; j++)
+                cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,0,255,100));
 
+            if(i==0)
+                cv::line(tmpImage, hull.verts[0], hull.verts[1], cv::Scalar(255,0,100,100));
 
         }
 
