@@ -152,12 +152,12 @@ Match* Patch::match(Patch& other, float error) {
     float orientation = orientHist->minDiff(other.orientHist);
 
     // orientation still to different
-    if(orientHist->diff(other.orientHist,orientation/10) > 800) return 0;
+    if(orientHist->diff(other.orientHist,orientation/10) > 500) return 0;
 
     Match* match = new Match(&other);
 
     // apply initial rotation TODO: float :D
-    if ((int)orientation!=360) {
+    if ((int)orientation!=0) {
         cv::Point2f center( other.x_+(w_/2), other.y_+(h_/2) );
 
         cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);

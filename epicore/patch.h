@@ -34,7 +34,7 @@ public:
     cv::Scalar variance;
     OrientHist* orientHist;
 
-    Patch(cv::Mat& sourceImage, int x=0, int y=0, int w=16, int h=16);
+    Patch(cv::Mat& sourceImage, int x, int y, int w, int h);
 
     bool isPatch();
 

@@ -161,7 +161,7 @@ void SeedMap::match(Patch& patch) {
                 #pragma omp critical
                     patch.matches->push_back(match);
 
-                    if (seed->isPatch())
+                    if (seed->isPatch() && !(seed->matches))
                         seed->matches=patch.matches;
                 }
             }
