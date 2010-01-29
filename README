@@ -5,13 +5,13 @@ steeps
 
 TODO:
 - more and excluded debug vis. (interface)
-- move calc. to thread
 - asserts/exceptions
-- start steep two
 - speedup steep one (some opencv profiling needed)
 - steep three
 
 DONE:
+- start steep two
+- move calc. to thread
 - use opencv2 c++ binding instead of c binding
 - vis. all matches
 - serialize/save matches

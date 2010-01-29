@@ -30,4 +30,5 @@ HEADERS += epicore.h \
     matchconsumer.h \
     matrix.h \
     epitome.h
+
 QMAKE_CXXFLAGS += -fopenmp

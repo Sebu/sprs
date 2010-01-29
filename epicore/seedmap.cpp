@@ -147,7 +147,7 @@ void SeedMap::match(Patch& patch) {
     if (!patch.matches) {
         patch.matches = new std::vector<Match*>;
 
-#pragma omp parallel for
+        #pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
             if(!termCalculate) {
                 Match* match = 0;
@@ -158,7 +158,7 @@ void SeedMap::match(Patch& patch) {
                 if (match) {
                     match->patch = &patch;
 
-                #pragma omp critical
+                    #pragma omp critical
                     patch.matches->push_back(match);
 
                     if (seed->isPatch() && !(seed->matches))
@@ -171,7 +171,6 @@ void SeedMap::match(Patch& patch) {
             patch.matches->clear();
             delete (patch.matches);
             patch.matches = 0;
-
         }
     } else {
         std::cout << "shares " << patch.matches->size() <<  " matches @ " <<  patch.x_/16 << " " << patch.y_/16 << std::endl;

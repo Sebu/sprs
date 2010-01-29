@@ -5,6 +5,8 @@
 #include <iostream>
 #include <limits.h>
 
+class Patch;
+
 class OrientHist
 {
 public:
@@ -12,9 +14,11 @@ public:
     int _numBins;
     OrientHist(cv::Mat& image, int numBins);
 
+    void genOrientHists(Patch& patch);
+    void genSingle(cv::Mat& image, int offset);
+
     int minDiff(OrientHist* other);
     int diff(OrientHist* other, int offset=0);
-    float peak();
 
 
 

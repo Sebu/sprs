@@ -3,36 +3,28 @@
 #include "stdio.h"
 #include "cv_ext.h"
 
-float OrientHist::peak() {
-    int max = 0;
-    for(int i=0; i<_numBins; i++) {
-        if (_bins[i] > _bins[max]) max = i;
+#include "patch.h"
+
+void OrientHist::genOrientHists(Patch& patch) {
+
+    for(uint i=0; i<_numBins; i++) {
+//        genSingle(patch,i);
+
     }
-    return max/35.0f;
 }
 
-int OrientHist::minDiff(OrientHist* other) {
-    int angle=0;
 
-    int min = INT_MAX;
-    for(int j=0; j < this->_numBins; j++) {
-        int sum = this->diff(other, j);
-        if (sum<=min) { min=sum; angle=j*10; }
-    }
+void OrientHist::genSingle(cv::Mat& image, int offset) {
 
-    return angle;
-}
+//    cv::Point2f center( patch.x_+(patch.w_/2), patch.y_+(patch.h_/2) );
+//    cv::Mat rotMat = cv::getRotationMatrix2D(center, (offset*_numBins), 1.0f);
+//    cv::Mat rotated;
+//    cv::warpAffine(patch.sourceImage_, rotated, rotMat, patch.sourceImage_.size());
+//    cv::Mat result( patch.w_, patch.h_, patch.sourceImage_.type() );
+//    copyBlock(rotated, result, cvRect(patch.x_, patch.y_, patch.w_, patch.h_), cvRect(0, 0, patch.w_, patch.h_));
+//    cv::Mat gray;
+//    cv::cvtColor(result, gray, CV_BGR2GRAY);
 
-int OrientHist::diff(OrientHist* other, int offset) {
-    int sum=0;
-    for (int i=0; i < _numBins; i++){
-        sum += pow(this->_bins[i]-other->_bins[ (i+offset) % _numBins ], 2);
-    }
-    return sum;
-}
-
-OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins)
-{
 
     // preuso code
     //    for each pixel (x,y) in an image I
@@ -52,10 +44,8 @@ OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins
 
     cv::Mat contrast(image.size(), CV_32F);
     cv::Mat direction(image.size(), CV_32F);
-    _bins = new int[_numBins];
 
-    // init with 0
-    for(int i=0; i<numBins; i++) _bins[i]=0;
+
 
     long sumContrast = 0 ;
     long count = 0 ;
@@ -85,7 +75,37 @@ OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins
     for(int y=0; y<image.rows-1; y++)
         for (int x=0; x<image.cols-1; x++)
             if(contrast.at<float>(y,x) > threshold )
-                _bins[ (int)direction.at<float>(y,x) / (360/numBins)  ]++;
+                _bins[  ( (int)direction.at<float>(y,x) / (360/_numBins)  ) ]++;
+}
 
+
+int OrientHist::minDiff(OrientHist* other) {
+    int angle=0;
+
+    int min = INT_MAX;
+    for(int j=0; j < this->_numBins; j++) {
+        int sum = this->diff(other, j);
+        if (sum<=min) { min=sum; angle=j*(360/_numBins); }
+    }
+
+    return angle;
+}
+
+int OrientHist::diff(OrientHist* other, int offset) {
+    int sum=0;
+    for (int i=0; i < _numBins; i++){
+        sum += pow(this->_bins[i]-other->_bins[ (i+offset) % _numBins ], 2);
+    }
+    return sum;
+}
+
+OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins)
+{
+    _bins = new int[_numBins*_numBins];
+
+    // init with 0
+    for(int i=0; i<_numBins*_numBins; i++) _bins[i]=0;
+
+    genSingle(image,0);
 
 }

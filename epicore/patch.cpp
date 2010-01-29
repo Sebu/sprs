@@ -13,6 +13,8 @@ bool Patch::isPatch() {
     return ( !(x_ % w_) && !(y_ % h_) && !(scale>1.0) && !transformed);
 }
 
+
+
 void Patch::deserialize(std::ifstream& ifs) {
     ifs >> x_ >> y_;
     ifs.ignore(8192, '\n');
@@ -45,9 +47,8 @@ void Patch::serialize(std::ofstream& ofs) {
 
 cv::Scalar Patch::reconError(Match* t) {
 
-    float alpha = 1.0f; // 0 <= alpha <= 2
-    float beta  = .002f;
-    cv::Mat diff;
+    float alpha = .5f; // 0 <= alpha <= 2
+    float beta  = .00002f;
 
     // reconstruct
     cv::Mat reconstruction( t->reconstruct() );
@@ -70,15 +71,20 @@ cv::Scalar Patch::reconError(Match* t) {
     merge(planes,reconstruction);
 
     // sqaure distance
+    cv::Mat diff(reconstruction.size(), CV_32FC3);
     diff = cv::abs(this->patchImage - reconstruction);
     cv::pow(diff, 2, diff);
     cv::Scalar sum = cv::sum(diff);
 
+    float dist=0;
+    for(uint i=0; i<3; i++)
+        dist += (sum[i]/(255*255));
 
+    std::cout << dist << std::endl;
     // error equation
     cv::Scalar result;
     for (int i=0; i<3; i++)
-        result[i] = sum[i] / ( pow( variance[i] , alpha) + beta );
+        result[i] = dist / ( pow( variance[0] , alpha) + beta );
 
     return result;
 }
@@ -86,11 +92,13 @@ cv::Scalar Patch::reconError(Match* t) {
 void Patch::findFeatures() {
 
     // precalculate variance
-    cv::Mat mean( patchImage.size(), patchImage.type(), this->getHistMean() );
-    cv::Mat varianceMap = cv::abs( patchImage - mean );
+    cv::Mat mean( patchImage.size(), grayPatch.type(), this->getHistMean() );
+    cv::Mat varianceMap = cv::abs( grayPatch - mean );
     cv::pow(varianceMap, 2, varianceMap);
     variance = cv::sum(varianceMap);
+    variance[0] /= patchImage.cols*patchImage.rows;
 
+    std::cout << variance[0] << " " << variance[1] << " " << variance[2] <<  std::endl;
     // track initial features
     cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
     if(pointsSrc.size()<3)
@@ -152,7 +160,7 @@ Match* Patch::match(Patch& other, float error) {
     float orientation = orientHist->minDiff(other.orientHist);
 
     // orientation still to different
-    if(orientHist->diff(other.orientHist,orientation/10) > 500) return 0;
+    if(orientHist->diff(other.orientHist,orientation/10) > 300) return 0;
 
     Match* match = new Match(&other);
 
@@ -174,6 +182,8 @@ Match* Patch::match(Patch& other, float error) {
     cv::Scalar reconstructionError =  reconError(match);
 
     match->error = reconstructionError;
+
+    std::cout << match->error[0] << std::endl;
 
     // reconstruction error too high? skip
     if (reconstructionError[0] > error || reconstructionError[1] > error || reconstructionError[2] > error) {
@@ -205,7 +215,9 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int w, int h):
 
     patchImage = sourceImage_(cv::Rect(x_,y,w_,h_)).clone();
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);
-    orientHist = new OrientHist(grayPatch, 36);
+
+
+    orientHist = new OrientHist(grayPatch, 72);
     setHistMean( cv::mean(patchImage) );
 
 
