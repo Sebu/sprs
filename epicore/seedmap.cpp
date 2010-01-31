@@ -57,7 +57,7 @@ void SeedMap::generateEpitomes() {
             satisfied.push_back(m->patch);
             tmp.push_back(patch);
             foreach(Patch* over, m->overlapedPatches) {
-//                satisfied.push_back(over);
+                satisfied.push_back(over);
                 tmp.push_back(over);
             }
         }

@@ -4,12 +4,14 @@ steeps
 3. create epitome atlas
 
 TODO:
+- correct color scaling for shared matches
+- better orientation histograms
+- epitome grow process
 - more and excluded debug vis. (interface)
 - asserts/exceptions
-- speedup steep one (some opencv profiling needed)
-- steep three
 
 DONE:
+- speedup steep one (some opencv profiling needed)
 - start steep two
 - move calc. to thread
 - use opencv2 c++ binding instead of c binding

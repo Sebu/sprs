@@ -95,14 +95,13 @@ void Patch::findFeatures() {
     for (int y=0; y<grayPatch.rows; y++) {
         for(int x=0; x<grayPatch.cols; x++) {
             uchar p = grayPatch.at<uchar>(y,x);
-            float v = p/256.0f-mean[0]/256.0f;
+            float v = (p/256.0f)-(mean[0]/256.0f);
             variance += v*v;
 
         }
     }
     variance /= (patchImage.cols*patchImage.rows);
 
-    //    std::cout << variance[0] << " " << variance[1] << " " << variance[2] <<  std::endl;
     // track initial features
     cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
     if(pointsSrc.size()<3)
@@ -165,7 +164,7 @@ Match* Patch::match(Patch& other, float error) {
     float orientation = orientHist->minDiff(other.orientHist);
 
     // orientation still to different
-    if(orientHist->diff(other.orientHist,orientation/5) > 50.0) return 0;
+//    if(orientHist->diff(other.orientHist,orientation/5) > 50.0) return 0;
 
     Match* match = new Match(&other);
 

@@ -16,13 +16,7 @@ void OrientHist::genOrientHists(Patch& patch) {
 
 void OrientHist::genSingle(cv::Mat& image, int offset) {
 
-//    cv::Point2f center( patch.x_+(patch.w_/2), patch.y_+(patch.h_/2) );
-//    cv::Mat rotMat = cv::getRotationMatrix2D(center, (offset*_numBins), 1.0f);
-//    cv::Mat rotated;
-//    cv::warpAffine(patch.sourceImage_, rotated, rotMat, patch.sourceImage_.size());
-//    cv::Mat result( patch.w_, patch.h_, patch.sourceImage_.type() );
-//    copyBlock(rotated, result, cvRect(patch.x_, patch.y_, patch.w_, patch.h_), cvRect(0, 0, patch.w_, patch.h_));
-//    cv::Mat gray;
+
 //    cv::cvtColor(result, gray, CV_BGR2GRAY);
 
 
@@ -52,9 +46,9 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
-            float pixel = image.at<uchar>(y, x); // /256.0f;
-            float pixel_x = image.at<uchar>(y, x+1); // /256.0f;
-            float pixel_y = image.at<uchar>(y+1, x); // /256.0f;
+            float pixel = image.at<uchar>(y, x);// / 256.0f;
+            float pixel_x = image.at<uchar>(y, x+1);// / 256.0f;
+            float pixel_y = image.at<uchar>(y+1, x);//   / 256.0f;
 
             float dx = pixel - pixel_x;
             float dy = pixel - pixel_y;
@@ -103,7 +97,7 @@ OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins
 {
     _bins = new float[_numBins*_numBins];
 
-    // init with 0
+    // init with 0s
     for(int i=0; i<_numBins*_numBins; i++) _bins[i]=0.0f;
 
     genSingle(image,0);
