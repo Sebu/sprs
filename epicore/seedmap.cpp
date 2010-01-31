@@ -6,7 +6,7 @@
 #include "epitome.h"
 
 SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
-    : termCalculate(0), patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid), matchStep(0)
+    : termCalculate(0), patchW(w), patchH(h), xgrid(xgrid), ygrid(ygrid), matchStep(0), maxError(0.0f)
 {
 
     setImage(image,3);
@@ -82,7 +82,7 @@ void SeedMap::loadMatches(std::string fileName) {
         ifs >> fileName;
         ifs.ignore(8192, '\n');
 
-        ifs >> patchW >> xgrid >> maxError;
+        ifs >> patchW >> xgrid;
         ifs.ignore(8192, '\n');
         int size;
         ifs >> size;
@@ -153,7 +153,6 @@ void SeedMap::match(Patch& patch) {
                 Match* match = 0;
                 Patch* seed = seeds[i];
                 seed->transformed = false; // TODO: reset is better or move flag to match
-
                 match = patch.match(*seed, maxError);
                 if (match) {
                     match->patch = &patch;
@@ -280,7 +279,6 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
         scale *= 1.5f;
         scaleWidth  = sourceImage.cols / scale;
         scaleHeight = sourceImage.rows / scale;
-//        cv::resize(sourceImage, currentImage, cv::Size(scaleWidth, scaleHeight) );
         
     }
     

@@ -56,6 +56,7 @@ bool CalculationThread::singleStep(int x, int y) {
         }
 */
         for(uint i=0; i<patch->matches->size(); i++) {
+            if (i>1000) break;
             Match* match = patch->matches->at(i);
             Polygon hull = match->getMatchbox();
 

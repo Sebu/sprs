@@ -47,14 +47,14 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
 
 
 
-    long sumContrast = 0 ;
+    float sumContrast = 0 ;
     long count = 0 ;
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
-            uchar pixel = image.at<uchar>(y, x);
-            uchar pixel_x = image.at<uchar>(y, x+1);
-            uchar pixel_y = image.at<uchar>(y+1, x);
+            float pixel = image.at<uchar>(y, x); // /256.0f;
+            float pixel_x = image.at<uchar>(y, x+1); // /256.0f;
+            float pixel_y = image.at<uchar>(y+1, x); // /256.0f;
 
             float dx = pixel - pixel_x;
             float dy = pixel - pixel_y;
@@ -79,20 +79,20 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
 }
 
 
-int OrientHist::minDiff(OrientHist* other) {
-    int angle=0;
+float OrientHist::minDiff(OrientHist* other) {
+    float angle=0;
 
-    int min = INT_MAX;
+    float min = this->diff(other, 0);
     for(int j=0; j < this->_numBins; j++) {
-        int sum = this->diff(other, j);
+        float sum = this->diff(other, j);
         if (sum<=min) { min=sum; angle=j*(360/_numBins); }
     }
 
     return angle;
 }
 
-int OrientHist::diff(OrientHist* other, int offset) {
-    int sum=0;
+float OrientHist::diff(OrientHist* other, int offset) {
+    float sum=0;
     for (int i=0; i < _numBins; i++){
         sum += pow(this->_bins[i]-other->_bins[ (i+offset) % _numBins ], 2);
     }
@@ -101,10 +101,10 @@ int OrientHist::diff(OrientHist* other, int offset) {
 
 OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins)
 {
-    _bins = new int[_numBins*_numBins];
+    _bins = new float[_numBins*_numBins];
 
     // init with 0
-    for(int i=0; i<_numBins*_numBins; i++) _bins[i]=0;
+    for(int i=0; i<_numBins*_numBins; i++) _bins[i]=0.0f;
 
     genSingle(image,0);
 

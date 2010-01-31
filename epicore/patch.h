@@ -31,7 +31,7 @@ public:
     cv::Mat patchImage;
     cv::Mat sourceImage_;
     cv::Mat grayPatch;
-    cv::Scalar variance;
+    float variance;
     OrientHist* orientHist;
 
     Patch(cv::Mat& sourceImage, int x, int y, int w, int h);
@@ -40,9 +40,9 @@ public:
 
     bool overlaps();
     void findFeatures();
-    cv::Scalar reconError(Match*);
-    bool trackFeatures(Match* t);
-    Match* match(Patch&, float error);
+    float reconError(Match*);
+    bool trackFeatures(Match*);
+    Match* match(Patch&, float);
 
     cv::Scalar getHistMean() { return histMean; }
     void setHistMean(cv::Scalar _hist_mean) { this->histMean = _hist_mean; }

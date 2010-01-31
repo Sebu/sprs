@@ -20,22 +20,25 @@ public:
     cv::Mat warpMat;
     cv::Mat rotMat;
     cv::Mat scaleMat;
+    cv::Mat translateMat;
 
     cv::Scalar colorScale;
-    cv::Scalar error;
+    float error;
 
     int seedX, seedY;
     int seedW, seedH;
     float scale;
 
+    std::vector<Patch*> overlapedPatches;
 //    Polygon hull;
 
-    std::vector<Patch*> overlapedPatches;
 
 
     Match(Patch* seed=0);
-
     void setSeed(Patch* seed);
+
+
+    bool isPatch();
 
     cv::Mat rotate();
     cv::Mat warp();
@@ -43,8 +46,9 @@ public:
 
     Polygon getMatchbox();
 
-    void deserialize(std::ifstream&);
+
     void serialize(std::ofstream&);
+    void deserialize(std::ifstream&);
 };
 
 #endif // TRANSFORMMAP_H

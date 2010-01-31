@@ -10,15 +10,15 @@ class Patch;
 class OrientHist
 {
 public:
-    int* _bins;
+    float* _bins;
     int _numBins;
     OrientHist(cv::Mat& image, int numBins);
 
     void genOrientHists(Patch& patch);
     void genSingle(cv::Mat& image, int offset);
 
-    int minDiff(OrientHist* other);
-    int diff(OrientHist* other, int offset=0);
+    float minDiff(OrientHist* other);
+    float diff(OrientHist* other, int offset=0);
 
 
 
