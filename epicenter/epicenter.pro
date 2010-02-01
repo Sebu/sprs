@@ -23,3 +23,5 @@ QMAKE_CXXFLAGS += -pg \
     -fopenmp
 QMAKE_LFLAGS += -pg
 CONFIG += debug
+
+DEPENDPATH += ../epicore

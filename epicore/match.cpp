@@ -126,8 +126,6 @@ cv::Mat Match::reconstruct() {
 
     cv::Mat warped = warp();
 
-    // extract patch
-
     // color scale
     std::vector<cv::Mat> planes;
     split(warped, planes);

@@ -46,9 +46,9 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
-            float pixel = image.at<uchar>(y, x);// / 256.0f;
-            float pixel_x = image.at<uchar>(y, x+1);// / 256.0f;
-            float pixel_y = image.at<uchar>(y+1, x);//   / 256.0f;
+            float pixel = image.at<uchar>(y, x); // / 255.0f;
+            float pixel_x = image.at<uchar>(y, x+1); // / 255.0f;
+            float pixel_y = image.at<uchar>(y+1, x); // / 255.0f;
 
             float dx = pixel - pixel_x;
             float dy = pixel - pixel_y;

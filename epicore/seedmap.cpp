@@ -112,14 +112,8 @@ void SeedMap::saveMatches(std::string fileName) {
 
 void SeedMap::resetMatches() {
     matchStep=0;
-    for(uint i=0; i<patches.size(); i++) {
-        Patch* patch = patches[i];
-        if(patch->matches) {
-            patches[i]->matches->clear();
-            delete patch->matches;
-            patch->matches = 0;
-        }
-    }
+    for(uint i=0; i<patches.size(); i++)
+        patches[i]->resetMatches();
 }
 
 Patch* SeedMap::matchNext() {
@@ -160,19 +154,21 @@ void SeedMap::match(Patch& patch) {
                     #pragma omp critical
                     patch.matches->push_back(match);
 
-                    if (seed->isPatch() && !(seed->matches))
+                    if (seed->isPatch() && !(seed->matches)) {
                         seed->matches=patch.matches;
+                        seed->sharesMatches = true;
+                    }
                 }
             }
 
         }
-        if(termCalculate) {
-            patch.matches->clear();
-            delete (patch.matches);
-            patch.matches = 0;
-        }
+        if(termCalculate)
+            patch.resetMatches();
+
     } else {
         std::cout << "shares " << patch.matches->size() <<  " matches @ " <<  patch.x_/16 << " " << patch.y_/16 << std::endl;
+        //TODO: copy matches and recalculate colorScale!
+        patch.copyMatches();
     }
 
     

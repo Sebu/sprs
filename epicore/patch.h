@@ -26,6 +26,7 @@ public:
     std::vector<Match*> overlapedMatches;
     Polygon hull;
 
+    bool sharesMatches;
     std::vector<Match*>* matches;
 
     cv::Mat patchImage;
@@ -38,11 +39,14 @@ public:
 
     bool isPatch();
 
-    bool overlaps();
+
     void findFeatures();
     float reconError(Match*);
     bool trackFeatures(Match*);
     Match* match(Patch&, float);
+
+    void resetMatches();
+    void copyMatches();
 
     cv::Scalar getHistMean() { return histMean; }
     void setHistMean(cv::Scalar _hist_mean) { this->histMean = _hist_mean; }

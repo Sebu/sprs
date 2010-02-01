@@ -5,8 +5,34 @@
 #include "cv_ext.h"
 
 
-bool Patch::overlaps() {
-    return true;
+void Patch::resetMatches() {
+    if(!matches) return;
+    matches->clear();
+    delete matches;
+    matches = 0;
+}
+
+void Patch::copyMatches() {
+    if(!sharesMatches) return;
+    std::cout << "correcting colors" << std::endl;
+
+    std::vector<Match*>* newVector = new std::vector<Match*>;
+    std::vector<Match*>* oldVector = matches;
+    for(uint i=0; i<matches->size(); i++) {
+        Match* oldMatch = matches->at(i);
+        Match* newMatch = new Match(*oldMatch);
+
+        // recalculate colorScale
+        newMatch->colorScale=(cv::Scalar::all(1.0f));
+        cv::Mat reconstruction( newMatch->reconstruct() );
+        cv::Scalar reconstructionMean = cv::mean(reconstruction);
+        for(uint i=0; i<4; i++)
+            newMatch->colorScale[i] = this->getHistMean()[i] / reconstructionMean[i];
+
+        newVector->push_back(newMatch);
+    }
+
+    matches = newVector;
 }
 
 bool Patch::isPatch() {
@@ -45,29 +71,23 @@ void Patch::serialize(std::ofstream& ofs) {
     }
 }
 
-float Patch::reconError(Match* t) {
+float Patch::reconError(Match* m) {
 
-    float alpha = 1.0f; // 0 <= alpha <= 2
+    float alpha = 1.5f; // 0 <= alpha <= 2
     float beta  = 0.0001f;
 
     // reconstruct
-    cv::Mat reconstruction( t->reconstruct() );
+    cv::Mat reconstruction( m->reconstruct() );
 
     // 4.1 translation, color scale
     // drop when over bright
-    cv::Scalar reconstructionMean = cv::sum(reconstruction);
+    cv::Scalar reconstructionMean = cv::mean(reconstruction);
     for(uint i=0; i<4; i++)
-        t->colorScale[i] = this->getHistMean()[i] / reconstructionMean[i];
+        m->colorScale[i] = this->getHistMean()[i] / reconstructionMean[i];
 
-    if(t->colorScale[0]>1.25 || t->colorScale[1]>1.25 || t->colorScale[2]>1.25) return 100000.0f;
+    if(m->colorScale[0]>1.25f || m->colorScale[1]>1.25f || m->colorScale[2]>1.25f) return 100000.0f;
 
-    // correct color scale
-    std::vector<cv::Mat> planes;
-    split(reconstruction, planes);
-    for(uint i=0; i<planes.size(); i++) {
-        planes[i] *= t->colorScale.val[i];
-    }
-    merge(planes,reconstruction);
+    reconstruction = cv::Mat( m->reconstruct() );
 
     // sqaure distance
     cv::Mat diff = cv::abs(this->patchImage - reconstruction);
@@ -76,9 +96,9 @@ float Patch::reconError(Match* t) {
     for (int y=0; y<diff.rows; y++) {
         for(int x=0; x<diff.cols; x++) {
             cv::Vec3b v = diff.at<cv::Vec3b>(y,x);
-            float r = v[0]/256.0f;
-            float g = v[1]/256.0f;
-            float b = v[2]/256.0f;
+            float r = v[0]/255.0f;
+            float g = v[1]/255.0f;
+            float b = v[2]/255.0f;
 
             dist += (r*r)+(g*g)+(b*b);
         }
@@ -90,17 +110,18 @@ float Patch::reconError(Match* t) {
 void Patch::findFeatures() {
 
     // precalculate variance
-    float variance=0;
     cv::Scalar mean = cv::mean(grayPatch);
     for (int y=0; y<grayPatch.rows; y++) {
         for(int x=0; x<grayPatch.cols; x++) {
             uchar p = grayPatch.at<uchar>(y,x);
-            float v = (p/256.0f)-(mean[0]/256.0f);
+            float v = (p-mean[0])/255.0f;
             variance += v*v;
 
         }
     }
-    variance /= (patchImage.cols*patchImage.rows);
+//    variance /= (grayPatch.cols*grayPatch.rows);
+
+    std::cout << "variance" << variance << std::endl;
 
     // track initial features
     cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
@@ -172,7 +193,7 @@ Match* Patch::match(Patch& other, float error) {
     if ((int)orientation!=0) {
         cv::Point2f center( (w_/2), (h_/2) );
 
-        cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
+        cv::Mat rotMat = cv::getRotationMatrix2D(center, -orientation, 1.0f);
         cv::Mat selection( match->rotMat, cv::Rect(0,0,3,2) );
         rotMat.copyTo(selection);
 
@@ -185,6 +206,8 @@ Match* Patch::match(Patch& other, float error) {
     // 4 reconstruction error
     float reconstructionError =  reconError(match) / (w_*h_);
 
+//    std::cout << reconstructionError << std::endl;
+
     // reconstruction error too high? skip
     if (reconstructionError > error) {
         delete match;
@@ -192,6 +215,7 @@ Match* Patch::match(Patch& other, float error) {
     }
 
     match->error = reconstructionError;
+
 
     // debug out
 #ifdef DEBUG
@@ -206,8 +230,8 @@ Match* Patch::match(Patch& other, float error) {
 }
 
 Patch::Patch(cv::Mat& sourceImage, int x, int  y, int w, int h):
-        histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), matches(0), sourceImage_(sourceImage),
-        transformed(false)
+        histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), sharesMatches(0), matches(0),
+        sourceImage_(sourceImage), transformed(0), variance(0)
 {
 
     hull = Polygon::square(x,y,w,h);
@@ -217,7 +241,7 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int w, int h):
 
 
     orientHist = new OrientHist(grayPatch, 72);
-    setHistMean( cv::sum(patchImage) );
+    setHistMean( cv::mean(patchImage) );
 
 
 }
