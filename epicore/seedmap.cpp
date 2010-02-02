@@ -252,14 +252,22 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
         width =  ((scaleWidth-w) / xgrid); //+ 1;
         height = ((scaleHeight-h) / ygrid); // + 1;
 
-        
+        Patch* seed=0;
         // generate new patches
         for(int y=0; y<height; y++){
             for(int x=0; x<width; x++){
-                Patch* seed = new Patch( currentImage, sourceGray, x*xgrid, y*ygrid, w, h,  scale);
+                seed = new Patch( currentImage, sourceGray, x*xgrid, y*ygrid, w, h,  scale, 0);
                 this->seeds.push_back(seed);
                 if (seed->isPatch())
                     this->patches.push_back(seed);
+
+                // fliped patches
+                /*
+                seed = new Patch( currentImage, sourceGray, x*xgrid, y*ygrid, w, h,  scale, 1);
+                this->seeds.push_back(seed);
+                seed = new Patch( currentImage, sourceGray, x*xgrid, y*ygrid, w, h,  scale, -1);
+                this->seeds.push_back(seed);
+                */
 
             }
         }

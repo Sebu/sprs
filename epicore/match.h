@@ -20,13 +20,14 @@ public:
     cv::Mat warpMat;
     cv::Mat rotMat;
     cv::Mat scaleMat;
+    cv::Mat flipMat;
     cv::Mat translateMat;
 
     cv::Scalar colorScale;
     float error;
 
     int seedX, seedY;
-    int seedW, seedH;
+    int w_, h_;
     float scale;
 
     std::vector<Patch*> overlapedPatches;

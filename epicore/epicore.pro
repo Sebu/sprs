@@ -16,6 +16,7 @@ SOURCES += epicore.cpp \
     seedmap.cpp \
     cv_ext.cpp \
     orientationhistogram.cpp \
+    orientationhistogramfast.cpp \
     match.cpp \
     matchconsumer.cpp \
     matrix.cpp \
@@ -25,6 +26,7 @@ HEADERS += epicore.h \
     seedmap.h \
     cv_ext.h \
     orientationhistogram.h \
+    orientationhistogramfast.h \
     match.h \
     epicore_global.h \
     matchconsumer.h \

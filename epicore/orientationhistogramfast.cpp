@@ -1,45 +1,15 @@
-#include "orientationhistogram.h"
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+
 #include "stdio.h"
 #include "cv_ext.h"
 
+#include "orientationhistogramfast.h"
 #include "patch.h"
 
-void OrientHist::genOrientHists() {
-
-    cv::Mat scaleMat = cv::Mat::eye(3,3,CV_64FC1);
-    scaleMat.at<double>(0,0)/=patch_->scale;
-    scaleMat.at<double>(1,1)/=patch_->scale;
-
-    cv::Mat translateMat = cv::Mat::eye(3,3,CV_64FC1);
-    translateMat.at<double>(0,2)=-patch_->x_;
-    translateMat.at<double>(1,2)=-patch_->y_;
 
 
-    cv::Mat rotMat = cv::Mat::eye(3,3,CV_64FC1);
-
-    for(uint i=0; i<numBins_; i++) {
-        cv::Point2f center( (patch_->w_/2), (patch_->h_/2) );
-
-        float orientation = i*factor_;
-
-        cv::Mat rot = cv::getRotationMatrix2D(center, -orientation, 1.0f);
-        cv::Mat selection( rotMat, cv::Rect(0,0,3,2) );
-        rot.copyTo(selection);
-
-        cv::Mat transform = rotMat * patch_->flipMat * translateMat *  scaleMat;
-        cv::Mat rotPatch;
-        cv::Mat selectionT(transform, cv::Rect(0,0,3,2));
-        cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->w_, patch_->h_));
-//        cv::imshow("test", rotPatch);
-        genSingle(rotPatch, i);
-
-    }
-}
-
-
-void OrientHist::genSingle(cv::Mat& image, int offset) {
+void OrientHistFast::genSingle(cv::Mat& image) {
 
 
     // preuso code
@@ -92,14 +62,14 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
         for (int x=0; x<image.cols-1; x++) {
             if(contrast.at<float>(y,x) > threshold ) {
                 int dir = (int) (direction.at<float>(y,x) / factor_);
-                bins_[  offset*numBins_ + dir  ]++;
+                bins_[  dir  ]++;
             }
         }
     }
 }
 
 
-float OrientHist::minDiff(OrientHist* other) {
+float OrientHistFast::minDiff(OrientHistFast* other) {
     float angle=0;
 
     float min = 100000000000.0f;
@@ -111,24 +81,23 @@ float OrientHist::minDiff(OrientHist* other) {
     return angle;
 }
 
-float OrientHist::diff(OrientHist* other, int offset) {
+float OrientHistFast::diff(OrientHistFast* other, int offset) {
     float sum=0;
     for (int i=0; i < numBins_; i++){
-        sum += pow(this->bins_[i]-other->bins_[ offset*numBins_ + i], 2);
+        sum += pow(this->bins_[i]-other->bins_[ (i+offset) % numBins_ ], 2);
     }
     return sum;
 }
 
-OrientHist::OrientHist(Patch* patch, int numBins) : bins_(0), numBins_(numBins)
+OrientHistFast::OrientHistFast(Patch* patch, int numBins) : bins_(0), numBins_(numBins)
 {
     patch_ = patch;
-    bins_ = new float[numBins_*numBins_];
+    bins_ = new float[numBins_];
 
     factor_ = 360/numBins_;
     // init with 0s
-    for(int i=0; i<numBins_*numBins_; i++) bins_[i]=0.0f;
+    for(int i=0; i<numBins_; i++) bins_[i]=0.0f;
 
-//    genSingle(image,0);
-    genOrientHists();
+    genSingle(patch->grayPatch);
 
 }

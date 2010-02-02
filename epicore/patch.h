@@ -4,6 +4,7 @@
 #include <opencv/cv.h>
 
 #include "orientationhistogram.h"
+#include "orientationhistogramfast.h"
 #include "match.h"
 
 class Match;
@@ -35,9 +36,10 @@ public:
     cv::Mat patchImage;
     cv::Mat grayPatch;
     float variance;
-    OrientHist* orientHist;
+    OrientHistFast* orientHist;
+    cv::Mat flipMat;
 
-    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float);
+    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float, int);
 
     bool isPatch();
 
