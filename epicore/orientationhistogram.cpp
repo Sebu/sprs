@@ -1,23 +1,50 @@
 #include "orientationhistogram.h"
 #include <opencv/cv.h>
+#include <opencv/highgui.h>
 #include "stdio.h"
 #include "cv_ext.h"
 
 #include "patch.h"
 
-void OrientHist::genOrientHists(Patch& patch) {
+void OrientHist::genOrientHists() {
 
-    for(uint i=0; i<_numBins; i++) {
-//        genSingle(patch,i);
+    cv::Mat scaleMat = cv::Mat::eye(3,3,CV_64FC1);
+    scaleMat.at<double>(0,0)/=patch_->scale;
+    scaleMat.at<double>(1,1)/=patch_->scale;
+
+    cv::Mat translateMat = cv::Mat::eye(3,3,CV_64FC1);
+    translateMat.at<double>(0,2)=-patch_->x_;
+    translateMat.at<double>(1,2)=-patch_->y_;
+
+
+    cv::Mat rotMat = cv::Mat::eye(3,3,CV_64FC1);
+
+    for(uint i=0; i<numBins_; i++) {
+        cv::Point2f center( (patch_->w_/2), (patch_->h_/2) );
+
+        float orientation = i*factor_;
+
+        cv::Mat rot = cv::getRotationMatrix2D(center, orientation, 1.0f);
+        cv::Mat selection( rotMat, cv::Rect(0,0,3,2) );
+        rot.copyTo(selection);
+
+        cv::Mat transform = rotMat * translateMat *  scaleMat;
+        cv::Mat rotPatch;
+        cv::Mat selectionT(transform, cv::Rect(0,0,3,2));
+//        for (int i1=0; i1<selectionT.rows; i1++)
+//            for (int j1=0; j1<selectionT.cols; j1++)
+//                std::cout << selection.at<float>(i1,j1) << " ";
+
+//        std::cout << std::endl;
+        cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->w_, patch_->h_));
+//        cv::imshow("test", rotPatch);
+        genSingle(rotPatch, i);
 
     }
 }
 
 
 void OrientHist::genSingle(cv::Mat& image, int offset) {
-
-
-//    cv::cvtColor(result, gray, CV_BGR2GRAY);
 
 
     // preuso code
@@ -47,14 +74,14 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
             float pixel = image.at<uchar>(y, x); // / 255.0f;
-            float pixel_x = image.at<uchar>(y, x+1); // / 255.0f;
-            float pixel_y = image.at<uchar>(y+1, x); // / 255.0f;
+            float pixel_x = image.at<uchar>(y, x+1);// / 255.0f;
+            float pixel_y = image.at<uchar>(y+1, x);// / 255.0f;
 
             float dx = pixel - pixel_x;
             float dy = pixel - pixel_y;
 
 
-            direction.at<float>(y,x) = cv::fastAtan2(dx,dy);
+            direction.at<float>(y,x) = cv::fastAtan2(dx ,dy);
 
             float ctmp = sqrt(dx*dx + dy*dy);
             contrast.at<float>(y,x) = ctmp;
@@ -66,20 +93,24 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
 
     float threshold = (sumContrast / count) * 2.0f;
 
-    for(int y=0; y<image.rows-1; y++)
-        for (int x=0; x<image.cols-1; x++)
-            if(contrast.at<float>(y,x) > threshold )
-                _bins[  ( (int)direction.at<float>(y,x) / (360/_numBins)  ) ]++;
+    for(int y=0; y<image.rows-1; y++) {
+        for (int x=0; x<image.cols-1; x++) {
+            if(contrast.at<float>(y,x) > threshold ) {
+                int dir = (int) (direction.at<float>(y,x) / factor_);
+                bins_[  offset*numBins_ + dir  ]++;
+            }
+        }
+    }
 }
 
 
 float OrientHist::minDiff(OrientHist* other) {
     float angle=0;
 
-    float min = this->diff(other, 0);
-    for(int j=0; j < this->_numBins; j++) {
+    float min = 100000000000.0f;
+    for(int j=0; j < this->numBins_; j++) {
         float sum = this->diff(other, j);
-        if (sum<=min) { min=sum; angle=j*(360/_numBins); }
+        if (sum<=min) { min=sum; angle=j*factor_;}
     }
 
     return angle;
@@ -87,19 +118,22 @@ float OrientHist::minDiff(OrientHist* other) {
 
 float OrientHist::diff(OrientHist* other, int offset) {
     float sum=0;
-    for (int i=0; i < _numBins; i++){
-        sum += pow(this->_bins[i]-other->_bins[ (i+offset) % _numBins ], 2);
+    for (int i=0; i < numBins_; i++){
+        sum += pow(this->bins_[i]-other->bins_[ offset*numBins_ + i], 2);
     }
     return sum;
 }
 
-OrientHist::OrientHist(cv::Mat& image, int numBins) : _bins(0), _numBins(numBins)
+OrientHist::OrientHist(Patch* patch, int numBins) : bins_(0), numBins_(numBins)
 {
-    _bins = new float[_numBins*_numBins];
+    patch_ = patch;
+    bins_ = new float[numBins_*numBins_];
 
+    factor_ = 360/numBins_;
     // init with 0s
-    for(int i=0; i<_numBins*_numBins; i++) _bins[i]=0.0f;
+    for(int i=0; i<numBins_*numBins_; i++) bins_[i]=0.0f;
 
-    genSingle(image,0);
+//    genSingle(image,0);
+    genOrientHists();
 
 }

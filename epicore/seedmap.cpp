@@ -234,6 +234,9 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
     cv::Mat region(sourceImage, cv::Rect(cv::Point(0,0),image.size()));
     sourceImage = image; //image.copyTo(region);
 
+    // create gray version
+    cv::cvtColor(sourceImage, sourceGray, CV_BGR2GRAY);
+
     cv::Mat currentImage = sourceImage;
     
     
@@ -244,9 +247,6 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
     float scaleHeight = sourceImage.rows;
     
 
-    cv::Mat flipped = currentImage.clone();
-    cv::flip(currentImage, flipped, 0);
-
     for (int i=0; i< depth; i++) {
         
         width =  ((scaleWidth-w) / xgrid); //+ 1;
@@ -256,17 +256,10 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
         // generate new patches
         for(int y=0; y<height; y++){
             for(int x=0; x<width; x++){
-
-
-                Patch* seed = new Patch( currentImage, x*xgrid, y*ygrid, w, h );
-                seed->scale = scale;
+                Patch* seed = new Patch( currentImage, sourceGray, x*xgrid, y*ygrid, w, h,  scale);
                 this->seeds.push_back(seed);
                 if (seed->isPatch())
                     this->patches.push_back(seed);
-                
-//                seed = new Patch( flipped, x*xgrid, y*ygrid, w, h );
-//                seed->scale = scale;
-//                this->seeds.push_back(seed);
 
             }
         }

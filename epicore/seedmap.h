@@ -33,6 +33,7 @@ public:
 
 
     cv::Mat sourceImage;
+    cv::Mat sourceGray;
 
     SeedMap( cv::Mat& image, int w, int h, int xgrid, int ygrid );
     void setImage(cv::Mat&, int depth=1);

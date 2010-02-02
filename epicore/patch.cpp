@@ -17,7 +17,7 @@ void Patch::copyMatches() {
     std::cout << "correcting colors" << std::endl;
 
     std::vector<Match*>* newVector = new std::vector<Match*>;
-    std::vector<Match*>* oldVector = matches;
+
     for(uint i=0; i<matches->size(); i++) {
         Match* oldMatch = matches->at(i);
         Match* newMatch = new Match(*oldMatch);
@@ -73,7 +73,7 @@ void Patch::serialize(std::ofstream& ofs) {
 
 float Patch::reconError(Match* m) {
 
-    float alpha = 1.5f; // 0 <= alpha <= 2
+    float alpha = 1.0f; // 0 <= alpha <= 2
     float beta  = 0.0001f;
 
     // reconstruct
@@ -88,6 +88,7 @@ float Patch::reconError(Match* m) {
     if(m->colorScale[0]>1.25f || m->colorScale[1]>1.25f || m->colorScale[2]>1.25f) return 100000.0f;
 
     reconstruction = cv::Mat( m->reconstruct() );
+
 
     // sqaure distance
     cv::Mat diff = cv::abs(this->patchImage - reconstruction);
@@ -114,7 +115,7 @@ void Patch::findFeatures() {
     for (int y=0; y<grayPatch.rows; y++) {
         for(int x=0; x<grayPatch.cols; x++) {
             uchar p = grayPatch.at<uchar>(y,x);
-            float v = (p-mean[0])/255.0f;
+            float v = (p-mean[0]) / 255.0f;
             variance += v*v;
 
         }
@@ -193,7 +194,7 @@ Match* Patch::match(Patch& other, float error) {
     if ((int)orientation!=0) {
         cv::Point2f center( (w_/2), (h_/2) );
 
-        cv::Mat rotMat = cv::getRotationMatrix2D(center, -orientation, 1.0f);
+        cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
         cv::Mat selection( match->rotMat, cv::Rect(0,0,3,2) );
         rotMat.copyTo(selection);
 
@@ -229,9 +230,9 @@ Match* Patch::match(Patch& other, float error) {
     return match;
 }
 
-Patch::Patch(cv::Mat& sourceImage, int x, int  y, int w, int h):
-        histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), sharesMatches(0), matches(0),
-        sourceImage_(sourceImage), transformed(0), variance(0)
+Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float scale):
+        histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), scale(scale), sharesMatches(0), matches(0),
+        sourceImage_(sourceImage), sourceGray_(sourceGray), transformed(0), variance(0)
 {
 
     hull = Polygon::square(x,y,w,h);
@@ -240,7 +241,7 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int w, int h):
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);
 
 
-    orientHist = new OrientHist(grayPatch, 72);
+    orientHist = new OrientHist(this, 36);
     setHistMean( cv::mean(patchImage) );
 
 

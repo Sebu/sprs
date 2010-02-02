@@ -29,13 +29,15 @@ public:
     bool sharesMatches;
     std::vector<Match*>* matches;
 
-    cv::Mat patchImage;
     cv::Mat sourceImage_;
+    cv::Mat sourceGray_;
+
+    cv::Mat patchImage;
     cv::Mat grayPatch;
     float variance;
     OrientHist* orientHist;
 
-    Patch(cv::Mat& sourceImage, int x, int y, int w, int h);
+    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float);
 
     bool isPatch();
 
