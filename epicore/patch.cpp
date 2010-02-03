@@ -5,6 +5,16 @@
 #include "cv_ext.h"
 
 
+bool Patch::overlaps(Vector2f& v) {
+    if(v.m_v[0]> x_+w_ || v.m_v[0] < x_ || v.m_v[1] > y_+h_ || v.m_v[1] < y_ ) return false;
+    return true;
+}
+
+bool Patch::overlaps(Match* m) {
+    Polygon p= m->getMatchbox();
+    return hull.intersect(p);
+}
+
 void Patch::resetMatches() {
     if(!matches) return;
     matches->clear();
@@ -43,10 +53,8 @@ bool Patch::isPatch() {
 
 void Patch::deserialize(std::ifstream& ifs) {
     ifs >> x_ >> y_;
-    ifs.ignore(8192, '\n');
     uint size;
     ifs >> size;
-    ifs.ignore(8192, '\n');
     if (size==-1) return;
     matches = new std::vector<Match*>;
     for(uint j=0; j<size; j++) {
@@ -62,20 +70,22 @@ void Patch::deserialize(std::ifstream& ifs) {
 }
 
 void Patch::serialize(std::ofstream& ofs) {
-    ofs << x_ << " " << y_ << std::endl;
+    ofs << x_ << " " << y_ << " ";
+
+
     if (matches) {
-        ofs << matches->size() << std::endl;
+        ofs << matches->size() << " ";
         for(uint j=0; j<matches->size(); j++) {
             matches->at(j)->serialize(ofs);
         }
     } else {
-        ofs << -1 << std::endl;
+        ofs << -1 << " ";
     }
 }
 
 float Patch::reconError(Match* m) {
 
-    float alpha = .4f; // 0 <= alpha <= 2
+    float alpha = 1.0f; // 0 <= alpha <= 2
     float beta  = 0.0000000001f;
 
     // reconstruct
@@ -122,7 +132,7 @@ void Patch::findFeatures() {
 
         }
     }
-    variance /= (grayPatch.cols*grayPatch.rows);
+//    variance /= (grayPatch.cols*grayPatch.rows);
 
     std::cout << "variance" << variance << std::endl;
 
@@ -207,6 +217,8 @@ Match* Patch::match(Patch& other, float error) {
     // 4.1 KLT matching
     if (!trackFeatures(match)) { delete match; return 0; }
 
+    match->calcTransform();
+
     // 4 reconstruction error
     float reconstructionError =  reconError(match) / (w_*h_);
 
@@ -235,7 +247,7 @@ Match* Patch::match(Patch& other, float error) {
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float scale, int flip):
         histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), scale(scale), sharesMatches(0), matches(0),
-        sourceImage_(sourceImage), sourceGray_(sourceGray), transformed(0), variance(0)
+        sourceImage_(sourceImage), sourceGray_(sourceGray), transformed(0), satisfied(0), variance(0)
 {
 
     hull = Polygon::square(x,y,w,h);

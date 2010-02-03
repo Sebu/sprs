@@ -22,6 +22,7 @@ public:
     cv::Mat scaleMat;
     cv::Mat flipMat;
     cv::Mat translateMat;
+    cv::Mat transform;
 
     cv::Scalar colorScale;
     float error;
@@ -30,7 +31,7 @@ public:
     int w_, h_;
     float scale;
 
-    std::vector<Patch*> overlapedPatches;
+    std::vector<Patch*> overlapedSeeds;
 //    Polygon hull;
 
 
@@ -38,6 +39,8 @@ public:
     Match(Patch* seed=0);
     void setSeed(Patch* seed);
 
+
+    void calcTransform();
 
     bool isPatch();
 

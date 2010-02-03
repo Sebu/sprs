@@ -9,6 +9,10 @@ class Epitome
 public:
     std::vector<Patch*> reconPatches;
     Epitome();
+
+    void grow();
+
+    void save();
 };
 
 #endif // EPITOME_H

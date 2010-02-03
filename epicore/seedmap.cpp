@@ -12,34 +12,35 @@ SeedMap::SeedMap(cv::Mat& image, int w, int h, int xgrid, int ygrid )
     setImage(image,3);
 }
 
-bool myfunction (Patch* i, Patch* j) { return (i->overlapedMatches.size() > j->overlapedMatches.size() ); }
+bool patchSorter (Patch* i, Patch* j) { return (i->overlapingBlocks.size() > j->overlapingBlocks.size() ); }
 
 void SeedMap::generateEpitomes() {
 
     std::list<Patch*> sortedPatches;
-    std::vector<Patch*> satisfied;
 
 
     // crappy setup
-    for(uint i=0; i<patches.size(); i++) {
-        Patch* patch=patches[i];
+    foreach(Patch* patch, patches) {
         sortedPatches.push_back(patch);
-        for(uint j=0; j<patch->matches->size(); j++) {
-            Match* m = patch->matches->at(j);
-            Polygon poly = m->getMatchbox();
-            for(uint k=0; k<patches.size(); k++) {
-                Patch* p = patches[k];
-                if ( poly.intersect(p->hull) ) {
-                    m->overlapedPatches.push_back(p);
-                    p->overlapedMatches.push_back(m);
+        bool blockFound = false;
+        foreach(Match* m, *(patch->matches)) {
+            Polygon matchHull = m->getMatchbox();
+            foreach(Patch* p, patches) {
+                if ( matchHull.intersect(p->hull) ) {
+                    m->overlapedSeeds.push_back(p);
+                    p->overlapingMatches.push_back(m);
+                    if(!blockFound)
+                        p->overlapingBlocks.push_back(patch);
+                    blockFound=true;
                 }
-
             }
         }
     }
+    std::cout <<  "pre calc done"  << std::endl;
+
 
     // sort patches by overlap count
-    sortedPatches.sort(myfunction);
+    sortedPatches.sort(patchSorter);
 
     // create epitomes
     while(sortedPatches.size()!=0) {
@@ -47,27 +48,53 @@ void SeedMap::generateEpitomes() {
         std::list<Patch*> tmp;
         Patch* patch = sortedPatches.front();
         sortedPatches.pop_front();
+        tmp.push_back(patch);
+
 
         Epitome* epi = new Epitome();
 
-        for(uint i=0; i < patch->overlapedMatches.size(); i++) {
-            Match* m = patch->overlapedMatches.at(i);
-            std::vector<Patch*>::iterator it=std::find(satisfied.begin(),satisfied.end(),m->patch);
-            if (satisfied.size()!=0 && (it!=satisfied.end() || (*it)==m->patch)) continue;
-            satisfied.push_back(m->patch);
-            tmp.push_back(patch);
-            foreach(Patch* over, m->overlapedPatches) {
-                satisfied.push_back(over);
-                tmp.push_back(over);
+        // TODO: grow epitome :?
+        // do {
+        std::vector<Patch*> gotSatisfied;
+
+        foreach(Match* m, patch->overlapingMatches) {
+
+            // block of match allready satisfied?
+            if(m->patch->satisfied) continue;
+            m->patch->satisfied=true;
+            gotSatisfied.push_back(m->patch);
+
+            // FIXME: grow only block segments
+            foreach(Patch* cover, m->overlapedSeeds) {
+                if(!cover->satisfied) {
+                    cover->satisfied = true;
+                    gotSatisfied.push_back(cover);
+                }
+                tmp.push_back(cover);
             }
         }
 
-        while(tmp.size()!=0){
+        // detlaE ??
+        while(tmp.size()!=0) {
             Patch* p = tmp.front();
             epi->reconPatches.push_back(p);
             tmp.remove(p);
         }
-        epitomes.push_back(epi);
+        int deltaE = (int)epi->reconPatches.size() * patchW * patchH;
+
+        int deltaI = (int)gotSatisfied.size() * patchW * patchH;
+
+        int benefit = deltaI  - deltaE;
+        std::cout << benefit << std::endl;
+
+        // } while(benefit(deltaE)>0)
+        if(benefit>=0)
+            epitomes.push_back(epi);
+        else {
+            foreach(Patch* p, gotSatisfied)
+                p->satisfied = false;
+
+        }
     }
 
 }
@@ -76,18 +103,10 @@ void SeedMap::loadMatches(std::string fileName) {
     std::ifstream ifs( (fileName + ".txt").c_str() );
 
     if (ifs) {
-        std::string version;
-        ifs >> version;
-        ifs.ignore(8192, '\n');
-        ifs >> fileName;
-        ifs.ignore(8192, '\n');
-
-        ifs >> patchW >> xgrid;
-        ifs.ignore(8192, '\n');
+        float tmp;
+        ifs >> patchW >> xgrid >> tmp;
         int size;
         ifs >> size;
-        ifs.ignore(8192, '\n');
-
         for(int i=0; i<size; i++)
             patches[i]->deserialize(ifs);
     }
@@ -100,10 +119,8 @@ void SeedMap::loadMatches(std::string fileName) {
 void SeedMap::saveMatches(std::string fileName) {
     std::ofstream ofs( (fileName + ".txt").c_str() );
 
-    ofs << "version 1.0" << std::endl;
-    ofs << fileName << std::endl;
-    ofs << patchW << " " << xgrid << " " << maxError << std::endl;
-    ofs << patches.size() << std::endl;
+    ofs << patchW << " " << xgrid << " " << maxError << " ";
+    ofs << patches.size() << " ";
     for(uint i=0; i<patches.size(); i++)
         patches[i]->serialize(ofs);
 
@@ -186,8 +203,8 @@ cv::Mat SeedMap::debugEpitomeMap() {
     int step = 255/epitomes.size();
     foreach(Epitome* epi, epitomes) {
         foreach(Patch* patch, epi->reconPatches) {
+            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar(color,255-color,color,255), 2);
             copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
-//            cv::rectangle(image, patch->hull.verts[0], patch->hull.verts[2],cv::Scalar(color,255-color,color,255), CV_FILLED);
         }
         color += step;
     }
@@ -262,13 +279,12 @@ void SeedMap::setImage(cv::Mat& image, int depth) {
                     this->patches.push_back(seed);
 
                 // fliped patches
-                /*
+                //*
                 seed = new Patch( currentImage, sourceGray, x*xgrid, y*ygrid, w, h,  scale, 1);
                 this->seeds.push_back(seed);
                 seed = new Patch( currentImage, sourceGray, x*xgrid, y*ygrid, w, h,  scale, -1);
                 this->seeds.push_back(seed);
-                */
-
+                //*/
             }
         }
         

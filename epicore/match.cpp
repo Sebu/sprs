@@ -12,7 +12,7 @@ Match::Match(Patch* seed)
     scaleMat = cv::Mat::eye(3,3,CV_64FC1);
     flipMat = cv::Mat::eye(3,3,CV_64FC1);
     translateMat = cv::Mat::eye(3,3,CV_64FC1);
-
+    transform = cv::Mat::eye(3,3,CV_64FC1);
     setSeed(seed);
 
 }
@@ -42,7 +42,6 @@ Polygon Match::getMatchbox() {
     };
     Polygon box;
 
-    cv::Mat transform = warpMat * rotMat * flipMat * translateMat * scaleMat;
     cv::Mat selection(transform, cv::Rect(0,0,3,2));
     cv::Mat inverted;
     invertAffineTransform(selection, inverted);
@@ -63,54 +62,41 @@ Polygon Match::getMatchbox() {
 
 void Match::deserialize(std::ifstream& ifs) {
 
-    ifs >> seedX >> seedY >> w_ >> h_ >> scale;
-    translateMat.at<double>(0,2)=-seedX;
-    translateMat.at<double>(1,2)=-seedY;
-    scaleMat.at<double>(0,0)/=scale;
-    scaleMat.at<double>(1,1)/=scale;
-
-    ifs.ignore(8192, '\n');
-    // omg O_o two times the same code
     for (int i=0; i<2; i++)
         for(int j=0; j<rotMat.cols; j++)
-            ifs >> rotMat.at<double>(i,j);
-    ifs.ignore(8192, '\n');
-    for (int i=0; i<2; i++)
-        for(int j=0; j<warpMat.cols; j++)
-            ifs >> warpMat.at<double>(i,j);
-    ifs.ignore(8192, '\n');
+            ifs >> transform.at<double>(i,j);
     ifs >> colorScale[0] >> colorScale[1] >>  colorScale[2];
-    ifs.ignore(8192, '\n');
     ifs >> error;
-    ifs.ignore(8192, '\n');
 }
 
 void Match::serialize(std::ofstream& ofs) {
 
-    cv::Mat transform =  warpMat * rotMat * flipMat * translateMat *  scaleMat;
     for (int i=0; i<2; i++)
         for(int j=0; j<transform.cols; j++)
             ofs << transform.at<double>(i,j) << " ";
-    ofs << "transform" << std::endl;
-    ofs << colorScale[0] << " " << colorScale[1] << " " << colorScale[2] << std::endl;
-    ofs << error << std::endl;
+    ofs << colorScale[0] << " " << colorScale[1] << " " << colorScale[2] << " ";
+    ofs << error << " ";
 }
 
 
 cv::Mat Match::rotate() {
 
-    cv::Mat transform = rotMat * flipMat * translateMat * scaleMat;
+    cv::Mat rotate = rotMat * flipMat * translateMat * scaleMat;
     cv::Mat rotated;
-    cv::Mat selection(transform, cv::Rect(0,0,3,2));
+    cv::Mat selection(rotate, cv::Rect(0,0,3,2));
     cv::warpAffine(sourceImage, rotated, selection, cv::Size(w_, h_));
 
     return rotated;
 
 }
 
+void Match::calcTransform() {
+    transform =  warpMat * rotMat * flipMat * translateMat *  scaleMat;
+
+}
+
 cv::Mat Match::warp() {
 
-    cv::Mat transform =  warpMat * rotMat * flipMat * translateMat *  scaleMat;
     cv::Mat warped;
     cv::Mat selection(transform, cv::Rect(0,0,3,2));
     cv::warpAffine(sourceImage, warped, selection, cv::Size(w_, h_));

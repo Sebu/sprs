@@ -22,9 +22,10 @@ public:
 
     float scale;
     bool transformed;
+    bool satisfied;
 
-
-    std::vector<Match*> overlapedMatches;
+    std::vector<Match*> overlapingMatches;
+    std::vector<Patch*> overlapingBlocks;
     Polygon hull;
 
     bool sharesMatches;
@@ -42,6 +43,9 @@ public:
     Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float, int);
 
     bool isPatch();
+    bool overlaps(Vector2f& v);
+    bool overlaps(Match* m);
+
 
 
     void findFeatures();

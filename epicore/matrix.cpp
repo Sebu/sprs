@@ -90,6 +90,7 @@ bool Polygon::isInFrontOf(Polygon& rhs) {
     return false;
 }
 
+
 bool Polygon::intersect(Polygon& rhs) {
     if (rhs.isInFrontOf(*this) || isInFrontOf(rhs)) return false;
     return true;
