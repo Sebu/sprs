@@ -17,8 +17,9 @@ private:
 
 
 public:
+    static int count_;
     int x_, y_, w_, h_;
-    int id;
+    int id_;
 
     float scale;
     bool transformed;

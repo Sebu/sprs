@@ -5,6 +5,8 @@
 #include "cv_ext.h"
 
 
+int Patch::count_ = 0;
+
 bool Patch::overlaps(Vector2f& v) {
     if(v.m_v[0]> x_+w_ || v.m_v[0] < x_ || v.m_v[1] > y_+h_ || v.m_v[1] < y_ ) return false;
     return true;
@@ -46,7 +48,8 @@ void Patch::copyMatches() {
 }
 
 bool Patch::isPatch() {
-    return ( !(x_ % w_) && !(y_ % h_) && !(scale>1.0) && !transformed);
+
+    return ( !(x_ % w_) && !(y_ % h_) && !(scale>1.0f)); // && !transformed);
 }
 
 
@@ -137,7 +140,7 @@ void Patch::findFeatures() {
     std::cout << "variance" << variance << std::endl;
 
     // track initial features
-    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
+    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 3, .01, .01);
     if(pointsSrc.size()<3)
         std::cout << "too bad features" << std::endl;
 
@@ -161,7 +164,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::calcOpticalFlowPyrLK( grayPatch, grayRotated,
                               pointsSrc, pointsDest,
                               status, err,
-                              cv::Size(3,3), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 40, 0.1));
+                              cv::Size(15,15), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 10, 0.1));
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -194,14 +197,17 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other, float error) {
 
 
+
+
     // 4.1 rotation, orientation/gradient histogram
     float orientation = orientHist->minDiff(other.orientHist);
 
     // orientation still to different
-    //    if(orientHist->diff(other.orientHist,orientation/5) > 50.0) return 0;
+    if(orientHist->diff(other.orientHist,orientation/orientHist->factor_) > 50.0) {
+        return 0;
+    }
 
     Match* match = new Match(&other);
-
 
     // apply initial rotation TODO: float :D
     if ((int)orientation!=0) {
@@ -250,29 +256,35 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, in
         sourceImage_(sourceImage), sourceGray_(sourceGray), transformed(0), satisfied(0), variance(0)
 {
 
-    hull = Polygon::square(x,y,w,h);
+    id_ = count_++;
 
-
-
-    patchImage = sourceImage_(cv::Rect(x_,y,w_,h_)).clone();
-
-
+    hull = Polygon::square(x_,y_,w_,h_);
+    patchImage = sourceImage_(cv::Rect(x_,y_,w_,h_)).clone();
+    std::cout.flush();
+    // flip :)
     flipMat = cv::Mat::eye(3,3,CV_64FC1);
-
-    if(flip<0) {
-        cv::flip(patchImage, patchImage, 0);
-        flipMat.at<double>(1,1)=-1.0f;
-        flipMat.at<double>(1,2)=h;
-    }
-    else if(flip>0) {
+    switch(flip) {
+    case 1:
         cv::flip(patchImage, patchImage, 1);
         flipMat.at<double>(0,0)=-1.0f;
         flipMat.at<double>(0,2)=w;
+        break;
+    case 2:
+        cv::flip(patchImage, patchImage, 0);
+        flipMat.at<double>(1,1)=-1.0f;
+        flipMat.at<double>(1,2)=h;
+    default:
+        break;
     }
 
+    // cache gray patch version
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);
 
+    // generate orientation histogram
+    // FIXME: use interface for switching between fast and slow version
     orientHist = new OrientHistFast(this, 36);
+
+
     setHistMean( cv::mean(patchImage) );
 
 

@@ -32,7 +32,6 @@ public:
     float scale;
 
     std::vector<Patch*> overlapedSeeds;
-//    Polygon hull;
 
 
 

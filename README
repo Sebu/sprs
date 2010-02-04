@@ -4,17 +4,20 @@ steeps
 3. create epitome atlas
 
 TODO:
-- better orientation histograms
+- use alternative image and reconstruction base
+- color/orient histogram bad match selection
+- use epitome atlas for reconstruction
 - epitome grow process
-- save epitome atlas data
 - more and excluded debug vis. (interface)
 - asserts/exceptions
 
 DONE:
+- save epitome atlas data
+- better orientation histograms
 - correct color scaling for shared matches
 - speedup steep one (some opencv profiling needed)
 - start steep two
-- move calc. to thread
+- move calc. to thread (sort of)
 - use opencv2 c++ binding instead of c binding
 - vis. all matches
 - serialize/save matches

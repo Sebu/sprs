@@ -1,5 +1,6 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include <float.h>
 
 #include "stdio.h"
 #include "cv_ext.h"
@@ -38,9 +39,9 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
-            float pixel = image.at<uchar>(y, x); // / 255.0f;
-            float pixel_x = image.at<uchar>(y, x+1);// / 255.0f;
-            float pixel_y = image.at<uchar>(y+1, x);// / 255.0f;
+            float pixel = image.at<uchar>(y, x) / 255.0f;
+            float pixel_x = image.at<uchar>(y, x+1) / 255.0f;
+            float pixel_y = image.at<uchar>(y+1, x) / 255.0f;
 
             float dx = pixel - pixel_x;
             float dy = pixel - pixel_y;
@@ -72,7 +73,7 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 float OrientHistFast::minDiff(OrientHistFast* other) {
     float angle=0;
 
-    float min = 100000000000.0f;
+    float min = FLT_MAX;
     for(int j=0; j < this->numBins_; j++) {
         float sum = this->diff(other, j);
         if (sum<=min) { min=sum; angle=j*factor_;}

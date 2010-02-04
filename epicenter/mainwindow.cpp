@@ -41,7 +41,7 @@ void MainWindow::changeImage() {
 
     calcThread.image = cv::imread( fileName );
     debugWidgetL->fromIpl( calcThread.image, "image" );
-    calcThread.seedmap = new SeedMap( calcThread.image, ui->blockSpin->value(), ui->blockSpin->value(), ui->seedSpin->value(), ui->seedSpin->value());
+    calcThread.seedmap = new SeedMap( calcThread.image, ui->blockSpin->value());
     calcThread.blockSize = ui->blockSpin->value();
     calcThread.seedmap->maxError = ui->errorSpin->value();
 

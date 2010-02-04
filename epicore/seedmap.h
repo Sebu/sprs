@@ -35,8 +35,13 @@ public:
     cv::Mat sourceImage;
     cv::Mat sourceGray;
 
-    SeedMap( cv::Mat& image, int w, int h, int xgrid, int ygrid );
-    void setImage(cv::Mat&, int depth=1);
+    SeedMap( cv::Mat& image, int s);
+
+    void setImage(cv::Mat& image);
+    void setReconSource(cv::Mat& image, int depth);
+    void addSeedsFromImage(cv::Mat& source, int depth);
+    void addSeedsFromEpitomes();
+
 
     Patch* getSeed(int x, int y);
     Patch* getPatch(int x, int y);
