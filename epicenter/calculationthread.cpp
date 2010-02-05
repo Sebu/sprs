@@ -6,15 +6,18 @@
 #include "calculationthread.h"
 
 CalculationThread::CalculationThread()
+    : seedmap(0)
 {
 }
 
 void CalculationThread::step() {
 //    for (int i=0; i<ui->stepSpin->value(); i++)
+
         singleStep();
 }
 
 void CalculationThread::step2() {
+    if(!seedmap) init();
     seedmap->generateEpitomes();
     cv::Mat epitomeMap(seedmap->debugEpitomeMap());
     debugWidgetL->fromIpl( epitomeMap, "epitome map" );
@@ -22,6 +25,7 @@ void CalculationThread::step2() {
 }
 
 bool CalculationThread::singleStep(int x, int y) {
+    if(!seedmap) init();
 
     QMutex mutex;
     Patch* patch = 0;
@@ -41,7 +45,7 @@ bool CalculationThread::singleStep(int x, int y) {
     // debug
     if (!patch->matches->empty()) {
 
-        cv::Mat tmpImage = seedmap->sourceImage.clone(); // patch->matches->front()->warp();
+        cv::Mat tmpImage = base.clone(); // patch->matches->front()->warp();
 
         // highlight block
         for(int i=0; i<4; i++){
@@ -92,7 +96,14 @@ bool CalculationThread::singleStep(int x, int y) {
     return true;
 }
 
+void CalculationThread::init() {
+    seedmap = new SeedMap( image, base, blockSize);
+    seedmap->maxError = 0.006; //->errorSpin->value();
+    seedmap->loadMatches(fileName);
+}
+
 void CalculationThread::calculate() {
+    if(!seedmap) init();
     run();
 }
 

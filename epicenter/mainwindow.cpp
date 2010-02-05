@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     calcThread.debugWidgetR = debugWidgetR;
 
     this->connect( ui->loadButton, SIGNAL(clicked()),         this, SLOT(changeImage()) );
+    this->connect( ui->baseButton, SIGNAL(clicked()),         this, SLOT(changeBase()) );
+
     this->connect( ui->saveButton, SIGNAL(clicked()),         this, SLOT(saveImage())   );
     this->connect( ui->prevButton, SIGNAL(clicked()), debugWidgetL, SLOT(prev())        );
     this->connect( ui->nextButton, SIGNAL(clicked()), debugWidgetL, SLOT(next())        );
@@ -33,20 +35,25 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 
+void MainWindow::changeBase() {
+
+    std::string bla = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
+    if(bla=="") return;
+
+    calcThread.base = cv::imread( bla );
+}
+
 
 void MainWindow::changeImage() {
 
     fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
     if(fileName=="") return;
 
+    calcThread.fileName = fileName;
     calcThread.image = cv::imread( fileName );
+    calcThread.base = calcThread.image;
     debugWidgetL->fromIpl( calcThread.image, "image" );
-    calcThread.seedmap = new SeedMap( calcThread.image, ui->blockSpin->value());
     calcThread.blockSize = ui->blockSpin->value();
-    calcThread.seedmap->maxError = ui->errorSpin->value();
-
-    calcThread.seedmap->loadMatches(fileName);
-
 
 }
 

@@ -79,17 +79,6 @@ void Match::serialize(std::ofstream& ofs) {
 }
 
 
-cv::Mat Match::rotate() {
-
-    cv::Mat rotate = rotMat * flipMat * translateMat * scaleMat;
-    cv::Mat rotated;
-    cv::Mat selection(rotate, cv::Rect(0,0,3,2));
-    cv::warpAffine(sourceImage, rotated, selection, cv::Size(w_, h_));
-
-    return rotated;
-
-}
-
 void Match::calcTransform() {
     transform =  warpMat * rotMat * flipMat * translateMat *  scaleMat;
 

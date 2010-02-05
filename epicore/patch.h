@@ -18,8 +18,9 @@ private:
 
 public:
     static int count_;
-    int x_, y_, w_, h_;
     int id_;
+
+    int x_, y_, w_, h_;
 
     float scale;
     bool transformed;

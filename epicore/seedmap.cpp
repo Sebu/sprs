@@ -84,6 +84,7 @@ void SeedMap::generateEpitomes() {
 
         //         } while(benefit(deltaE)>0)
         if(benefit>=0) {
+            patch->satisfied = true;
             epitomes.push_back(epi);
             epi->save();
         } else {
@@ -156,7 +157,7 @@ void SeedMap::match(Patch& patch) {
     if (!patch.matches) {
         patch.matches = new std::vector<Match*>;
 
-#pragma omp parallel for
+//#pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
             if(!termCalculate) {
                 Match* match = 0;
@@ -169,10 +170,13 @@ void SeedMap::match(Patch& patch) {
 #pragma omp critical
                     patch.matches->push_back(match);
 
+                    // FIXME: :)
                     if (seed->isPatch()) {
                         seed->matches=patch.matches;
                         seed->sharesMatches = true;
                     }
+
+                    break;
                 }
             }
 
@@ -240,8 +244,8 @@ cv::Mat SeedMap::debugReconstruction() {
 void SeedMap::setImage(cv::Mat &image) {
 
     // add patches
-    width =  sourceImage.cols / patchW;
-    height = sourceImage.rows / patchH;
+    width =  image.cols / patchW;
+    height = image.rows / patchH;
     for(int y=0; y<height; y++)
         for(int x=0; x<width; x++) {
             patches.push_back(new Patch( image, sourceGray, x*patchW, y*patchH, patchW, patchH,  1.0f, 0));
@@ -253,8 +257,8 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
     // add seeds
     float scale = 1.0f;
     for (int z=0; z< depth; z++) {
-        float scaleWidth  = sourceImage.cols / scale;
-        float scaleHeight = sourceImage.rows / scale;
+        float scaleWidth  = source.cols / scale;
+        float scaleHeight = source.rows / scale;
 
         width =  ((scaleWidth-patchW) / xgrid) + 1;
         height = ((scaleHeight-patchH) / ygrid) + 1;
@@ -263,7 +267,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
         for(int y=0; y<height; y++)
             for(int x=0; x<width; x++)
                 for(int flip=0; flip<3; flip++)
-                    seeds.push_back(new Patch( sourceImage, sourceGray, x*xgrid, y*ygrid, patchW, patchH,  scale, flip));
+                    seeds.push_back(new Patch( source, sourceGray, x*xgrid, y*ygrid, patchW, patchH,  scale, flip));
 
         scale *= 1.5f;
     }
@@ -291,7 +295,7 @@ void SeedMap::setReconSource(cv::Mat& image, int depth) {
 
 }
 
-SeedMap::SeedMap(cv::Mat& image, int s)
+SeedMap::SeedMap(cv::Mat& image, cv::Mat& base, int s)
     : termCalculate(0), patchW(s), patchH(s), xgrid(s/4), ygrid(s/4), matchStep(0), maxError(0.0f)
 {
 
@@ -307,5 +311,5 @@ SeedMap::SeedMap(cv::Mat& image, int s)
     // create gray version
     cv::cvtColor(sourceImage, sourceGray, CV_BGR2GRAY);
     setImage(sourceImage);
-    setReconSource(sourceImage, 3);
+    setReconSource(base, 3);
 }

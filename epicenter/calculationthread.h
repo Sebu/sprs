@@ -12,12 +12,15 @@ class CalculationThread : public QThread
 
 public:
     cv::Mat         image;
+    cv::Mat         base;
+    std::string     fileName;
     SeedMap*        seedmap;
     AlbumWidget*    debugWidgetL;
     AlbumWidget*    debugWidgetR;
     int blockSize;
 
     CalculationThread();
+    void init();
     void run();
 
 public slots:

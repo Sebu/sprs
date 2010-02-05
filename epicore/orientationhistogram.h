@@ -11,7 +11,7 @@ class OrientHist
 {
 public:
     float* bins_;
-    int numBins_;
+    uint numBins_;
     float factor_;
 
     Patch* patch_;

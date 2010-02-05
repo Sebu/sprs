@@ -5,8 +5,8 @@ steeps
 
 TODO:
 - use alternative image and reconstruction base
-- color/orient histogram bad match selection
 - use epitome atlas for reconstruction
+- color/orient histogram bad match selection
 - epitome grow process
 - more and excluded debug vis. (interface)
 - asserts/exceptions

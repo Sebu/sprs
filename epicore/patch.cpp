@@ -88,7 +88,7 @@ void Patch::serialize(std::ofstream& ofs) {
 
 float Patch::reconError(Match* m) {
 
-    float alpha = 1.0f; // 0 <= alpha <= 2
+    float alpha = .7f; // 0 <= alpha <= 2
     float beta  = 0.0000000001f;
 
     // reconstruct
@@ -126,6 +126,7 @@ float Patch::reconError(Match* m) {
 void Patch::findFeatures() {
 
     // precalculate variance
+    variance = 0.0f;
     cv::Scalar mean = cv::mean(grayPatch);
     for (int y=0; y<grayPatch.rows; y++) {
         for(int x=0; x<grayPatch.cols; x++) {
@@ -137,10 +138,10 @@ void Patch::findFeatures() {
     }
 //    variance /= (grayPatch.cols*grayPatch.rows);
 
-    std::cout << "variance" << variance << std::endl;
+//    std::cout << "variance" << variance << std::endl;
 
     // track initial features
-    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 3, .01, .01);
+    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
     if(pointsSrc.size()<3)
         std::cout << "too bad features" << std::endl;
 
@@ -151,7 +152,7 @@ bool Patch::trackFeatures(Match* match) {
 
 
     cv::Mat grayRotated;
-    cv::Mat rotated(match->rotate());
+    cv::Mat rotated(match->warp());
 
     cv::cvtColor(rotated, grayRotated, CV_BGR2GRAY);
 
@@ -164,7 +165,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::calcOpticalFlowPyrLK( grayPatch, grayRotated,
                               pointsSrc, pointsDest,
                               status, err,
-                              cv::Size(15,15), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 10, 0.1));
+                              cv::Size(5,5), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 30, 0.1));
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -220,15 +221,19 @@ Match* Patch::match(Patch& other, float error) {
         other.transformed=true;
     }
 
+    match->calcTransform();
+
     // 4.1 KLT matching
-    if (!trackFeatures(match)) { delete match; return 0; }
+    trackFeatures(match);
+//    if (!) { delete match; return 0; }
 
     match->calcTransform();
 
     // 4 reconstruction error
     float reconstructionError =  reconError(match) / (w_*h_);
 
-    //    std::cout << reconstructionError << std::endl;
+//    if(x_ == other.x_ && y_  == other.y_)
+//        std::cout << reconstructionError << std::endl;
 
     // reconstruction error too high? skip
     if (reconstructionError > error) {

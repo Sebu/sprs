@@ -15,7 +15,7 @@ Epitome::Epitome() : maxX(0), minX(INT_MAX), maxY(0), minY(INT_MAX)
 
 void Epitome::caclDimensions() {
     // align
-    for(int i=0; i< reconPatches.size(); i++) {
+    for(uint i=0; i< reconPatches.size(); i++) {
         Patch *p = reconPatches[i];
 
         // find min x and y

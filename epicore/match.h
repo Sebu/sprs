@@ -42,8 +42,6 @@ public:
     void calcTransform();
 
     bool isPatch();
-
-    cv::Mat rotate();
     cv::Mat warp();
     cv::Mat reconstruct();
 
