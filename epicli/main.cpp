@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     std::string fileName(argv[1]);
     
     cv::Mat image = cv::imread( fileName );
-    seedmap = new SeedMap( image, 16, 16, 4, 4);
+    seedmap = new SeedMap( image, 16);
     seedmap->loadMatches(fileName);
     seedmap->maxError = atof(argv[2]);
     std::cout << seedmap->maxError << std::endl;
