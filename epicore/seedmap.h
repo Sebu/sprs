@@ -23,6 +23,7 @@ public:
     int width;
     int height;
 
+    bool findAllMatches;
     float maxError;
 
     uint matchStep;

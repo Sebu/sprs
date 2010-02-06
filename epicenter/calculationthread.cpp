@@ -6,7 +6,7 @@
 #include "calculationthread.h"
 
 CalculationThread::CalculationThread()
-    : seedmap(0)
+    : seedmap(0), error(0.0f)
 {
 }
 
@@ -43,22 +43,16 @@ bool CalculationThread::singleStep(int x, int y) {
 
 
     // debug
-    if (!patch->matches->empty()) {
+//    if (!patch->matches->empty()) {
 
         cv::Mat tmpImage = base.clone(); // patch->matches->front()->warp();
 
         // highlight block
+        /*
         for(int i=0; i<4; i++){
             cv::line(tmpImage, patch->hull.verts[i], patch->hull.verts[(i+1) % 4], cv::Scalar(0,255,0,100),2);
         }
-
-/*
-        foreach(Match* match, patch->overlapedMatches) {
-            Polygon hull = match->getMatchbox();
-            for(int i=0; i<4; i++)
-                cv::line(tmpImage, hull.verts[i], hull.verts[(i+1) % 4], cv::Scalar(0,255,255,100));
-        }
-*/
+        //*/
         for(uint i=0; i<patch->matches->size(); i++) {
             if (i>1000) break;
             Match* match = patch->matches->at(i);
@@ -89,7 +83,7 @@ bool CalculationThread::singleStep(int x, int y) {
         debugWidgetL->updateGL();
         debugWidgetR->updateGL();
 
-    }
+//    }
 
 
 
@@ -98,7 +92,8 @@ bool CalculationThread::singleStep(int x, int y) {
 
 void CalculationThread::init() {
     seedmap = new SeedMap( image, base, blockSize);
-    seedmap->maxError = 0.006; //->errorSpin->value();
+    seedmap->findAllMatches = findAllMatches;
+    seedmap->maxError = error;
     seedmap->loadMatches(fileName);
 }
 

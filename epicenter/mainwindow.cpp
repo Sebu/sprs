@@ -39,7 +39,7 @@ void MainWindow::changeBase() {
 
     std::string bla = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
     if(bla=="") return;
-
+    calcThread.findAllMatches = false;
     calcThread.base = cv::imread( bla );
 }
 
@@ -52,8 +52,10 @@ void MainWindow::changeImage() {
     calcThread.fileName = fileName;
     calcThread.image = cv::imread( fileName );
     calcThread.base = calcThread.image;
+    calcThread.findAllMatches = true;
     debugWidgetL->fromIpl( calcThread.image, "image" );
     calcThread.blockSize = ui->blockSpin->value();
+    calcThread.error  = ui->errorSpin->value();
 
 }
 
@@ -63,7 +65,6 @@ void MainWindow::saveImage() {
     // save demo reconstruction
     QString saveName = QFileDialog::getSaveFileName(this,tr("Save Image"), (fileName + ".recon.jpg").c_str(), tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
     calcThread.seedmap->saveReconstruction(saveName.toStdString());
-
     // save matches
     calcThread.seedmap->saveMatches(fileName);
 

@@ -18,6 +18,8 @@ public:
     AlbumWidget*    debugWidgetL;
     AlbumWidget*    debugWidgetR;
     int blockSize;
+    bool findAllMatches;
+    float error;
 
     CalculationThread();
     void init();

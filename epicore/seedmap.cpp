@@ -157,7 +157,7 @@ void SeedMap::match(Patch& patch) {
     if (!patch.matches) {
         patch.matches = new std::vector<Match*>;
 
-//#pragma omp parallel for
+#pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
             if(!termCalculate) {
                 Match* match = 0;
@@ -171,12 +171,16 @@ void SeedMap::match(Patch& patch) {
                     patch.matches->push_back(match);
 
                     // FIXME: :)
-                    if (seed->isPatch()) {
-                        seed->matches=patch.matches;
-                        seed->sharesMatches = true;
+                    /*
+                    if (seed->isPatch() && findAllMatches) {
+                        int indexX = seed->x_ / patchW;
+                        int indexY = seed->h_ / patchH;
+                        Patch* p = getPatch(indexX, indexY);
+                        p->matches=patch.matches;
+                        p->sharesMatches = true;
                     }
-
-                    break;
+*/
+                    if (!findAllMatches) termCalculate=true;
                 }
             }
 
@@ -266,7 +270,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
         // generate new patches
         for(int y=0; y<height; y++)
             for(int x=0; x<width; x++)
-                for(int flip=0; flip<3; flip++)
+                for(int flip=0; flip<1; flip++)
                     seeds.push_back(new Patch( source, sourceGray, x*xgrid, y*ygrid, patchW, patchH,  scale, flip));
 
         scale *= 1.5f;
@@ -312,4 +316,5 @@ SeedMap::SeedMap(cv::Mat& image, cv::Mat& base, int s)
     cv::cvtColor(sourceImage, sourceGray, CV_BGR2GRAY);
     setImage(sourceImage);
     setReconSource(base, 3);
+
 }

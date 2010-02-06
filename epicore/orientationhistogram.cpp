@@ -103,7 +103,7 @@ float OrientHist::minDiff(OrientHist* other) {
     float angle=0;
 
     float min = 100000000000.0f;
-    for(int j=0; j < this->numBins_; j++) {
+    for(uint j=0; j < this->numBins_; j++) {
         float sum = this->diff(other, j);
         if (sum<=min) { min=sum; angle=j*factor_;}
     }
@@ -113,7 +113,7 @@ float OrientHist::minDiff(OrientHist* other) {
 
 float OrientHist::diff(OrientHist* other, int offset) {
     float sum=0;
-    for (int i=0; i < numBins_; i++){
+    for (uint i=0; i < numBins_; i++){
         sum += pow(this->bins_[i]-other->bins_[ offset*numBins_ + i], 2);
     }
     return sum;
@@ -126,7 +126,7 @@ OrientHist::OrientHist(Patch* patch, int numBins) : bins_(0), numBins_(numBins)
 
     factor_ = 360/numBins_;
     // init with 0s
-    for(int i=0; i<numBins_*numBins_; i++) bins_[i]=0.0f;
+    for(uint i=0; i<numBins_*numBins_; i++) bins_[i]=0.0f;
 
 //    genSingle(image,0);
     genOrientHists();

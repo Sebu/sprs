@@ -204,7 +204,7 @@ Match* Patch::match(Patch& other, float error) {
     float orientation = orientHist->minDiff(other.orientHist);
 
     // orientation still to different
-    if(orientHist->diff(other.orientHist,orientation/orientHist->factor_) > 50.0) {
+    if(orientHist->diff(other.orientHist,orientation/orientHist->factor_) > 150.0) {
         return 0;
     }
 

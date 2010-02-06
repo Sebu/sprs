@@ -35,7 +35,7 @@ cv::Mat Epitome::getMap() {
     std::cout << width << " " << height << " " << minX << " " << minY << " " << reconPatches.size() << std::endl;
 
     cv::Mat map = cv::Mat::zeros(height, width, CV_8UC3);
-    for(int i=0; i< reconPatches.size(); i++) {
+    for(uint i=0; i< reconPatches.size(); i++) {
         Patch *p = reconPatches[i];
         // save seeds
         std::cout << p->x_ - minX << " " << p->y_ - minY << std::endl;
@@ -62,7 +62,7 @@ void Epitome::save()
 
     std::ofstream ofs( (fileName.str() + ".txt").c_str() );
     ofs << maxX-minX << " " << maxY-minY << " ";
-    for(int i=0; i< reconPatches.size(); i++) {
+    for(uint i=0; i< reconPatches.size(); i++) {
         Patch *p = reconPatches[i];
         // save seeds
         cv::Mat selection(seedImage, cv::Rect(i*p->w_, 0, p->w_, p->h_));
