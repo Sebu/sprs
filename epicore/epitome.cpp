@@ -6,11 +6,11 @@
 #include "epitome.h"
 
 
-int Epitome::count_ = 0;
+int Epitome::staticCounter_ = 0;
 
 Epitome::Epitome() : maxX(0), minX(INT_MAX), maxY(0), minY(INT_MAX)
 {
-    id_ = count_++;
+    id_ = staticCounter_++;
 }
 
 void Epitome::caclDimensions() {

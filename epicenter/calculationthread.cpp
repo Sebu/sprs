@@ -53,16 +53,16 @@ bool CalculationThread::singleStep(int x, int y) {
             cv::line(tmpImage, patch->hull.verts[i], patch->hull.verts[(i+1) % 4], cv::Scalar(0,255,0,100),2);
         }
         //*/
-        for(uint i=0; i<patch->matches->size(); i++) {
+        for(uint i=0; i<patch->matches_->size(); i++) {
             if (i>1000) break;
-            Match* match = patch->matches->at(i);
-            Polygon hull = match->getMatchbox();
+            Match* match = patch->matches_->at(i);
+            Polygon hull = match->hull_;
 
             for (uint j=0; j<seedmap->patches.size(); j++) {
                 Patch *p = seedmap->patches[j];
-                if ((p->hull.intersect(hull))) {
+                if ((p->hull_.intersect(hull))) {
 //                    match->overlapedPatches.push_back(p);
-                    cv::rectangle(tmpImage, p->hull.verts[0], p->hull.verts[2], cv::Scalar(0,100,100,100));
+                    cv::rectangle(tmpImage, p->hull_.verts[0], p->hull_.verts[2], cv::Scalar(0,100,100,100));
                 }
 
             }

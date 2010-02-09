@@ -49,6 +49,8 @@ void MainWindow::changeImage() {
     fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
     if(fileName=="") return;
 
+    if(calcThread.seedmap) delete calcThread.seedmap;
+    calcThread.seedmap = 0;
     calcThread.fileName = fileName;
     calcThread.image = cv::imread( fileName );
     calcThread.base = calcThread.image;

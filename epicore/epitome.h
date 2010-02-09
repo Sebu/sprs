@@ -7,21 +7,19 @@
 class Epitome
 {
 public:
-    static int count_;
+    static int staticCounter_;
     int id_;
 
     int maxX, minX, maxY, minY;
-
     std::vector<Patch*> reconPatches;
+
     Epitome();
-
     void caclDimensions();
-
     void grow();
-
     cv::Mat getMap();
 
 
+    //
     void save();
 //    void load();
 };

@@ -9,8 +9,8 @@
 void OrientHist::genOrientHists() {
 
     cv::Mat scaleMat = cv::Mat::eye(3,3,CV_64FC1);
-    scaleMat.at<double>(0,0)/=patch_->scale;
-    scaleMat.at<double>(1,1)/=patch_->scale;
+    scaleMat.at<double>(0,0)/=patch_->scale_;
+    scaleMat.at<double>(1,1)/=patch_->scale_;
 
     cv::Mat translateMat = cv::Mat::eye(3,3,CV_64FC1);
     translateMat.at<double>(0,2)=-patch_->x_;

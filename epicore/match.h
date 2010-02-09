@@ -10,44 +10,50 @@ class Patch;
 
 class Match
 {
-private:
-    Patch* seed;
 
 public:
+    int seedX, seedY;
+    int w_, h_;
+    float scale_;
+    cv::Mat transform_;
+    cv::Scalar colorScale_;
+
+    bool transformed_;
+    float error_;
+
+    Polygon hull_;
+
     Patch* patch;
     cv::Mat sourceImage;
 
+
     cv::Mat warpMat;
     cv::Mat rotMat;
+
+    // TODO: move to seed
     cv::Mat scaleMat;
     cv::Mat flipMat;
     cv::Mat translateMat;
-    cv::Mat transform;
 
-    cv::Scalar colorScale;
-    float error;
 
-    int seedX, seedY;
-    int w_, h_;
-    float scale;
+
 
     std::vector<Patch*> overlapedSeeds;
 
 
 
     Match(Patch* seed=0);
-    void setSeed(Patch* seed);
 
-
-    void calcTransform();
 
     bool isPatch();
+
     cv::Mat warp();
     cv::Mat reconstruct();
 
-    Polygon getMatchbox();
+    void calcTransform();
+    void calcHull();
 
-
+    // (de-)serialize
     void serialize(std::ofstream&);
     void deserialize(std::ifstream&);
 };

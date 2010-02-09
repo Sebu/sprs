@@ -17,21 +17,24 @@ private:
 
 
 public:
-    static int count_;
+    static int staticCounter_;
     int id_;
 
     int x_, y_, w_, h_;
 
-    float scale;
-    bool transformed;
-    bool satisfied;
+    float scale_;
+    bool transformed_;
+    bool satisfied_;
+    Polygon hull_;
+
+    bool sharesMatches_;
+    std::vector<Match*>* matches_;
+
+
 
     std::vector<Match*> overlapingMatches;
     std::vector<Patch*> overlapingBlocks;
-    Polygon hull;
 
-    bool sharesMatches;
-    std::vector<Match*>* matches;
 
     cv::Mat sourceImage_;
     cv::Mat sourceGray_;
@@ -40,6 +43,7 @@ public:
     cv::Mat grayPatch;
     float variance;
     OrientHistFast* orientHist;
+
     cv::Mat flipMat;
 
     Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float, int);

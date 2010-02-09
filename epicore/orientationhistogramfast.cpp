@@ -29,8 +29,8 @@ void OrientHistFast::genSingle(cv::Mat& image) {
     //
     //      blur the initial histogram by [1 4 6 4 1] averaging filter.
 
-    cv::Mat contrast(image.size(), CV_32F);
-    cv::Mat direction(image.size(), CV_32F);
+    cv::Mat contrast = cv::Mat::zeros(image.size(), CV_32F);
+    cv::Mat direction = cv::Mat::zeros(image.size(), CV_32F);
 
 
 
@@ -76,7 +76,7 @@ float OrientHistFast::minDiff(OrientHistFast* other) {
     float min = FLT_MAX;
     for(int j=0; j < this->numBins_; j++) {
         float sum = this->diff(other, j);
-        if (sum<=min) { min=sum; angle=j*factor_;}
+        if (sum<min) { min=sum; angle=j*factor_;}
     }
 
     return angle;

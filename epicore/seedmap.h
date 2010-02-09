@@ -16,12 +16,10 @@ class EPICORESHARED_EXPORT SeedMap
 public:
     bool termCalculate;
 
-    int patchW;
-    int patchH;
-    int xgrid;
-    int ygrid;
-    int width;
-    int height;
+    int patchW_;
+    int patchH_;
+    int xgrid_;
+    int ygrid_;
 
     bool findAllMatches;
     float maxError;
@@ -44,7 +42,6 @@ public:
     void addSeedsFromEpitomes();
 
 
-    Patch* getSeed(int x, int y);
     Patch* getPatch(int x, int y);
     void match(Patch& patch);
 
