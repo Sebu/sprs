@@ -154,19 +154,16 @@ void SeedMap::match(Patch& patch) {
     if (!patch.matches_) {
         patch.matches_ = new std::vector<Match*>;
 
-#pragma omp parallel for
+        #pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
+            Patch* seed = seeds[i];
             if(!termCalculate) {
-                Match* match = 0;
-                Patch* seed = seeds[i];
-                match = patch.match(*seed, maxError);
+                Match* match = patch.match(*seed, maxError);
                 if (match) {
-                    match->patch = &patch;
 
-#pragma omp critical
+                    #pragma omp critical
                     patch.matches_->push_back(match);
 
-                    // FIXME: :)
                     if (!match->transformed_ && seed->isPatch() && findAllMatches) {
                         int indexX = seed->x_ / patchW_;
                         int indexY = seed->y_ / patchH_;
@@ -182,12 +179,13 @@ void SeedMap::match(Patch& patch) {
             }
 
         }
-        if(termCalculate)
-            patch.resetMatches();
+//        if(termCalculate)
+//            patch.resetMatches();
 
     } else {
         std::cout << "shares " << patch.matches_->size() <<  " matches @ " <<  patch.x_/16 << " " << patch.y_/16 << std::endl;
-        //TODO: copy matches and recalculate colorScale!
+
+        //copy matches and recalculate colorScale!
         patch.copyMatches();
     }
 
@@ -255,6 +253,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
     // add seeds
     float scale = 1.0f;
     for (int z=0; z< depth; z++) {
+
         float scaleWidth  = source.cols / scale;
         float scaleHeight = source.rows / scale;
 
@@ -303,12 +302,18 @@ SeedMap::SeedMap(cv::Mat& image, cv::Mat& base, int s)
     sourceImage = cv::Mat::zeros(image.size()+cv::Size(rightBorder,bottomBorder), image.type());
     cv::Mat region(sourceImage, cv::Rect(cv::Point(0,0),image.size()));
     image.copyTo(region);
-    //
-    //    sourceImage = image; //image.copyTo(region);
+
+
+    rightBorder =  patchW_ - (base.cols % patchW_);
+    bottomBorder = patchH_ - (base.rows % patchH_);
+    baseImage = cv::Mat::zeros(base.size()+cv::Size(rightBorder,bottomBorder), base.type());
+    cv::Mat baseRegion(baseImage, cv::Rect(cv::Point(0,0),base.size()));
+    base.copyTo(baseRegion);
+
 
     // create gray version
     cv::cvtColor(sourceImage, sourceGray, CV_BGR2GRAY);
     setImage(sourceImage);
-    setReconSource(base, 3);
+    setReconSource(baseImage, 3);
 
 }

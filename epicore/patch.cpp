@@ -216,6 +216,7 @@ Match* Patch::match(Patch& other, float maxError) {
     }
 
     Match* match = new Match(&other);
+    match->patch = this;
     match->transformed_ = other.transformed_;
 
     // apply initial rotation TODO: float :D
