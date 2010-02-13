@@ -25,6 +25,7 @@ public:
     float scale_;
     bool transformed_;
     bool satisfied_;
+    bool inEpitome_;
     Polygon hull_;
 
     bool sharesMatches_;
@@ -39,16 +40,19 @@ public:
     cv::Mat sourceImage_;
     cv::Mat sourceGray_;
 
+
     cv::Mat patchImage;
+    cv::MatND hist;
+
     cv::Mat grayPatch;
     float variance;
     OrientHistFast* orientHist;
 
     cv::Mat flipMat;
 
-    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float, int);
+    bool isPatch_;
 
-    bool isPatch();
+    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float, int);
     bool overlaps(Vector2f& v);
     bool overlaps(Match* m);
 

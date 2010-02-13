@@ -11,7 +11,8 @@ public:
     int id_;
 
     int maxX, minX, maxY, minY;
-    std::vector<Patch*> reconPatches;
+    std::vector<Patch*> reconPatches_;
+    std::vector<Polygon*> segments_;
 
     Epitome();
     void caclDimensions();

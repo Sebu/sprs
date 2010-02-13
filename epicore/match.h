@@ -23,7 +23,7 @@ public:
 
     Polygon hull_;
 
-    Patch* patch;
+    Patch* block;
     cv::Mat sourceImage;
 
 

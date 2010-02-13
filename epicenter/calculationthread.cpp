@@ -58,8 +58,8 @@ bool CalculationThread::singleStep(int x, int y) {
             Match* match = patch->matches_->at(i);
             Polygon hull = match->hull_;
 
-            for (uint j=0; j<seedmap->patches.size(); j++) {
-                Patch *p = seedmap->patches[j];
+            for (uint j=0; j<seedmap->blocks.size(); j++) {
+                Patch *p = seedmap->blocks[j];
                 if ((p->hull_.intersect(hull))) {
 //                    match->overlapedPatches.push_back(p);
                     cv::rectangle(tmpImage, p->hull_.verts[0], p->hull_.verts[2], cv::Scalar(0,100,100,100));

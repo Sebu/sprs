@@ -47,12 +47,6 @@ void Patch::copyMatches() {
     matches_ = newVector;
 }
 
-bool Patch::isPatch() {
-
-    return ( !(x_ % w_) && !(y_ % h_) && !(scale_>1.0f) );
-}
-
-
 
 void Patch::deserialize(std::ifstream& ifs) {
     ifs >> x_ >> y_;
@@ -66,7 +60,7 @@ void Patch::deserialize(std::ifstream& ifs) {
         match->w_ = w_;
         match->h_ = h_;
         match->deserialize(ifs);
-        match->patch = this;
+        match->block = this;
         matches_->push_back(match);
 
     }
@@ -126,7 +120,7 @@ float Patch::reconError(Match* m) {
         }
     }
 
-    return dist; // / ( pow( variance, alpha) + beta );
+    return dist / ( pow( variance, alpha) + beta );
 }
 
 void Patch::findFeatures() {
@@ -205,6 +199,10 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other, float maxError) {
 
 
+    double histDiff = cv::compareHist(hist, other.hist, CV_COMP_CHISQR)/ 255.0;
+//    std::cout << histDiff << std::endl;
+    if(histDiff > 1.0) return 0;
+
 
 
     // 4.1 rotation, orientation/gradient histogram
@@ -216,7 +214,7 @@ Match* Patch::match(Patch& other, float maxError) {
     }
 
     Match* match = new Match(&other);
-    match->patch = this;
+    match->block = this;
     match->transformed_ = other.transformed_;
 
     // apply initial rotation TODO: float :D
@@ -258,7 +256,7 @@ Match* Patch::match(Patch& other, float maxError) {
     std::cout << x_/h_ << " " << y_/h_ << " " <<
             "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
     std::cout << " " << other.scale_;
-    if(x_==other.x_ && y_==other.y_ && other.isPatch()) std::cout << "\tfound myself!";
+    if(x_==other.x_ && y_==other.y_ && other.isPatch_) std::cout << "\tfound myself!";
     std::cout << std::endl;
 #endif
 
@@ -267,7 +265,7 @@ Match* Patch::match(Patch& other, float maxError) {
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float scale, int flip):
         histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), scale_(scale), sharesMatches_(0), matches_(0),
-        sourceImage_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), variance(0)
+        sourceImage_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inEpitome_(0), variance(0), isPatch_(0)
 {
 
     id_ = staticCounter_++;
@@ -291,6 +289,17 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, in
     default:
         break;
     }
+
+    // cache color histogram
+    int channels[] = {0, 1, 2};
+    int sbins = 16;
+    int histSize[] = {sbins, sbins, sbins};
+    float sranges[] = { 0, 255 };
+    const float* ranges[] = { sranges, sranges, sranges };
+    cv::calcHist( &patchImage, 1, channels, cv::Mat(), // do not use mask
+          hist, 3, histSize, ranges,
+          true, // the histogram is uniform
+          false );
 
     // cache gray patch version
     cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);

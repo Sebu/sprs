@@ -186,6 +186,19 @@ inline Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs)
     return m;
 };
 
+
+class AABB {
+
+public:
+    Vector2f min;
+    Vector2f max;
+
+    AABB(): min(Vector2f(FLT_MAX,FLT_MAX)), max(Vector2f(0,0)) {
+
+    }
+
+};
+
 class Polygon {
 public:
     std::vector<Vector2f> verts;
@@ -202,6 +215,8 @@ public:
     bool isInFrontOf(const Vector2f& point, const Vector2f& dir);
     bool isInFrontOf(Polygon& rhs);
     bool intersect(Polygon& rhs);
+
+    AABB getBox();
 
 };
 

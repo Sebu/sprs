@@ -21,13 +21,17 @@ public:
     int xgrid_;
     int ygrid_;
 
+    int seedsWidth_;
+
     bool findAllMatches;
     float maxError;
 
     uint matchStep;
 
     std::vector<Patch*> seeds;
-    std::vector<Patch*> patches;
+    std::vector<Patch*> polyominoSeeds;
+    std::vector<Patch*> blocks;
+
     std::list<Epitome*> epitomes;
 
 
@@ -58,7 +62,6 @@ public:
 
     // epitome generation
     void generateEpitomes();
-
 
     // debug
     std::map<std::string, cv::Mat> debugImages;

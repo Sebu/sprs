@@ -95,3 +95,15 @@ bool Polygon::intersect(Polygon& rhs) {
     if (rhs.isInFrontOf(*this) || isInFrontOf(rhs)) return false;
     return true;
 }
+AABB Polygon::getBox() {
+    AABB box;
+    for(uint i=0; i<verts.size(); i++) {
+        Vector2f vert = verts[i];
+        if(vert.m_v[0]<box.min.m_v[0]) box.min.m_v[0] = vert.m_v[0];
+        if(vert.m_v[1]<box.min.m_v[1]) box.min.m_v[1] = vert.m_v[1];
+        if(vert.m_v[0]>box.max.m_v[0]) box.max.m_v[0] = vert.m_v[0];
+        if(vert.m_v[1]>box.max.m_v[1]) box.max.m_v[1] = vert.m_v[1];
+    }
+    return box;
+}
+
