@@ -19,6 +19,7 @@ void CalculationThread::step() {
 void CalculationThread::step2() {
     if(!seedmap) init();
     seedmap->generateEpitomes();
+
     cv::Mat epitomeMap(seedmap->debugEpitomeMap());
     debugWidgetL->fromIpl( epitomeMap, "epitome map" );
     debugWidgetL->updateGL();
@@ -60,7 +61,7 @@ bool CalculationThread::singleStep(int x, int y) {
 
             for (uint j=0; j<seedmap->blocks.size(); j++) {
                 Patch *p = seedmap->blocks[j];
-                if ((p->hull_.intersect(hull))) {
+                if ((p->hull_.intersects(hull))) {
 //                    match->overlapedPatches.push_back(p);
                     cv::rectangle(tmpImage, p->hull_.verts[0], p->hull_.verts[2], cv::Scalar(0,100,100,100));
                 }

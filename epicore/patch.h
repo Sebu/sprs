@@ -9,6 +9,23 @@
 
 class Match;
 
+
+class Square
+{
+public:
+    bool inUse_;
+    Polygon hull_;
+    std::vector<Match*> overlapingMatches_;
+
+    Square(int x, int y): inUse_(0) {
+        hull_.verts.push_back(Vector2f(x,y));
+        hull_.verts.push_back(Vector2f(x+4,y));
+        hull_.verts.push_back(Vector2f(x+4,y+4));
+        hull_.verts.push_back(Vector2f(x,y+4));
+    }
+
+};
+
 class Patch
 {
 private:
@@ -21,6 +38,8 @@ public:
     int id_;
 
     int x_, y_, w_, h_;
+
+    int size_;
 
     float scale_;
     bool transformed_;

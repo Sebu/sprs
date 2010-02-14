@@ -2,7 +2,7 @@
 #include <limits.h>
 #include <fstream>
 #include <sstream>
-
+#include <QList>
 #include "epitome.h"
 
 
@@ -13,10 +13,12 @@ Epitome::Epitome() : maxX(0), minX(INT_MAX), maxY(0), minY(INT_MAX)
     id_ = staticCounter_++;
 }
 
+
+
 void Epitome::caclDimensions() {
     // align
-    for(uint i=0; i< reconPatches_.size(); i++) {
-        Patch *p = reconPatches_[i];
+    for(uint i=0; i< reconSeeds_.size(); i++) {
+        Patch *p = reconSeeds_[i];
 
         // find min x and y
         if(p->x_ < minX) minX = p->x_;
@@ -32,11 +34,11 @@ cv::Mat Epitome::getMap() {
     caclDimensions();
     int width = maxX-minX;
     int height = maxY-minY;
-    std::cout << width << " " << height << " " << minX << " " << minY << " " << reconPatches_.size() << std::endl;
+    std::cout << width << " " << height << " " << minX << " " << minY << " " << reconSeeds_.size() << std::endl;
 
     cv::Mat map = cv::Mat::zeros(height, width, CV_8UC3);
-    for(uint i=0; i< reconPatches_.size(); i++) {
-        Patch *p = reconPatches_[i];
+    for(uint i=0; i< reconSeeds_.size(); i++) {
+        Patch *p = reconSeeds_[i];
         // save seeds
         std::cout << p->x_ - minX << " " << p->y_ - minY << std::endl;
         cv::Mat selection(map, cv::Rect( p->x_ - minX, p->y_ - minY, p->w_, p->h_));
@@ -47,7 +49,7 @@ cv::Mat Epitome::getMap() {
 
 void Epitome::save()
 {
-    if (reconPatches_.empty()) return;
+    if (reconSeeds_.empty()) return;
 
     caclDimensions();
 
@@ -55,15 +57,15 @@ void Epitome::save()
     fileName << "../epitomes/" << id_;
 
     std::cout << fileName << std::endl;
-    Patch* first = reconPatches_.front();
-    cv::Mat seedImage = cv::Mat::zeros(first->h_, reconPatches_.size()*first->w_, CV_8UC3);
+    Patch* first = reconSeeds_.front();
+    cv::Mat seedImage = cv::Mat::zeros(first->h_, reconSeeds_.size()*first->w_, CV_8UC3);
 
 
 
     std::ofstream ofs( (fileName.str() + ".txt").c_str() );
     ofs << maxX-minX << " " << maxY-minY << " ";
-    for(uint i=0; i< reconPatches_.size(); i++) {
-        Patch *p = reconPatches_[i];
+    for(uint i=0; i< reconSeeds_.size(); i++) {
+        Patch *p = reconSeeds_[i];
         // save seeds
         cv::Mat selection(seedImage, cv::Rect(i*p->w_, 0, p->w_, p->h_));
         p->patchImage.copyTo(selection);

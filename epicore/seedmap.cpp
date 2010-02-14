@@ -7,16 +7,32 @@
 #include "epitome.h"
 
 
-bool patchSorter (Patch* i, Patch* j) { return (i->overlapingMatches.size() > j->overlapingMatches.size() ); }
+bool squareSorter (Square* i, Square* j) { return (i->overlapingMatches_.size() > j->overlapingMatches_.size() ); }
 
 
 void SeedMap::generateEpitomes() {
 
-    std::list<Patch*> sortedBlocks;
+
+    // create polyomino table
+
+    std::vector<Square*> map;
+    std::list<Square*> sortedSquares;
+
+    uint width = baseImage.cols/4;
+    uint height = baseImage.rows/4;
+
+
+    for(uint y=0; y<height; y++) {
+        for(uint x=0; x<width; x++) {
+            Square* s = new Square(x*4,y*4);
+            map.push_back(s);
+            sortedSquares.push_back(s);
+        }
+    }
+
 
     // crappy setup
     foreach(Patch* block, blocks) {
-        sortedBlocks.push_back(block);
         foreach(Match* match, *(block->matches_)) {
             // calc bbox of match
             AABB box = match->hull_.getBox();
@@ -25,92 +41,59 @@ void SeedMap::generateEpitomes() {
             uint maxx = box.max.m_v[0] / xgrid_;
             uint maxy = box.max.m_v[1] / ygrid_;
 
-            maxx-=3;
-            maxy-=3;
-
             // find all potential seeds
             for(uint y=miny; y<maxy; y++) {
                 for(uint x=minx; x<maxx; x++) {
-                    Patch* seed = polyominoSeeds.at(y*seedsWidth_ + x);
+                    Square* square = map.at(y*width + x);
                     // get only overlaped seeds
-                    if (seed->hull_.intersect(match->hull_)) {
-                        match->overlapedSeeds.push_back(seed);
-                        seed->overlapingMatches.push_back(match);
+                    if (square->hull_.intersects(match->hull_)) {
+                        match->overlapedSquares_.push_back(square);
+                        square->overlapingMatches_.push_back(match);
                     }
                 }
             }
 
         }
     }
+
+    sortedSquares.sort(squareSorter);
+
+    foreach(Square* s, sortedSquares)
+        std::cout << s->overlapingMatches_.size() << " ";
+
     std::cout <<  "pre calc done"  << std::endl;
 
+/*
     // sort patches by overlap count
-    sortedBlocks.sort(patchSorter);
-
-    // create epitomes
-    while(sortedBlocks.size()!=0) {
+    while(sortedSquares.size()!=0) {
 
         int deltaE = 0;
         int deltaI = 0;
+        int benefit = 0;
 
         // get first block
-        Patch* block = sortedBlocks.front();
-        sortedBlocks.pop_front();
+        Square* square = sortedSquares.front();
+        sortedSquares.pop_front();
 
-        if(block->satisfied_)
+        if(square->inUse_)
             continue;
 
         Epitome* epi = new Epitome();
 
-        // TODO: grow epitome :?
-        // do {
-        std::vector<Patch*> gotSatisfied;
 
-        foreach(Match* match, block->overlapingMatches) {
+        foreach(Match* match, square->overlapingMatches_) {
 
             // block of match allready satisfied?
             if(match->block->satisfied_) continue;
+            benefit += epi->grow(match);
 
-            match->block->satisfied_=true;
-            gotSatisfied.push_back(match->block);
-
-            foreach(Patch* cover, match->overlapedSeeds) {
-
-
-
-                if(cover->isPatch_ && !cover->satisfied_) {
-                    cover->satisfied_ = true;
-                    gotSatisfied.push_back(cover);
-                }
-                if( !cover->inEpitome_) {
-                    cover->inEpitome_ = true;
-                    epi->reconPatches_.push_back(cover);
-                    deltaE += patchW_ * patchH_;
-                }
-            }
-        }
-
-        // additionaly recontructed image region
-        deltaI = (int)gotSatisfied.size() * patchW_ * patchH_;
-
-        int benefit = deltaI  - deltaE;
-//        std::cout << "benefit: " << benefit << std::endl;
-
-        if(benefit>=0) {
-            block->satisfied_ = true;
-            epitomes.push_back(epi);
-            //            epi->save();
-        } else {
-//            sortedBlocks.push_back(block);
-            foreach(Patch* p, gotSatisfied)
-                p->satisfied_ = false;
-            foreach(Patch* p, epi->reconPatches_)
-                p->inEpitome_ = false;
+            match->block->satisfied_ = true;
 
         }
+
+        std::cout << "benefit: " << benefit << std::endl;
     }
-    //    Epitome* e = epitomes.front();
-    //    cv::imshow("test",e->getMap());
+//*/
 
 }
 
@@ -216,10 +199,10 @@ cv::Mat SeedMap::debugEpitomeMap() {
     int color = 0;
     int step = 255/epitomes.size();
     foreach(Epitome* epi, epitomes) {
-        foreach(Patch* patch, epi->reconPatches_) {
+        foreach(Patch* patch, epi->reconSeeds_) {
             cv::rectangle(image, patch->hull_.verts[0], patch->hull_.verts[2],cv::Scalar((128-color) % 255,(255-color) % 255,color,255), 2);
         }
-        foreach(Patch* patch, epi->reconPatches_) {
+        foreach(Patch* patch, epi->reconSeeds_) {
             copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
         }
 
@@ -271,7 +254,6 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
     // add seeds
     float scale = 1.0f;
 
-
     for (int z=0; z< depth; z++) {
 
         float scaleWidth  = source.cols / scale;
@@ -280,12 +262,8 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
         int width =  ((scaleWidth-patchW_) / xgrid_) + 1;
         int height = ((scaleHeight-patchH_) / ygrid_) + 1;
 
-        if(z==0)
-            seedsWidth_ =  width;
-
         // generate new seeds
         Patch* seed = 0;
-        int factor = patchW_ / xgrid_;
         for(int y=0; y<height; y++) {
             int localY = y*ygrid_;
             for(int x=0; x<width; x++) {
@@ -301,10 +279,6 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
                         seed = new Patch( source, sourceGray, localX, localY, patchW_, patchH_,  scale, flip);
 
                     seeds.push_back(seed);
-
-                    if(flip==0 && z==0)
-                        polyominoSeeds.push_back(seed);
-
                 }
             }
         }

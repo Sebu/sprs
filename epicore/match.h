@@ -7,6 +7,7 @@
 #include "patch.h"
 
 class Patch;
+class Square;
 
 class Match
 {
@@ -38,7 +39,7 @@ public:
 
 
 
-    std::vector<Patch*> overlapedSeeds;
+    std::vector<Square*> overlapedSquares_;
 
 
 

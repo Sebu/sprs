@@ -14,7 +14,7 @@ bool Patch::overlaps(Vector2f& v) {
 
 bool Patch::overlaps(Match* m) {
     Polygon p= m->hull_;
-    return hull_.intersect(p);
+    return hull_.intersects(p);
 }
 
 void Patch::resetMatches() {
@@ -269,6 +269,7 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, in
 {
 
     id_ = staticCounter_++;
+    size_ = w_ * h_;
 
     hull_ = Polygon::square(x_,y_,w_,h_);
     patchImage = sourceImage_(cv::Rect(x_,y_,w_,h_)).clone();

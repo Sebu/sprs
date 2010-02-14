@@ -214,7 +214,7 @@ public:
 
     bool isInFrontOf(const Vector2f& point, const Vector2f& dir);
     bool isInFrontOf(Polygon& rhs);
-    bool intersect(Polygon& rhs);
+    bool intersects(Polygon& rhs);
 
     AABB getBox();
 

@@ -11,18 +11,24 @@ public:
     int id_;
 
     int maxX, minX, maxY, minY;
-    std::vector<Patch*> reconPatches_;
+    std::vector<Patch*> reconSeeds_;
     std::vector<Polygon*> segments_;
 
     Epitome();
     void caclDimensions();
-    void grow();
+
+
+    bool intersects(Patch*);
+    bool intersects(Match*);
+    int grow(Match*);
+
+
     cv::Mat getMap();
 
 
     //
     void save();
-//    void load();
+    //    void load();
 };
 
 #endif // EPITOME_H

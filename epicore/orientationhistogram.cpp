@@ -32,7 +32,7 @@ void OrientHist::genOrientHists() {
         cv::Mat rotPatch;
         cv::Mat selectionT(transform, cv::Rect(0,0,3,2));
         cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->w_, patch_->h_));
-//        cv::imshow("test", rotPatch);
+
         genSingle(rotPatch, i);
 
     }
