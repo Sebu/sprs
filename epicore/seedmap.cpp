@@ -31,9 +31,31 @@ void SeedMap::generateEpitomes() {
         }
     }
 
+
+    // neighbours
+    // FIXME: :D
     for(uint y=0; y<height; y++) {
         for(uint x=0; x<width; x++) {
             Square* s = map[y*width+x];
+
+            if (x>0 && y>0) {
+                Square* n = map[(y-1)*width +(x-1)];
+                s->neighbours_.push_back(n);
+            }
+
+            if (x>0 && y<height-1) {
+                Square* n = map[(y+1)*width +(x-1)];
+                s->neighbours_.push_back(n);
+            }
+
+            if (x<width-1 && y>0) {
+                Square* n = map[(y-1)*width +(x+1)];
+                s->neighbours_.push_back(n);
+            }
+            if(x<width-1 && y<height-1) {
+                Square* n = map[(y+1)*width +(x+1)];
+                s->neighbours_.push_back(n);
+            }
             if (x>0) {
                 Square* n = map[y*width +(x-1)];
                 s->neighbours_.push_back(n);
@@ -87,6 +109,8 @@ void SeedMap::generateEpitomes() {
     sortedSquares.sort(squareSorter);
 
     std::cout <<  "pre calc done"  << std::endl;
+    // reset satisfied
+
 
 
     // sort patches by overlap count
@@ -139,11 +163,13 @@ void SeedMap::generateEpitomes() {
                 // add neighbours to chartSquares
                 foreach(Square* s, deltaESquares) {
                     chart->reconSquares_.push_back(s);
-                    chartSquares.push_back(s);
+                    if(!s->done_)
+                        chartSquares.push_back(s);
+                    foreach(Square* neighbour, s->neighbours_)
+                        if(!neighbour->done_)
+                            chartSquares.push_back(neighbour);
                 }
 
-                foreach(Square* neighbour, current->neighbours_)
-                  chartSquares.push_back(neighbour);
 
             } else {
                 foreach(Square* s, deltaESquares) s->inUse_ = false;
@@ -154,10 +180,17 @@ void SeedMap::generateEpitomes() {
         if(!chart->reconSquares_.empty())
            epitomes.push_back(chart);
 //        else
-//            sortedSquares.push_back(chartSquare);
+//            if(!chartSquare->done_)
+//                sortedSquares.push_back(chartSquare);
 
     }
-    std::cout << epitomes.size() << std::endl;
+
+    int unsatisfied = 0;
+    foreach(Patch* p, blocks)
+        if(!p->satisfied_) unsatisfied++;
+
+    std::cout << epitomes.size() << " "  << unsatisfied << std::endl;
+
 }
 
 void SeedMap::loadMatches(std::string fileName) {
@@ -263,13 +296,15 @@ cv::Mat SeedMap::debugEpitomeMap() {
     float step = 255.0f/epitomes.size();
     foreach(Chart* epi, epitomes) {
         foreach(Square* square, epi->reconSquares_) {
-            cv::rectangle(image, square->hull_.verts[0], square->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255));
+            cv::rectangle(image, square->hull_.verts[0], square->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255),2);
         }
-        /*
-        foreach(Patch* patch, epi->reconSquares_) {
-            copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
+
+        foreach(Square* square, epi->reconSquares_) {
+            Vector2f v = square->hull_.verts[0];
+            int x = v.m_v[0];
+            int y = v.m_v[1];
+            copyBlock(sourceImage, debugImages["epitomemap"], cv::Rect(x, y, 4, 4), cv::Rect(x,y, 4, 4) );
         }
-        //*/
 
         color += step;
     }

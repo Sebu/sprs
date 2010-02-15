@@ -82,7 +82,7 @@ void Patch::serialize(std::ofstream& ofs) {
 
 float Patch::reconError(Match* m) {
 
-    float alpha = .7f; // 0 <= alpha <= 2
+    float alpha = 1.0f; // 0 <= alpha <= 2
     float beta  = 0.0000000001f;
 
     // reconstruct
