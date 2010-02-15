@@ -4,22 +4,20 @@
 #include <vector>
 #include "patch.h"
 
-class Epitome
+class Chart
 {
 public:
     static int staticCounter_;
     int id_;
 
     int maxX, minX, maxY, minY;
-    std::vector<Patch*> reconSeeds_;
-    std::vector<Polygon*> segments_;
 
-    Epitome();
+    std::vector<Square*> reconSquares_;
+
+    Chart();
     void caclDimensions();
 
 
-    bool intersects(Patch*);
-    bool intersects(Match*);
     int grow(Match*);
 
 

@@ -29,7 +29,7 @@ public:
     std::vector<Patch*> seeds;
     std::vector<Patch*> blocks;
 
-    std::list<Epitome*> epitomes;
+    std::list<Chart*> epitomes;
 
 
     cv::Mat sourceImage;

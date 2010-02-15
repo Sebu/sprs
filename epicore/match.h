@@ -39,7 +39,7 @@ public:
 
 
 
-    std::vector<Square*> overlapedSquares_;
+    std::vector<Square*> coveredSquares_;
 
 
 

@@ -31,6 +31,7 @@ Match::Match(Patch* seed)
 
 }
 
+
 void Match::calcHull() {
     double points[4][2] = { {0 , 0},
                             {w_, 0},

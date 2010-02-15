@@ -18,17 +18,42 @@ void SeedMap::generateEpitomes() {
     std::vector<Square*> map;
     std::list<Square*> sortedSquares;
 
-    uint width = baseImage.cols/4;
-    uint height = baseImage.rows/4;
+    int width = baseImage.cols/4;
+    int height = baseImage.rows/4;
 
 
     for(uint y=0; y<height; y++) {
         for(uint x=0; x<width; x++) {
             Square* s = new Square(x*4,y*4);
+
             map.push_back(s);
             sortedSquares.push_back(s);
         }
     }
+
+    for(uint y=0; y<height; y++) {
+        for(uint x=0; x<width; x++) {
+            Square* s = map[y*width+x];
+            if (x>0) {
+                Square* n = map[y*width +(x-1)];
+                s->neighbours_.push_back(n);
+            }
+            if (y>0) {
+                Square* n = map[(y-1)*width +x];
+                s->neighbours_.push_back(n);
+            }
+            if(x<width-1) {
+                Square* n = map[y*width +(x+1)];
+                s->neighbours_.push_back(n);
+            }
+            if(y<height-1) {
+                Square* n = map[(y+1)*width +x];
+                s->neighbours_.push_back(n);
+            }
+
+        }
+    }
+
 
 
     // crappy setup
@@ -36,10 +61,13 @@ void SeedMap::generateEpitomes() {
         foreach(Match* match, *(block->matches_)) {
             // calc bbox of match
             AABB box = match->hull_.getBox();
-            uint minx = box.min.m_v[0] / xgrid_;
-            uint miny = box.min.m_v[1] / ygrid_;
-            uint maxx = box.max.m_v[0] / xgrid_;
-            uint maxy = box.max.m_v[1] / ygrid_;
+            uint minx = std::max( (int)(box.min.m_v[0] / xgrid_), 0 );
+            uint miny = std::max( (int)(box.min.m_v[1] / ygrid_), 0 );
+            uint maxx = std::min( (int)(box.max.m_v[0] / xgrid_), width);
+            uint maxy = std::min( (int)(box.max.m_v[1] / ygrid_), height);
+
+
+
 
             // find all potential seeds
             for(uint y=miny; y<maxy; y++) {
@@ -47,7 +75,7 @@ void SeedMap::generateEpitomes() {
                     Square* square = map.at(y*width + x);
                     // get only overlaped seeds
                     if (square->hull_.intersects(match->hull_)) {
-                        match->overlapedSquares_.push_back(square);
+                        match->coveredSquares_.push_back(square);
                         square->overlapingMatches_.push_back(match);
                     }
                 }
@@ -58,43 +86,78 @@ void SeedMap::generateEpitomes() {
 
     sortedSquares.sort(squareSorter);
 
-    foreach(Square* s, sortedSquares)
-        std::cout << s->overlapingMatches_.size() << " ";
-
     std::cout <<  "pre calc done"  << std::endl;
 
-/*
-    // sort patches by overlap count
-    while(sortedSquares.size()!=0) {
 
-        int deltaE = 0;
-        int deltaI = 0;
-        int benefit = 0;
+    // sort patches by overlap count
+    while(!sortedSquares.empty()) {
+
 
         // get first block
-        Square* square = sortedSquares.front();
+        Square* chartSquare = sortedSquares.front();
         sortedSquares.pop_front();
 
-        if(square->inUse_)
+        if(chartSquare->done_)
             continue;
 
-        Epitome* epi = new Epitome();
+        Chart* chart = new Chart();
+        std::list<Square*> chartSquares;
 
+        chartSquares.push_back(chartSquare);
+        // block coverrage
+        while(!chartSquares.empty()) {
+            std::vector<Patch*> deltaIBlocks;
+            std::vector<Square*> deltaESquares;
+            int deltaE = 0;
+            int deltaI = 0;
 
-        foreach(Match* match, square->overlapingMatches_) {
+            Square* current = chartSquares.front();
+            chartSquares.pop_front();
+            if(current->done_) continue;
 
-            // block of match allready satisfied?
-            if(match->block->satisfied_) continue;
-            benefit += epi->grow(match);
+            foreach(Match* match, current->overlapingMatches_) {
 
-            match->block->satisfied_ = true;
+                // block of match allready satisfied?
+                if(match->block->satisfied_) continue;
+                match->block->satisfied_ = true;
+                deltaIBlocks.push_back(match->block);
+                deltaI += 16*16;
 
+                foreach(Square* s, match->coveredSquares_) {
+                    if(s->inUse_) continue;
+
+                    s->inUse_=true;
+                    deltaE += 16;
+                    deltaESquares.push_back(s);
+                }
+            }
+            int benefit = deltaI - deltaE;
+            std::cout << "benefit: " << benefit << std::endl;
+            if(benefit>=0) {
+                // mark as all matches satisfied
+                current->done_ = true;
+                // add neighbours to chartSquares
+                foreach(Square* s, deltaESquares) {
+                    chart->reconSquares_.push_back(s);
+                    chartSquares.push_back(s);
+                }
+
+                foreach(Square* neighbour, current->neighbours_)
+                  chartSquares.push_back(neighbour);
+
+            } else {
+                foreach(Square* s, deltaESquares) s->inUse_ = false;
+                foreach(Patch* b, deltaIBlocks) b->satisfied_ = false;
+            }
         }
 
-        std::cout << "benefit: " << benefit << std::endl;
-    }
-//*/
+        if(!chart->reconSquares_.empty())
+           epitomes.push_back(chart);
+//        else
+//            sortedSquares.push_back(chartSquare);
 
+    }
+    std::cout << epitomes.size() << std::endl;
 }
 
 void SeedMap::loadMatches(std::string fileName) {
@@ -188,7 +251,7 @@ void SeedMap::match(Patch& patch) {
         patch.copyMatches();
     }
 
-    
+
 }
 
 
@@ -196,15 +259,17 @@ void SeedMap::match(Patch& patch) {
 cv::Mat SeedMap::debugEpitomeMap() {
     cv::Mat image = debugImages["epitomemap"] = cv::Mat::zeros(sourceImage.size(), CV_8UC3);
 
-    int color = 0;
-    int step = 255/epitomes.size();
-    foreach(Epitome* epi, epitomes) {
-        foreach(Patch* patch, epi->reconSeeds_) {
-            cv::rectangle(image, patch->hull_.verts[0], patch->hull_.verts[2],cv::Scalar((128-color) % 255,(255-color) % 255,color,255), 2);
+    float color = 0;
+    float step = 255.0f/epitomes.size();
+    foreach(Chart* epi, epitomes) {
+        foreach(Square* square, epi->reconSquares_) {
+            cv::rectangle(image, square->hull_.verts[0], square->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255));
         }
-        foreach(Patch* patch, epi->reconSeeds_) {
+        /*
+        foreach(Patch* patch, epi->reconSquares_) {
             copyBlock(patch->patchImage, debugImages["epitomemap"], cv::Rect(0, 0, patch->w_, patch->h_), cv::Rect(patch->x_, patch->y_, patch->w_, patch->h_) );
         }
+        //*/
 
         color += step;
     }
@@ -290,7 +355,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
 }
 
 void SeedMap::addSeedsFromEpitomes() {
-    foreach(Epitome* epi, epitomes) {
+    foreach(Chart* epi, epitomes) {
         cv::Mat map = epi->getMap();
         addSeedsFromImage(map,1);
     }
