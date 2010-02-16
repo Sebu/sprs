@@ -45,7 +45,7 @@ public:
 
 
     Patch* getPatch(int x, int y);
-    void match(Patch& patch);
+    void match(Patch* patch);
 
     void saveReconstruction(std::string filename);
 

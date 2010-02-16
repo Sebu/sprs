@@ -33,6 +33,7 @@ void Patch::copyMatches() {
     for(uint i=0; i<matches_->size(); i++) {
         Match* oldMatch = matches_->at(i);
         Match* newMatch = new Match(*oldMatch);
+        newMatch->block = this;
 
         // recalculate colorScale
         newMatch->colorScale_=(cv::Scalar::all(1.0f));
@@ -82,7 +83,7 @@ void Patch::serialize(std::ofstream& ofs) {
 
 float Patch::reconError(Match* m) {
 
-    float alpha = 1.0f; // 0 <= alpha <= 2
+    float alpha = .6f; // 0 <= alpha <= 2
     float beta  = 0.0000000001f;
 
     // reconstruct
@@ -94,7 +95,7 @@ float Patch::reconError(Match* m) {
     for(uint i=0; i<4; i++)
         m->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
-    if(m->colorScale_[0]>1.25f || m->colorScale_[1]>1.25f || m->colorScale_[2]>1.25f) return 100000.0f;
+    if(m->colorScale_[0]>1.25f || m->colorScale_[1]>1.25f || m->colorScale_[2]>1.25f) return FLT_MAX;
 
     reconstruction = cv::Mat( m->reconstruct() );
 
@@ -141,7 +142,7 @@ void Patch::findFeatures() {
 //    std::cout << "variance" << variance << std::endl;
 
     // track initial features
-    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 4, .01, .01);
+    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 3, .01, .1);
     if(pointsSrc.size()<3)
         std::cout << "too bad features" << std::endl;
 
@@ -165,7 +166,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::calcOpticalFlowPyrLK( grayPatch, grayRotated,
                               pointsSrc, pointsDest,
                               status, err,
-                              cv::Size(5,5), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 30, 0.1));
+                              cv::Size(3,3), 2, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 40, 0.1));
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -201,7 +202,7 @@ Match* Patch::match(Patch& other, float maxError) {
 
     double histDiff = cv::compareHist(hist, other.hist, CV_COMP_CHISQR)/ 255.0;
 //    std::cout << histDiff << std::endl;
-    if(histDiff > 1.0) return 0;
+    if(histDiff > 2.0) return 0;
 
 
 
@@ -215,7 +216,7 @@ Match* Patch::match(Patch& other, float maxError) {
 
     Match* match = new Match(&other);
     match->block = this;
-    match->transformed_ = other.transformed_;
+
 
     // apply initial rotation TODO: float :D
     if ((int)orientation!=0) {

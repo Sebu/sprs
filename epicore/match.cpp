@@ -7,6 +7,7 @@
 Match::Match(Patch* seed)
     : colorScale_(cv::Scalar::all(1.0f)), error_(0.0f), seedX(0), seedY(0), w_(0), h_(0), scale_(0.0), transformed_(0)
 {
+
     rotMat = cv::Mat::eye(3,3,CV_64FC1);
     warpMat = cv::Mat::eye(3,3,CV_64FC1);
     scaleMat = cv::Mat::eye(3,3,CV_64FC1);
@@ -46,14 +47,22 @@ void Match::calcHull() {
     for(int i=0; i<4; i++ ) {
         cv::Mat p = (cv::Mat_<double>(3,1) << points[i][0], points[i][1], 1);
 
-       cv::Mat a =  inverted * p;
-
+        cv::Mat a =  inverted * p;
         Vector2f point;
         point.m_v[0] = a.at<double>(0,0);
         point.m_v[1] = a.at<double>(0,1);
         hull_.verts.push_back(point);
-
     }
+
+    // flipped? correct orientation
+    Vector2f v1 = hull_.verts[0];
+    Vector2f v2 = hull_.verts[1];
+    Vector2f v3 = hull_.verts[2];
+    float cross = ( (v2.m_v[0] - v1.m_v[0]) * (v3.m_v[1]-v2.m_v[1])) - ( (v2.m_v[1] - v1.m_v[1]) * (v3.m_v[0]-v2.m_v[0]) );
+    if (cross<0.0)
+        std::reverse(hull_.verts.begin(), hull_.verts.end());
+
+
 
 }
 

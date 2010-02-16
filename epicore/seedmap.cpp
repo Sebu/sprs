@@ -38,6 +38,7 @@ void SeedMap::generateEpitomes() {
         for(uint x=0; x<width; x++) {
             Square* s = map[y*width+x];
 
+            //*
             if (x>0 && y>0) {
                 Square* n = map[(y-1)*width +(x-1)];
                 s->neighbours_.push_back(n);
@@ -56,6 +57,7 @@ void SeedMap::generateEpitomes() {
                 Square* n = map[(y+1)*width +(x+1)];
                 s->neighbours_.push_back(n);
             }
+            //*/
             if (x>0) {
                 Square* n = map[y*width +(x-1)];
                 s->neighbours_.push_back(n);
@@ -179,9 +181,9 @@ void SeedMap::generateEpitomes() {
 
         if(!chart->reconSquares_.empty())
            epitomes.push_back(chart);
-        else
-            if(!chartSquare->done_)
-                sortedSquares.push_back(chartSquare);
+//        else
+//            if(!chartSquare->done_)
+//                sortedSquares.push_back(chartSquare);
 
     }
 
@@ -228,7 +230,7 @@ void SeedMap::resetMatches() {
 Patch* SeedMap::matchNext() {
     if (matchStep>=blocks.size()) return 0;
     Patch* patch = blocks[matchStep++];
-    match(*patch);
+    match(patch);
     return patch;
 }
 
@@ -243,26 +245,28 @@ void SeedMap::saveReconstruction(std::string filename) {
 }
 
 
-void SeedMap::match(Patch& patch) {
+void SeedMap::match(Patch* patch) {
 
-    patch.findFeatures();
+    patch->findFeatures();
 
-    if (!patch.matches_) {
-        patch.matches_ = new std::vector<Match*>;
+    if (!patch->matches_) {
+        patch->matches_ = new std::vector<Match*>;
 
-#pragma omp parallel for
+
+
+        #pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
             Patch* seed = seeds[i];
             if(!termCalculate) {
-                Match* match = patch.match(*seed, maxError);
+                Match* match = patch->match(*seed, maxError);
                 if (match) {
 
-#pragma omp critical
-                    patch.matches_->push_back(match);
+                    #pragma omp critical
+                    patch->matches_->push_back(match);
 
                     if (!match->transformed_ && seed->isPatch_ && findAllMatches) {
                         if (!seed->matches_) {
-                            seed->matches_=patch.matches_;
+                            seed->matches_=patch->matches_;
                             seed->sharesMatches_ = true;
                         }
                     }
@@ -272,14 +276,24 @@ void SeedMap::match(Patch& patch) {
             }
 
         }
+
+        // add self match :P
+        Match* selfMatch = new Match(patch);
+        selfMatch->block = patch;
+        selfMatch->transformed_ = patch->transformed_;
+        selfMatch->error_ = 0.0;
+        selfMatch->calcTransform();
+        selfMatch->calcHull();
+        patch->matches_->push_back(selfMatch);
+
         //        if(termCalculate)
         //            patch.resetMatches();
 
     } else {
-        std::cout << "shares " << patch.matches_->size() <<  " matches @ " <<  patch.x_/16 << " " << patch.y_/16 << std::endl;
+        std::cout << "shares " << patch->matches_->size() <<  " matches @ " <<  patch->x_/16 << " " << patch->y_/16 << std::endl;
 
         //copy matches and recalculate colorScale!
-        patch.copyMatches();
+        patch->copyMatches();
     }
 
 
@@ -319,7 +333,7 @@ cv::Mat SeedMap::debugReconstruction() {
         int w = patch->w_;
         int h = patch->h_;
 
-        if (!patch->matches_ || patch->matches_->empty()) continue;
+        if (!patch->matches_ || patch->matches_->empty() || patch->satisfied_) continue;
 
 
         Match* m = patch->matches_->front();
@@ -366,7 +380,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
             int localY = y*ygrid_;
             for(int x=0; x<width; x++) {
                 int localX = x*xgrid_;
-                for(int flip=0; flip<1; flip++) {
+                for(int flip=0; flip<3; flip++) {
 
                     if ( (localX % patchW_)==0 && (localY % patchH_)==0 && flip==0 && z==0 ) {
                         int indexX = localX / patchW_;
