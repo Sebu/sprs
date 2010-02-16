@@ -179,17 +179,15 @@ void SeedMap::generateEpitomes() {
 
         if(!chart->reconSquares_.empty())
            epitomes.push_back(chart);
-//        else
-//            if(!chartSquare->done_)
-//                sortedSquares.push_back(chartSquare);
+        else
+            if(!chartSquare->done_)
+                sortedSquares.push_back(chartSquare);
 
     }
 
     int unsatisfied = 0;
     foreach(Patch* p, blocks)
-        if(!p->satisfied_) unsatisfied++;
-
-    std::cout << epitomes.size() << " "  << unsatisfied << std::endl;
+        if(!p->satisfied_) std::cout << p->x_/16 << " " << p->y_/16 << std::endl;
 
 }
 
@@ -368,7 +366,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
             int localY = y*ygrid_;
             for(int x=0; x<width; x++) {
                 int localX = x*xgrid_;
-                for(int flip=0; flip<3; flip++) {
+                for(int flip=0; flip<1; flip++) {
 
                     if ( (localX % patchW_)==0 && (localY % patchH_)==0 && flip==0 && z==0 ) {
                         int indexX = localX / patchW_;
