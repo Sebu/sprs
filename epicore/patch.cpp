@@ -142,7 +142,7 @@ void Patch::findFeatures() {
 //    std::cout << "variance" << variance << std::endl;
 
     // track initial features
-    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 3, .01, .1);
+    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 3, .01, .01);
     if(pointsSrc.size()<3)
         std::cout << "too bad features" << std::endl;
 
@@ -202,7 +202,7 @@ Match* Patch::match(Patch& other, float maxError) {
 
     double histDiff = cv::compareHist(hist, other.hist, CV_COMP_CHISQR)/ 255.0;
 //    std::cout << histDiff << std::endl;
-    if(histDiff > 2.0) return 0;
+    if(histDiff > 1.5) return 0;
 
 
 
@@ -239,7 +239,7 @@ Match* Patch::match(Patch& other, float maxError) {
     // 4 reconstruction error
     float reconstructionError =  reconError(match) / (w_*h_);
 
-    if(x_ == other.x_ && y_  == other.y_ && reconstructionError > maxError && !(other.scale_>1.0f)) {
+    if(x_ == other.x_ && y_  == other.y_ && reconstructionError > maxError && other.isPatch_) {
         std::cout << orientation << " bad buddy: " << reconstructionError << std::endl;
     }
 

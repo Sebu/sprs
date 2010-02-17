@@ -197,6 +197,11 @@ public:
 
     }
 
+    inline bool intersect(AABB& box) {
+        if (box.min.m_v[0]>max.m_v[0] &&  box.min.m_v[1]>max.m_v[1]) return false;
+        if (box.max.m_v[0]<min.m_v[0] &&  box.max.m_v[1]<min.m_v[1]) return false;
+        return true;
+    }
 };
 
 class Polygon {

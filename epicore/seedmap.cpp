@@ -7,7 +7,7 @@
 #include "epitome.h"
 
 
-bool squareSorter (Square* i, Square* j) { return (i->overlapingMatches_.size() > j->overlapingMatches_.size() ); }
+bool squareSorter (Square* i, Square* j) { return (i->blocks_ > j->blocks_ ); }
 
 
 void SeedMap::generateEpitomes() {
@@ -31,6 +31,7 @@ void SeedMap::generateEpitomes() {
         }
     }
 
+    std::cout <<  "create squares done"  << std::endl;
 
     // neighbours
     // FIXME: :D
@@ -38,7 +39,7 @@ void SeedMap::generateEpitomes() {
         for(uint x=0; x<width; x++) {
             Square* s = map[y*width+x];
 
-            //*
+            /*
             if (x>0 && y>0) {
                 Square* n = map[(y-1)*width +(x-1)];
                 s->neighbours_.push_back(n);
@@ -78,12 +79,17 @@ void SeedMap::generateEpitomes() {
         }
     }
 
-
+    std::cout <<  "create neighbours done"  << std::endl;
 
     // crappy setup
+    // find all potential seeds
+            for(uint y=0; y<height; y++) {
+                for(uint x=0; x<width; x++) {
+
     foreach(Patch* block, blocks) {
+        bool blockFound = false;
         foreach(Match* match, *(block->matches_)) {
-            // calc bbox of match
+         // calc bbox of match
             AABB box = match->hull_.getBox();
             uint minx = std::max( (int)(box.min.m_v[0] / xgrid_), 0 );
             uint miny = std::max( (int)(box.min.m_v[1] / ygrid_), 0 );
@@ -92,13 +98,14 @@ void SeedMap::generateEpitomes() {
 
 
 
-
-            // find all potential seeds
-            for(uint y=miny; y<maxy; y++) {
-                for(uint x=minx; x<maxx; x++) {
                     Square* square = map.at(y*width + x);
-                    // get only overlaped seeds
+                    AABB box1 = square->hull_.getBox();
                     if (square->hull_.intersects(match->hull_)) {
+                        if(!blockFound) {
+                            blockFound = true;
+                            square->blocks_++;
+
+                        }
                         match->coveredSquares_.push_back(square);
                         square->overlapingMatches_.push_back(match);
                     }
@@ -180,10 +187,10 @@ void SeedMap::generateEpitomes() {
         }
 
         if(!chart->reconSquares_.empty())
-           epitomes.push_back(chart);
-//        else
-//            if(!chartSquare->done_)
-//                sortedSquares.push_back(chartSquare);
+            epitomes.push_back(chart);
+        //        else
+        //            if(!chartSquare->done_)
+        //                sortedSquares.push_back(chartSquare);
 
     }
 
@@ -254,14 +261,14 @@ void SeedMap::match(Patch* patch) {
 
 
 
-        #pragma omp parallel for
+#pragma omp parallel for
         for(uint i=0; i< seeds.size(); i++) {
             Patch* seed = seeds[i];
             if(!termCalculate) {
                 Match* match = patch->match(*seed, maxError);
                 if (match) {
 
-                    #pragma omp critical
+#pragma omp critical
                     patch->matches_->push_back(match);
 
                     if (!match->transformed_ && seed->isPatch_ && findAllMatches) {
@@ -327,7 +334,7 @@ cv::Mat SeedMap::debugEpitomeMap() {
 
 cv::Mat SeedMap::debugReconstruction() {
     debugImages["reconstuct"] = cv::Mat::zeros(sourceImage.size(), CV_8UC3);
-    
+
     for(uint i=0; i< blocks.size(); i++) {
         Patch* patch = blocks[i];
         int w = patch->w_;
@@ -342,9 +349,9 @@ cv::Mat SeedMap::debugReconstruction() {
 
 
 
-        
+
     }
-    
+
     return debugImages["reconstuct"];
 }
 
