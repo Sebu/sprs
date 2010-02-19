@@ -4,13 +4,11 @@
 
 #include <signal.h>
 
-bool termCalculate=0;
 SeedMap* seedmap;
 
 void terminate (int param)
 {
-   termCalculate = 1;
-   seedmap->termCalculate = 1;
+   seedmap->termCalculate_ = 1;
 }
 
 int main(int argc, char *argv[])
@@ -24,14 +22,14 @@ int main(int argc, char *argv[])
     std::string fileName(argv[1]);
     
     cv::Mat image = cv::imread( fileName );
-    seedmap = new SeedMap( image, image, 16);
-    seedmap->loadMatches(fileName);
-    seedmap->maxError = atof(argv[2]);
-    std::cout << seedmap->maxError << std::endl;
+    seedmap = new SeedMap( image, image, 16, true);
+    seedmap->deserialize(fileName);
+    seedmap->maxError_ = atof(argv[2]);
+    std::cout << seedmap->maxError_ << std::endl;
 
-    while(seedmap->matchNext() && !termCalculate) {}
+    seedmap->matchAll();
     
     seedmap->saveReconstruction((fileName + ".recon.jpg").c_str());
-    seedmap->saveMatches(fileName);
+    seedmap->serialize(fileName);
     
 }

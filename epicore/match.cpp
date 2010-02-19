@@ -4,43 +4,46 @@
 #include "cv_ext.h"
 #include "matrix.h"
 
+
+bool matchSorter(Match* i, Match* j) { return (i->error_ < j->error_ ); }
+
 Match::Match(Patch* seed)
-    : colorScale_(cv::Scalar::all(1.0f)), error_(0.0f), seedX(0), seedY(0), w_(0), h_(0), scale_(0.0), transformed_(0)
+    : colorScale_(cv::Scalar::all(1.0f)), error_(0.0f), seedX_(0), seedY_(0), s_(0), scale_(0.0), transformed_(0)
 {
 
-    rotMat = cv::Mat::eye(3,3,CV_64FC1);
-    warpMat = cv::Mat::eye(3,3,CV_64FC1);
-    scaleMat = cv::Mat::eye(3,3,CV_64FC1);
-    flipMat = cv::Mat::eye(3,3,CV_64FC1);
-    translateMat = cv::Mat::eye(3,3,CV_64FC1);
-    transform_ = cv::Mat::eye(3,3,CV_64FC1);
+    rotMat_ = cv::Mat::eye(3,3,CV_64FC1);
+    warpMat_ = cv::Mat::eye(3,3,CV_64FC1);
+    scaleMat_ = cv::Mat::eye(3,3,CV_64FC1);
+    flipMat_ = cv::Mat::eye(3,3,CV_64FC1);
+    translateMat_ = cv::Mat::eye(3,3,CV_64FC1);
+    transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
 
     if (!seed) return;
-    seedX = seed->x_;
-    seedY = seed->y_;
-    translateMat.at<double>(0,2)=-seedX;
-    translateMat.at<double>(1,2)=-seedY;
-    w_ = seed->w_;
-    h_ = seed->h_;
+    seedX_ = seed->x_;
+    seedY_ = seed->y_;
+    translateMat_.at<double>(0,2)=-seedX_;
+    translateMat_.at<double>(1,2)=-seedY_;
+    s_ = seed->s_;
+    s_ = seed->s_;
     scale_ = seed->scale_;
-    scaleMat.at<double>(0,0)/=scale_;
-    scaleMat.at<double>(1,1)/=scale_;
+    scaleMat_.at<double>(0,0)/=scale_;
+    scaleMat_.at<double>(1,1)/=scale_;
 
-    flipMat = seed->flipMat;
+    flipMat_ = seed->flipMat_;
 
-    sourceImage = seed->sourceImage_;
+    sourceImage_ = seed->sourceImage_;
 
 }
 
 
 void Match::calcHull() {
     double points[4][2] = { {0 , 0},
-                            {w_, 0},
-                            {w_, h_},
-                            {0, h_}
+                            {s_, 0},
+                            {s_, s_},
+                            {0, s_}
     };
 
-    cv::Mat selection(transform_, cv::Rect(0,0,3,2));
+    cv::Mat selection(transformMat_, cv::Rect(0,0,3,2));
     cv::Mat inverted;
     invertAffineTransform(selection, inverted);
 
@@ -66,35 +69,45 @@ void Match::calcHull() {
 
 }
 
+
+void Match::save(std::ofstream& ofs) {
+    for (int i=0; i<2; i++)
+        for(int j=0; j<transformMat_.cols; j++)
+            ofs << transformMat_.at<double>(i,j) << " ";
+    ofs << colorScale_[0] << " " << colorScale_[1] << " " << colorScale_[2] << " ";
+}
+
+
+void Match::serialize(std::ofstream& ofs) {
+
+    for (int i=0; i<2; i++)
+        for(int j=0; j<transformMat_.cols; j++)
+            ofs << transformMat_.at<double>(i,j) << " ";
+    ofs << colorScale_[0] << " " << colorScale_[1] << " " << colorScale_[2] << " ";
+    ofs << error_ << " ";
+}
+
 void Match::deserialize(std::ifstream& ifs) {
 
     for (int i=0; i<2; i++)
-        for(int j=0; j<rotMat.cols; j++)
-            ifs >> transform_.at<double>(i,j);
+        for(int j=0; j<rotMat_.cols; j++)
+            ifs >> transformMat_.at<double>(i,j);
     ifs >> colorScale_[0] >> colorScale_[1] >>  colorScale_[2];
     ifs >> error_;
     calcHull();
 }
 
-void Match::serialize(std::ofstream& ofs) {
-
-    for (int i=0; i<2; i++)
-        for(int j=0; j<transform_.cols; j++)
-            ofs << transform_.at<double>(i,j) << " ";
-    ofs << colorScale_[0] << " " << colorScale_[1] << " " << colorScale_[2] << " ";
-    ofs << error_ << " ";
-}
 
 
 void Match::calcTransform() {
-    transform_ =  warpMat * rotMat * flipMat * translateMat *  scaleMat;
+    transformMat_ =  warpMat_ * rotMat_ * flipMat_ * translateMat_ *  scaleMat_;
 }
 
 cv::Mat Match::warp() {
 
     cv::Mat warped;
-    cv::Mat selection(transform_, cv::Rect(0,0,3,2));
-    cv::warpAffine(sourceImage, warped, selection, cv::Size(w_, h_));
+    cv::Mat selection(transformMat_, cv::Rect(0,0,3,2));
+    cv::warpAffine(sourceImage_, warped, selection, cv::Size(s_, s_));
 
     return warped;
 

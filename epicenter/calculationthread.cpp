@@ -33,8 +33,8 @@ bool CalculationThread::singleStep(int x, int y) {
     if(x==-1)
         patch = seedmap->matchNext();
     else {
-        int xlocal = ((float)x/400.0) * (seedmap->sourceImage.size().width / blockSize);
-        int ylocal = ((float)y/400.0) * (seedmap->sourceImage.size().height / blockSize);
+        int xlocal = ((float)x/400.0) * (seedmap->sourceImage_.size().width / blockSize);
+        int ylocal = ((float)y/400.0) * (seedmap->sourceImage_.size().height / blockSize);
 
         patch = seedmap->getPatch(xlocal,ylocal);
         seedmap->match(patch);
@@ -57,8 +57,8 @@ bool CalculationThread::singleStep(int x, int y) {
                 cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,0,255,100));
 
             // coverage area
-            for (uint j=0; j<seedmap->blocks.size(); j++) {
-                Patch *p = seedmap->blocks[j];
+            for (uint j=0; j<seedmap->blocks_.size(); j++) {
+                Patch *p = seedmap->blocks_[j];
                 if ((p->hull_.intersects(hull)))
                     cv::rectangle(tmpImage, p->hull_.verts[0], p->hull_.verts[2], cv::Scalar(0,100,100,100));
             }
@@ -79,10 +79,9 @@ bool CalculationThread::singleStep(int x, int y) {
 }
 
 void CalculationThread::init() {
-    seedmap = new SeedMap( image, base, blockSize);
-    seedmap->findAllMatches = findAllMatches;
-    seedmap->maxError = error;
-    seedmap->loadMatches(fileName);
+    seedmap = new SeedMap( image, base, blockSize, searchInOriginal_);
+    seedmap->maxError_ = error;
+    seedmap->deserialize(fileName);
 }
 
 void CalculationThread::calculate() {

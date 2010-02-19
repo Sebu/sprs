@@ -14,29 +14,28 @@
 class EPICORESHARED_EXPORT SeedMap
 {
 public:
-    bool termCalculate;
+    bool termCalculate_;
 
-    int patchW_;
-    int patchH_;
-    int xgrid_;
-    int ygrid_;
+    int patchS_;
+    int grid_;
 
-    bool findAllMatches;
-    float maxError;
+    bool searchInOriginal_;
+    float maxError_;
 
-    uint matchStep;
+    uint matchStep_;
 
-    std::vector<Patch*> seeds;
-    std::vector<Patch*> blocks;
+    std::vector<Tile*> tiles_;
+    std::vector<Patch*> seeds_;
+    std::vector<Patch*> blocks_;
 
-    std::list<Chart*> epitomes;
+    std::list<Chart*> epitomes_;
 
 
-    cv::Mat sourceImage;
-    cv::Mat sourceGray;
-    cv::Mat baseImage;
+    cv::Mat sourceImage_;
+    cv::Mat sourceGray_;
+    cv::Mat baseImage_;
 
-    SeedMap( cv::Mat& image, cv::Mat& base, int s);
+    SeedMap( cv::Mat& image, cv::Mat& base, int s, bool);
 
     void setImage(cv::Mat& image);
     void setReconSource(cv::Mat& image, int depth);
@@ -54,8 +53,9 @@ public:
     void resetMatches();
     void matchAll();
     Patch* matchNext();
-    void saveMatches(std::string fileName);
-    void loadMatches(std::string fileName);
+    void save(std::string fileName);
+    void serialize(std::string fileName);
+    void deserialize(std::string fileName);
 
     // epitome generation
     void generateEpitomes();

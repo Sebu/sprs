@@ -2,6 +2,7 @@
 #define SEED_H
 
 #include <opencv/cv.h>
+#include <list>
 
 #include "orientationhistogram.h"
 #include "orientationhistogramfast.h"
@@ -10,17 +11,19 @@
 class Match;
 
 
-class Square
+class Tile
 {
 public:
+    int x_, y_;
     bool inUse_;
     bool done_;
     int blocks_;
     Polygon hull_;
-    std::vector<Square*> neighbours_;
+    std::vector<Tile*> neighbours_;
     std::vector<Match*> overlapingMatches_;
+    std::list<Patch*> overlapingBlocks_;
 
-    Square(int x, int y): inUse_(0), done_(0), blocks_(0) {
+    Tile(int x, int y): x_(x), y_(y), inUse_(0), done_(0), blocks_(0) {
         hull_.verts.push_back(Vector2f(x,y));
         hull_.verts.push_back(Vector2f(x+4,y));
         hull_.verts.push_back(Vector2f(x+4,y+4));
@@ -32,27 +35,27 @@ public:
 class Patch
 {
 private:
-    cv::Scalar histMean;
-    std::vector<cv::Point2f> pointsSrc;
+    cv::Scalar histMean_;
+    std::vector<cv::Point2f> pointsSrc_;
 
 
 public:
     static int staticCounter_;
     int id_;
 
-    int x_, y_, w_, h_;
-
+    int x_, y_, s_;
     int size_;
-
+    float variance_;
     float scale_;
-    bool transformed_;
+
+    bool isPatch_;
     bool satisfied_;
-    bool inEpitome_;
-    Polygon hull_;
-
+    bool transformed_;
     bool sharesMatches_;
-    std::vector<Match*>* matches_;
 
+    Polygon hull_;
+    std::vector<Match*>* matches_;
+    Match* finalMatch_;
 
 
     std::vector<Match*> overlapingMatches;
@@ -63,18 +66,16 @@ public:
     cv::Mat sourceGray_;
 
 
-    cv::Mat patchImage;
-    cv::MatND hist;
+    cv::Mat patchImage_;
+    cv::MatND colorHist_;
 
-    cv::Mat grayPatch;
-    float variance;
-    OrientHistFast* orientHist;
+    cv::Mat grayPatch_;
+    OrientHistFast* orientHist_;
 
-    cv::Mat flipMat;
+    cv::Mat flipMat_;
 
-    bool isPatch_;
 
-    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float, int);
+    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int, int, int, float, int);
     bool overlaps(Vector2f& v);
     bool overlaps(Match* m);
 
@@ -88,11 +89,12 @@ public:
     void resetMatches();
     void copyMatches();
 
-    cv::Scalar getHistMean() { return histMean; }
-    void setHistMean(cv::Scalar _hist_mean) { this->histMean = _hist_mean; }
+    cv::Scalar getHistMean() { return histMean_; }
+    void setHistMean(cv::Scalar _hist_mean) { this->histMean_ = _hist_mean; }
 
-    void deserialize(std::ifstream&);
+    void save(std::ofstream&);
     void serialize(std::ofstream&);
+    void deserialize(std::ifstream&);
 
 };
 

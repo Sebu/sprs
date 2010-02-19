@@ -8,7 +8,7 @@
 int Patch::staticCounter_ = 0;
 
 bool Patch::overlaps(Vector2f& v) {
-    if(v.m_v[0]> x_+w_ || v.m_v[0] < x_ || v.m_v[1] > y_+h_ || v.m_v[1] < y_ ) return false;
+    if(v.m_v[0]> x_+s_ || v.m_v[0] < x_ || v.m_v[1] > y_+s_ || v.m_v[1] < y_ ) return false;
     return true;
 }
 
@@ -33,7 +33,7 @@ void Patch::copyMatches() {
     for(uint i=0; i<matches_->size(); i++) {
         Match* oldMatch = matches_->at(i);
         Match* newMatch = new Match(*oldMatch);
-        newMatch->block = this;
+        newMatch->block_ = this;
 
         // recalculate colorScale
         newMatch->colorScale_=(cv::Scalar::all(1.0f));
@@ -51,21 +51,27 @@ void Patch::copyMatches() {
 
 void Patch::deserialize(std::ifstream& ifs) {
     ifs >> x_ >> y_;
-    uint size;
+    int size;
     ifs >> size;
     if (size==-1) return;
     matches_ = new std::vector<Match*>;
-    for(uint j=0; j<size; j++) {
+    for(int j=0; j<size; j++) {
         Match* match = new Match(0);
-        match->sourceImage = sourceImage_;
-        match->w_ = w_;
-        match->h_ = h_;
+        match->sourceImage_ = sourceImage_;
+        match->s_ = s_;
+        match->s_ = s_;
         match->deserialize(ifs);
-        match->block = this;
+        match->block_ = this;
         matches_->push_back(match);
 
     }
 }
+
+void Patch::save(std::ofstream& ofs) {
+    if (finalMatch_)
+        finalMatch_->save(ofs);
+}
+
 
 void Patch::serialize(std::ofstream& ofs) {
     ofs << x_ << " " << y_ << " ";
@@ -101,13 +107,13 @@ float Patch::reconError(Match* m) {
 
 
     // sqaure distance
-//    cv::Mat diff= cv::abs(this->patchImage - reconstruction);
+    //    cv::Mat diff= cv::abs(this->patchImage - reconstruction);
 
 
     float dist=0.0f;
     for (int y=0; y<reconstruction.rows; y++) {
 
-        cv::Vec3b* orig = patchImage.ptr<cv::Vec3b>(y);
+        cv::Vec3b* orig = patchImage_.ptr<cv::Vec3b>(y);
         cv::Vec3b* recon = reconstruction.ptr<cv::Vec3b>(y);
         for(int x=0; x<reconstruction.cols; x++) {
 
@@ -121,35 +127,35 @@ float Patch::reconError(Match* m) {
         }
     }
 
-    return dist / ( pow( variance, alpha) + beta );
+    return dist / ( pow( variance_, alpha) + beta );
 }
 
 void Patch::findFeatures() {
 
     // precalculate variance
-    variance = 0.0f;
-    cv::Scalar mean = cv::mean(grayPatch);
-    for (int y=0; y<grayPatch.rows; y++) {
-        for(int x=0; x<grayPatch.cols; x++) {
-            uchar p = cv::saturate_cast<uchar>(grayPatch.at<uchar>(y,x));
+    variance_ = 0.0f;
+    cv::Scalar mean = cv::mean(grayPatch_);
+    for (int y=0; y<grayPatch_.rows; y++) {
+        for(int x=0; x<grayPatch_.cols; x++) {
+            uchar p = cv::saturate_cast<uchar>(grayPatch_.at<uchar>(y,x));
             float v = ((float)p-(float)mean[0]) / 255.0f;
-            variance += v*v;
+            variance_ += v*v;
 
         }
     }
-//    variance /= (grayPatch.cols*grayPatch.rows);
+    //    variance /= (grayPatch.cols*grayPatch.rows);
 
-//    std::cout << "variance" << variance << std::endl;
+    //    std::cout << "variance" << variance << std::endl;
 
     // track initial features
-    cv::goodFeaturesToTrack(grayPatch, pointsSrc, 3, .01, .01);
-    if(pointsSrc.size()<3)
-        std::cout << "too bad features" << std::endl;
+    cv::goodFeaturesToTrack(grayPatch_, pointsSrc_, 3, .01, .1);
+    if(pointsSrc_.size()<3)
+        std::cout << "no features " << x_ << " " << y_<< std::endl;
 
 }
 bool Patch::trackFeatures(Match* match) {
 
-    if(pointsSrc.size()<3) return true;
+    if(pointsSrc_.size()<3) return true;
 
 
     cv::Mat grayRotated;
@@ -163,8 +169,8 @@ bool Patch::trackFeatures(Match* match) {
     std::vector<float>          err;
 
 
-    cv::calcOpticalFlowPyrLK( grayPatch, grayRotated,
-                              pointsSrc, pointsDest,
+    cv::calcOpticalFlowPyrLK( grayPatch_, grayRotated,
+                              pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(3,3), 2, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 40, 0.1));
 
@@ -174,8 +180,8 @@ bool Patch::trackFeatures(Match* match) {
     int index = 0;
     for(uint i = 0; i < status.size(); i++) {
         if(status[i]) {
-            srcTri[index].x = pointsSrc[i].x;
-            srcTri[index].y = pointsSrc[i].y;
+            srcTri[index].x = pointsSrc_[i].x;
+            srcTri[index].y = pointsSrc_[i].y;
             destTri[index].x = pointsDest[i].x;
             destTri[index].y = pointsDest[i].y;
             index++;
@@ -187,9 +193,9 @@ bool Patch::trackFeatures(Match* match) {
     cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
 
 
-    if(x_==match->seedX && y_==match->seedY) {
+    if(x_==match->seedX_ && y_==match->seedY_) {
     } else {
-        cv::Mat selection( match->warpMat, cv::Rect(0,0,3,2) );
+        cv::Mat selection( match->warpMat_, cv::Rect(0,0,3,2) );
         tmp.copyTo(selection);
         match->transformed_ = true;
     }
@@ -200,30 +206,29 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other, float maxError) {
 
 
-    double histDiff = cv::compareHist(hist, other.hist, CV_COMP_CHISQR)/ 255.0;
-//    std::cout << histDiff << std::endl;
-    if(histDiff > 1.5) return 0;
+    double histDiff = cv::compareHist(colorHist_, other.colorHist_, CV_COMP_CHISQR)/ 255.0;
+    //    std::cout << histDiff << std::endl;
+    if(histDiff > 2.0) return 0;
 
 
 
     // 4.1 rotation, orientation/gradient histogram
-    float orientation = orientHist->minDiff(other.orientHist);
+    float orientation = orientHist_->minDiff(other.orientHist_);
 
     // orientation still to different
-    if(orientHist->diff(other.orientHist,orientation/orientHist->factor_) > 50.0) {
-        return 0;
-    }
+    if(orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_) > 50.0) return 0;
+
 
     Match* match = new Match(&other);
-    match->block = this;
+    match->block_ = this;
 
 
     // apply initial rotation TODO: float :D
     if ((int)orientation!=0) {
-        cv::Point2f center( (w_/2), (h_/2) );
+        cv::Point2f center( (s_/2), (s_/2) );
 
         cv::Mat rotMat = cv::getRotationMatrix2D(center, -orientation, 1.0f);
-        cv::Mat selection( match->rotMat, cv::Rect(0,0,3,2) );
+        cv::Mat selection( match->rotMat_, cv::Rect(0,0,3,2) );
         rotMat.copyTo(selection);
         match->transformed_ = true;
     }
@@ -232,12 +237,12 @@ Match* Patch::match(Patch& other, float maxError) {
 
     // 4.1 KLT matching
     trackFeatures(match);
-//    if (!) { delete match; return 0; }
+    //    if (!) { delete match; return 0; }
 
     match->calcTransform();
 
     // 4 reconstruction error
-    float reconstructionError =  reconError(match) / (w_*h_);
+    float reconstructionError =  reconError(match) / (s_*s_);
 
     if(x_ == other.x_ && y_  == other.y_ && reconstructionError > maxError && other.isPatch_) {
         std::cout << orientation << " bad buddy: " << reconstructionError << std::endl;
@@ -254,7 +259,7 @@ Match* Patch::match(Patch& other, float maxError) {
 
     // debug out
 #ifdef DEBUG
-    std::cout << x_/h_ << " " << y_/h_ << " " <<
+    std::cout << x_/s_ << " " << y_/s_ << " " <<
             "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
     std::cout << " " << other.scale_;
     if(x_==other.x_ && y_==other.y_ && other.isPatch_) std::cout << "\tfound myself!";
@@ -264,29 +269,29 @@ Match* Patch::match(Patch& other, float maxError) {
     return match;
 }
 
-Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, int h, float scale, int flip):
-        histMean(cv::Scalar::all(0.0f)), x_(x), y_(y), w_(w), h_(h), scale_(scale), sharesMatches_(0), matches_(0),
-        sourceImage_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inEpitome_(0), variance(0), isPatch_(0)
+Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip):
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), scale_(scale), sharesMatches_(0), matches_(0), finalMatch_(0),
+        sourceImage_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), variance_(0), isPatch_(0)
 {
 
     id_ = staticCounter_++;
-    size_ = w_ * h_;
+    size_ = s_ * s_;
 
-    hull_ = Polygon::square(x_,y_,w_,h_);
-    patchImage = sourceImage_(cv::Rect(x_,y_,w_,h_)).clone();
+    hull_ = Polygon::square(x_,y_,s_,s_);
+    patchImage_ = sourceImage_(cv::Rect(x_,y_,s_,s_)).clone();
     // flip :)
-    flipMat = cv::Mat::eye(3,3,CV_64FC1);
+    flipMat_ = cv::Mat::eye(3,3,CV_64FC1);
     switch(flip) {
     case 1:
-        cv::flip(patchImage, patchImage, 1);
-        flipMat.at<double>(0,0)=-1.0f;
-        flipMat.at<double>(0,2)=w;
+        cv::flip(patchImage_, patchImage_, 1);
+        flipMat_.at<double>(0,0)=-1.0f;
+        flipMat_.at<double>(0,2)=s_;
         transformed_ = true;
         break;
     case 2:
-        cv::flip(patchImage, patchImage, 0);
-        flipMat.at<double>(1,1)=-1.0f;
-        flipMat.at<double>(1,2)=h;
+        cv::flip(patchImage_, patchImage_, 0);
+        flipMat_.at<double>(1,1)=-1.0f;
+        flipMat_.at<double>(1,2)=s_;
         transformed_ = true;
     default:
         break;
@@ -298,20 +303,20 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int w, in
     int histSize[] = {sbins, sbins, sbins};
     float sranges[] = { 0, 255 };
     const float* ranges[] = { sranges, sranges, sranges };
-    cv::calcHist( &patchImage, 1, channels, cv::Mat(), // do not use mask
-          hist, 3, histSize, ranges,
-          true, // the histogram is uniform
-          false );
+    cv::calcHist( &patchImage_, 1, channels, cv::Mat(), // do not use mask
+                  colorHist_, 3, histSize, ranges,
+                  true, // the histogram is uniform
+                  false );
 
     // cache gray patch version
-    cv::cvtColor(patchImage, grayPatch, CV_BGR2GRAY);
+    cv::cvtColor(patchImage_, grayPatch_, CV_BGR2GRAY);
 
     // generate orientation histogram
     // FIXME: use interface for switching between fast and slow version
-    orientHist = new OrientHistFast(this, 36);
+    orientHist_ = new OrientHistFast(this, 36);
 
 
-    setHistMean( cv::mean(patchImage) );
+    setHistMean( cv::mean(patchImage_) );
 
 
 }

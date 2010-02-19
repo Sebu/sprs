@@ -8,52 +8,47 @@
 
 int Chart::staticCounter_ = 0;
 
-Chart::Chart() : maxX(0), minX(INT_MAX), maxY(0), minY(INT_MAX)
+Chart::Chart(cv::Mat* image) : maxX_(0), minX_(INT_MAX), maxY_(0), minY_(INT_MAX), baseImage_(image)
 {
     id_ = staticCounter_++;
 }
 
 
-int Chart::grow(Match* match) {
-
-}
-
-
 void Chart::caclDimensions() {
     // align
-    for(uint i=0; i< reconSquares_.size(); i++) {
-        //Patch *p = reconSquares_[i];
+    for(uint i=0; i< reconTiles_.size(); i++) {
+        Tile *tile = reconTiles_[i];
 
         // find min x and y
-        //if(p->x_ < minX) minX = p->x_;
-        //if(p->y_ < minY) minY = p->y_;
-        //if(p->x_+p->w_ > maxX) maxX = p->x_+p->w_;
-        //if(p->y_+p->h_ > maxY) maxY = p->y_+p->h_;
+        if(tile->x_ < minX_) minX_ = tile->x_;
+        if(tile->y_ < minY_) minY_ = tile->y_;
+        if(tile->x_+4 > maxX_) maxX_ = tile->x_+4;
+        if(tile->y_+4 > maxY_) maxY_ = tile->y_+4;
 
     }
-    std::cout << minX << " " << minY << std::endl;
+    std::cout << minX_ << " " << minY_ << std::endl;
 }
 
 cv::Mat Chart::getMap() {
     caclDimensions();
-    int width = maxX-minX;
-    int height = maxY-minY;
-    std::cout << width << " " << height << " " << minX << " " << minY << " " << reconSquares_.size() << std::endl;
+    int width = maxX_-minX_;
+    int height = maxY_-minY_;
+    std::cout << width << " " << height << " " << minX_ << " " << minY_ << " " << reconTiles_.size() << std::endl;
 
     cv::Mat map = cv::Mat::zeros(height, width, CV_8UC3);
-    for(uint i=0; i< reconSquares_.size(); i++) {
-        Square *s = reconSquares_[i];
+    for(uint i=0; i< reconTiles_.size(); i++) {
+        Tile *tile = reconTiles_[i];
         // save seeds
-        //std::cout << p->x_ - minX << " " << p->y_ - minY << std::endl;
-        //cv::Mat selection(map, cv::Rect( p->x_ - minX, p->y_ - minY, p->w_, p->h_));
-        //p->patchImage.copyTo(selection);
+        std::cout << tile->x_ - minX_ << " " << tile->y_ - minY_ << std::endl;
+        cv::Mat selection(map, cv::Rect( tile->x_ - minX_, tile->y_ - minY_, 4, 4));
+        (*baseImage_)(cv::Rect(tile->x_,tile->y_,4,4)).copyTo(selection);
     }
    return map;
 }
 
 void Chart::save()
 {
-    if (reconSquares_.empty()) return;
+    if (reconTiles_.empty()) return;
 
     caclDimensions();
 
@@ -61,26 +56,25 @@ void Chart::save()
     fileName << "../epitomes/" << id_;
 
     std::cout << fileName << std::endl;
-    /*
-    Patch* first = reconSquares_.front();
-    cv::Mat seedImage = cv::Mat::zeros(first->h_, reconSquares_.size()*first->w_, CV_8UC3);
+    //*
+    cv::Mat tilesImage = cv::Mat::zeros(4, reconTiles_.size()*4, CV_8UC3);
 
 
 
     std::ofstream ofs( (fileName.str() + ".txt").c_str() );
-    ofs << maxX-minX << " " << maxY-minY << " ";
-    for(uint i=0; i< reconSquares_.size(); i++) {
-        Patch *p = reconSquares_[i];
+    ofs << maxX_-minX_ << " " << maxY_-minY_ << " ";
+    for(uint i=0; i< reconTiles_.size(); i++) {
+        Tile *tile = reconTiles_[i];
         // save seeds
-        cv::Mat selection(seedImage, cv::Rect(i*p->w_, 0, p->w_, p->h_));
-        p->patchImage.copyTo(selection);
+        cv::Mat selection(tilesImage, cv::Rect(i*4, 0, 4, 4));
+        (*baseImage_)(cv::Rect(tile->x_,tile->y_,4,4)).copyTo(selection);
 
         // save seed positions
-        ofs << p->x_ - minX << " " << p->y_ - minY << " ";
+        ofs << tile->x_ - minX_ << " " << tile->y_ - minY_ << " ";
     }
     ofs.close();
 
-    cv::imwrite((fileName.str() + ".png"), seedImage);
+    cv::imwrite((fileName.str() + ".png"), tilesImage);
     //*/
 
 }

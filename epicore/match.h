@@ -7,16 +7,17 @@
 #include "patch.h"
 
 class Patch;
-class Square;
+class Tile;
+
+
 
 class Match
 {
 
 public:
-    int seedX, seedY;
-    int w_, h_;
+    int seedX_, seedY_;
+    int s_;
     float scale_;
-    cv::Mat transform_;
     cv::Scalar colorScale_;
 
     bool transformed_;
@@ -24,22 +25,23 @@ public:
 
     Polygon hull_;
 
-    Patch* block;
-    cv::Mat sourceImage;
+    Patch* block_;
+    cv::Mat sourceImage_;
 
 
-    cv::Mat warpMat;
-    cv::Mat rotMat;
+    cv::Mat transformMat_;
+    cv::Mat warpMat_;
+    cv::Mat rotMat_;
 
-    // TODO: move to seed
-    cv::Mat scaleMat;
-    cv::Mat flipMat;
-    cv::Mat translateMat;
+    // TODO: move to patch
+    cv::Mat scaleMat_;
+    cv::Mat flipMat_;
+    cv::Mat translateMat_;
 
 
 
 
-    std::vector<Square*> coveredSquares_;
+    std::vector<Tile*> coveredTiles_;
 
 
 
@@ -54,9 +56,13 @@ public:
     void calcTransform();
     void calcHull();
 
+    void save(std::ofstream&);
     // (de-)serialize
     void serialize(std::ofstream&);
     void deserialize(std::ifstream&);
 };
+
+
+bool matchSorter(Match* i, Match* j);
 
 #endif // TRANSFORMMAP_H

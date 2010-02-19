@@ -20,7 +20,7 @@ void OrientHist::genOrientHists() {
     cv::Mat rotMat = cv::Mat::eye(3,3,CV_64FC1);
 
     for(uint i=0; i<numBins_; i++) {
-        cv::Point2f center( (patch_->w_/2), (patch_->h_/2) );
+        cv::Point2f center( (patch_->s_/2), (patch_->s_/2) );
 
         float orientation = i*factor_;
 
@@ -28,10 +28,10 @@ void OrientHist::genOrientHists() {
         cv::Mat selection( rotMat, cv::Rect(0,0,3,2) );
         rot.copyTo(selection);
 
-        cv::Mat transform = rotMat * patch_->flipMat * translateMat *  scaleMat;
+        cv::Mat transform = rotMat * patch_->flipMat_ * translateMat *  scaleMat;
         cv::Mat rotPatch;
         cv::Mat selectionT(transform, cv::Rect(0,0,3,2));
-        cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->w_, patch_->h_));
+        cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->s_, patch_->s_));
 
         genSingle(rotPatch, i);
 

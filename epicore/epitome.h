@@ -10,16 +10,15 @@ public:
     static int staticCounter_;
     int id_;
 
-    int maxX, minX, maxY, minY;
 
-    std::vector<Square*> reconSquares_;
+    int maxX_, minX_, maxY_, minY_;
 
-    Chart();
+    cv::Mat* baseImage_;
+
+    std::vector<Tile*> reconTiles_;
+
+    Chart(cv::Mat*);
     void caclDimensions();
-
-
-    int grow(Match*);
-
 
     cv::Mat getMap();
 
