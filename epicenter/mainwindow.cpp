@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     calcThread.debugWidgetR = debugWidgetR;
 
     this->connect( ui->loadButton, SIGNAL(clicked()),         this, SLOT(changeImage()) );
-    this->connect( ui->baseButton, SIGNAL(clicked()),         this, SLOT(changeBase()) );
+    this->connect( ui->baseButton, SIGNAL(clicked()),         this, SLOT(addBase()) );
 
     this->connect( ui->saveButton, SIGNAL(clicked()),         this, SLOT(saveImage())   );
     this->connect( ui->prevButton, SIGNAL(clicked()), debugWidgetL, SLOT(prev())        );
@@ -35,12 +35,17 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 
-void MainWindow::changeBase() {
+void MainWindow::addBase() {
 
     std::string bla = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
     if(bla=="") return;
     calcThread.searchInOriginal_ = false;
     calcThread.base = cv::imread( bla );
+
+    // TODO: clear seeds, add news seeds
+
+    if(calcThread.seedmap)
+        calcThread.seedmap->setReconSource(calcThread.base,1);
 }
 
 

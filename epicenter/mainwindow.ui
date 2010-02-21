@@ -195,7 +195,7 @@
        <item>
         <widget class="QPushButton" name="baseButton">
          <property name="text">
-          <string>load base</string>
+          <string>add base</string>
          </property>
         </widget>
        </item>
@@ -258,7 +258,7 @@
      <x>0</x>
      <y>0</y>
      <width>978</width>
-     <height>23</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

@@ -48,34 +48,34 @@ public:
     float variance_;
     float scale_;
 
-    bool isPatch_;
+    bool isBlock_;
     bool satisfied_;
     bool transformed_;
     bool sharesMatches_;
 
     Polygon hull_;
-    std::vector<Match*>* matches_;
+
+    std::string baseName_;
     Match* finalMatch_;
 
-
-    std::vector<Match*> overlapingMatches;
-    std::vector<Patch*> overlapingBlocks;
+    std::vector<Match*>* matches_;
 
 
-    cv::Mat sourceImage_;
+    std::vector<Match*> overlapingMatches_;
+    std::vector<Patch*> overlapingBlocks_;
+
+    cv::Mat sourceColor_;
     cv::Mat sourceGray_;
 
+    cv::Mat patchColor_;
+    cv::Mat patchGray_;
 
-    cv::Mat patchImage_;
     cv::MatND colorHist_;
-
-    cv::Mat grayPatch_;
     OrientHistFast* orientHist_;
 
     cv::Mat flipMat_;
 
-
-    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int, int, int, float, int);
+    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int, int, int, float, int, bool);
     bool overlaps(Vector2f& v);
     bool overlaps(Match* m);
 

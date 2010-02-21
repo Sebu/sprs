@@ -30,7 +30,7 @@ public:
 public slots:
     void saveImage();
     void changeImage();
-    void changeBase();
+    void addBase();
 
 private:
     Ui::MainWindow *ui;

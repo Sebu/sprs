@@ -31,7 +31,7 @@ Match::Match(Patch* seed)
 
     flipMat_ = seed->flipMat_;
 
-    sourceImage_ = seed->sourceImage_;
+    sourceImage_ = seed->sourceColor_;
 
 }
 

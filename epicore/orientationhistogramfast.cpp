@@ -99,6 +99,6 @@ OrientHistFast::OrientHistFast(Patch* patch, int numBins) : bins_(0), numBins_(n
     // init with 0s
     for(int i=0; i<numBins_; i++) bins_[i]=0.0f;
 
-    genSingle(patch->grayPatch_);
+    genSingle(patch->patchGray_);
 
 }

@@ -28,7 +28,7 @@ public:
     std::vector<Patch*> seeds_;
     std::vector<Patch*> blocks_;
 
-    std::list<Chart*> epitomes_;
+    std::list<Chart*> charts_;
 
 
     cv::Mat sourceImage_;
@@ -40,7 +40,7 @@ public:
     void setImage(cv::Mat& image);
     void setReconSource(cv::Mat& image, int depth);
     void addSeedsFromImage(cv::Mat& source, int depth);
-    void addSeedsFromEpitomes();
+    void addSeedsFromEpitome();
 
 
     Patch* getPatch(int x, int y);
@@ -53,6 +53,7 @@ public:
     void resetMatches();
     void matchAll();
     Patch* matchNext();
+    void saveEpitome(std::string fileName);
     void save(std::string fileName);
     void serialize(std::string fileName);
     void deserialize(std::string fileName);

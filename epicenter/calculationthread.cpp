@@ -11,9 +11,9 @@ CalculationThread::CalculationThread()
 }
 
 void CalculationThread::step() {
-//    for (int i=0; i<ui->stepSpin->value(); i++)
+    //    for (int i=0; i<ui->stepSpin->value(); i++)
 
-        singleStep();
+    singleStep();
 }
 
 void CalculationThread::step2() {
@@ -42,36 +42,36 @@ bool CalculationThread::singleStep(int x, int y) {
 
     if (!patch) return false;
 
+    if (!patch->matches_) return true;
 
 
+    cv::Mat tmpImage = base.clone();
 
-        cv::Mat tmpImage = base.clone();
+    for(uint i=0; i<patch->matches_->size(); i++) {
 
-        for(uint i=0; i<patch->matches_->size(); i++) {
-            if (i>1000) break;
-            Match* match = patch->matches_->at(i);
-            Polygon hull = match->hull_;
-
-            // highlight match
-            for(int j=0; j<4; j++)
-                cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,0,255,100));
-
-            // coverage area
-            for (uint j=0; j<seedmap->blocks_.size(); j++) {
-                Patch *p = seedmap->blocks_[j];
-                if ((p->hull_.intersects(hull)))
-                    cv::rectangle(tmpImage, p->hull_.verts[0], p->hull_.verts[2], cv::Scalar(0,100,100,100));
-            }
+        Match* match = patch->matches_->at(i);
+        Polygon hull = match->hull_;
 
 
+        // coverage area
+        for (uint j=0; j<seedmap->blocks_.size(); j++) {
+            Patch *p = seedmap->blocks_[j];
+            if ((p->hull_.intersects(hull)))
+                cv::rectangle(tmpImage, p->hull_.verts[0], p->hull_.verts[2], cv::Scalar(0,100,100,100));
         }
 
-        cv::Mat reconstruction(seedmap->debugReconstruction());
+        // highlight match
+        for(int j=0; j<4; j++)
+            cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,0,255,100));
 
-        debugWidgetR->fromIpl( tmpImage, "preview" );
-        debugWidgetL->fromIpl( reconstruction, "reconstruction" );
-        debugWidgetL->updateGL();
-        debugWidgetR->updateGL();
+    }
+
+    cv::Mat reconstruction(seedmap->debugReconstruction());
+
+    debugWidgetR->fromIpl( tmpImage, "preview" );
+    debugWidgetL->fromIpl( reconstruction, "reconstruction" );
+    debugWidgetL->updateGL();
+    debugWidgetR->updateGL();
 
 
 
