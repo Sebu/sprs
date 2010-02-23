@@ -25,6 +25,7 @@ public:
     bool searchInOriginal_;
     float maxError_;
 
+    bool verbose_;
 
     uint matchStep_;
 

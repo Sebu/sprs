@@ -3,7 +3,9 @@
 #include <epicore/seedmap.h>
 
 #include <signal.h>
-#include<QDir>
+#include <QDir>
+#include <QTime>
+#include <ctime>
 
 SeedMap* seedmap;
 
@@ -22,7 +24,29 @@ int main(int argc, char *argv[])
     prev_fn = signal (SIGTERM,terminate);
     if (prev_fn==SIG_IGN) signal(SIGTERM,SIG_IGN);
 
+    // command line parsing
+    float error=0.005;
+    bool verbose=0;
+    bool fullSearch=0;
 
+    int opt;
+    while ((opt = getopt(argc, argv, "vfe:")) != -1) {
+        switch(opt) {
+        case 'v':
+            verbose = true;
+            break;
+        case 'f':
+            fullSearch = true;
+            break;
+        case 'e':
+            error = atof(optarg);
+            break;
+        case '?':
+        default: /* '?' */
+            std::cerr << "Usage: " << argv[0] << " [-v] [-e error]" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
     std::string fullName;
     std::cin >> fullName;
 
@@ -30,12 +54,14 @@ int main(int argc, char *argv[])
     std::string pathName = fullName.substr(0,found);
     std::string fileName = fullName.substr(found+1);
 
+    if(verbose)
     std::cout << fileName << " " << pathName << " " << std::endl;
 
     // original
     cv::Mat image = cv::imread(fullName);
     seedmap = new SeedMap( image, 16, true);
-    seedmap->maxError_ = 0.007; //atof(argv[1]);
+    seedmap->maxError_ = error;
+    seedmap->verbose_ = verbose;
     seedmap->deserialize(fullName);
 
     // for in qdir
@@ -45,27 +71,38 @@ int main(int argc, char *argv[])
 
     seedmap->searchInOriginal_ = false;
 
-    std::cout << "testing epitomes" << std::endl;
-    foreach( QString name, dir.entryList(QStringList("*.epi.png")) ) {
-        std::string nameStr = (epiPath + name).toStdString();
-        std::cout << nameStr << std::endl;
-//        size_t found=nameStr.find_last_of(".");
-        cv::Mat base = cv::imread(nameStr);
-        seedmap->setReconSource(base,1);
-        seedmap->matchAll();
-        if(seedmap->termCalculate_) break;
+    cv::Mat base;
+    if(fullSearch) {
+        if(verbose) std::cout << "testing epitomes" << std::endl;
+
+        foreach( QString name, dir.entryList(QStringList("*.epi.png")) ) {
+            std::string nameStr = (epiPath + name).toStdString();
+
+            if(verbose) std::cout << nameStr << std::endl;
+            // size_t found=nameStr.find_last_of(".");
+            base = cv::imread(nameStr);
+            seedmap->setReconSource(base,1);
+            seedmap->matchAll();
+            if(seedmap->termCalculate_) break;
+        }
     }
 
-    std::cout << "testing original" << std::endl;
-
     // search in original image
+    if(verbose)
+    std::cout << "testing original" << std::endl;
     if(!seedmap->termCalculate_ || !seedmap->done_) {
-        cv::Mat base = cv::imread(fullName);
+        base = cv::imread(fullName);
         seedmap->searchInOriginal_ = true;
         seedmap->setReconSource(base,3);
         seedmap->matchAll();
         if(!seedmap->termCalculate_) {
-            std::string epiName = (epiPath+fileName.c_str()).toStdString();
+
+            time_t seconds;
+            seconds = time(0);
+            QString tString( QTime::currentTime().toString("hhmmsszzz") );
+            std::string epiName = (epiPath+tString+fileName.c_str()).toStdString();
+
+            if(verbose)
             std::cout << epiName << std::endl;
             seedmap->generateEpitome();
             seedmap->saveEpitome(epiName);
@@ -81,6 +118,9 @@ int main(int argc, char *argv[])
         seedmap->saveCompressedImage(fullName);
 
     // save a preview of reconstruction
+    if(seedmap->done_)
+        std::cout << "done" << std::endl;
+
     seedmap->saveReconstruction(fullName);
 
 

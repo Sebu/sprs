@@ -148,9 +148,9 @@ void Patch::findFeatures() {
     //    std::cout << "variance" << variance << std::endl;
 
     // track initial features
-    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 3, .01, .1);
+    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 3, .005, 0.5);
     if(pointsSrc_.size()<3)
-        std::cout << "no features " << x_ << " " << y_<< std::endl;
+        std::cout << "no features found @ " << x_/s_ << " " << y_/s_ << std::endl;
 
 }
 bool Patch::trackFeatures(Match* match) {
@@ -172,7 +172,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::calcOpticalFlowPyrLK( patchGray_, grayRotated,
                               pointsSrc_, pointsDest,
                               status, err,
-                              cv::Size(3,3), 2, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 40, 0.1));
+                              cv::Size(3,3), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 20, 0.1));
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -194,11 +194,14 @@ bool Patch::trackFeatures(Match* match) {
 
 
     if(x_==match->seedX_ && y_==match->seedY_) {
-    } else {
+//        for(int i=0; i<3; i++)
+//            std::cout << "(" << destTri[i].x <<  " , " <<  destTri[i].y <<  ") (" << srcTri[i].x << " , " << srcTri[i].y << ")" << std::endl;
+    }
+//    } else {
         cv::Mat selection( match->warpMat_, cv::Rect(0,0,3,2) );
         tmp.copyTo(selection);
         match->transformed_ = true;
-    }
+//    }
 
     return true;
 
@@ -216,7 +219,7 @@ Match* Patch::match(Patch& other, float maxError) {
     float orientation = orientHist_->minDiff(other.orientHist_);
 
     // orientation still to different
-    if(orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_) > 50.0) return 0;
+    if(orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_) > 150.0) return 0;
 
 
     Match* match = new Match(&other);
@@ -245,7 +248,7 @@ Match* Patch::match(Patch& other, float maxError) {
     float reconstructionError =  reconError(match) / (s_*s_);
 
     if(x_ == other.x_ && y_  == other.y_ && reconstructionError > maxError && other.isBlock_) {
-        std::cout << orientation << " bad buddy: " << reconstructionError << std::endl;
+        std::cout << x_/s_ << " " << y_/s_ << " " << orientation << " bad buddy: " << reconstructionError << std::endl;
     }
 
     // reconstruction error too high? skip
@@ -258,6 +261,7 @@ Match* Patch::match(Patch& other, float maxError) {
     match->calcHull();
 
     // debug out
+    /*
 #ifdef DEBUG
     std::cout << x_/s_ << " " << y_/s_ << " " <<
             "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
@@ -265,7 +269,7 @@ Match* Patch::match(Patch& other, float maxError) {
     if(x_==other.x_ && y_==other.y_ && other.isBlock_) std::cout << "\tfound myself!";
     std::cout << std::endl;
 #endif
-
+    //*/
     return match;
 }
 

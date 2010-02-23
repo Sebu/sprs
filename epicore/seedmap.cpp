@@ -29,6 +29,7 @@ void SeedMap::generateEpitome() {
         }
     }
 
+    if(verbose_)
     std::cout <<  "create squares done"  << std::endl;
 
 
@@ -36,7 +37,7 @@ void SeedMap::generateEpitome() {
     // find all potential seeds
 
     foreach(Patch* block, blocks_) {
-        if(!block->matches_ || block->satisfied_) continue;
+        if(!block->matches_ || block->finalMatch_) continue;
 
         foreach(Match* match, *(block->matches_)) {
             // calc bbox of match
@@ -62,6 +63,7 @@ void SeedMap::generateEpitome() {
         }
     }
 
+    if(verbose_)
     std::cout <<  "find overlapsed done"  << std::endl;
 
     // neighbours
@@ -113,10 +115,12 @@ void SeedMap::generateEpitome() {
 
         }
     }
+    if(verbose_)
     std::cout <<  "create neighbours done"  << std::endl;
 
     sortedTiles.sort(tileSorter);
 
+    if(verbose_)
     std::cout <<  "pre calc done"  << std::endl;
     // reset satisfied
 
@@ -165,6 +169,7 @@ void SeedMap::generateEpitome() {
                 }
             }
             int benefit = deltaI - deltaE;
+            if(verbose_)
             std::cout << "benefit: " << benefit << std::endl;
             if(benefit>=0) {
                 // mark as all matches satisfied
@@ -224,7 +229,8 @@ void SeedMap::generateEpitome() {
     //*/
 
     foreach(Patch* p, blocks_)
-        if(!p->satisfied_) std::cout << p->x_/16 << " " << p->y_/16 << std::endl;
+        if(!p->finalMatch_ && verbose_)
+              std::cout << p->x_/s_ << " " << p->y_/s_ << std::endl;
 
 
 }
@@ -338,7 +344,11 @@ void SeedMap::match(Patch* block) {
                         }
                     }
 
-                    if (!searchInOriginal_) breakIt=true;
+
+                    if (!searchInOriginal_) {
+                        block->finalMatch_ = match;
+                        breakIt=true;
+                    }
                 }
             }
 
@@ -360,7 +370,8 @@ void SeedMap::match(Patch* block) {
         }
 
     } else {
-        std::cout << "shares " << block->matches_->size() <<  " matches @ " <<  block->x_/16 << " " << block->y_/16 << std::endl;
+        if(verbose_)
+            std::cout << "shares " << block->matches_->size() <<  " matches @ " <<  block->x_/16 << " " << block->y_/16 << std::endl;
 
         //copy matches and recalculate colorScale!
         block->copyMatches();
@@ -489,7 +500,8 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
 
         scale *= 1.5f;
     }
-    std::cout << blocks_.size() << " " << seeds_.size() << std::endl;
+    if(verbose_)
+        std::cout << blocks_.size() << " " << seeds_.size() << std::endl;
 }
 
 void SeedMap::addSeedsFromEpitome() {
@@ -520,7 +532,7 @@ void SeedMap::setReconSource(cv::Mat& base, int depth) {
 
 SeedMap::SeedMap(cv::Mat& image, int s, bool searchInOriginal)
     : termCalculate_(0), s_(s), grid_(s/4), matchStep_(0), maxError_(0.0f), searchInOriginal_(searchInOriginal),
-    satisfiedBlocks_(0), done_(0)
+    satisfiedBlocks_(0), done_(0), verbose_(0)
 {
     setImage(image);
 }
