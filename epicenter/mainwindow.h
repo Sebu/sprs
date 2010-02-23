@@ -16,7 +16,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    std::string     fileName;
+    std::string     fileName_;
     AlbumWidget*    debugWidgetL;
     AlbumWidget*    debugWidgetR;
     CalculationThread calcThread;

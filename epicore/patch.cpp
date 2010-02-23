@@ -216,7 +216,7 @@ Match* Patch::match(Patch& other, float maxError) {
     float orientation = orientHist_->minDiff(other.orientHist_);
 
     // orientation still to different
-//    if(orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_) > 150.0) return 0;
+    if(orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_) > 50.0) return 0;
 
 
     Match* match = new Match(&other);

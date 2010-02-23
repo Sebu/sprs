@@ -11,15 +11,15 @@ class CalculationThread : public QThread
     Q_OBJECT
 
 public:
-    cv::Mat         image;
-    cv::Mat         base;
+    cv::Mat         image_;
+    cv::Mat         base_;
     std::string     fileName;
     SeedMap*        seedmap;
     AlbumWidget*    debugWidgetL;
     AlbumWidget*    debugWidgetR;
-    int blockSize;
+    int blockSize_;
     bool searchInOriginal_;
-    float error;
+    float error_;
 
     CalculationThread();
     void init();

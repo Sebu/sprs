@@ -37,32 +37,32 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::addBase() {
 
-    std::string bla = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
-    if(bla=="") return;
+    std::string bName = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
+    if(bName=="") return;
     calcThread.searchInOriginal_ = false;
-    calcThread.base = cv::imread( bla );
+    calcThread.base_ = cv::imread( bName );
 
     // TODO: clear seeds, add news seeds
 
     if(calcThread.seedmap)
-        calcThread.seedmap->setReconSource(calcThread.base,1);
+        calcThread.seedmap->setReconSource(calcThread.base_,1);
 }
 
 
 void MainWindow::changeImage() {
 
-    fileName = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
-    if(fileName=="") return;
+    fileName_ = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
+    if(fileName_=="") return;
 
     if(calcThread.seedmap) delete calcThread.seedmap;
     calcThread.seedmap = 0;
-    calcThread.fileName = fileName;
-    calcThread.image = cv::imread( fileName );
-    calcThread.base = calcThread.image;
+    calcThread.fileName = fileName_;
+    calcThread.image_ = cv::imread( fileName_ );
+    calcThread.base_ = calcThread.image_;
     calcThread.searchInOriginal_ = true;
-    debugWidgetL->fromIpl( calcThread.image, "image" );
-    calcThread.blockSize = ui->blockSpin->value();
-    calcThread.error  = ui->errorSpin->value();
+    debugWidgetL->fromIpl( calcThread.image_, "image" );
+    calcThread.blockSize_ = ui->blockSpin->value();
+    calcThread.error_  = ui->errorSpin->value();
 
 }
 
@@ -70,10 +70,12 @@ void MainWindow::changeImage() {
 
 void MainWindow::saveImage() {
     // save demo reconstruction
-    QString saveName = QFileDialog::getSaveFileName(this,tr("Save Image"), (fileName + ".recon.jpg").c_str(), tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
-    calcThread.seedmap->saveReconstruction(saveName.toStdString());
+//    QString saveName = QFileDialog::getSaveFileName(this,tr("Save Image"), (fileName_ + ".recon.jpg").c_str(), tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
     // save matches
-    calcThread.seedmap->serialize(fileName);
+    calcThread.seedmap->serialize(fileName_);
+    calcThread.seedmap->saveReconstruction(fileName_); //saveName.toStdString());
+    calcThread.seedmap->saveCompressedImage(fileName_);
+    calcThread.seedmap->saveEpitome(fileName_);
 
 }
 

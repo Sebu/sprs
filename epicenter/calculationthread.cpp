@@ -6,7 +6,7 @@
 #include "calculationthread.h"
 
 CalculationThread::CalculationThread()
-    : seedmap(0), error(0.0f)
+    : seedmap(0), error_(0.0f)
 {
 }
 
@@ -18,7 +18,7 @@ void CalculationThread::step() {
 
 void CalculationThread::step2() {
     if(!seedmap) init();
-    seedmap->generateEpitomes();
+    seedmap->generateEpitome();
 
     cv::Mat epitomeMap(seedmap->debugEpitomeMap());
     debugWidgetL->fromIpl( epitomeMap, "epitome map" );
@@ -33,8 +33,8 @@ bool CalculationThread::singleStep(int x, int y) {
     if(x==-1)
         patch = seedmap->matchNext();
     else {
-        int xlocal = ((float)x/400.0) * (seedmap->sourceImage_.size().width / blockSize);
-        int ylocal = ((float)y/400.0) * (seedmap->sourceImage_.size().height / blockSize);
+        int xlocal = ((float)x/400.0) * (seedmap->sourceImage_.size().width / blockSize_);
+        int ylocal = ((float)y/400.0) * (seedmap->sourceImage_.size().height / blockSize_);
 
         patch = seedmap->getPatch(xlocal,ylocal);
         seedmap->match(patch);
@@ -45,7 +45,7 @@ bool CalculationThread::singleStep(int x, int y) {
     if (!patch->matches_) return true;
 
 
-    cv::Mat tmpImage = base.clone();
+    cv::Mat tmpImage = base_.clone();
 
     for(uint i=0; i<patch->matches_->size(); i++) {
 
@@ -79,8 +79,8 @@ bool CalculationThread::singleStep(int x, int y) {
 }
 
 void CalculationThread::init() {
-    seedmap = new SeedMap( image, base, blockSize, searchInOriginal_);
-    seedmap->maxError_ = error;
+    seedmap = new SeedMap( image_, blockSize_, searchInOriginal_);
+    seedmap->maxError_ = error_;
     seedmap->deserialize(fileName);
 }
 
@@ -97,7 +97,7 @@ void CalculationThread::run() {
 
     // FANCY DEBUG outputs
     cv::Mat reconstruction(seedmap->debugReconstruction());
-    cv::Mat error( image.cols, image.rows, CV_8UC1);
+    cv::Mat error( image_.cols, image_.rows, CV_8UC1);
     //    error = image - reconstruction;
 
     //    debugWidgetL->fromIpl( error, "error");
