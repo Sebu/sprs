@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     std::string pathName = fullName.substr(0,found);
     std::string fileName = fullName.substr(found+1);
 
-    std::cout << fileName << " " << pathName << " " << argv[1] << std::endl;
+    std::cout << fileName << " " << pathName << " " << std::endl;
 
     // original
     cv::Mat image = cv::imread(fullName);
@@ -42,7 +42,10 @@ int main(int argc, char *argv[])
     QString epiPath = QString(pathName.c_str()) + "/epitomes/";
     QDir dir(epiPath);
 
+
     seedmap->searchInOriginal_ = false;
+
+    std::cout << "testing epitomes" << std::endl;
     foreach( QString name, dir.entryList(QStringList("*.epi.png")) ) {
         std::string nameStr = (epiPath + name).toStdString();
         std::cout << nameStr << std::endl;
@@ -52,6 +55,8 @@ int main(int argc, char *argv[])
         seedmap->matchAll();
         if(seedmap->termCalculate_) break;
     }
+
+    std::cout << "testing original" << std::endl;
 
     // search in original image
     if(!seedmap->termCalculate_ || !seedmap->done_) {
