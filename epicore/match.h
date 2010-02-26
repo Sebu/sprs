@@ -33,10 +33,8 @@ public:
     cv::Mat warpMat_;
     cv::Mat rotMat_;
 
-    // TODO: move to patch
-    cv::Mat scaleMat_;
-    cv::Mat flipMat_;
-    cv::Mat translateMat_;
+    cv::Mat transScaleFlipMat_;
+
 
 
 

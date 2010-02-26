@@ -13,23 +13,15 @@ Match::Match(Patch* seed)
 
     rotMat_ = cv::Mat::eye(3,3,CV_64FC1);
     warpMat_ = cv::Mat::eye(3,3,CV_64FC1);
-    scaleMat_ = cv::Mat::eye(3,3,CV_64FC1);
-    flipMat_ = cv::Mat::eye(3,3,CV_64FC1);
-    translateMat_ = cv::Mat::eye(3,3,CV_64FC1);
     transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
 
     if (!seed) return;
     seedX_ = seed->x_;
     seedY_ = seed->y_;
-    translateMat_.at<double>(0,2)=-seedX_;
-    translateMat_.at<double>(1,2)=-seedY_;
-    s_ = seed->s_;
     s_ = seed->s_;
     scale_ = seed->scale_;
-    scaleMat_.at<double>(0,0)/=scale_;
-    scaleMat_.at<double>(1,1)/=scale_;
 
-    flipMat_ = seed->flipMat_;
+    transScaleFlipMat_ = seed->transScaleFlipMat_;
 
     sourceImage_ = seed->sourceColor_;
 
@@ -100,7 +92,7 @@ void Match::deserialize(std::ifstream& ifs) {
 
 
 void Match::calcTransform() {
-    transformMat_ =  warpMat_ * rotMat_ * flipMat_ * translateMat_ *  scaleMat_;
+    transformMat_ =  warpMat_ * rotMat_ * transScaleFlipMat_;
 }
 
 cv::Mat Match::warp() {

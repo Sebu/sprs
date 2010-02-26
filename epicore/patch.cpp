@@ -5,7 +5,6 @@
 #include "cv_ext.h"
 
 
-int Patch::staticCounter_ = 0;
 
 bool Patch::overlaps(Vector2f& v) {
     if(v.m_v[0]> x_+s_ || v.m_v[0] < x_ || v.m_v[1] > y_+s_ || v.m_v[1] < y_ ) return false;
@@ -26,7 +25,8 @@ void Patch::resetMatches() {
 
 void Patch::copyMatches() {
     if(!sharesMatches_) return;
-    std::cout << "correcting colors" << std::endl;
+    if(verbose_)
+        std::cout << "correcting colors" << std::endl;
 
     std::vector<Match*>* newVector = new std::vector<Match*>;
 
@@ -89,7 +89,7 @@ void Patch::serialize(std::ofstream& ofs) {
 
 float Patch::reconError(Match* m) {
 
-    float alpha = .6f; // 0 <= alpha <= 2
+    float alpha = 0.6f; // 0 <= alpha <= 2
     float beta  = 0.0000000001f;
 
     // reconstruct
@@ -150,7 +150,8 @@ void Patch::findFeatures() {
     // track initial features
     cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 3, .005, 0.5);
     if(pointsSrc_.size()<3)
-        std::cout << "no features found @ " << x_/s_ << " " << y_/s_ << std::endl;
+        if(verbose_)
+            std::cout << "no features found @ " << x_/s_ << " " << y_/s_ << std::endl;
 
 }
 bool Patch::trackFeatures(Match* match) {
@@ -211,7 +212,7 @@ Match* Patch::match(Patch& other, float maxError) {
 
     double histDiff = cv::compareHist(colorHist_, other.colorHist_, CV_COMP_BHATTACHARYYA);
 //    std::cout << histDiff << std::endl;
-    if(histDiff > .8) return 0;
+    if(histDiff > .9) return 0;
 
 
 
@@ -248,7 +249,8 @@ Match* Patch::match(Patch& other, float maxError) {
     float reconstructionError =  reconError(match) / (s_*s_);
 
     if(x_ == other.x_ && y_  == other.y_ && reconstructionError > maxError && other.isBlock_) {
-        std::cout << x_/s_ << " " << y_/s_ << " " << orientation << " bad buddy: " << reconstructionError << std::endl;
+        if(verbose_)
+            std::cout << x_/s_ << " " << y_/s_ << " " << orientation << " bad buddy: " << reconstructionError << std::endl;
     }
 
     // reconstruction error too high? skip
@@ -261,15 +263,15 @@ Match* Patch::match(Patch& other, float maxError) {
     match->calcHull();
 
     // debug out
-    /*
-#ifdef DEBUG
-    std::cout << x_/s_ << " " << y_/s_ << " " <<
-            "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
-    std::cout << " " << other.scale_;
-    if(x_==other.x_ && y_==other.y_ && other.isBlock_) std::cout << "\tfound myself!";
-    std::cout << std::endl;
-#endif
-    //*/
+    //*
+    if(verbose_) {
+        std::cout << x_/s_ << " " << y_/s_ << " " <<
+                "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
+        std::cout << " " << other.scale_;
+        if(x_==other.x_ && y_==other.y_ && other.isBlock_) std::cout << "\tfound myself!";
+        std::cout << std::endl;
+    }
+
     return match;
 }
 
@@ -278,28 +280,36 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
         sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), variance_(0), isBlock_(isBlock)
 {
 
-    id_ = staticCounter_++;
     size_ = s_ * s_;
 
     hull_ = Polygon::square(x_,y_,s_,s_);
     patchColor_ = sourceColor_(cv::Rect(x_,y_,s_,s_)).clone();
+
+    cv::Mat transMat = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat scaleMat = cv::Mat::eye(3,3,CV_64FC1);
+    transMat.at<double>(0,2)=-x_;
+    transMat.at<double>(1,2)=-y_;
+    scaleMat.at<double>(0,0)/=scale_;
+    scaleMat.at<double>(1,1)/=scale_;
     // flip :)
-    flipMat_ = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat flipMat = cv::Mat::eye(3,3,CV_64FC1);
     switch(flip) {
     case 1:
         cv::flip(patchColor_, patchColor_, 1);
-        flipMat_.at<double>(0,0)=-1.0f;
-        flipMat_.at<double>(0,2)=s_;
+        flipMat.at<double>(0,0)=-1.0f;
+        flipMat.at<double>(0,2)=s_;
         transformed_ = true;
         break;
     case 2:
         cv::flip(patchColor_, patchColor_, 0);
-        flipMat_.at<double>(1,1)=-1.0f;
-        flipMat_.at<double>(1,2)=s_;
+        flipMat.at<double>(1,1)=-1.0f;
+        flipMat.at<double>(1,2)=s_;
         transformed_ = true;
     default:
         break;
     }
+
+    transScaleFlipMat_ = flipMat * transMat *  scaleMat;
 
     // cache color histogram
     int channels[] = {0, 1, 2};
@@ -317,7 +327,7 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
 
     // generate orientation histogram
     // FIXME: use interface for switching between fast and slow version
-    orientHist_ = new OrientHistFast(this, 36);
+    orientHist_ = new OrientHist(this, 36);
 
 
     setHistMean( cv::mean(patchColor_) );

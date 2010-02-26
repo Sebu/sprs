@@ -8,15 +8,6 @@
 
 void OrientHist::genOrientHists() {
 
-    cv::Mat scaleMat = cv::Mat::eye(3,3,CV_64FC1);
-    scaleMat.at<double>(0,0)/=patch_->scale_;
-    scaleMat.at<double>(1,1)/=patch_->scale_;
-
-    cv::Mat translateMat = cv::Mat::eye(3,3,CV_64FC1);
-    translateMat.at<double>(0,2)=-patch_->x_;
-    translateMat.at<double>(1,2)=-patch_->y_;
-
-
     cv::Mat rotMat = cv::Mat::eye(3,3,CV_64FC1);
 
     for(uint i=0; i<numBins_; i++) {
@@ -28,7 +19,7 @@ void OrientHist::genOrientHists() {
         cv::Mat selection( rotMat, cv::Rect(0,0,3,2) );
         rot.copyTo(selection);
 
-        cv::Mat transform = rotMat * patch_->flipMat_ * translateMat *  scaleMat;
+        cv::Mat transform = rotMat * patch_->transScaleFlipMat_;
         cv::Mat rotPatch;
         cv::Mat selectionT(transform, cv::Rect(0,0,3,2));
         cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->s_, patch_->s_));
@@ -76,10 +67,10 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
             float dy = pixel - pixel_y;
 
 
-            direction.at<float>(y,x) = cv::fastAtan2(dx ,dy);
+            direction.at<double>(y,x) = cv::fastAtan2(dx ,dy);
 
             float ctmp = sqrt(dx*dx + dy*dy);
-            contrast.at<float>(y,x) = ctmp;
+            contrast.at<double>(y,x) = ctmp;
             sumContrast += ctmp;
             count++;
 
@@ -90,8 +81,8 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
-            if(contrast.at<float>(y,x) > threshold ) {
-                int dir = (int) (direction.at<float>(y,x) / factor_);
+            if(contrast.at<double>(y,x) > threshold ) {
+                int dir = (int) (direction.at<double>(y,x) / factor_);
                 bins_[  offset*numBins_ + dir  ]++;
             }
         }

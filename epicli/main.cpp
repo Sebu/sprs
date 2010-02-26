@@ -28,9 +28,10 @@ int main(int argc, char *argv[])
     float error=0.005;
     bool verbose=0;
     bool fullSearch=0;
+    std::string fullName;
 
     int opt;
-    while ((opt = getopt(argc, argv, "vfe:")) != -1) {
+    while ((opt = getopt(argc, argv, "vfe:i:")) != -1) {
         switch(opt) {
         case 'v':
             verbose = true;
@@ -41,14 +42,16 @@ int main(int argc, char *argv[])
         case 'e':
             error = atof(optarg);
             break;
+        case 'i':
+            fullName = optarg;
+            break;
         case '?':
         default: /* '?' */
-            std::cerr << "Usage: " << argv[0] << " [-v] [-e error]" << std::endl;
+            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-v] [-e error]" << std::endl;
             exit(EXIT_FAILURE);
         }
     }
-    std::string fullName;
-    std::cin >> fullName;
+    //std::cin >> fullName;
 
     size_t found=fullName.find_last_of("/\\");
     std::string pathName = fullName.substr(0,found);
@@ -62,7 +65,7 @@ int main(int argc, char *argv[])
     seedmap = new SeedMap( image, 16, true);
     seedmap->maxError_ = error;
     seedmap->verbose_ = verbose;
-    seedmap->deserialize(fullName);
+    //seedmap->deserialize(fullName);
 
     // for in qdir
     QString epiPath = QString(pathName.c_str()) + "/epitomes/";
@@ -110,8 +113,8 @@ int main(int argc, char *argv[])
     }
 
     // save matches when interrupted
-    if(seedmap->termCalculate_)
-        seedmap->serialize(fullName);
+    //if(seedmap->termCalculate_)
+      //  seedmap->serialize(fullName);
 
     // finished? save image
     if(seedmap->done_)

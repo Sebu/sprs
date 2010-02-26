@@ -328,8 +328,9 @@ void SeedMap::match(Patch* block) {
         bool breakIt = false;
 
         #pragma omp parallel for
-        for(uint i=0; i< seeds_.size(); i++) {
+        for(ulong i=0; i< seeds_.size(); i++) {
             Patch* seed = seeds_[i];
+
             if(!termCalculate_ && !breakIt) {
                 Match* match = block->match(*seed, maxError_);
                 if (match) {
@@ -338,6 +339,7 @@ void SeedMap::match(Patch* block) {
                     block->matches_->push_back(match);
 
                     if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
+
                         if (!seed->matches_) {
                             seed->matches_=block->matches_;
                             seed->sharesMatches_ = true;
@@ -350,6 +352,7 @@ void SeedMap::match(Patch* block) {
                         breakIt=true;
                     }
                 }
+                if(block->matches_->size()>=10000) breakIt=true;
             }
 
         }
@@ -374,7 +377,7 @@ void SeedMap::match(Patch* block) {
             std::cout << "shares " << block->matches_->size() <<  " matches @ " <<  block->x_/16 << " " << block->y_/16 << std::endl;
 
         //copy matches and recalculate colorScale!
-        block->copyMatches();
+        //block->copyMatches();
     }
 
     if (block->matches_ && !block->matches_->empty()) {
@@ -459,6 +462,7 @@ void SeedMap::setImage(cv::Mat &image) {
     for(int y=0; y<height; y++)
         for(int x=0; x<width; x++) {
         Patch* block = new Patch( sourceImage_, sourceGray_, x*s_, y*s_, s_,  1.0f, 0, true);
+        block->verbose_ = verbose_;
         blocks_.push_back(block);
     }
 }
@@ -468,7 +472,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
     // add seeds
     float scale = 1.0f;
 
-    for (int z=0; z< depth; z++) {
+    for (uint z=0; z< depth; z++) {
 
         float scaleWidth  = source.cols / scale;
         float scaleHeight = source.rows / scale;
@@ -478,11 +482,11 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
 
         // generate new seeds
         Patch* seed = 0;
-        for(int y=0; y<height; y++) {
+        for(uint y=0; y<height; y++) {
             int localY = y*grid_;
-            for(int x=0; x<width; x++) {
+            for(uint x=0; x<width; x++) {
                 int localX = x*grid_;
-                for(int flip=0; flip<3; flip++) {
+                for(uint flip=0; flip<3; flip++) {
 
                     if (searchInOriginal_ && (localX % s_)==0 && (localY % s_)==0 && flip==0 && z==0 ) {
                         int indexX = localX / s_;
@@ -492,7 +496,9 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
                     else
                         seed = new Patch( source, sourceGray_, localX, localY, s_,  scale, flip, false);
 
+                    seed->verbose_ = verbose_;
                     seeds_.push_back(seed);
+
                 }
             }
         }
@@ -532,7 +538,7 @@ void SeedMap::setReconSource(cv::Mat& base, int depth) {
 
 SeedMap::SeedMap(cv::Mat& image, int s, bool searchInOriginal)
     : termCalculate_(0), s_(s), grid_(s/4), matchStep_(0), maxError_(0.0f), searchInOriginal_(searchInOriginal),
-    satisfiedBlocks_(0), done_(0), verbose_(0)
+    satisfiedBlocks_(0), done_(0), verbose_(1)
 {
     setImage(image);
 }

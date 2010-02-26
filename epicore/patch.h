@@ -40,13 +40,13 @@ private:
 
 
 public:
-    static int staticCounter_;
-    int id_;
 
     int x_, y_, s_;
     int size_;
     float variance_;
     float scale_;
+
+    bool verbose_;
 
     bool isBlock_;
     bool satisfied_;
@@ -71,9 +71,9 @@ public:
     cv::Mat patchGray_;
 
     cv::MatND colorHist_;
-    OrientHistFast* orientHist_;
+    OrientHist* orientHist_;
 
-    cv::Mat flipMat_;
+    cv::Mat transScaleFlipMat_;
 
     Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int, int, int, float, int, bool);
     bool overlaps(Vector2f& v);
