@@ -5,17 +5,6 @@
 #include "cv_ext.h"
 
 
-
-bool Patch::overlaps(Vector2f& v) {
-    if(v.m_v[0]> x_+s_ || v.m_v[0] < x_ || v.m_v[1] > y_+s_ || v.m_v[1] < y_ ) return false;
-    return true;
-}
-
-bool Patch::overlaps(Match* m) {
-    Polygon p= m->hull_;
-    return hull_.intersects(p);
-}
-
 void Patch::resetMatches() {
     if(!matches_) return;
     matches_->clear();
@@ -89,7 +78,7 @@ void Patch::serialize(std::ofstream& ofs) {
 
 float Patch::reconError(Match* m) {
 
-    float alpha = 0.6f; // 0 <= alpha <= 2
+    float alpha = 0.8f; // 0 <= alpha <= 2
     float beta  = 0.0000000001f;
 
     // reconstruct
@@ -143,9 +132,9 @@ void Patch::findFeatures() {
 
         }
     }
-    //    variance /= (grayPatch.cols*grayPatch.rows);
+    variance_ /= (patchGray_.cols*patchGray_.rows)-1;
 
-    //    std::cout << "variance" << variance << std::endl;
+    std::cout << "variance " << variance_ << std::endl;
 
     // track initial features
     cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 3, .005, 0.5);
@@ -194,10 +183,10 @@ bool Patch::trackFeatures(Match* match) {
     cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
 
 
-    if(x_==match->seedX_ && y_==match->seedY_) {
+//    if(x_==match->seedX_ && y_==match->seedY_) {
 //        for(int i=0; i<3; i++)
 //            std::cout << "(" << destTri[i].x <<  " , " <<  destTri[i].y <<  ") (" << srcTri[i].x << " , " << srcTri[i].y << ")" << std::endl;
-    }
+//    }
 //    } else {
         cv::Mat selection( match->warpMat_, cv::Rect(0,0,3,2) );
         tmp.copyTo(selection);
@@ -327,7 +316,7 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
 
     // generate orientation histogram
     // FIXME: use interface for switching between fast and slow version
-    orientHist_ = new OrientHist(this, 36);
+    orientHist_ = new OrientHistFast(this, 36);
 
 
     setHistMean( cv::mean(patchColor_) );

@@ -15,9 +15,10 @@ class Match
 {
 
 public:
-    int seedX_, seedY_;
+//    int seedX_, seedY_;
+    //    float scale_;
+
     int s_;
-    float scale_;
     cv::Scalar colorScale_;
 
     bool transformed_;
@@ -35,13 +36,7 @@ public:
 
     cv::Mat transScaleFlipMat_;
 
-
-
-
-
     std::vector<Tile*> coveredTiles_;
-
-
 
     Match(Patch* seed=0);
 

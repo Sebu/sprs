@@ -158,13 +158,13 @@ void SeedMap::generateEpitome() {
                 if(match->block_->satisfied_) continue;
                 match->block_->satisfied_ = true;
                 deltaIBlocks.push_back(match->block_);
-                deltaI += 16*16;
+                deltaI += s_*s_;
 
                 foreach(Tile* s, match->coveredTiles_) {
                     if(s->inUse_) continue;
 
                     s->inUse_=true;
-                    deltaE += 16;
+                    deltaE += s_;
                     deltaETiles.push_back(s);
                 }
             }
@@ -374,10 +374,10 @@ void SeedMap::match(Patch* block) {
 
     } else {
         if(verbose_)
-            std::cout << "shares " << block->matches_->size() <<  " matches @ " <<  block->x_/16 << " " << block->y_/16 << std::endl;
+            std::cout << "shares " << block->matches_->size() <<  " matches @ " <<  block->x_/s_ << " " << block->y_/s_ << std::endl;
 
         //copy matches and recalculate colorScale!
-        //block->copyMatches();
+        block->copyMatches();
     }
 
     if (block->matches_ && !block->matches_->empty()) {

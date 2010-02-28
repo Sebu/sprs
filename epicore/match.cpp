@@ -8,7 +8,7 @@
 bool matchSorter(Match* i, Match* j) { return (i->error_ < j->error_ ); }
 
 Match::Match(Patch* seed)
-    : colorScale_(cv::Scalar::all(1.0f)), error_(0.0f), seedX_(0), seedY_(0), s_(0), scale_(0.0), transformed_(0)
+    : colorScale_(cv::Scalar::all(1.0f)), error_(0.0f), s_(0), transformed_(0)
 {
 
     rotMat_ = cv::Mat::eye(3,3,CV_64FC1);
@@ -16,10 +16,10 @@ Match::Match(Patch* seed)
     transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
 
     if (!seed) return;
-    seedX_ = seed->x_;
-    seedY_ = seed->y_;
+//    seedX_ = seed->x_;
+//    seedY_ = seed->y_;
+//    scale_ = seed->scale_;
     s_ = seed->s_;
-    scale_ = seed->scale_;
 
     transScaleFlipMat_ = seed->transScaleFlipMat_;
 

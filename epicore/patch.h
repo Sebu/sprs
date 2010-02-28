@@ -55,9 +55,9 @@ public:
 
     Polygon hull_;
 
-    std::string baseName_;
-    Match* finalMatch_;
+    std::string epitomeName_;
 
+    Match* finalMatch_;
     std::vector<Match*>* matches_;
 
 
@@ -71,15 +71,11 @@ public:
     cv::Mat patchGray_;
 
     cv::MatND colorHist_;
-    OrientHist* orientHist_;
+    OrientHistFast* orientHist_;
 
     cv::Mat transScaleFlipMat_;
 
     Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int, int, int, float, int, bool);
-    bool overlaps(Vector2f& v);
-    bool overlaps(Match* m);
-
-
 
     void findFeatures();
     float reconError(Match*);

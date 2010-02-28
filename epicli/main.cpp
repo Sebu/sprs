@@ -28,10 +28,11 @@ int main(int argc, char *argv[])
     float error=0.005;
     bool verbose=0;
     bool fullSearch=0;
+    int  s = 16;
     std::string fullName;
 
     int opt;
-    while ((opt = getopt(argc, argv, "vfe:i:")) != -1) {
+    while ((opt = getopt(argc, argv, "vfe:s:i:")) != -1) {
         switch(opt) {
         case 'v':
             verbose = true;
@@ -41,6 +42,9 @@ int main(int argc, char *argv[])
             break;
         case 'e':
             error = atof(optarg);
+            break;
+        case 's':
+            d = atoi(optarg);
             break;
         case 'i':
             fullName = optarg;
@@ -62,7 +66,7 @@ int main(int argc, char *argv[])
 
     // original
     cv::Mat image = cv::imread(fullName);
-    seedmap = new SeedMap( image, 16, true);
+    seedmap = new SeedMap( image, s, true);
     seedmap->maxError_ = error;
     seedmap->verbose_ = verbose;
     //seedmap->deserialize(fullName);
