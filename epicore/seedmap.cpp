@@ -76,7 +76,7 @@ void SeedMap::generateEpitome() {
             tile->blocks_ = tile->overlapingBlocks_.size();
 
 
-            /*
+            //*
             if (x>0 && y>0) {
                 Tile* n = tiles_[(y-1)*width +(x-1)];
                 tile->neighbours_.push_back(n);
@@ -358,6 +358,7 @@ void SeedMap::match(Patch* block) {
         }
 
         // add self match :P
+        /*
         if(searchInOriginal_) {
             Match* selfMatch = new Match(block);
             selfMatch->block_ = block;
@@ -367,6 +368,7 @@ void SeedMap::match(Patch* block) {
             selfMatch->calcHull();
             block->matches_->push_back(selfMatch);
         }
+        //*/
 
         if (block->matches_->empty() || termCalculate_) {
             block->resetMatches();

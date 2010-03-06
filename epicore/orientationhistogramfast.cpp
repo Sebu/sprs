@@ -59,13 +59,24 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 
     float threshold = (sumContrast / count) * 2.0f;
 
+    float* bins = new float[numBins_];
+    for(int i=0; i<numBins_; i++) bins[i]=0.0f;
+
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
             if(contrast.at<double>(y,x) > threshold ) {
                 int dir = (int) (direction.at<double>(y,x) / factor_);
-                bins_[  dir  ]++;
+                bins[  dir  ]++;
             }
         }
+    }
+    for(int i=0; i<numBins_; i++) {
+        float n2 = bins[ (i-2) % numBins_]*1.0;
+        float n1 = bins[ (i-1) % numBins_]*4.0;
+        float o = bins[ i ]*6.0;
+        float p1 = bins[ (i+1) % numBins_]*4.0;
+        float p2 = bins[ (i+2) % numBins_]*1.0;
+        bins_[i] = (n2 + n1 + o + p1 + p2)/16.0;
     }
 }
 

@@ -93,6 +93,7 @@ void Match::deserialize(std::ifstream& ifs) {
 
 void Match::calcTransform() {
     transformMat_ =  warpMat_ * rotMat_ * transScaleFlipMat_;
+//    transformMat_ =  rotMat_ * transScaleFlipMat_;
 }
 
 cv::Mat Match::warp() {
@@ -111,13 +112,14 @@ cv::Mat Match::reconstruct() {
     cv::Mat warped = warp();
 
     // color scale
+    //*/
     std::vector<cv::Mat> planes;
     split(warped, planes);
     for(uint i=0; i<planes.size(); i++) {
         planes[i] *= colorScale_.val[i];
     }
     merge(planes, warped);
-
+    //*/
 
 
     return warped;

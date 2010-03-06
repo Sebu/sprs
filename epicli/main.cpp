@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     std::string fullName;
 
     int opt;
-    while ((opt = getopt(argc, argv, "vfe:s:i:")) != -1) {
+    while ((opt = getopt(argc, argv, "vfe:b:i:")) != -1) {
         switch(opt) {
         case 'v':
             verbose = true;
@@ -43,15 +43,15 @@ int main(int argc, char *argv[])
         case 'e':
             error = atof(optarg);
             break;
-        case 's':
-            d = atoi(optarg);
+        case 'b':
+            s = atoi(optarg);
             break;
         case 'i':
             fullName = optarg;
             break;
         case '?':
         default: /* '?' */
-            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-v] [-e error]" << std::endl;
+            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-v] [-e error] [-fullSearch] [-b blocksize]" << std::endl;
             exit(EXIT_FAILURE);
         }
     }

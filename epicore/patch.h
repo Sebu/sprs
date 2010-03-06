@@ -36,10 +36,10 @@ class Patch
 {
 private:
     cv::Scalar histMean_;
-    std::vector<cv::Point2f> pointsSrc_;
 
 
 public:
+    std::vector<cv::Point2f> pointsSrc_;
 
     int x_, y_, s_;
     int size_;

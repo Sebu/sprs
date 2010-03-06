@@ -29,41 +29,54 @@ bool CalculationThread::singleStep(int x, int y) {
     if(!seedmap) init();
 
     QMutex mutex;
-    Patch* patch = 0;
+    Patch* block = 0;
     if(x==-1)
-        patch = seedmap->matchNext();
+        block = seedmap->matchNext();
     else {
         int xlocal = ((float)x/400.0) * (seedmap->sourceImage_.size().width / blockSize_);
         int ylocal = ((float)y/400.0) * (seedmap->sourceImage_.size().height / blockSize_);
 
-        patch = seedmap->getPatch(xlocal,ylocal);
-        seedmap->match(patch);
+        block = seedmap->getPatch(xlocal,ylocal);
+        seedmap->match(block);
     }
 
-    if (!patch) return false;
+    if (!block) return false;
 
-    if (!patch->matches_) return true;
+    if (!block->matches_) return true;
 
 
     cv::Mat tmpImage = base_.clone();
 
-    for(uint i=0; i<patch->matches_->size(); i++) {
+    for(uint i=0; i<block->matches_->size(); i++) {
 
-        Match* match = patch->matches_->at(i);
+        Match* match = block->matches_->at(i);
         Polygon hull = match->hull_;
 
 
         // coverage area
+        /*/
         for (uint j=0; j<seedmap->blocks_.size(); j++) {
             Patch *p = seedmap->blocks_[j];
             if ((p->hull_.intersects(hull)))
                 cv::rectangle(tmpImage, p->hull_.verts[0], p->hull_.verts[2], cv::Scalar(0,100,100,100));
         }
+        //*/
 
         // highlight match
         for(int j=0; j<4; j++)
             cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,0,255,100));
 
+
+        foreach(cv::Point2f p, block->pointsSrc_)
+            cv::line(tmpImage, p, p, cv::Scalar(0,155,00,100));
+
+
+    }
+
+    if(block->finalMatch_) {
+        // highlight match
+        for(int j=0; j<4; j++)
+            cv::line(tmpImage, block->finalMatch_->hull_.verts[j], block->finalMatch_->hull_.verts[(j+1) % 4], cv::Scalar(0,255,0,100));
     }
 
     cv::Mat reconstruction(seedmap->debugReconstruction());
