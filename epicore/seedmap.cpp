@@ -352,7 +352,7 @@ void SeedMap::match(Patch* block) {
                         breakIt=true;
                     }
                 }
-                if(block->matches_->size()>=10000) breakIt=true;
+                if(block->matches_->size()>=2000) breakIt=true;
             }
 
         }
@@ -379,7 +379,7 @@ void SeedMap::match(Patch* block) {
             std::cout << "shares " << block->matches_->size() <<  " matches @ " <<  block->x_/s_ << " " << block->y_/s_ << std::endl;
 
         //copy matches and recalculate colorScale!
-        block->copyMatches();
+//        block->copyMatches();
     }
 
     if (block->matches_ && !block->matches_->empty()) {

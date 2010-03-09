@@ -81,7 +81,7 @@ void Patch::serialize(std::ofstream& ofs) {
 
 float Patch::reconError(Match* m) {
 
-    float alpha = 0.9f; // 0 <= alpha <= 2
+    float alpha = 1.0f; // 0 <= alpha <= 2
     float beta  = 0.0000000001f;
 
     // reconstruct
@@ -93,7 +93,7 @@ float Patch::reconError(Match* m) {
     for(uint i=0; i<4; i++)
         m->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
-    if(m->colorScale_[0]>1.25f || m->colorScale_[1]>1.25f || m->colorScale_[2]>1.25f) {
+    if(m->colorScale_[0]>10.25f || m->colorScale_[1]>10.25f || m->colorScale_[2]>10.25f) {
 //        std::cout << reconstructionMean[0] << " " << reconstructionMean[1] <<  " "  <<  reconstructionMean[2] << std::endl;
 //        std::cout << m->colorScale_[0] << " " << m->colorScale_[1] <<  " "  <<  m->colorScale_[2] << std::endl;
 //        std::cout << m->transformMat_.at<double>(0,0) << " " << m->transformMat_.at<double>(0,1) << " " << m->transformMat_.at<double>(0,2) << std::endl;
@@ -147,7 +147,7 @@ void Patch::findFeatures() {
 
     std::vector<cv::Point2f> points;
 
-    cv::goodFeaturesToTrack(patchGray_, points, 8, .005, 0.1);
+    cv::goodFeaturesToTrack(patchGray_, points, 8, .001, 0.1);
 
     foreach(cv::Point2f newP, points) {
         bool indie = true;
@@ -182,7 +182,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::calcOpticalFlowPyrLK( patchGray_, grayRotated,
                               pointsSrc_, pointsDest,
                               status, err,
-                              cv::Size(4,4), 1, cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 20, 0.1));
+                              cv::Size(15,15), 1, cv::TermCriteria(cv::TermCriteria::EPS, 1, 0.05));
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -223,9 +223,9 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other, float maxError) {
 
 
-    double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR);
+    double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_BHATTACHARYYA);
 //    std::cout << histDiff << std::endl;
-    if(histDiff > 300) return 0;
+    if(histDiff > 0.6) return 0;
 
 
 
@@ -235,7 +235,7 @@ Match* Patch::match(Patch& other, float maxError) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
 //    std::cout << diff << std::endl;
-    if(diff > 150.0) return 0;
+    if(diff > 50.0) return 0;
 
 
     Match* match = new Match(&other);
@@ -353,5 +353,7 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
 
 
     setHistMean( cv::mean(patchColor_) );
+    if(!isBlock_)
+        patchColor_.release();
 
 }

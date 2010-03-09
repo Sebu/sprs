@@ -18,23 +18,22 @@ public:
 //    int seedX_, seedY_;
     //    float scale_;
 
-    int s_;
     cv::Scalar colorScale_;
-
-    bool transformed_;
+    cv::Mat transformMat_;
     float error_;
 
-    Polygon hull_;
-
+    int s_;
     Patch* block_;
+    cv::Mat transScaleFlipMat_;
+
+    bool transformed_;
+    Polygon hull_;
     cv::Mat sourceImage_;
 
 
-    cv::Mat transformMat_;
     cv::Mat warpMat_;
     cv::Mat rotMat_;
 
-    cv::Mat transScaleFlipMat_;
 
     std::vector<Tile*> coveredTiles_;
 
