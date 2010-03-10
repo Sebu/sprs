@@ -47,6 +47,7 @@ bool CalculationThread::singleStep(int x, int y) {
 
     cv::Mat tmpImage = base_.clone();
 
+    float colorScale = 255.0 / seedmap->crit_.maxError_;
     for(uint i=0; i<block->matches_->size(); i++) {
 
         Match* match = block->matches_->at(i);
@@ -63,8 +64,9 @@ bool CalculationThread::singleStep(int x, int y) {
         //*/
 
         // highlight match
+
         for(int j=0; j<4; j++)
-            cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,0,255,100));
+            cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,match->error_*colorScale,0,100));
 
 
         foreach(cv::Point2f p, block->pointsSrc_)

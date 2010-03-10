@@ -179,7 +179,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::calcOpticalFlowPyrLK( patchGray_, grayRotated,
                               pointsSrc_, pointsDest,
                               status, err,
-                              cv::Size(crit_->winSize_,crit_->winSize_), 1, cv::TermCriteria(cv::TermCriteria::EPS, 1, 0.01));
+                              cv::Size(crit_->winSize_,crit_->winSize_), 0, cv::TermCriteria(cv::TermCriteria::EPS, 1, 0.01));
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -220,9 +220,9 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other) {
 
 
-    double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_BHATTACHARYYA);
+    double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR);
 //    std::cout << histDiff << std::endl;
-    if(histDiff > 0.6) return 0;
+    if(histDiff > 600) return 0;
 
 
 
@@ -281,7 +281,7 @@ Match* Patch::match(Patch& other) {
     // debug out
     //*
     if(verbose_) {
-        std::cout << other.x_/s_ << " " << other.y_/s_ << " " <<
+        std::cout << other.x_ << " " << other.y_ << " " <<
                 "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
         //std::cout << " " << other.scale_;
         if(x_==other.x_ && y_==other.y_ && other.isBlock_) std::cout << "\tfound myself!";
