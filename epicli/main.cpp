@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     // original
     cv::Mat image = cv::imread(fullName);
     seedmap = new SeedMap( image, s, true);
-    seedmap->maxError_ = error;
+    seedmap->crit_.maxError_ = error;
     seedmap->verbose_ = verbose;
     //seedmap->deserialize(fullName);
 
