@@ -93,7 +93,8 @@ float Patch::reconError(Match* m) {
     for(uint i=0; i<4; i++)
         m->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
-    if(m->colorScale_[0]>10.25f || m->colorScale_[1]>10.25f || m->colorScale_[2]>10.25f) {
+    if(m->colorScale_[0]>10.25f || m->colorScale_[1]>10.25f || m->colorScale_[2]>10.25f)
+    {
 //        std::cout << reconstructionMean[0] << " " << reconstructionMean[1] <<  " "  <<  reconstructionMean[2] << std::endl;
 //        std::cout << m->colorScale_[0] << " " << m->colorScale_[1] <<  " "  <<  m->colorScale_[2] << std::endl;
 //        std::cout << m->transformMat_.at<double>(0,0) << " " << m->transformMat_.at<double>(0,1) << " " << m->transformMat_.at<double>(0,2) << std::endl;
@@ -182,7 +183,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::calcOpticalFlowPyrLK( patchGray_, grayRotated,
                               pointsSrc_, pointsDest,
                               status, err,
-                              cv::Size(15,15), 1, cv::TermCriteria(cv::TermCriteria::EPS, 1, 0.05));
+                              cv::Size(5,5), 0, cv::TermCriteria(cv::TermCriteria::EPS, 1, 0.04));
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -225,7 +226,7 @@ Match* Patch::match(Patch& other, float maxError) {
 
     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_BHATTACHARYYA);
 //    std::cout << histDiff << std::endl;
-    if(histDiff > 0.6) return 0;
+//    if(histDiff > 0.6) return 0;
 
 
 
@@ -235,7 +236,7 @@ Match* Patch::match(Patch& other, float maxError) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
 //    std::cout << diff << std::endl;
-    if(diff > 50.0) return 0;
+//    if(diff > 50.0) return 0;
 
 
     Match* match = new Match(&other);
@@ -284,7 +285,7 @@ Match* Patch::match(Patch& other, float maxError) {
     // debug out
     //*
     if(verbose_) {
-        std::cout << other.x_/s_ << " " << other.y_/s_ << " " <<
+        std::cout << other.x_ << " " << other.y_ << " " <<
                 "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
         std::cout << " " << other.scale_;
         if(x_==other.x_ && y_==other.y_ && other.isBlock_) std::cout << "\tfound myself!";

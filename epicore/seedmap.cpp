@@ -352,7 +352,7 @@ void SeedMap::match(Patch* block) {
                         breakIt=true;
                     }
                 }
-                if(block->matches_->size()>=2000) breakIt=true;
+//                if(block->matches_->size()>=2000) breakIt=true;
             }
 
         }
