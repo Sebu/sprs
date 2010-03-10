@@ -81,9 +81,6 @@ void Patch::serialize(std::ofstream& ofs) {
 
 float Patch::reconError(Match* m) {
 
-    float alpha = 1.0f; // 0 <= alpha <= 2
-    float beta  = 0.0000000001f;
-
     // reconstruct
     cv::Mat reconstruction( m->reconstruct() );
 
@@ -93,7 +90,7 @@ float Patch::reconError(Match* m) {
     for(uint i=0; i<4; i++)
         m->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
-    if(m->colorScale_[0]>10.25f || m->colorScale_[1]>10.25f || m->colorScale_[2]>10.25f) {
+    if(m->colorScale_[0]>crit_->maxColor_ || m->colorScale_[1]>crit_->maxColor_ || m->colorScale_[2]>crit_->maxColor_) {
 //        std::cout << reconstructionMean[0] << " " << reconstructionMean[1] <<  " "  <<  reconstructionMean[2] << std::endl;
 //        std::cout << m->colorScale_[0] << " " << m->colorScale_[1] <<  " "  <<  m->colorScale_[2] << std::endl;
 //        std::cout << m->transformMat_.at<double>(0,0) << " " << m->transformMat_.at<double>(0,1) << " " << m->transformMat_.at<double>(0,2) << std::endl;
@@ -119,10 +116,10 @@ float Patch::reconError(Match* m) {
         }
 
     }
-//    cv::imshow("fenster123", reconstruction);
 
-//    std::cout << dist << " " << variance_ << std::endl;
-    return dist / ( pow( variance_, alpha) + beta );
+//     std::cout << crit_->alpha_ << " " << variance_ << std::endl;
+
+    return dist / ( pow( variance_, crit_->alpha_) + 0.0000000001f );
 }
 
 void Patch::findFeatures() {
@@ -182,7 +179,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::calcOpticalFlowPyrLK( patchGray_, grayRotated,
                               pointsSrc_, pointsDest,
                               status, err,
-                              cv::Size(15,15), 1, cv::TermCriteria(cv::TermCriteria::EPS, 1, 0.05));
+                              cv::Size(crit_->winSize_,crit_->winSize_), 1, cv::TermCriteria(cv::TermCriteria::EPS, 1, 0.01));
 
     cv::Point2f srcTri[3], destTri[3];
 
@@ -220,7 +217,7 @@ bool Patch::trackFeatures(Match* match) {
     return true;
 
 }
-Match* Patch::match(Patch& other, float maxError) {
+Match* Patch::match(Patch& other) {
 
 
     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_BHATTACHARYYA);
@@ -235,7 +232,7 @@ Match* Patch::match(Patch& other, float maxError) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
 //    std::cout << diff << std::endl;
-    if(diff > 50.0) return 0;
+    if(diff > crit_->maxOrient_) return 0;
 
 
     Match* match = new Match(&other);
@@ -265,7 +262,7 @@ Match* Patch::match(Patch& other, float maxError) {
 
 //    std::cout << reconstructionError << std::endl;
 
-    if(x_ == other.x_ && y_  == other.y_ && reconstructionError > maxError && other.isBlock_) {
+    if(x_ == other.x_ && y_  == other.y_ && reconstructionError > crit_->maxError_ && other.isBlock_) {
         if(verbose_)
             std::cout << other.x_/s_ << " " << other.x_/s_ << " " << orientation << " bad buddy: " << reconstructionError << std::endl;
             std::cout << match->warpMat_.at<double>(0,0) << " " << match->warpMat_.at<double>(0,1) << " " << match->warpMat_.at<double>(0,2) << std::endl;
@@ -273,7 +270,7 @@ Match* Patch::match(Patch& other, float maxError) {
     }
 
     // reconstruction error too high? skip
-    if (reconstructionError > maxError) {
+    if (reconstructionError > crit_->maxError_) {
         delete match;
         return 0;
     }
@@ -286,7 +283,7 @@ Match* Patch::match(Patch& other, float maxError) {
     if(verbose_) {
         std::cout << other.x_/s_ << " " << other.y_/s_ << " " <<
                 "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
-        std::cout << " " << other.scale_;
+        //std::cout << " " << other.scale_;
         if(x_==other.x_ && y_==other.y_ && other.isBlock_) std::cout << "\tfound myself!";
         std::cout << std::endl;
     }
@@ -295,7 +292,7 @@ Match* Patch::match(Patch& other, float maxError) {
 }
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), scale_(scale), sharesMatches_(0), matches_(0), finalMatch_(0),
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), sharesMatches_(0), matches_(0), finalMatch_(0),
         sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), variance_(0), isBlock_(isBlock)
 {
 
@@ -307,8 +304,8 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
     cv::Mat scaleMat = cv::Mat::eye(3,3,CV_64FC1);
     transMat.at<double>(0,2)=-x_;
     transMat.at<double>(1,2)=-y_;
-    scaleMat.at<double>(0,0)/=scale_;
-    scaleMat.at<double>(1,1)/=scale_;
+    scaleMat.at<double>(0,0)/=scale;
+    scaleMat.at<double>(1,1)/=scale;
     // flip :)
     cv::Mat flipMat = cv::Mat::eye(3,3,CV_64FC1);
     switch(flip) {

@@ -6,6 +6,7 @@
 
 #include "orientationhistogram.h"
 #include "orientationhistogramfast.h"
+#include "searchcriteria.h"
 #include "match.h"
 
 class Match;
@@ -44,7 +45,9 @@ public:
     int x_, y_, s_;
     int size_;
     float variance_;
-    float scale_;
+    //float scale_;
+
+    SearchCriteria* crit_;
 
     bool verbose_;
 
@@ -80,7 +83,7 @@ public:
     void findFeatures();
     float reconError(Match*);
     bool trackFeatures(Match*);
-    Match* match(Patch&, float);
+    Match* match(Patch&);
 
     void resetMatches();
     void copyMatches();

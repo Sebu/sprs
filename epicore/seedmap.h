@@ -9,6 +9,7 @@
 #include "patch.h"
 #include "match.h"
 #include "epitome.h"
+#include "searchcriteria.h"
 #include "epicore_global.h"
 
 class EPICORESHARED_EXPORT SeedMap
@@ -23,7 +24,8 @@ public:
     bool done_;
 
     bool searchInOriginal_;
-    float maxError_;
+
+    SearchCriteria crit_;
 
     bool verbose_;
 

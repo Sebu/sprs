@@ -266,7 +266,7 @@ void SeedMap::deserialize(std::string fileName) {
     if (ifs) {
         float error;
         ifs >> s_ >> grid_ >> error;
-        if (maxError_ == error) {
+        if (crit_.maxError_ == error) {
             int size;
             ifs >> size;
             for(int i=0; i<size; i++)
@@ -281,7 +281,7 @@ void SeedMap::deserialize(std::string fileName) {
 void SeedMap::serialize(std::string fileName) {
     std::ofstream ofs( (fileName + ".cache").c_str() );
 
-    ofs << s_ << " " << grid_ << " " << maxError_ << " ";
+    ofs << s_ << " " << grid_ << " " << crit_.maxError_ << " ";
     ofs << blocks_.size() << " ";
     for(uint i=0; i<blocks_.size(); i++)
         blocks_[i]->serialize(ofs);
@@ -332,7 +332,7 @@ void SeedMap::match(Patch* block) {
             Patch* seed = seeds_[i];
 
             if(!termCalculate_ && !breakIt) {
-                Match* match = block->match(*seed, maxError_);
+                Match* match = block->match(*seed);
                 if (match) {
 
                     #pragma omp critical
@@ -464,6 +464,7 @@ void SeedMap::setImage(cv::Mat &image) {
     for(int y=0; y<height; y++)
         for(int x=0; x<width; x++) {
         Patch* block = new Patch( sourceImage_, sourceGray_, x*s_, y*s_, s_,  1.0f, 0, true);
+        block->crit_ = &crit_;
         block->verbose_ = verbose_;
         blocks_.push_back(block);
     }
@@ -495,8 +496,10 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
                         int indexY = localY / s_;
                         seed = getPatch(indexX, indexY);
                     }
-                    else
+                    else {
                         seed = new Patch( source, sourceGray_, localX, localY, s_,  scale, flip, false);
+                        seed->crit_ = &crit_;
+                    }
 
                     seed->verbose_ = verbose_;
                     seeds_.push_back(seed);
@@ -539,7 +542,7 @@ void SeedMap::setReconSource(cv::Mat& base, int depth) {
 }
 
 SeedMap::SeedMap(cv::Mat& image, int s, bool searchInOriginal)
-    : termCalculate_(0), s_(s), grid_(s/4), matchStep_(0), maxError_(0.0f), searchInOriginal_(searchInOriginal),
+    : termCalculate_(0), s_(s), grid_(s/4), matchStep_(0), searchInOriginal_(searchInOriginal),
     satisfiedBlocks_(0), done_(0), verbose_(1)
 {
     setImage(image);

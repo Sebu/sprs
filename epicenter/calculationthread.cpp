@@ -94,7 +94,7 @@ bool CalculationThread::singleStep(int x, int y) {
 void CalculationThread::init() {
     seedmap = new SeedMap( image_, blockSize_, searchInOriginal_);
     seedmap->setReconSource(base_,3);
-    seedmap->maxError_ = error_;
+    seedmap->crit_.maxError_ = error_;
 
     seedmap->deserialize(fileName);
 }
