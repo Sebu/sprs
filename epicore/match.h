@@ -28,6 +28,7 @@ public:
 
     bool transformed_;
     Polygon hull_;
+    Polygon bbox_;
     cv::Mat sourceImage_;
 
 
@@ -43,10 +44,12 @@ public:
     bool isPatch();
 
     cv::Mat warp();
+    cv::Mat warpFull();
     cv::Mat reconstruct();
 
     void calcTransform();
     void calcHull();
+    void calcPos();
 
     void save(std::ofstream&);
     // (de-)serialize

@@ -27,6 +27,27 @@ Match::Match(Patch* seed)
 
 }
 
+void Match::calcPos() {
+    double points[4][2] = { {0 , 0},
+                            {s_, s_},
+
+    };
+
+    cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
+    cv::Mat inverted;
+    invertAffineTransform(selection, inverted);
+
+    for(int i=0; i<2; i++ ) {
+        cv::Mat p = (cv::Mat_<double>(3,1) << points[i][0], points[i][1], 1);
+
+        cv::Mat a =  inverted * p;
+        Vector2f point;
+        point.m_v[0] = a.at<double>(0,0);
+        point.m_v[1] = a.at<double>(0,1);
+        bbox_.verts.push_back(point);
+    }
+
+}
 
 void Match::calcHull() {
     double points[4][2] = { {0 , 0},
@@ -86,14 +107,22 @@ void Match::deserialize(std::ifstream& ifs) {
             ifs >> transformMat_.at<double>(i,j);
     ifs >> colorScale_[0] >> colorScale_[1] >>  colorScale_[2];
     ifs >> error_;
-    calcHull();
 }
 
 
 
 void Match::calcTransform() {
-    transformMat_ =  warpMat_ * rotMat_ * transScaleFlipMat_;
-//    transformMat_ =  rotMat_ * transScaleFlipMat_;
+    transformMat_ =  warpMat_  * rotMat_ * transScaleFlipMat_ ;
+}
+
+cv::Mat Match::warpFull() {
+
+    cv::Mat warped;
+    cv::Mat selection(transformMat_, cv::Rect(0,0,3,2));
+    cv::warpAffine(sourceImage_, warped, selection, cv::Size(s_, s_));
+
+    return warped;
+
 }
 
 cv::Mat Match::warp() {

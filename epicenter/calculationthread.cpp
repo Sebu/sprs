@@ -52,6 +52,7 @@ bool CalculationThread::singleStep(int x, int y) {
 
         Match* match = block->matches_->at(i);
         Polygon hull = match->hull_;
+        Polygon bbox = match->bbox_;
 
 
         // coverage area
@@ -66,8 +67,9 @@ bool CalculationThread::singleStep(int x, int y) {
         // highlight match
 
         for(int j=0; j<4; j++)
-            cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,match->error_*colorScale,0,100));
+            cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,255-match->error_*colorScale,match->error_*colorScale,100));
 
+        cv::line(tmpImage, bbox.verts[0], hull.verts[0], cv::Scalar(200,0,0,100));
 
         foreach(cv::Point2f p, block->pointsSrc_)
             cv::line(tmpImage, p, p, cv::Scalar(0,155,00,100));
