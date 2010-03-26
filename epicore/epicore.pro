@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-01-12T18:57:11
 # -------------------------------------------------
 QT -= gui
-CONFIG += debug
+# CONFIG += debug
 TARGET = epicore
 TEMPLATE = lib
 DEFINES += EPICORE_LIBRARY
@@ -34,4 +34,4 @@ HEADERS += epicore.h \
     matrix.h \
     epitome.h \
     searchcriteria.h
-QMAKE_CXXFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -fopenmp -D_GLIBCXX_PARALLEL
