@@ -17,10 +17,23 @@ void Patch::resetMatches() {
     matches_ = 0;
 }
 
+void Patch::correctFinalMatch() {
+    if(!sharesMatches_ || !finalMatch_) return;
+    if(verbose_)
+        std::cout << "correcting color of final match" << std::endl;
+
+    finalMatch_->colorScale_=(cv::Scalar::all(1.0f));
+    cv::Mat reconstruction( finalMatch_->reconstruct() );
+    cv::Scalar reconstructionMean = cv::mean(reconstruction);
+    for(uint i=0; i<4; i++)
+        finalMatch_->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
+
+}
+
 void Patch::copyMatches() {
     if(!sharesMatches_) return;
     if(verbose_)
-        std::cout << "correcting colors" << std::endl;
+        std::cout << "correcting colors of all matches" << std::endl;
 
     std::vector<Match*>* newVector = new std::vector<Match*>;
 
@@ -235,7 +248,7 @@ Match* Patch::match(Patch& other) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
     //    std::cout << diff << std::endl;
-        if(diff > crit_->maxOrient_) return 0;
+//        if(diff > crit_->maxOrient_) return 0;
 
 
     Match* match = new Match(&other);

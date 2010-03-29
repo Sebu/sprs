@@ -19,7 +19,7 @@ HEADERS += mainwindow.h \
     glwidget.h \
     calculationthread.h
 FORMS += mainwindow.ui
-QMAKE_CXXFLAGS += -fopenmp -D_GLIBCXX_PARALLEL
+QMAKE_CXXFLAGS += -fopenmp
 # CONFIG += debug
 
 DEPENDPATH += ../epicore

@@ -3,8 +3,6 @@
 
 #include <QList>
 #include <QHash>
-#define _BACKUP _GLIBCXX_NAMESPACE_ASSOCIATION_PARALLEL
-#define _GLIBCXX_NAMESPACE_ASSOCIATION_PARALLEL 1
 
 #include <opencv/cv.h>
 #include <fstream>

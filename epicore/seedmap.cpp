@@ -2,6 +2,8 @@
 #include <opencv/highgui.h>
 #include <fstream>
 #include <tr1/memory>
+#include <QTime>
+
 #include "seedmap.h"
 #include "cv_ext.h"
 #include "epitome.h"
@@ -76,7 +78,7 @@ void SeedMap::generateEpitome() {
             tile->blocks_ = tile->overlapingBlocks_.size();
 
 
-            //*
+            /*
             if (x>0 && y>0) {
                 Tile* n = tiles_[(y-1)*width +(x-1)];
                 tile->neighbours_.push_back(n);
@@ -206,7 +208,8 @@ void SeedMap::generateEpitome() {
                 if(!tile->inChart_) { covered = false; break; }
             }
             if(covered) {
-                block->finalMatch_ = match;
+                block->finalMatch_ = new Match(*match); // TODO: copy match & correct color
+                block->correctFinalMatch();
                 break;
             }
         }
@@ -295,8 +298,16 @@ void SeedMap::resetMatches() {
 }
 
 void SeedMap::matchAll() {
+
+    QTime timer;
+
+    timer.start();
     while(!termCalculate_ && matchNext()) {}
     matchStep_=0;
+
+
+    if(verbose_)
+        std::cout << "match time: " <<  timer.elapsed() << std::endl;
 }
 
 Patch* SeedMap::matchNext() {

@@ -34,4 +34,4 @@ HEADERS += epicore.h \
     matrix.h \
     epitome.h \
     searchcriteria.h
-QMAKE_CXXFLAGS += -fopenmp -D_GLIBCXX_PARALLEL
+QMAKE_CXXFLAGS += -fopenmp
