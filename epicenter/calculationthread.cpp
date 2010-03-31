@@ -96,10 +96,10 @@ bool CalculationThread::singleStep(int x, int y) {
 }
 
 void CalculationThread::init() {
-    seedmap = new SeedMap( image_, blockSize_, searchInOriginal_);
-    seedmap->setReconSource(base_,3);
+    seedmap = new SeedMap(blockSize_, searchInOriginal_);
     seedmap->crit_.maxError_ = error_;
-
+    seedmap->setImage(image_);
+    seedmap->setReconSource(base_,3);
     seedmap->deserialize(fileName);
 }
 

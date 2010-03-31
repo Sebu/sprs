@@ -543,10 +543,10 @@ void SeedMap::setReconSource(cv::Mat& base, int depth) {
 
 }
 
-SeedMap::SeedMap(cv::Mat& image, int s, bool searchInOriginal)
+SeedMap::SeedMap(int s, bool searchInOriginal)
     : termCalculate_(0), s_(s), grid_(s/4), matchStep_(0), searchInOriginal_(searchInOriginal),
     satisfiedBlocks_(0), done_(0), verbose_(1)
 {
     std::cout <<  s_ << std::endl;
-    setImage(image);
+
 }

@@ -43,7 +43,7 @@ public:
     cv::Mat sourceGray_;
     cv::Mat baseImage_;
 
-    SeedMap( cv::Mat& image, int s, bool);
+    SeedMap(int s, bool);
 
     void setImage(cv::Mat& image);
     void setReconSource(cv::Mat& image, int depth);

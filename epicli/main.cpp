@@ -66,9 +66,10 @@ int main(int argc, char *argv[])
 
     // original
     cv::Mat image = cv::imread(fullName);
-    seedmap = new SeedMap( image, s, true);
+    seedmap = new SeedMap(s, true);
     seedmap->crit_.maxError_ = error;
     seedmap->verbose_ = verbose;
+    seedmap->setImage(image);
     //seedmap->deserialize(fullName);
 
     // for in qdir
