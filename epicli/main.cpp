@@ -29,10 +29,11 @@ int main(int argc, char *argv[])
     bool verbose= false;
     bool fullSearch=0;
     int  s = 16;
+    int winsize = 6;
     std::string fullName;
 
     int opt;
-    while ((opt = getopt(argc, argv, "vfe:b:i:")) != -1) {
+    while ((opt = getopt(argc, argv, "vfe:b:i:w:")) != -1) {
         switch(opt) {
         case 'v':
             verbose = true;
@@ -48,6 +49,9 @@ int main(int argc, char *argv[])
             break;
         case 'i':
             fullName = optarg;
+            break;
+        case 'w':
+            winsize = atoi(optarg);
             break;
         case '?':
         default: /* '?' */

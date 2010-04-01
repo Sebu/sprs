@@ -238,7 +238,7 @@ Match* Patch::match(Patch& other) {
 
     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-    if(histDiff > 1.3) return 0;
+    if(histDiff > 1.5) return 0;
 
 
 
@@ -268,8 +268,8 @@ Match* Patch::match(Patch& other) {
     match->calcTransform();
 
     // 4.1 KLT matching
-    trackFeatures(match);
     //    if (!) { delete match; return 0; }
+    trackFeatures(match);
 
     match->calcTransform();
 

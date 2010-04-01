@@ -340,7 +340,7 @@ void SeedMap::match(Patch* block) {
 
         bool breakIt = false;
 
-#pragma omp parallel for
+        #pragma omp parallel for
         for(ulong i=0; i< seeds_.size(); i++) {
             Patch* seed = seeds_[i];
 
@@ -348,18 +348,16 @@ void SeedMap::match(Patch* block) {
                 Match* match = block->match(*seed);
                 if (match) {
 
-#pragma omp critical
-                    {
-                        block->matches_->push_back(match);
+                     #pragma omp critical
+                     block->matches_->push_back(match);
 
                         if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
 
                             if (!seed->matches_) {
                                 seed->matches_=block->matches_;
                                 seed->sharesMatches_ = true;
-                            }
-                        }
-                    }
+                         }
+                     }
 
                     if (!searchInOriginal_) {
                         block->finalMatch_ = match;
