@@ -4,11 +4,20 @@
 class SearchCriteria
 {
 public:
+
     float alpha_;
     float maxError_;
     float maxColor_;
     float maxOrient_;
-    int winSize_;
+
+    // good featues
+    int gfNumFeatures_;
+    double gfQualityLvl_;
+    double gfMinDist_;
+
+    // KLT
+    int kltWinSize_;
+    int kltMaxLvls_;
 
     SearchCriteria();
 };

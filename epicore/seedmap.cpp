@@ -397,7 +397,7 @@ cv::Mat SeedMap::debugEpitomeMap() {
 
     float color = 0;
     float step = 255.0f/charts_.size();
-    /*
+    //*
     foreach(Chart* epi, charts_) {
         foreach(Tile* square, epi->reconTiles_) {
                 cv::rectangle(image, square->hull_.verts[0], square->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255),-2);
