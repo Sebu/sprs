@@ -44,10 +44,10 @@ void SeedMap::generateEpitome() {
         foreach(Match* match, *(block->matches_)) {
             // calc bbox of match
             AABB box = match->hull_.getBox();
-            uint minx = std::max( (int)(box.min.m_v[0] / grid_), 0 );
-            uint miny = std::max( (int)(box.min.m_v[1] / grid_), 0 );
-            uint maxx = std::min( (int)(box.max.m_v[0] / grid_), (int)width-1);
-            uint maxy = std::min( (int)(box.max.m_v[1] / grid_), (int)height-1);
+            uint minx = std::max( (int)(box.min.m_v[0] / 4), 0 );
+            uint miny = std::max( (int)(box.min.m_v[1] / 4), 0 );
+            uint maxx = std::min( (int)(box.max.m_v[0] / 4), (int)width-1);
+            uint maxy = std::min( (int)(box.max.m_v[1] / 4), (int)height-1);
 
 
             for(uint y=miny; y<=maxy; y++) {
@@ -74,8 +74,9 @@ void SeedMap::generateEpitome() {
         for(uint x=0; x<width; x++) {
             Tile* tile = tiles_[y*width+x];
 
+
             tile->overlapingBlocks_.unique();
-            tile->blocks_ = tile->overlapingBlocks_.size();
+            tile->blocks_ =tile->overlapingBlocks_.size();
 
 
             /*
@@ -132,16 +133,16 @@ void SeedMap::generateEpitome() {
 
 
         // get first block
-        Tile* firstTile = sortedTiles.front();
+        Tile* bestCoveredTile = sortedTiles.front();
         sortedTiles.pop_front();
 
-        if(firstTile->done_)
+        if(bestCoveredTile->done_)
             continue;
 
         Chart* chart = new Chart(&baseImage_);
         std::list<Tile*> chartTiles;
 
-        chartTiles.push_back(firstTile);
+        chartTiles.push_back(bestCoveredTile);
         // block coverrage
         while(!chartTiles.empty()) {
             std::vector<Patch*> deltaI;

@@ -22,7 +22,10 @@ cv::Mat getTransform( const std::vector<cv::Point2f> src, const std::vector<cv::
         b[i*2+1] = dst[i].y;
     }
 
-    solve( A, B, X, cv::DECOMP_SVD);
+//    if (size==3)
+      solve( A, B, X); //, cv::DECOMP_SVD);
+//    else
+//      solve( A, B, X, cv::DECOMP_SVD);
     return M;
 }
 
