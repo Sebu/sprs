@@ -9,55 +9,40 @@
 #include "epitome.h"
 
 
-bool tileSorter (Tile* i, Tile* j) { return (i->blocks_ > j->blocks_ ); }
+bool tileSorter (Patch* i, Patch* j) { return (i->blocks_ > j->blocks_ ); }
 
 
-void SeedMap::generateEpitome() {
+void SeedMap::generateCharts() {
 
     if(termCalculate_) return;
 
-    std::list<Tile*> sortedTiles;
-    uint width = baseImage_.cols/4;
-    uint height = baseImage_.rows/4;
+    std::list<Patch*> sortedBlocks;
+    uint width = baseImage_.cols/s_;
+    uint height = baseImage_.rows/s_;
 
-
-    // create tile table
-    for(uint y=0; y<height; y++) {
-        for(uint x=0; x<width; x++) {
-            Tile* tile = new Tile(x*4,y*4);
-
-            tiles_.push_back(tile);
-            sortedTiles.push_back(tile);
-        }
-    }
-
-    if(verbose_)
-        std::cout <<  "create squares done"  << std::endl;
-
-
-    // crappy setup
-    // find all potential seeds
 
     foreach(Patch* block, blocks_) {
+        sortedBlocks.push_back(block);
         if(!block->matches_ || block->finalMatch_) continue;
+
 
         foreach(Match* match, *(block->matches_)) {
             // calc bbox of match
             AABB box = match->hull_.getBox();
-            uint minx = std::max( (int)(box.min.m_v[0] / 4), 0 );
-            uint miny = std::max( (int)(box.min.m_v[1] / 4), 0 );
-            uint maxx = std::min( (int)(box.max.m_v[0] / 4), (int)width-1);
-            uint maxy = std::min( (int)(box.max.m_v[1] / 4), (int)height-1);
+            uint minx = std::max( (int)(box.min.m_v[0] / s_), 0 );
+            uint miny = std::max( (int)(box.min.m_v[1] / s_), 0 );
+            uint maxx = std::min( (int)(box.max.m_v[0] / s_), (int)width-1);
+            uint maxy = std::min( (int)(box.max.m_v[1] / s_), (int)height-1);
 
 
             for(uint y=miny; y<=maxy; y++) {
                 for(uint x=minx; x<=maxx; x++) {
-                    Tile* tile = tiles_.at(y*width + x);
+                    Patch* b = blocks_.at(y*width + x);
 
-                    if (tile->hull_.intersects(match->hull_)) {
-                        match->coveredTiles_.push_back(tile);
-                        tile->overlapingMatches_.push_back(match);
-                        tile->overlapingBlocks_.push_back(block);
+                    if (b->hull_.intersects(match->hull_)) {
+                        match->coveredBlocks_.push_back(b);
+                        b->overlapingMatches_.push_back(match);
+                        b->overlapingBlocks_.push_back(block);
                     }
                 }
             }
@@ -72,48 +57,48 @@ void SeedMap::generateEpitome() {
     // FIXME: :D
     for(uint y=0; y<height; y++) {
         for(uint x=0; x<width; x++) {
-            Tile* tile = tiles_[y*width+x];
+            Patch* block = blocks_[y*width+x];
 
 
-            tile->overlapingBlocks_.unique();
-            tile->blocks_ =tile->overlapingBlocks_.size();
+            block->overlapingBlocks_.unique();
+            block->blocks_ =block->overlapingBlocks_.size();
 
 
             /*
             if (x>0 && y>0) {
-                Tile* n = tiles_[(y-1)*width +(x-1)];
-                tile->neighbours_.push_back(n);
+                Patch* n = blocks_[(y-1)*width +(x-1)];
+                block->neighbours_.push_back(n);
             }
 
             if (x>0 && y<height-1) {
-                Tile* n = tiles_[(y+1)*width +(x-1)];
-                tile->neighbours_.push_back(n);
+                Patch* n = blocks_[(y+1)*width +(x-1)];
+                block->neighbours_.push_back(n);
             }
 
             if (x<width-1 && y>0) {
-                Tile* n = tiles_[(y-1)*width +(x+1)];
-                tile->neighbours_.push_back(n);
+                Patch* n = blocks_[(y-1)*width +(x+1)];
+                block->neighbours_.push_back(n);
             }
             if(x<width-1 && y<height-1) {
-                Tile* n = tiles_[(y+1)*width +(x+1)];
-                tile->neighbours_.push_back(n);
+                Patch* n = blocks_[(y+1)*width +(x+1)];
+                block->neighbours_.push_back(n);
             }
             //*/
             if (x>0) {
-                Tile* n = tiles_[y*width +(x-1)];
-                tile->neighbours_.push_back(n);
+                Patch* n = blocks_[y*width +(x-1)];
+                block->neighbours_.push_back(n);
             }
             if (y>0) {
-                Tile* n = tiles_[(y-1)*width +x];
-                tile->neighbours_.push_back(n);
+                Patch* n = blocks_[(y-1)*width +x];
+                block->neighbours_.push_back(n);
             }
             if(x<width-1) {
-                Tile* n = tiles_[y*width +(x+1)];
-                tile->neighbours_.push_back(n);
+                Patch* n = blocks_[y*width +(x+1)];
+                block->neighbours_.push_back(n);
             }
             if(y<height-1) {
-                Tile* n = tiles_[(y+1)*width +x];
-                tile->neighbours_.push_back(n);
+                Patch* n = blocks_[(y+1)*width +x];
+                block->neighbours_.push_back(n);
             }
 
         }
@@ -123,80 +108,100 @@ void SeedMap::generateEpitome() {
 
     if(verbose_)
         std::cout <<  "pre calc done"  << std::endl;
-    // reset satisfied
 
-
-    sortedTiles.sort(tileSorter);
 
     // sort patches by overlap count
-    while(!sortedTiles.empty()) {
+    while(!sortedBlocks.empty()) {
+
+        sortedBlocks.sort(tileSorter);
 
 
         // get first block
-        Tile* bestCoveredTile = sortedTiles.front();
-        sortedTiles.pop_front();
+        Patch* mostCoveredBlock = sortedBlocks.front();
+        sortedBlocks.pop_front();
 
-        if(bestCoveredTile->done_)
+        if(mostCoveredBlock->satisfied_)
             continue;
 
+
+        std::cout<< "start new chart" << std::endl;
         Chart* chart = new Chart(&baseImage_);
-        std::list<Tile*> chartTiles;
+        std::list<Patch*> potentialChartBlocks;
 
-        chartTiles.push_back(bestCoveredTile);
+        potentialChartBlocks.push_back(mostCoveredBlock);
         // block coverrage
-        while(!chartTiles.empty()) {
+        while(!potentialChartBlocks.empty()) {
             std::vector<Patch*> deltaI;
-            std::vector<Tile*> deltaE;
+            std::vector<Patch*> deltaE;
 
-            Tile* currentTile = chartTiles.front();
-            chartTiles.pop_front();
+            Patch* currentBlock = potentialChartBlocks.front();
+            potentialChartBlocks.pop_front();
 
-            if(currentTile->done_) continue;
+            if(currentBlock->satisfied_) continue;
 
-            foreach(Match* match, currentTile->overlapingMatches_) {
-
+            foreach(Match* match, currentBlock->overlapingMatches_) {
                 // block of match allready satisfied?
                 if(match->block_->satisfied_) continue;
+
+                // mark all covered blocks?
+                foreach(Patch* block, match->coveredBlocks_) {
+
+                    if(block->inChart_) continue;
+                    block->inChart_=true;
+                    deltaE.push_back(block);
+
+                    if(block->satisfied_) continue;
+                    block->satisfied_ = true;
+                    deltaI.push_back(block);
+
+                    foreach(Match* innerMatch, block->overlapingMatches_) {
+                        if(innerMatch->block_->satisfied_) continue;
+                        innerMatch->block_->satisfied_ = true;
+                        foreach (Patch* innerBlock, innerMatch->coveredBlocks_) {
+                            if (innerBlock->inChart_) continue;
+                            innerMatch->block_->satisfied_ = false;
+                            break;
+                        }
+                        if (innerMatch->block_->satisfied_)
+                          deltaI.push_back(innerMatch->block_);
+                    }
+
+                }
+
                 match->block_->satisfied_ = true;
                 deltaI.push_back(match->block_);
 
-                foreach(Tile* s, match->coveredTiles_) {
-                    if(s->inChart_) continue;
-                    s->inChart_=true;
-                    deltaE.push_back(s);
-                }
             }
-            int benefit = (deltaI.size()*s_*s_) - (deltaE.size()*16);
 
+            int benefit = deltaI.size() - deltaE.size();
             if(verbose_)
                 std::cout << "benefit: " << benefit << std::endl;
 
             if(benefit>=0) {
                 // mark as all matches satisfied
-                currentTile->done_ = true;
-                // add neighbours to chartTiles
-                foreach(Tile* s, deltaE) {
-                    chart->reconTiles_.push_back(s);
-                    if(!s->done_)
-                        chartTiles.push_back(s);
-                    foreach(Tile* neighbour, s->neighbours_) {
-                        if(!neighbour->done_)
-                            chartTiles.push_back(neighbour);
+                currentBlock->satisfied_ = true;
+                // add neighbours to potentialChartBlocks
+                foreach(Patch* block, deltaE) {
+                    chart->reconBlocks_.push_back(block);
+                    foreach(Patch* neighbour, block->neighbours_) {
+                        if(!neighbour->inChart_)
+                            potentialChartBlocks.push_back(neighbour);
                     }
                 }
 
 
             } else {
-                foreach(Tile* s, deltaE) s->inChart_ = false;
+                foreach(Patch* s, deltaE) s->inChart_ = false;
                 foreach(Patch* b, deltaI) b->satisfied_ = false;
             }
         }
 
-        if(!chart->reconTiles_.empty())
+        if(!chart->reconBlocks_.empty())
             charts_.push_back(chart);
-        //        else
-        //            if(!firstTile->done_)
-        //                sortedTiles.push_back(firstTile);
+
+
+//        if(!mostCoveredBlock->inChart_)
+//            sortedBlocks.push_back(mostCoveredBlock);
 
     }
 
@@ -205,8 +210,8 @@ void SeedMap::generateEpitome() {
         std::sort(block->matches_->begin(), block->matches_->end(), matchSorter);
         foreach(Match* match, *block->matches_) {
             bool covered = true;
-            foreach(Tile* tile, match->coveredTiles_) {
-                if(!tile->inChart_) { covered = false; break; }
+            foreach(Patch* b, match->coveredBlocks_) {
+                if(!b->inChart_) { covered = false; break; }
             }
             if(covered) {
                 block->finalMatch_ = new Match(*match); // TODO: copy match & correct color
@@ -217,14 +222,14 @@ void SeedMap::generateEpitome() {
     }
 
     //*
-    foreach(Tile* tile, tiles_) {
-        tile->inChart_ = false;
+    foreach(Patch* block, blocks_) {
+        block->inChart_ = false;
     }
 
     foreach(Patch* block, blocks_) {
         if(block->finalMatch_) {
-            foreach(Tile* tile, block->finalMatch_->coveredTiles_)
-                tile->inChart_ = true;
+            foreach(Patch* b, block->finalMatch_->coveredBlocks_)
+                b->inChart_ = true;
         }
     }
     //*/
@@ -243,8 +248,8 @@ void SeedMap::saveEpitome(std::string fileName) {
 
     std::ofstream ofs( (fileName + ".epi.txt").c_str() );
     foreach(Chart* c, charts_)
-        foreach(Tile* t,c->reconTiles_)
-            ofs << t->x_ << " " << t->y_ << " ";
+        foreach(Patch* b,c->reconBlocks_)
+            ofs << b->x_ << " " << b->y_ << " ";
     ofs.close();
 }
 
@@ -341,7 +346,7 @@ void SeedMap::match(Patch* block) {
 
         bool breakIt = false;
 
-        #pragma omp parallel for
+//        #pragma omp parallel for
         for(ulong i=0; i< seeds_.size(); i++) {
             Patch* seed = seeds_[i];
 
@@ -400,18 +405,18 @@ cv::Mat SeedMap::debugEpitomeMap() {
     float step = 255.0f/charts_.size();
     //*
     foreach(Chart* epi, charts_) {
-        foreach(Tile* square, epi->reconTiles_) {
-                cv::rectangle(image, square->hull_.verts[0], square->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255),-2);
+        foreach(Patch* block, epi->reconBlocks_) {
+                cv::rectangle(image, block->hull_.verts[0], block->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255),-2);
         }
         color += step;
     }
     //*/
-    foreach(Tile* square, tiles_) {
-        if(square->inChart_) {
-            Vector2f v = square->hull_.verts[0];
+    foreach(Patch* block, blocks_) {
+        if(block->inChart_) {
+            Vector2f v = block->hull_.verts[0];
             int x = v.m_v[0];
             int y = v.m_v[1];
-            copyBlock(baseImage_, debugImages["epitomemap"], cv::Rect(x, y, 4, 4), cv::Rect(x,y, 4, 4) );
+            copyBlock(baseImage_, debugImages["epitomemap"], cv::Rect(x, y, s_, s_), cv::Rect(x,y, s_, s_) );
         }
     }
 
@@ -525,11 +530,11 @@ void SeedMap::addSeedsFromEpitome() {
 void SeedMap::setReconSource(cv::Mat& base, int depth) {
 
     // add border to base
-//    int rightBorder =  s_ - (base.cols % s_);
-//    int bottomBorder = s_ - (base.rows % s_);
-//    baseImage_ = cv::Mat::zeros(base.size()+cv::Size(rightBorder,bottomBorder), base.type());
-//    cv::Mat baseRegion(baseImage_, cv::Rect(cv::Point(0,0),base.size()));
-//    base.copyTo(baseRegion);
+    //    int rightBorder =  s_ - (base.cols % s_);
+    //    int bottomBorder = s_ - (base.rows % s_);
+    //    baseImage_ = cv::Mat::zeros(base.size()+cv::Size(rightBorder,bottomBorder), base.type());
+    //    cv::Mat baseRegion(baseImage_, cv::Rect(cv::Point(0,0),base.size()));
+    //    base.copyTo(baseRegion);
     baseImage_ = base;
 
     // remove all old seeds

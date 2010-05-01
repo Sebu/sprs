@@ -18,7 +18,7 @@ void CalculationThread::step() {
 
 void CalculationThread::step2() {
     if(!seedmap) init();
-    seedmap->generateEpitome();
+    seedmap->generateCharts();
 
     cv::Mat epitomeMap(seedmap->debugEpitomeMap());
     debugWidgetL->fromIpl( epitomeMap, "epitome map" );

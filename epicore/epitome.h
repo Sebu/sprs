@@ -15,7 +15,7 @@ public:
 
     cv::Mat* baseImage_;
 
-    std::vector<Tile*> reconTiles_;
+    std::vector<Patch*> reconBlocks_;
 
     Chart(cv::Mat*);
     void caclDimensions();

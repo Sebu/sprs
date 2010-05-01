@@ -32,7 +32,6 @@ public:
 
     uint matchStep_;
 
-    std::vector<Tile*> tiles_;
     std::vector<Patch*> seeds_;
     std::vector<Patch*> blocks_;
 
@@ -67,7 +66,7 @@ public:
     void deserialize(std::string fileName);
 
     // epitome generation
-    void generateEpitome();
+    void generateCharts();
 
     // debug
     std::map<std::string, cv::Mat> debugImages;

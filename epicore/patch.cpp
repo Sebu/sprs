@@ -311,7 +311,7 @@ Match* Patch::match(Patch& other) {
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip, bool isBlock):
         histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), sharesMatches_(0), matches_(0), finalMatch_(0),
-        sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), variance_(0), isBlock_(isBlock)
+        sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inChart_(0), variance_(0), isBlock_(isBlock)
 {
 
     size_ = s_ * s_;

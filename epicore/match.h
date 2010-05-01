@@ -36,7 +36,7 @@ public:
     cv::Mat rotMat_;
 
 
-    std::vector<Tile*> coveredTiles_;
+    std::vector<Patch*> coveredBlocks_;
 
     Match(Patch* seed=0);
 

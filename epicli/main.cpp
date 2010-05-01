@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
             if(verbose)
             std::cout << epiName << std::endl;
-            seedmap->generateEpitome();
+            seedmap->generateCharts();
             seedmap->saveEpitome(epiName);
         }
     }

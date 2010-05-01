@@ -16,20 +16,20 @@ class Tile
 {
 public:
     int x_, y_;
-    bool inChart_;
-    bool done_;
-    int blocks_;
+
     Polygon hull_;
     std::vector<Tile*> neighbours_;
     std::vector<Match*> overlapingMatches_;
     std::list<Patch*> overlapingBlocks_;
 
+    /*
     Tile(int x, int y): x_(x), y_(y), inChart_(0), done_(0), blocks_(0) {
         hull_.verts.push_back(Vector2f(x,y));
         hull_.verts.push_back(Vector2f(x+4,y));
         hull_.verts.push_back(Vector2f(x+4,y+4));
         hull_.verts.push_back(Vector2f(x,y+4));
     }
+    */
 
 };
 
@@ -61,9 +61,13 @@ public:
     bool verbose_;
 
     bool isBlock_;
-    bool satisfied_;
     bool transformed_;
     bool sharesMatches_;
+
+
+    bool satisfied_;
+    bool inChart_;
+    int blocks_;
 
     Polygon hull_;
 
@@ -72,9 +76,9 @@ public:
     Match* finalMatch_;
     std::vector<Match*>* matches_;
 
-
+    std::vector<Patch*> neighbours_;
     std::vector<Match*> overlapingMatches_;
-    std::vector<Patch*> overlapingBlocks_;
+    std::list<Patch*> overlapingBlocks_;
 
     cv::Mat sourceColor_;
     cv::Mat sourceGray_;
