@@ -79,6 +79,7 @@ public:
     std::vector<Patch*> neighbours_;
     std::vector<Match*> overlapingMatches_;
     std::list<Patch*> overlapingBlocks_;
+    std::list<Patch*> ioverlap_;
 
     cv::Mat sourceColor_;
     cv::Mat sourceGray_;

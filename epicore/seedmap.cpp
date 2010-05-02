@@ -45,6 +45,7 @@ void SeedMap::generateCharts() {
                         match->coveredBlocks_.push_back(b);
                         b->overlapingMatches_.push_back(match);
                         b->overlapingBlocks_.push_back(block);
+                        block->ioverlap_.push_back(b);
                     }
                 }
             }
@@ -63,7 +64,7 @@ void SeedMap::generateCharts() {
 
 
             block->overlapingBlocks_.unique();
-            block->blocks_ =block->overlapingBlocks_.size();
+            block->blocks_=block->overlapingBlocks_.size();
 
 
             /*
@@ -110,6 +111,7 @@ void SeedMap::generateCharts() {
 
     if(verbose_)
         std::cout <<  "pre calc done"  << std::endl;
+
 
 
     // sort patches by overlap count
@@ -189,8 +191,12 @@ void SeedMap::generateCharts() {
                         if(!neighbour->inChart_)
                             potentialChartBlocks.push_back(neighbour);
                     }
-                }
 
+                }
+                foreach(Patch* block, deltaI) {
+                    foreach(Patch* b, block->ioverlap_)
+                        b->blocks_--;
+                }
 
             } else {
                 foreach(Patch* s, deltaE) s->inChart_ = false;
