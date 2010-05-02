@@ -25,10 +25,10 @@ int main(int argc, char *argv[])
     if (prev_fn==SIG_IGN) signal(SIGTERM,SIG_IGN);
 
     // command line parsing
-    float error=0.005;
+    float error=0.16;
     bool verbose= false;
     bool fullSearch=0;
-    int  s = 16;
+    int  s = 12;
     int winsize = 6;
     std::string fullName;
 
@@ -126,6 +126,7 @@ int main(int argc, char *argv[])
       //  seedmap->serialize(fullName);
 
     // finished? save image
+    std::cout << fullName << std::endl;
     if(seedmap->done_)
         seedmap->saveCompressedImage(fullName);
 

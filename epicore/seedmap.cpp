@@ -17,6 +17,8 @@ void SeedMap::generateCharts() {
     if(termCalculate_) return;
 
     std::list<Patch*> sortedBlocks;
+    std::list<Patch*> missingBlocks;
+
     uint width = baseImage_.cols/s_;
     uint height = baseImage_.rows/s_;
 
@@ -200,10 +202,24 @@ void SeedMap::generateCharts() {
             charts_.push_back(chart);
 
 
-//        if(!mostCoveredBlock->inChart_)
-//            sortedBlocks.push_back(mostCoveredBlock);
+        if(!mostCoveredBlock->inChart_ && !mostCoveredBlock->sharesMatches_)
+            missingBlocks.push_back(mostCoveredBlock);
+
 
     }
+
+    // handle missing blocks :/
+    foreach(Patch* block, missingBlocks) {
+        if(!block->inChart_) {
+            block->inChart_ = true;
+            Chart* chart = new Chart(&baseImage_);
+            chart->reconBlocks_.push_back(block);
+            charts_.push_back(chart);
+
+        }
+    }
+
+    // find best macht in charts
 
     foreach(Patch* block, blocks_) {
         if(!block->matches_) continue;
@@ -214,13 +230,14 @@ void SeedMap::generateCharts() {
                 if(!b->inChart_) { covered = false; break; }
             }
             if(covered) {
-                block->finalMatch_ = new Match(*match); // TODO: copy match & correct color
+                block->finalMatch_ = new Match(*match);
                 block->correctFinalMatch();
                 break;
             }
         }
     }
 
+    // trimm
     //*
     foreach(Patch* block, blocks_) {
         block->inChart_ = false;
@@ -234,6 +251,7 @@ void SeedMap::generateCharts() {
     }
     //*/
 
+    // list still missing ones
     foreach(Patch* p, blocks_)
         if(!p->finalMatch_ && verbose_)
             std::cout << p->x_/s_ << " " << p->y_/s_ << std::endl;
@@ -346,7 +364,7 @@ void SeedMap::match(Patch* block) {
 
         bool breakIt = false;
 
-//        #pragma omp parallel for
+        #pragma omp parallel for
         for(ulong i=0; i< seeds_.size(); i++) {
             Patch* seed = seeds_[i];
 

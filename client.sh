@@ -2,5 +2,5 @@
 
 export LD_LIBRARY_PATH=~/git/epitome/epicore:~/playground/lib
 echo $1
-~/git/epitome/epicli/epicli -i $1 -e 0.09  > /dev/null
+~/git/epitome/epicli/epicli -i $1 -e 0.16  # > /dev/null
 
