@@ -249,7 +249,7 @@ Match* Patch::match(Patch& other) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
     //    std::cout << diff << std::endl;
-    if(diff > crit_->maxOrient_) return 0;
+//    if(diff > crit_->maxOrient_) return 0;
 
 
     Match* match = new Match(&other);
