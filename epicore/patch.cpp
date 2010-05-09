@@ -182,7 +182,7 @@ bool Patch::trackFeatures(Match* match) {
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
-                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 20, 0.04));
+                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 20, 0.1));
 
 
 
@@ -237,9 +237,9 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other) {
 
 
-    double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
+//    double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-    if(histDiff > 1.0) return 0;
+//    if(histDiff > 1.0) return 0;
 
 
 
