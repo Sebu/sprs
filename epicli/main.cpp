@@ -27,35 +27,35 @@ int main(int argc, char *argv[])
     // command line parsing
     float error=0.16;
     bool verbose= false;
-    bool fullSearch=0;
+    bool atlasSearch=0;
     int  s = 12;
     int winsize = 6;
     std::string fullName;
 
     int opt;
-    while ((opt = getopt(argc, argv, "vfe:b:i:w:")) != -1) {
+    while ((opt = getopt(argc, argv, "ab:e:i:vw:")) != -1) {
         switch(opt) {
-        case 'v':
-            verbose = true;
-            break;
-        case 'f':
-            fullSearch = true;
-            break;
-        case 'e':
-            error = atof(optarg);
+        case 'a':
+            atlasSearch = true;
             break;
         case 'b':
             s = atoi(optarg);
             break;
+        case 'e':
+            error = atof(optarg);
+            break;
         case 'i':
             fullName = optarg;
+            break;
+        case 'v':
+            verbose = true;
             break;
         case 'w':
             winsize = atoi(optarg);
             break;
         case '?':
         default: /* '?' */
-            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-v] [-e error] [-fullSearch] [-b blocksize]" << std::endl;
+            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-v] [-e error] [-atlasSearch] [-b blocksize]" << std::endl;
             exit(EXIT_FAILURE);
         }
     }
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     seedmap->searchInOriginal_ = false;
 
     cv::Mat base;
-    if(fullSearch) {
+    if(atlasSearch) {
         if(verbose) std::cout << "testing epitomes" << std::endl;
 
         foreach( QString name, dir.entryList(QStringList("*.epi.png")) ) {

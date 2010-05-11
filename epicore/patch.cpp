@@ -237,9 +237,9 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other) {
 
 
-//    double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
+     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-//    if(histDiff > 1.0) return 0;
+     if(histDiff > 1.0) return 0;
 
 
 
@@ -249,7 +249,7 @@ Match* Patch::match(Patch& other) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
     //    std::cout << diff << std::endl;
-//    if(diff > crit_->maxOrient_) return 0;
+    if(diff > crit_->maxOrient_) return 0;
 
 
     Match* match = new Match(&other);
