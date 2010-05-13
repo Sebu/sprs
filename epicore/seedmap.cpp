@@ -19,12 +19,12 @@ void SeedMap::generateCharts() {
     std::list<Patch*> sortedBlocks;
     std::list<Patch*> missingBlocks;
 
+
+    foreach(Patch* block, blocks_) { sortedBlocks.push_back(block); }
+
     uint width = baseImage_.cols/s_;
     uint height = baseImage_.rows/s_;
-
-
     foreach(Patch* block, blocks_) {
-        sortedBlocks.push_back(block);
         if(!block->matches_ || block->finalMatch_) continue;
 
 
@@ -124,8 +124,7 @@ void SeedMap::generateCharts() {
         Patch* mostCoveredBlock = sortedBlocks.front();
         sortedBlocks.pop_front();
 
-        if(mostCoveredBlock->satisfied_)
-            continue;
+        if(mostCoveredBlock->satisfied_)  continue;
 
 
         std::cout<< "start new chart" << std::endl;
@@ -225,7 +224,7 @@ void SeedMap::generateCharts() {
         }
     }
 
-    // find best macht in charts
+    // find best matches in charts
 
     foreach(Patch* block, blocks_) {
         if(!block->matches_) continue;

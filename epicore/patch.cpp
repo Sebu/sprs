@@ -239,7 +239,7 @@ Match* Patch::match(Patch& other) {
 
      double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-     if(histDiff > 1.0) return 0;
+     if(histDiff > 1.5) return 0;
 
 
 

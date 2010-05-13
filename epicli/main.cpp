@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
             std::string epiName = (epiPath+tString+fileName.c_str()).toStdString();
 
             if(verbose)
-            std::cout << epiName << std::endl;
+                std::cout << epiName << std::endl;
             seedmap->generateCharts();
             seedmap->saveEpitome(epiName);
         }
