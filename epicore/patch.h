@@ -10,28 +10,8 @@
 #include "match.h"
 
 class Match;
+class Chart;
 
-
-class Tile
-{
-public:
-    int x_, y_;
-
-    Polygon hull_;
-    std::vector<Tile*> neighbours_;
-    std::vector<Match*> overlapingMatches_;
-    std::list<Patch*> overlapingBlocks_;
-
-    /*
-    Tile(int x, int y): x_(x), y_(y), inChart_(0), done_(0), blocks_(0) {
-        hull_.verts.push_back(Vector2f(x,y));
-        hull_.verts.push_back(Vector2f(x+4,y));
-        hull_.verts.push_back(Vector2f(x+4,y+4));
-        hull_.verts.push_back(Vector2f(x,y+4));
-    }
-    */
-
-};
 
 class Feature
 {
@@ -67,6 +47,7 @@ public:
 
     bool satisfied_;
     bool inChart_;
+    Chart *chart_;
     int blocks_;
 
     Polygon hull_;
@@ -79,7 +60,7 @@ public:
     std::vector<Patch*> neighbours_;
     std::vector<Match*> overlapingMatches_;
     std::list<Patch*> overlapingBlocks_;
-    std::list<Patch*> ioverlap_;
+    std::list<Patch*> iOverlap_;
 
     cv::Mat sourceColor_;
     cv::Mat sourceGray_;

@@ -20,6 +20,7 @@ Chart* SeedMap::generateChart(Patch* mostCoveredBlock) {
     std::cout<< "start new chart" << std::endl;
     Chart* chart = new Chart(&baseImage_);
 
+
     // block coverrage
     while(!potentialChartBlocks.empty()) {
         std::vector<Patch*> deltaI;
@@ -29,12 +30,12 @@ Chart* SeedMap::generateChart(Patch* mostCoveredBlock) {
         Patch* currentBlock = potentialChartBlocks.front();
         potentialChartBlocks.pop_front();
 
-        if(currentBlock->satisfied_) continue;
+        if(currentBlock->inChart_) continue;
 
         currentBlock->inChart_ = true;
         deltaE.push_back(currentBlock);
         currentBlock->satisfied_ = true;
-        deltaI.push_back(currentBlock)j;
+        deltaI.push_back(currentBlock);
 
         foreach(Match* match, currentBlock->overlapingMatches_) {
             // block of match allready satisfied?
@@ -45,6 +46,20 @@ Chart* SeedMap::generateChart(Patch* mostCoveredBlock) {
             // mark all covered blocks
             foreach(Patch* block, match->coveredBlocks_) {
 
+
+                // did we catch other blocks?
+                foreach(Match* innerMatch, block->overlapingMatches_) {
+                    if(innerMatch->block_->satisfied_) continue;
+                    innerMatch->block_->satisfied_ = true;
+                    foreach (Patch* innerBlock, innerMatch->coveredBlocks_) {
+                        if (innerBlock->inChart_ || innerBlock==block) continue;
+                        innerMatch->block_->satisfied_ = false;
+                        break;
+                    }
+                    if (innerMatch->block_->satisfied_)
+                        deltaI.push_back(innerMatch->block_);
+                }
+
                 if(block->inChart_) continue;
                 block->inChart_ = true;
                 deltaE.push_back(block);
@@ -53,18 +68,6 @@ Chart* SeedMap::generateChart(Patch* mostCoveredBlock) {
                 block->satisfied_ = true;
                 deltaI.push_back(block);
 
-                // did we catch other blocks?
-                foreach(Match* innerMatch, block->overlapingMatches_) {
-                    if(innerMatch->block_->satisfied_) continue;
-                    innerMatch->block_->satisfied_ = true;
-                    foreach (Patch* innerBlock, innerMatch->coveredBlocks_) {
-                        if (innerBlock->inChart_) continue;
-                        innerMatch->block_->satisfied_ = false;
-                        break;
-                    }
-                    if (innerMatch->block_->satisfied_)
-                      deltaI.push_back(innerMatch->block_);
-                }
 
             }
 
@@ -73,11 +76,9 @@ Chart* SeedMap::generateChart(Patch* mostCoveredBlock) {
 
         int benefit = deltaI.size() - deltaE.size();
         if(verbose_)
-            std::cout << "benefit: " << deltaI.size() << " " << deltaE.size() <<  std::endl;
+            std::cout << "benefit: " << deltaI.size() << " " << deltaE.size() << " " << currentBlock->x_/12 << " " << currentBlock->y_/12 << std::endl;
 
         if(benefit>=0) {
-            // mark as all matches satisfied
-            currentBlock->satisfied_ = true;
             // add neighbours to potentialChartBlocks
             foreach(Patch* block, deltaE) {
                 chart->reconBlocks_.push_back(block);
@@ -88,7 +89,7 @@ Chart* SeedMap::generateChart(Patch* mostCoveredBlock) {
 
             }
             foreach(Patch* block, deltaI) {
-                foreach(Patch* b, block->ioverlap_)
+                foreach(Patch* b, block->iOverlap_)
                     b->blocks_--;
             }
 
@@ -134,12 +135,12 @@ void SeedMap::generateCharts() {
                         match->coveredBlocks_.push_back(b);
                         b->overlapingMatches_.push_back(match);
                         b->overlapingBlocks_.push_back(block);
-                        block->ioverlap_.push_back(b);
+                        block->iOverlap_.push_back(b);
                     }
                 }
             }
         }
-        block->ioverlap_.unique();
+        block->iOverlap_.unique();
     }
 
     foreach(Patch* block, blocks_) {
@@ -150,11 +151,11 @@ void SeedMap::generateCharts() {
     if(verbose_)
         std::cout <<  "find overlaped done"  << std::endl;
 
+    sortedBlocks.sort(tileSorter);
 
     while(!sortedBlocks.empty()) {
 
         // sort Blocks by Cover count
-        sortedBlocks.sort(tileSorter);
 
         // get first block
         Patch* firstBlock = sortedBlocks.front();
@@ -167,21 +168,21 @@ void SeedMap::generateCharts() {
             charts_.push_back(chart);
 
         if(!firstBlock->inChart_ && !firstBlock->satisfied_  && !firstBlock->sharesMatches_)
-//              sortedBlocks.push_back(firstBlock);
+            sortedBlocks.push_back(firstBlock);
             missingBlocks.push_back(firstBlock);
 
     }
 
     // handle missing blocks :/
-//    foreach(Patch* block, missingBlocks) {
-//        if(!block->inChart_) {
-//            block->inChart_ = true;
-//            Chart* chart = new Chart(&baseImage_);
-//            chart->reconBlocks_.push_back(block);
-//            charts_.push_back(chart);
-//
-//        }
-//    }
+    //    foreach(Patch* block, missingBlocks) {
+    //        if(!block->inChart_) {
+    //            block->inChart_ = true;
+    //            Chart* chart = new Chart(&baseImage_);
+    //            chart->reconBlocks_.push_back(block);
+    //            charts_.push_back(chart);
+    //
+    //        }
+    //    }
 
     optimizeCharts();
 
@@ -200,10 +201,13 @@ void SeedMap::optimizeCharts() {
     foreach(Patch* block, blocks_) {
         if(!block->matches_) continue;
         std::sort(block->matches_->begin(), block->matches_->end(), matchSorter);
-        foreach(Match* match, *block->matches_) {
+        foreach(Match* match,*block->matches_) {
             bool covered = true;
+            Chart *chart = 0;
             foreach(Patch* b, match->coveredBlocks_) {
                 if(!b->inChart_) { covered = false; break; }
+                if(!chart) chart=b->chart_;
+                if(chart!=b->chart_) { covered = false; break; }
             }
             if(covered) {
                 block->finalMatch_ = new Match(*match);
