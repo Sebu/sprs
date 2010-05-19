@@ -66,7 +66,10 @@ public:
     void deserialize(std::string fileName);
 
     // epitome generation
+    void findNeighbours();
+    Chart* generateChart(Patch*);
     void generateCharts();
+    void optimizeCharts();
 
     // debug
     std::map<std::string, cv::Mat> debugImages;

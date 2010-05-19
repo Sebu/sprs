@@ -141,7 +141,7 @@
             <double>0.000500000000000</double>
            </property>
            <property name="value">
-            <double>0.180000000000000</double>
+            <double>0.080000000000000</double>
            </property>
           </widget>
          </item>
@@ -258,7 +258,7 @@
      <x>0</x>
      <y>0</y>
      <width>978</width>
-     <height>24</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
