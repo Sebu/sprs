@@ -37,6 +37,7 @@ public:
 
     std::list<Chart*> charts_;
 
+    std::list<Chart*> candidateCharts_;
 
     cv::Mat sourceImage_;
     cv::Mat sourceGray_;
@@ -66,9 +67,11 @@ public:
     void deserialize(std::string fileName);
 
     // epitome generation
-    void findNeighbours();
+    void genNeighbours();
     Chart* generateChart(Patch*);
     void generateCharts();
+    void genCandidateCharts();
+    void growChart(Chart *chart);
     void optimizeCharts();
 
     // debug

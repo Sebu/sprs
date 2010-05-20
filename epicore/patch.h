@@ -47,6 +47,7 @@ public:
 
     bool satisfied_;
     bool inChart_;
+    bool inCandidate_;
     Chart *chart_;
     int blocks_;
 
@@ -59,8 +60,8 @@ public:
 
     std::vector<Patch*> neighbours_;
     std::vector<Match*> overlapingMatches_;
-    std::list<Patch*> overlapingBlocks_;
-    std::list<Patch*> iOverlap_;
+//    std::list<Patch*> overlapingBlocks_;
+//    std::list<Patch*> iOverlap_;
 
     cv::Mat sourceColor_;
     cv::Mat sourceGray_;

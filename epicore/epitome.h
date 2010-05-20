@@ -13,9 +13,13 @@ public:
 
     int maxX_, minX_, maxY_, minY_;
 
+
     cv::Mat* baseImage_;
 
-    std::vector<Patch*> reconBlocks_;
+    std::vector<Patch*> satBlocks_;
+    std::vector<Patch*> chartBlocks_;
+
+    int benefit_;
 
     Chart(cv::Mat*);
     void caclDimensions();
