@@ -37,8 +37,6 @@ public:
 
     std::list<Chart*> charts_;
 
-    std::list<Chart*> candidateCharts_;
-
     cv::Mat sourceImage_;
     cv::Mat sourceGray_;
     cv::Mat baseImage_;
@@ -70,7 +68,7 @@ public:
     void genNeighbours();
     Chart* generateChart(Patch*);
     void generateCharts();
-    void genCandidateCharts();
+    Chart* findBestChart();
     void growChart(Chart *chart);
     void optimizeCharts();
 
