@@ -35,8 +35,6 @@ void SeedMap::growChart(Chart *chart) {
         newBlock->inChart_=true;
         int benefit = -1;
 
-
-
         foreach(Match* match, newBlock->overlapingMatches_) {
             if(match->block_->satisfied_) continue;
             match->block_->satisfied_ = true;
@@ -52,7 +50,6 @@ void SeedMap::growChart(Chart *chart) {
         }
 
         if(benefit>=0) {
-            std::cout << "grow" << std::endl;
             newBlock->chart_=chart;
             newBlock->inChart_=true;
             chart->chartBlocks_.push_back(newBlock);
@@ -264,26 +261,6 @@ void SeedMap::genNeighbours() {
         for(uint x=0; x<width; x++) {
             Patch* block = blocks_[y*width+x];
 
-            /*
-            if (x>0 && y>0) {
-                Patch* n = blocks_[(y-1)*width +(x-1)];
-                block->neighbours_.push_back(n);
-            }
-
-            if (x>0 && y<height-1) {
-                Patch* n = blocks_[(y+1)*width +(x-1)];
-                block->neighbours_.push_back(n);
-            }
-
-            if (x<width-1 && y>0) {
-                Patch* n = blocks_[(y-1)*width +(x+1)];
-                block->neighbours_.push_back(n);
-            }
-            if(x<width-1 && y<height-1) {
-                Patch* n = blocks_[(y+1)*width +(x+1)];
-                block->neighbours_.push_back(n);
-            }
-            //*/
             if (x>0) {
                 Patch* n = blocks_[y*width +(x-1)];
                 block->neighbours_.push_back(n);
@@ -416,7 +393,19 @@ void SeedMap::match(Patch* block) {
 
             if(!termCalculate_ && !breakIt) {
                 Match* match = block->match(*seed);
-                if (match) {
+
+                if (match && match->error_ < crit_.maxError_) {
+
+                    match->calcHull();
+                    match->calcPos();
+
+                    if(verbose_) {
+                        std::cout << seed->x_ << " " << seed->y_ << " " <<
+                                "\t\t orient.: " << "\t\t error: " << match->error_;
+                        //std::cout << " " << other.scale_;
+                        if(block->x_ ==seed->x_ && block->y_==seed->y_ && seed->isBlock_) std::cout << "\tfound myself!";
+                        std::cout << std::endl;
+                    }
 
                      #pragma omp critical
                      block->matches_->push_back(match);
@@ -433,8 +422,10 @@ void SeedMap::match(Patch* block) {
                         block->finalMatch_ = match;
                         breakIt=true;
                     }
+
+                } else {
+                    delete match;
                 }
-                //                if(block->matches_->size()>=2000) breakIt=true;
             }
 
         }

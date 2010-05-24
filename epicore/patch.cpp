@@ -249,7 +249,7 @@ Match* Patch::match(Patch& other) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
     //    std::cout << diff << std::endl;
-    if(diff > crit_->maxOrient_) return 0;
+//    if(diff > crit_->maxOrient_) return 0;
 
 
     Match* match = new Match(&other);
@@ -287,25 +287,7 @@ Match* Patch::match(Patch& other) {
     }
 
     // reconstruction error too high? skip
-    if (reconstructionError > crit_->maxError_) {
-        delete match;
-        return 0;
-    }
-
     match->error_ = reconstructionError;
-    match->calcHull();
-    match->calcPos();
-
-    // debug out
-    //*
-    if(verbose_) {
-        std::cout << other.x_ << " " << other.y_ << " " <<
-                "\t\t orient.: " << orientation << "\t\t error: " << reconstructionError;
-        //std::cout << " " << other.scale_;
-        if(x_==other.x_ && y_==other.y_ && other.isBlock_) std::cout << "\tfound myself!";
-        std::cout << std::endl;
-    }
-
     return match;
 }
 
