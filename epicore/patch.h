@@ -47,7 +47,7 @@ public:
 
     bool satisfied_;
     bool inChart_;
-    bool inCandidate_;
+    bool candidate_;
     Chart *chart_;
     int blocks_;
 
