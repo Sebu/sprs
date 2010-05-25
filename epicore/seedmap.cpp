@@ -227,11 +227,11 @@ void SeedMap::optimizeCharts() {
             if(covered) {
                 block->finalMatch_ = new Match(*match);
                 std::cout << "found final match" << std::endl;
-                block->correctFinalMatch();
+//                block->correctFinalMatch();
                 break;
             }
         }
-        if(!block->loadsMatches_) block->resetMatches();
+        if(block->loadsMatches_) block->resetMatches();
     }
 
     // trimm
@@ -491,7 +491,7 @@ cv::Mat SeedMap::debugReconstruction() {
         Patch* block = blocks_[i];
 
 
-        if (!block->matches_ || block->matches_->empty()) continue;
+        if ((!block->matches_ || block->matches_->empty()) && !block->finalMatch_) continue;
 
 
         Match* m = 0;

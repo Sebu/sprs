@@ -37,18 +37,13 @@ void Patch::copyMatches() {
 
     std::vector<Match*>* newVector = new std::vector<Match*>;
 
-    std::cout << "bogusa" << std::endl;
-    for(uint i=0; i<matches_->size(); i++) {
-        Match* oldMatch = matches_->at(i);
-        std::cout << "bogusb" << std::endl;
+    foreach(Match *oldMatch, *(this->matches_)) {
         Match* newMatch = new Match(*oldMatch);
         newMatch->block_ = this;
 
         // recalculate colorScale
         newMatch->colorScale_=cv::Scalar::all(1.0f);
-        std::cout << "bogus1" << std::endl;
         cv::Mat reconstruction( newMatch->reconstruct() );
-        std::cout << "bogus2" << std::endl;
         cv::Scalar reconstructionMean = cv::mean(reconstruction);
         for(uint i=0; i<4; i++)
             newMatch->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
@@ -91,7 +86,7 @@ void Patch::serialize(std::ofstream& ofs) {
 
 
     if (matches_) {
-        ofs << matches_->size() << " ";
+        ofs << matches_->size() << " " << std::endl;
         for(uint j=0; j<matches_->size(); j++) {
             matches_->at(j)->serialize(ofs);
         }
