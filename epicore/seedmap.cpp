@@ -214,6 +214,7 @@ void SeedMap::optimizeCharts() {
     // find best matches in charts
     foreach(Patch* block, blocks_) {
         if(!block->matches_) continue;
+        if(block->loadsMatches_) block->copyMatches();
         std::sort(block->matches_->begin(), block->matches_->end(), matchSorter);
         foreach(Match* match,*block->matches_) {
             bool covered = true;
@@ -230,6 +231,7 @@ void SeedMap::optimizeCharts() {
                 break;
             }
         }
+        if(!block->loadsMatches_) block->resetMatches();
     }
 
     // trimm
@@ -415,6 +417,7 @@ void SeedMap::match(Patch* block) {
                          if (!seed->matches_) {
                                 seed->matches_=block->matches_;
                                 seed->loadsMatches_ = true;
+                                block->sharesMatches_ = true;
                          }
                      }
 

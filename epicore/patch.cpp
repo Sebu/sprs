@@ -37,14 +37,18 @@ void Patch::copyMatches() {
 
     std::vector<Match*>* newVector = new std::vector<Match*>;
 
+    std::cout << "bogusa" << std::endl;
     for(uint i=0; i<matches_->size(); i++) {
         Match* oldMatch = matches_->at(i);
+        std::cout << "bogusb" << std::endl;
         Match* newMatch = new Match(*oldMatch);
         newMatch->block_ = this;
 
         // recalculate colorScale
-        newMatch->colorScale_=(cv::Scalar::all(1.0f));
+        newMatch->colorScale_=cv::Scalar::all(1.0f);
+        std::cout << "bogus1" << std::endl;
         cv::Mat reconstruction( newMatch->reconstruct() );
+        std::cout << "bogus2" << std::endl;
         cv::Scalar reconstructionMean = cv::mean(reconstruction);
         for(uint i=0; i<4; i++)
             newMatch->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
@@ -195,8 +199,7 @@ bool Patch::trackFeatures(Match* match) {
 
     if (features.size()<3) return true;
 
-//    std::sort(features.begin(), features.end(), errorSorter);
-//    cv::Point2f srcTri[3], destTri[3];
+
     std::vector<cv::Point2f> srcTri, destTri;
 
     for(uint j = 0; j < features.size(); j++) {
@@ -292,7 +295,7 @@ Match* Patch::match(Patch& other) {
 }
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), matches_(0), finalMatch_(0),
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), sharesMatches_(0), matches_(0), finalMatch_(0),
         sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), variance_(0), isBlock_(isBlock)
 {
 
@@ -347,10 +350,10 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
     setHistMean( cv::mean(patchColor_) );
 
     if(isBlock_) {
-        cv::Mat tmpP;
-        cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
-        cv::warpAffine(sourceColor_, tmpP, selection, cv::Size(s_, s_));
-        cv::cvtColor(tmpP, patchGrayBig_, CV_BGR2GRAY);
+//        cv::Mat tmpP;
+//        cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
+//        cv::warpAffine(sourceColor_, tmpP, selection, cv::Size(s_, s_));
+//        cv::cvtColor(tmpP, patchGrayBig_, CV_BGR2GRAY);
     } else {
         patchColor_.release();
         patchGray_.release();

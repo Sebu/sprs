@@ -43,6 +43,7 @@ public:
     bool isBlock_;
     bool transformed_;
     bool loadsMatches_;
+    bool sharesMatches_;
 
 
     bool satisfied_;
@@ -60,8 +61,6 @@ public:
 
     std::vector<Patch*> neighbours_;
     std::vector<Match*> overlapingMatches_;
-//    std::list<Patch*> overlapingBlocks_;
-//    std::list<Patch*> iOverlap_;
 
     cv::Mat sourceColor_;
     cv::Mat sourceGray_;
