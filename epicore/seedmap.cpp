@@ -80,7 +80,7 @@ Chart *SeedMap::findBestChart() {
     Chart *bestChart = 0;
 
     foreach(Patch *block, blocks_) {
-        if(block->inChart_ || block->satisfied_ || block->sharesMatches_) continue;
+        if(block->inChart_ || block->satisfied_ || block->loadsMatches_) continue;
 
         Chart *chart = new Chart(&baseImage_);
 
@@ -410,11 +410,11 @@ void SeedMap::match(Patch* block) {
                      #pragma omp critical
                      block->matches_->push_back(match);
 
-                        if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
+                     if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
 
-                            if (!seed->matches_) {
+                         if (!seed->matches_) {
                                 seed->matches_=block->matches_;
-                                seed->sharesMatches_ = true;
+                                seed->loadsMatches_ = true;
                          }
                      }
 

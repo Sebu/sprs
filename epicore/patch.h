@@ -42,7 +42,7 @@ public:
 
     bool isBlock_;
     bool transformed_;
-    bool sharesMatches_;
+    bool loadsMatches_;
 
 
     bool satisfied_;
