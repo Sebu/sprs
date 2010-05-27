@@ -71,10 +71,19 @@ bool CalculationThread::singleStep(int x, int y) {
 
         cv::line(tmpImage, bbox.verts[0], hull.verts[0], cv::Scalar(200,0,0,100));
 
+
+
         foreach(cv::Point2f p, block->pointsSrc_)
             cv::line(tmpImage, p, p, cv::Scalar(0,155,00,100));
 
 
+    }
+
+    if(block->bestMatch_) {
+        std::cout << "best match: " <<  block->bestMatch_->error_ << std::endl;
+        block->bestMatch_->calcHull();
+        for(int j=0; j<4; j++)
+            cv::line(tmpImage, block->bestMatch_->hull_.verts[j], block->bestMatch_->hull_.verts[(j+1) % 4], cv::Scalar(155,155,0,100));
     }
 
     if(block->finalMatch_) {

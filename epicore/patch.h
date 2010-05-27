@@ -34,7 +34,6 @@ public:
     int x_, y_, s_;
     int size_;
     float variance_;
-    //float scale_;
 
     SearchCriteria* crit_;
 
@@ -50,12 +49,13 @@ public:
     bool inChart_;
     bool candidate_;
     Chart *chart_;
-    int blocks_;
+//    int blocks_;
 
     Polygon hull_;
 
     std::string epitomeName_;
 
+    Match *bestMatch_;
     Match* finalMatch_;
     std::vector<Match*>* matches_;
 
@@ -67,7 +67,7 @@ public:
 
     cv::Mat patchColor_;
     cv::Mat patchGray_;
-    cv::Mat patchGrayBig_;
+//    cv::Mat patchGrayBig_;
 
     cv::MatND colorHist_;
     OrientHistFast* orientHist_;

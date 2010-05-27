@@ -11,14 +11,12 @@ Match::Match(Patch* seed)
     : colorScale_(cv::Scalar::all(1.0f)), error_(0.0f), s_(0), transformed_(0)
 {
 
+
     rotMat_ = cv::Mat::eye(3,3,CV_64FC1);
     warpMat_ = cv::Mat::eye(3,3,CV_64FC1);
     transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
 
     if (!seed) return;
-//    seedX_ = seed->x_;
-//    seedY_ = seed->y_;
-//    scale_ = seed->scale_;
     s_ = seed->s_;
 
     transScaleFlipMat_ = seed->transScaleFlipMat_;
@@ -28,7 +26,7 @@ Match::Match(Patch* seed)
 }
 
 void Match::calcPos() {
-    double points[4][2] = { {0 , 0},
+    double points[2][2] = { {0 , 0},
                             {s_, s_},
 
     };
@@ -115,15 +113,6 @@ void Match::calcTransform() {
     transformMat_ =  warpMat_  * rotMat_ * transScaleFlipMat_ ;
 }
 
-cv::Mat Match::warpFull() {
-
-    cv::Mat warped;
-    cv::Mat selection(transformMat_, cv::Rect(0,0,3,2));
-    cv::warpAffine(sourceImage_, warped, selection, cv::Size(s_, s_));
-
-    return warped;
-
-}
 
 cv::Mat Match::warp() {
 

@@ -204,8 +204,6 @@ bool Patch::trackFeatures(Match* match) {
         s.y = pointsSrc_[i].y;
         d.x = pointsDest[i].x;
         d.y = pointsDest[i].y;
-//        srcTri[j] = s;
-//        destTri[j] = d;
         srcTri.push_back(s);
         destTri.push_back(d);
     }
@@ -219,9 +217,12 @@ bool Patch::trackFeatures(Match* match) {
         }
     }
 
+
+    same = true;
+
     if(!same) {
         cv::Mat tmp = getTransform(destTri, srcTri);
-        //cv::Mat tmp = cv::estimateRigidTransform(cv::Mat(destTri), cv::Mat(srcTri), true);
+        // cv::Mat tmp = cv::estimateRigidTransform(cv::Mat(destTri), cv::Mat(srcTri), true);
         // cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
         cv::Mat selection( match->warpMat_, cv::Rect(0,0,3,2) );
         tmp.copyTo(selection);
@@ -237,7 +238,7 @@ Match* Patch::match(Patch& other) {
 
      double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-     if(histDiff > 1.5) return 0;
+//     if(histDiff > 1.5) return 0;
 
 
 
@@ -268,7 +269,7 @@ Match* Patch::match(Patch& other) {
 
     // 4.1 KLT matching
     //    if (!) { delete match; return 0; }
-    trackFeatures(match);
+//    trackFeatures(match);
 
     match->calcTransform();
 
@@ -290,8 +291,7 @@ Match* Patch::match(Patch& other) {
 }
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), sharesMatches_(0), matches_(0), finalMatch_(0),
-        sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), variance_(0), isBlock_(isBlock)
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), sharesMatches_(0), matches_(0), bestMatch_(0), finalMatch_(0), sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), variance_(0), isBlock_(isBlock)
 {
 
     size_ = s_ * s_;
@@ -316,6 +316,7 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
         flipMat.at<double>(1,1)=-1.0f;
         flipMat.at<double>(1,2)=s_;
         transformed_ = true;
+        break;
     default:
         break;
     }

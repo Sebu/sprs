@@ -9,7 +9,7 @@
 #include "epitome.h"
 
 
-bool tileSorter (Patch* i, Patch* j) { return (i->blocks_ > j->blocks_ ); }
+// bool tileSorter (Patch* i, Patch* j) { return (i->blocks_ > j->blocks_ ); }
 bool chartSorter (Chart* i, Chart* j) { return (i->benefit_ > j->benefit_ ); }
 
 void SeedMap::growChart(Chart *chart) {
@@ -226,8 +226,6 @@ void SeedMap::optimizeCharts() {
             }
             if(covered) {
                 block->finalMatch_ = new Match(*match);
-                std::cout << "found final match" << std::endl;
-//                block->correctFinalMatch();
                 break;
             }
         }
@@ -378,9 +376,6 @@ void SeedMap::saveReconstruction(std::string fileName) {
 
 void SeedMap::match(Patch* block) {
 
-    //    cv::imshow("grayBig", block->patchGrayBig_);
-    //    cv::imshow("gray", block->patchGray_);
-    //    cv::imshow("color", block->patchColor_);
     block->findFeatures();
 
     if (!block->matches_) {
@@ -389,14 +384,15 @@ void SeedMap::match(Patch* block) {
 
         bool breakIt = false;
 
-        #pragma omp parallel for
+//        #pragma omp parallel for
         for(ulong i=0; i< seeds_.size(); i++) {
             Patch* seed = seeds_[i];
 
             if(!termCalculate_ && !breakIt) {
                 Match* match = block->match(*seed);
 
-                if (match && match->error_ < crit_.maxError_) {
+                if (!match) continue;
+                if (match->error_ < crit_.maxError_) {
 
                     match->calcHull();
                     match->calcPos();
@@ -409,7 +405,7 @@ void SeedMap::match(Patch* block) {
                         std::cout << std::endl;
                     }
 
-                     #pragma omp critical
+//                     #pragma omp critical
                      block->matches_->push_back(match);
 
                      if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
@@ -426,6 +422,9 @@ void SeedMap::match(Patch* block) {
                         breakIt=true;
                     }
 
+                } else if ( match->error_ > 0.0f && (!block->bestMatch_ ||  match->error_ < block->bestMatch_->error_) ){
+                    if(block->bestMatch_) delete block->bestMatch_;
+                    block->bestMatch_ = match;
                 } else {
                     delete match;
                 }
@@ -441,8 +440,6 @@ void SeedMap::match(Patch* block) {
         if(verbose_)
             std::cout << "shares " << block->matches_->size() <<  " matches @ " <<  block->x_/s_ << " " << block->y_/s_ << std::endl;
 
-        //copy matches and recalculate colorScale!
-        //        block->copyMatches();
     }
 
     if (block->matches_ && !block->matches_->empty()) {
