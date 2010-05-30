@@ -21,7 +21,8 @@ SOURCES += epicore.cpp \
     matchconsumer.cpp \
     matrix.cpp \
     epitome.cpp \
-    searchcriteria.cpp
+    searchcriteria.cpp \
+    epiimage.cpp
 HEADERS += epicore.h \
     patch.h \
     seedmap.h \
@@ -33,5 +34,6 @@ HEADERS += epicore.h \
     matchconsumer.h \
     matrix.h \
     epitome.h \
-    searchcriteria.h
+    searchcriteria.h \
+    epiimage.h
 QMAKE_CXXFLAGS += -fopenmp

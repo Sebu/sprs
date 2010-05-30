@@ -384,7 +384,7 @@ void SeedMap::match(Patch* block) {
 
         bool breakIt = false;
 
-//        #pragma omp parallel for
+        #pragma omp parallel for
         for(ulong i=0; i< seeds_.size(); i++) {
             Patch* seed = seeds_[i];
 
@@ -405,7 +405,7 @@ void SeedMap::match(Patch* block) {
                         std::cout << std::endl;
                     }
 
-//                     #pragma omp critical
+                     #pragma omp critical
                      block->matches_->push_back(match);
 
                      if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
@@ -422,9 +422,13 @@ void SeedMap::match(Patch* block) {
                         breakIt=true;
                     }
 
+
                 } else if ( match->error_ > 0.0f && (!block->bestMatch_ ||  match->error_ < block->bestMatch_->error_) ){
-                    if(block->bestMatch_) delete block->bestMatch_;
-                    block->bestMatch_ = match;
+                    #pragma omp critical
+                    {
+                        if(block->bestMatch_) delete block->bestMatch_;
+                        block->bestMatch_ = match;
+                    }
                 } else {
                     delete match;
                 }
@@ -458,7 +462,7 @@ cv::Mat SeedMap::debugEpitomeMap() {
 
     float color = 0;
     float step = 255.0f/charts_.size();
-    //*
+    /*
     foreach(Chart* epi, charts_) {
         foreach(Patch* block, epi->chartBlocks_) {
                 cv::rectangle(image, block->hull_.verts[0], block->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255),-2);
@@ -483,24 +487,26 @@ cv::Mat SeedMap::debugEpitomeMap() {
 cv::Mat SeedMap::debugReconstruction() {
     debugImages["reconstuct"] = cv::Mat::zeros(sourceImage_.size(), CV_8UC3);
 
-    if(done_) std::cout << "final match reconstruction" << std::endl;
-    for(uint i=0; i< blocks_.size(); i++) {
-        Patch* block = blocks_[i];
+    if(done_) {
+        std::cout << "final match reconstruction" << std::endl;
+
+//    }  else {
+        for(uint i=0; i< blocks_.size(); i++) {
+            Patch* block = blocks_[i];
+
+            if ((!block->matches_ || block->matches_->empty()) && !block->finalMatch_) continue;
 
 
-        if ((!block->matches_ || block->matches_->empty()) && !block->finalMatch_) continue;
+            Match* m = 0;
+            if(done_) m = block->finalMatch_;
+            else m = block->matches_->front();
 
+            if(m) {
+                cv::Mat reconstruction(m->t_.reconstruct(debugImages["epitomemap"], s_));
+                copyBlock(reconstruction, debugImages["reconstuct"] , cv::Rect(0, 0, s_, s_), cv::Rect(block->x_, block->y_, s_, s_) );
+            }
 
-        Match* m = 0;
-        if(done_) m = block->finalMatch_;
-        else m = block->matches_->front();
-
-        if(m) {
-            cv::Mat reconstruction(m->reconstruct());
-            copyBlock(reconstruction, debugImages["reconstuct"] , cv::Rect(0, 0, s_, s_), cv::Rect(block->x_, block->y_, s_, s_) );
         }
-
-
 
     }
 
@@ -541,8 +547,12 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
         float scaleWidth  = source.cols / scale;
         float scaleHeight = source.rows / scale;
 
-        int width =  ((scaleWidth-s_) / grid_) + 1;
-        int height = ((scaleHeight-s_) / grid_) + 1;
+//        int width =  ((scaleWidth-s_) / grid_) + 1;
+//        int height = ((scaleHeight-s_) / grid_) + 1;
+
+        int width =  scaleWidth / grid_;
+        int height = scaleHeight / grid_;
+
 
         // generate new seeds
         for(uint flip=0; flip<3; flip++) {

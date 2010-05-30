@@ -10,16 +10,27 @@ class Patch;
 class Tile;
 
 
+class Transform {
+public:
+    cv::Scalar colorScale_;
+    cv::Mat transformMat_;
+
+    cv::Mat warp(cv::Mat&, uint);
+    cv::Mat reconstruct(cv::Mat&, uint);
+
+
+    void save(std::ofstream&);
+
+};
 
 class Match
 {
 
 public:
-//    int seedX_, seedY_;
-    //    float scale_;
 
-    cv::Scalar colorScale_;
-    cv::Mat transformMat_;
+    // things to save aka transform
+    Transform t_;
+
     float error_;
 
     int s_;
@@ -44,7 +55,6 @@ public:
     bool isPatch();
 
     cv::Mat warp();
-    cv::Mat warpFull();
     cv::Mat reconstruct();
 
     void calcTransform();

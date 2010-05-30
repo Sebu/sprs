@@ -22,11 +22,11 @@ void Patch::correctFinalMatch() {
     if(verbose_)
         std::cout << "correcting color of final match" << std::endl;
 
-    finalMatch_->colorScale_=(cv::Scalar::all(1.0f));
+    finalMatch_->t_.colorScale_=(cv::Scalar::all(1.0f));
     cv::Mat reconstruction( finalMatch_->reconstruct() );
     cv::Scalar reconstructionMean = cv::mean(reconstruction);
     for(uint i=0; i<4; i++)
-        finalMatch_->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
+        finalMatch_->t_.colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
 }
 
@@ -42,11 +42,11 @@ void Patch::copyMatches() {
         newMatch->block_ = this;
 
         // recalculate colorScale
-        newMatch->colorScale_=cv::Scalar::all(1.0f);
+        newMatch->t_.colorScale_=cv::Scalar::all(1.0f);
         cv::Mat reconstruction( newMatch->reconstruct() );
         cv::Scalar reconstructionMean = cv::mean(reconstruction);
         for(uint i=0; i<4; i++)
-            newMatch->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
+            newMatch->t_.colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
         newVector->push_back(newMatch);
     }
@@ -104,9 +104,9 @@ float Patch::reconError(Match* m) {
     // drop when over bright
     cv::Scalar reconstructionMean = cv::mean(reconstruction);
     for(uint i=0; i<4; i++)
-        m->colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
+        m->t_.colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
-    if(m->colorScale_[0]>crit_->maxColor_ || m->colorScale_[1]>crit_->maxColor_ || m->colorScale_[2]>crit_->maxColor_) {
+    if(m->t_.colorScale_[0]>crit_->maxColor_ || m->t_.colorScale_[1]>crit_->maxColor_ || m->t_.colorScale_[2]>crit_->maxColor_) {
         return FLT_MAX;
     }
 
@@ -119,9 +119,9 @@ float Patch::reconError(Match* m) {
 
             cv::Vec3b vo = orig[x];
             cv::Vec3b vr = recon[x];
-            float r = ( ((float)vr[0]*m->colorScale_[0]) - (float)vo[0] )/255.0f;
-            float g = ( ((float)vr[1]*m->colorScale_[1]) - (float)vo[1] )/255.0f;
-            float b = ( ((float)vr[2]*m->colorScale_[2]) - (float)vo[2] )/255.0f;
+            float r = ( ((float)vr[0]*m->t_.colorScale_[0]) - (float)vo[0] )/255.0f;
+            float g = ( ((float)vr[1]*m->t_.colorScale_[1]) - (float)vo[1] )/255.0f;
+            float b = ( ((float)vr[2]*m->t_.colorScale_[2]) - (float)vo[2] )/255.0f;
 
             dist += (r*r)+(g*g)+(b*b);
         }
@@ -195,9 +195,11 @@ bool Patch::trackFeatures(Match* match) {
     if (features.size()<3) return true;
 
 
+    std::sort(features.begin(), features.end(), errorSorter);
+
     std::vector<cv::Point2f> srcTri, destTri;
 
-    for(uint j = 0; j < features.size(); j++) {
+    for(uint j = 0; j < 3; j++ ) { // features.size(); j++) {
         int i = features[j]->idx_;
         cv::Point2f s,d;
         s.x = pointsSrc_[i].x;
@@ -218,7 +220,6 @@ bool Patch::trackFeatures(Match* match) {
     }
 
 
-    same = true;
 
     if(!same) {
         cv::Mat tmp = getTransform(destTri, srcTri);
@@ -236,9 +237,9 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other) {
 
 
-     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
+     //double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-//     if(histDiff > 1.5) return 0;
+     //if(histDiff > 1.5) return 0;
 
 
 
@@ -248,7 +249,7 @@ Match* Patch::match(Patch& other) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
     //    std::cout << diff << std::endl;
-//    if(diff > crit_->maxOrient_) return 0;
+    if(diff > crit_->maxOrient_) return 0;
 
 
     Match* match = new Match(&other);
@@ -268,9 +269,9 @@ Match* Patch::match(Patch& other) {
     match->calcTransform();
 
     // 4.1 KLT matching
-    //    if (!) { delete match; return 0; }
-//    trackFeatures(match);
+    trackFeatures(match);
 
+    // calc final transformation
     match->calcTransform();
 
     // 4 reconstruction error

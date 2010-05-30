@@ -8,13 +8,14 @@
 bool matchSorter(Match* i, Match* j) { return (i->error_ < j->error_ ); }
 
 Match::Match(Patch* seed)
-    : colorScale_(cv::Scalar::all(1.0f)), error_(0.0f), s_(0), transformed_(0)
+    : error_(0.0f), s_(0), transformed_(0)
 {
 
 
     rotMat_ = cv::Mat::eye(3,3,CV_64FC1);
     warpMat_ = cv::Mat::eye(3,3,CV_64FC1);
-    transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
+    t_.colorScale_ = cv::Scalar::all(1.0f);
+    t_.transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
 
     if (!seed) return;
     s_ = seed->s_;
@@ -54,7 +55,7 @@ void Match::calcHull() {
                             {0, s_}
     };
 
-    cv::Mat selection(transformMat_, cv::Rect(0,0,3,2));
+    cv::Mat selection(t_.transformMat_, cv::Rect(0,0,3,2));
     cv::Mat inverted;
     invertAffineTransform(selection, inverted);
 
@@ -80,21 +81,24 @@ void Match::calcHull() {
 
 }
 
-
-void Match::save(std::ofstream& ofs) {
+void Transform::save(std::ofstream& ofs) {
     for (int i=0; i<2; i++)
         for(int j=0; j<transformMat_.cols; j++)
             ofs << transformMat_.at<double>(i,j) << " ";
     ofs << colorScale_[0] << " " << colorScale_[1] << " " << colorScale_[2] << " ";
 }
 
+void Match::save(std::ofstream& ofs) {
+    t_.save(ofs);
+}
+
 
 void Match::serialize(std::ofstream& ofs) {
 
     for (int i=0; i<2; i++)
-        for(int j=0; j<transformMat_.cols; j++)
-            ofs << transformMat_.at<double>(i,j) << " ";
-    ofs << colorScale_[0] << " " << colorScale_[1] << " " << colorScale_[2] << " ";
+        for(int j=0; j<t_.transformMat_.cols; j++)
+            ofs << t_.transformMat_.at<double>(i,j) << " ";
+    ofs << t_.colorScale_[0] << " " << t_.colorScale_[1] << " " << t_.colorScale_[2] << " ";
     ofs << error_ << " ";
 }
 
@@ -102,32 +106,34 @@ void Match::deserialize(std::ifstream& ifs) {
 
     for (int i=0; i<2; i++)
         for(int j=0; j<rotMat_.cols; j++)
-            ifs >> transformMat_.at<double>(i,j);
-    ifs >> colorScale_[0] >> colorScale_[1] >>  colorScale_[2];
+            ifs >> t_.transformMat_.at<double>(i,j);
+    ifs >> t_.colorScale_[0] >> t_.colorScale_[1] >>  t_.colorScale_[2];
     ifs >> error_;
 }
 
 
 
 void Match::calcTransform() {
-    transformMat_ =  warpMat_  * rotMat_ * transScaleFlipMat_ ;
+    t_.transformMat_ = warpMat_ * transScaleFlipMat_;
 }
 
 
-cv::Mat Match::warp() {
+cv::Mat Transform::warp(cv::Mat &src, uint s) {
 
     cv::Mat warped;
     cv::Mat selection(transformMat_, cv::Rect(0,0,3,2));
-    cv::warpAffine(sourceImage_, warped, selection, cv::Size(s_, s_));
+    cv::warpAffine(src, warped, selection, cv::Size(s, s));
 
     return warped;
+}
 
+cv::Mat Match::warp() {
+    return t_.warp(sourceImage_, s_);
 }
 
 
-cv::Mat Match::reconstruct() {
-
-    cv::Mat warped = warp();
+cv::Mat Transform::reconstruct(cv::Mat &src, uint s) {
+    cv::Mat warped = warp(src, s);
 
     // color scale
     //*/
@@ -139,8 +145,11 @@ cv::Mat Match::reconstruct() {
     merge(planes, warped);
     //*/
 
-
     return warped;
+}
+
+cv::Mat Match::reconstruct() {
+   return t_.reconstruct(sourceImage_, s_);
 }
 
 
