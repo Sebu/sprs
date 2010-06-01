@@ -516,11 +516,11 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
         float scaleWidth  = source.cols / scale;
         float scaleHeight = source.rows / scale;
 
-        int width =  ((scaleWidth-s_) / gridstep_) + 1;
-        int height = ((scaleHeight-s_) / gridstep_) + 1;
+//        int width =  ((scaleWidth- s_) / gridstep_) + 1;
+//        int height = ((scaleHeight-s_) / gridstep_) + 1;
 
-//        int width =  scaleWidth / gridstep_;
-//        int height = scaleHeight / gridstep_;
+        int width =  ( ( scaleWidth - ((int)scaleWidth % s_) ) / gridstep_  ) - 3;
+        int height = ( ( scaleHeight - ((int)scaleHeight % s_) ) / gridstep_ ) - 3;
 
 
         // generate new seeds

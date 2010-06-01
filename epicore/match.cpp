@@ -118,7 +118,7 @@ void Match::deserialize(std::ifstream& ifs) {
 
 
 void Match::calcTransform() {
-    t_.transformMat_ = warpMat_ * transScaleFlipMat_;
+    t_.transformMat_ = warpMat_ * rotMat_ * transScaleFlipMat_;
 }
 
 

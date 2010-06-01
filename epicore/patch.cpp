@@ -181,7 +181,7 @@ bool Patch::trackFeatures(Match* match) {
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
-                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 20, 0.1));
+                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 30, 0.01), 1.0);
 
 
 
@@ -269,7 +269,7 @@ Match* Patch::match(Patch& other) {
     match->calcTransform();
 
     // 4.1 KLT matching
-//    trackFeatures(match);
+    trackFeatures(match);
 
     // calc final transformation
     match->calcTransform();
