@@ -146,8 +146,8 @@ void SeedMap::generateCharts() {
 
     genNeighbours();
 
-    uint width = baseImage_.cols/s_;
-    uint height = baseImage_.rows/s_;
+//    uint blocksx_ = baseImage_.cols / s_;
+//    uint blocksy_ = baseImage_.rows / s_;
     foreach(Patch* block, blocks_) {
         if(!block->matches_ || block->finalMatch_) continue;
 
@@ -157,13 +157,13 @@ void SeedMap::generateCharts() {
             AABB box = match->hull_.getBox();
             uint minx = std::max( (int)(box.min.m_v[0] / s_), 0 );
             uint miny = std::max( (int)(box.min.m_v[1] / s_), 0 );
-            uint maxx = std::min( (int)(box.max.m_v[0] / s_), (int)width-1);
-            uint maxy = std::min( (int)(box.max.m_v[1] / s_), (int)height-1);
+            uint maxx = std::min( (int)(box.max.m_v[0] / s_), (int)blocksx_-1);
+            uint maxy = std::min( (int)(box.max.m_v[1] / s_), (int)blocksy_-1);
 
 
             for(uint y=miny; y<=maxy; y++) {
                 for(uint x=minx; x<=maxx; x++) {
-                    Patch* b = blocks_.at(y*width + x);
+                    Patch* b = blocks_.at(y*blocksx_ + x);
 
                     if (b->hull_.intersects(match->hull_)) {
                         match->coveredBlocks_.push_back(b);
@@ -198,11 +198,19 @@ void SeedMap::generateCharts() {
 
         growChart(bestChart);
 
-        charts_.push_back(bestChart);
+        image_.charts_.push_back(bestChart);
 
     };
 
     optimizeCharts();
+
+//    image_.texture_ = genEpitomeMap();
+
+    for(uint i=0; i<blocksy_; i++) {
+        for(uint j=0; j<blocksx_; j++) {
+            image_.transforms_.push_back(&(getPatch(j,i)->finalMatch_->t_));
+        }
+    }
 
 
 }
@@ -254,27 +262,27 @@ void SeedMap::optimizeCharts() {
 void SeedMap::genNeighbours() {
     // neighbours
     // FIXME: :D
-    uint width = baseImage_.cols/s_;
-    uint height = baseImage_.rows/s_;
+//    uint blocksx_ = baseImage_.cols/s_;
+//    uint blocksy_ = baseImage_.rows/s_;
 
-    for(uint y=0; y<height; y++) {
-        for(uint x=0; x<width; x++) {
-            Patch* block = blocks_[y*width+x];
+    for(uint y=0; y<blocksy_; y++) {
+        for(uint x=0; x<blocksx_; x++) {
+            Patch* block = blocks_[y*blocksx_+x];
 
             if (x>0) {
-                Patch* n = blocks_[y*width +(x-1)];
+                Patch* n = blocks_[y*blocksx_ +(x-1)];
                 block->neighbours_.push_back(n);
             }
             if (y>0) {
-                Patch* n = blocks_[(y-1)*width +x];
+                Patch* n = blocks_[(y-1)*blocksx_ +x];
                 block->neighbours_.push_back(n);
             }
-            if(x<width-1) {
-                Patch* n = blocks_[y*width +(x+1)];
+            if(x<blocksx_-1) {
+                Patch* n = blocks_[y*blocksx_ +(x+1)];
                 block->neighbours_.push_back(n);
             }
-            if(y<height-1) {
-                Patch* n = blocks_[(y+1)*width +x];
+            if(y<blocksy_-1) {
+                Patch* n = blocks_[(y+1)*blocksx_ +x];
                 block->neighbours_.push_back(n);
             }
 
@@ -284,26 +292,6 @@ void SeedMap::genNeighbours() {
 }
 
 
-void SeedMap::saveEpitome(std::string fileName) {
-    cv::imwrite((fileName + ".epi.png").c_str(), debugEpitomeMap());
-
-    std::ofstream ofs( (fileName + ".epi.txt").c_str() );
-    foreach(Chart* c, charts_)
-        foreach(Patch* b,c->chartBlocks_)
-            ofs << b->x_ << " " << b->y_ << " ";
-    ofs.close();
-}
-
-// filename
-//
-void SeedMap::saveCompressedImage(std::string fileName) {
-    std::ofstream ofs( (fileName + ".map").c_str() );
-
-    for(uint i=0; i<blocks_.size(); i++)
-        blocks_[i]->save(ofs);
-    ofs.close();
-}
-
 
 void SeedMap::deserialize(std::string fileName) {
     if (!searchInOriginal_) return;
@@ -312,7 +300,7 @@ void SeedMap::deserialize(std::string fileName) {
 
     if (ifs) {
         float error, s;
-        ifs >> s >> grid_ >> error;
+        ifs >> s >> gridstep_ >> error;
         if (crit_.maxError_ == error && s_ == s ) {
             int size;
             ifs >> size;
@@ -330,7 +318,7 @@ void SeedMap::deserialize(std::string fileName) {
 void SeedMap::serialize(std::string fileName) {
     std::ofstream ofs( (fileName + ".cache").c_str() );
 
-    ofs << s_ << " " << grid_ << " " << crit_.maxError_ << " ";
+    ofs << s_ << " " << gridstep_ << " " << crit_.maxError_ << " ";
     ofs << blocks_.size() << " ";
     for(uint i=0; i<blocks_.size(); i++)
         blocks_[i]->serialize(ofs);
@@ -365,7 +353,7 @@ Patch* SeedMap::matchNext() {
 }
 
 Patch* SeedMap::getPatch(int x, int y) {
-    Patch* patch = blocks_[y * ((sourceImage_.cols/s_)) + x];
+    Patch* patch = blocks_[y * blocksx_ + x];
     return patch;
 }
 
@@ -457,40 +445,17 @@ void SeedMap::match(Patch* block) {
 
 
 
-cv::Mat SeedMap::debugEpitomeMap() {
-    cv::Mat image = debugImages["epitomemap"] = cv::Mat::zeros(baseImage_.size(), CV_8UC3);
-
-    float color = 0;
-    float step = 255.0f/charts_.size();
-    /*
-    foreach(Chart* epi, charts_) {
-        foreach(Patch* block, epi->chartBlocks_) {
-                cv::rectangle(image, block->hull_.verts[0], block->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255),-2);
-        }
-        color += step;
-    }
-    //*/
-    foreach(Patch* block, blocks_) {
-        if(block->inChart_) {
-            Vector2f v = block->hull_.verts[0];
-            int x = v.m_v[0];
-            int y = v.m_v[1];
-            copyBlock(baseImage_, debugImages["epitomemap"], cv::Rect(x, y, s_, s_), cv::Rect(x,y, s_, s_) );
-        }
-    }
-
-
-
-    return debugImages["epitomemap"];
-}
-
 cv::Mat SeedMap::debugReconstruction() {
     debugImages["reconstuct"] = cv::Mat::zeros(sourceImage_.size(), CV_8UC3);
 
-    if(done_) {
-        std::cout << "final match reconstruction" << std::endl;
 
-//    }  else {
+    if(!image_.transforms_.empty()) {
+
+        std::cout << "final match reconstruction" << std::endl;
+        image_.reconstruct(debugImages["reconstuct"]);
+
+    }  else {
+
         for(uint i=0; i< blocks_.size(); i++) {
             Patch* block = blocks_[i];
 
@@ -505,7 +470,6 @@ cv::Mat SeedMap::debugReconstruction() {
                 cv::Mat reconstruction(m->t_.reconstruct(debugImages["epitomemap"], s_));
                 copyBlock(reconstruction, debugImages["reconstuct"] , cv::Rect(0, 0, s_, s_), cv::Rect(block->x_, block->y_, s_, s_) );
             }
-
         }
 
     }
@@ -526,10 +490,15 @@ void SeedMap::setImage(cv::Mat &image) {
     cv::cvtColor(sourceImage_, sourceGray_, CV_BGR2GRAY);
 
     // add patches
-    int width =  (sourceImage_.cols / s_);
-    int height = (sourceImage_.rows / s_);
-    for(int y=0; y<height; y++)
-        for(int x=0; x<width; x++) {
+    blocksx_ =  sourceImage_.cols / s_;
+    blocksy_ = sourceImage_.rows / s_;
+
+    image_.blocksx_ = blocksx_;
+    image_.blocksy_ = blocksy_;
+    image_.s_ = s_;
+
+    for(int y=0; y<blocksy_; y++)
+        for(int x=0; x<blocksx_; x++) {
         Patch* block = new Patch( sourceImage_, sourceGray_, x*s_, y*s_, s_,  1.0f, 0, true);
         block->crit_ = &crit_;
         block->verbose_ = verbose_;
@@ -547,19 +516,19 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
         float scaleWidth  = source.cols / scale;
         float scaleHeight = source.rows / scale;
 
-//        int width =  ((scaleWidth-s_) / grid_) + 1;
-//        int height = ((scaleHeight-s_) / grid_) + 1;
+        int width =  ((scaleWidth-s_) / gridstep_) + 1;
+        int height = ((scaleHeight-s_) / gridstep_) + 1;
 
-        int width =  scaleWidth / grid_;
-        int height = scaleHeight / grid_;
+//        int width =  scaleWidth / gridstep_;
+//        int height = scaleHeight / gridstep_;
 
 
         // generate new seeds
         for(uint flip=0; flip<3; flip++) {
             for(uint y=0; y<height; y++) {
-                int localY = y*grid_;
+                int localY = y*gridstep_;
                 for(uint x=0; x<width; x++) {
-                    int localX = x*grid_;
+                    int localX = x*gridstep_;
                     Patch* seed = 0;
 
                     if (searchInOriginal_ && (localX % s_)==0 && (localY % s_)==0 && flip==0 && z==0 ) {
@@ -587,7 +556,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
 }
 
 void SeedMap::addSeedsFromEpitome() {
-    foreach(Chart* epi, charts_) {
+    foreach(Chart* epi, image_.charts_) {
         cv::Mat map = epi->getMap();
         addSeedsFromImage(map,1);
     }
@@ -614,7 +583,7 @@ void SeedMap::setReconSource(cv::Mat& base, int depth) {
 }
 
 SeedMap::SeedMap(int s, bool searchInOriginal)
-    : termCalculate_(0), s_(s), grid_(s/4), matchStep_(0), searchInOriginal_(searchInOriginal),
+    : termCalculate_(0), s_(s), gridstep_(s/4), matchStep_(0), searchInOriginal_(searchInOriginal),
     satisfiedBlocks_(0), done_(0), verbose_(1)
 {
     std::cout <<  s_ << std::endl;

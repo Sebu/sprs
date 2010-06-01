@@ -74,8 +74,8 @@ void MainWindow::saveImage() {
     // save matches
     calcThread.seedmap->serialize(fileName_);
     calcThread.seedmap->saveReconstruction(fileName_); //saveName.toStdString());
-    calcThread.seedmap->saveCompressedImage(fileName_);
-    calcThread.seedmap->saveEpitome(fileName_);
+    calcThread.seedmap->image_.save(fileName_);
+    calcThread.seedmap->image_.saveTexture(fileName_);
 
 }
 

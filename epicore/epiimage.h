@@ -11,15 +11,22 @@ class EpiImage
 public:
     std::vector<Transform*> transforms_;
 
-    int width_, height_, s_;
-    cv::Mat texture_;
+    int blocksx_, blocksy_, s_;
 
+    cv::Mat texture_;
+    std::list<Chart*> charts_;
 
     EpiImage();
 
+    cv::Mat Texture();
+    void genTexture();
+
     // load/save/reconstruct
-    void save(std::string);
     void reconstruct(cv::Mat&);
+    void saveTexture(std::string);
+
+    void load(std::string fileName);
+    void save(std::string);
 
 };
 

@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
             if(verbose)
                 std::cout << epiName << std::endl;
             seedmap->generateCharts();
-            seedmap->saveEpitome(epiName);
+            seedmap->image_.saveTexture(epiName);
         }
     }
 
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     // finished? save image
     std::cout << fullName << std::endl;
     if(seedmap->done_)
-        seedmap->saveCompressedImage(fullName);
+        seedmap->image_.save(fullName);
 
     // save a preview of reconstruction
     if(seedmap->done_)

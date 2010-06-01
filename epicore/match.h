@@ -15,10 +15,15 @@ public:
     cv::Scalar colorScale_;
     cv::Mat transformMat_;
 
+    Transform() {
+        colorScale_ = cv::Scalar::all(1.0f);
+        transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
+    }
+
     cv::Mat warp(cv::Mat&, uint);
     cv::Mat reconstruct(cv::Mat&, uint);
 
-
+    void load(std::ifstream&);
     void save(std::ofstream&);
 
 };

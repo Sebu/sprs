@@ -20,7 +20,7 @@ void CalculationThread::step2() {
     if(!seedmap) init();
     seedmap->generateCharts();
 
-    cv::Mat epitomeMap(seedmap->debugEpitomeMap());
+    cv::Mat epitomeMap(seedmap->image_.Texture());
     debugWidgetL->fromIpl( epitomeMap, "epitome map" );
     debugWidgetL->updateGL();
 }

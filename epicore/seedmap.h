@@ -10,6 +10,7 @@
 #include "patch.h"
 #include "match.h"
 #include "epitome.h"
+#include "epiimage.h"
 #include "searchcriteria.h"
 #include "epicore_global.h"
 
@@ -19,7 +20,10 @@ public:
     bool termCalculate_;
 
     int s_;
-    int grid_;
+    int gridstep_;
+
+    int blocksx_;
+    int blocksy_;
 
     int satisfiedBlocks_;
     bool done_;
@@ -35,8 +39,7 @@ public:
     std::vector<Patch*> seeds_;
     std::vector<Patch*> blocks_;
 
-    std::list<Chart*> charts_;
-
+    EpiImage image_;
     cv::Mat sourceImage_;
     cv::Mat sourceGray_;
     cv::Mat baseImage_;
@@ -59,8 +62,6 @@ public:
     void resetMatches();
     void matchAll();
     Patch* matchNext();
-    void saveEpitome(std::string fileName);
-    void saveCompressedImage(std::string fileName);
     void serialize(std::string fileName);
     void deserialize(std::string fileName);
 
@@ -75,7 +76,6 @@ public:
     // debug
     std::map<std::string, cv::Mat> debugImages;
     cv::Mat debugReconstruction();
-    cv::Mat debugEpitomeMap();
 
 
 };

@@ -11,11 +11,8 @@ Match::Match(Patch* seed)
     : error_(0.0f), s_(0), transformed_(0)
 {
 
-
     rotMat_ = cv::Mat::eye(3,3,CV_64FC1);
     warpMat_ = cv::Mat::eye(3,3,CV_64FC1);
-    t_.colorScale_ = cv::Scalar::all(1.0f);
-    t_.transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
 
     if (!seed) return;
     s_ = seed->s_;
@@ -79,6 +76,13 @@ void Match::calcHull() {
 
 
 
+}
+
+void Transform::load(std::ifstream& ifs) {
+    for (int i=0; i<2; i++)
+        for(int j=0; j<3; j++)
+            ifs >> transformMat_.at<double>(i,j);
+    ifs >> colorScale_[0] >> colorScale_[1] >> colorScale_[2];
 }
 
 void Transform::save(std::ofstream& ofs) {

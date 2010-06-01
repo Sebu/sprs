@@ -269,7 +269,7 @@ Match* Patch::match(Patch& other) {
     match->calcTransform();
 
     // 4.1 KLT matching
-    trackFeatures(match);
+//    trackFeatures(match);
 
     // calc final transformation
     match->calcTransform();
