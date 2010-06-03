@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     bool verbose = false;
     bool dbSearch = 0;
     int  s = 12;
-    int winsize = 6;
+    int winsize = 3;
     std::string fullName;
 
     int opt;

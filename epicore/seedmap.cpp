@@ -1,6 +1,7 @@
 
 #include <opencv/highgui.h>
 #include <fstream>
+#include <iomanip>
 #include <tr1/memory>
 #include <QTime>
 
@@ -328,11 +329,33 @@ void SeedMap::matchAll() {
     QTime timer;
 
     timer.start();
-    while(!termCalculate_ && matchNext()) {}
+    long blocks = blocks_.size();
+    float step = 100.0f / blocks;
+    float current = 0.0;
+    long last = 0;
+    long length = 2;
+    long blocksDone = 0;
+
+    std::cout << std::fixed << std::setprecision(2);
+    do {
+        if((long)current > last) {
+            last = current;
+        }
+        current += step;
+        float deltaT = (((float)timer.elapsed() /60000.0f) / (float)blocksDone) * (blocks-blocksDone);
+        std::cout << "\r [";
+        for (long i=0; i<last/length; i++) std::cout << "=";
+        std::cout << ">";
+        for (long i=0; i<100/length-(last/length); i++) std::cout << ".";
+        std::cout << "]" << last  << "%  ETA " << deltaT << "min" << std::flush;
+
+        blocksDone++;
+    } while(!termCalculate_ && matchNext());
     matchStep_=0;
 
+    std::cout << std::endl;
 
-    std::cout << "match time: " <<  timer.elapsed() << std::endl;
+    std::cout << "match time: " <<  (float)timer.elapsed() / 60000.0f << "min" << std::endl;
 }
 
 Patch* SeedMap::matchNext() {

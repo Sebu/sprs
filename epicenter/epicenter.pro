@@ -21,6 +21,6 @@ HEADERS += mainwindow.h \
     calculationthread.h
 FORMS += mainwindow.ui
 QMAKE_CXXFLAGS += -fopenmp
-CONFIG += debug
+# CONFIG += debug
 
 DEPENDPATH += ../epicore

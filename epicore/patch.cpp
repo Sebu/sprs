@@ -173,7 +173,7 @@ bool Patch::trackFeatures(Match* match) {
     std::vector<float>          err;
 
 
-    cv::calcOpticalFlowPyrLK( patchColor_, rotated,
+    cv::calcOpticalFlowPyrLK( patchGray_, grayRotated,
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
@@ -239,7 +239,7 @@ Match* Patch::match(Patch& other) {
 
      double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-     if(histDiff > 1.5) return 0;
+     if(histDiff > crit_->maxColor_) return 0;
 
 
 
@@ -273,7 +273,7 @@ Match* Patch::match(Patch& other) {
 
 
     // 4.1 KLT matching
-    trackFeatures(match);
+//    trackFeatures(match);
 
     // 4 reconstruction error
     match->error_ =  reconError(match) / (s_*s_);
