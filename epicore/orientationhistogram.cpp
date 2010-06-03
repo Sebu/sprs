@@ -15,7 +15,7 @@ void OrientHist::genOrientHists() {
 
         float orientation = i*factor_;
 
-        cv::Mat rot = cv::getRotationMatrix2D(center, -orientation, 1.0f);
+        cv::Mat rot = cv::getRotationMatrix2D(center, orientation, 1.0f);
         cv::Mat selection( rotMat, cv::Rect(0,0,3,2) );
         rot.copyTo(selection);
 
@@ -49,8 +49,8 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
     //
     //      blur the initial histogram by [1 4 6 4 1] averaging filter.
 
-    cv::Mat contrast(image.size(), CV_32F);
-    cv::Mat direction(image.size(), CV_32F);
+    cv::Mat contrast = cv::Mat::zeros(image.size(), CV_32F);
+    cv::Mat direction = cv::Mat::zeros(image.size(), CV_32F);
 
 
 
@@ -67,7 +67,7 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
             float dy = pixel - pixel_y;
 
 
-            direction.at<double>(y,x) = cv::fastAtan2(dx ,dy);
+            direction.at<double>(y,x) = cv::fastAtan2(dy ,dx);
 
             float ctmp = sqrt(dx*dx + dy*dy);
             contrast.at<double>(y,x) = ctmp;
@@ -117,7 +117,7 @@ float OrientHist::minDiff(OrientHist* other) {
 float OrientHist::diff(OrientHist* other, int offset) {
     float sum=0;
     for (uint i=0; i < numBins_; i++){
-        sum += pow(this->bins_[i]-other->bins_[ offset*numBins_ + i], 2);
+        sum += pow(this->bins_[i] - other->bins_[ offset*numBins_ + i], 2);
     }
     return sum;
 }

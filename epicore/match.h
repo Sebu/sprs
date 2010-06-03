@@ -35,21 +35,16 @@ public:
 
     // things to save aka transform
     Transform t_;
+    bool transformed_;
 
     float error_;
 
-    int s_;
     Patch* block_;
-    cv::Mat transScaleFlipMat_;
 
-    bool transformed_;
     Polygon hull_;
     Polygon bbox_;
     cv::Mat sourceImage_;
 
-
-    cv::Mat warpMat_;
-    cv::Mat rotMat_;
 
 
     std::vector<Patch*> coveredBlocks_;
@@ -62,9 +57,7 @@ public:
     cv::Mat warp();
     cv::Mat reconstruct();
 
-    void calcTransform();
     void calcHull();
-    void calcPos();
 
     void save(std::ofstream&);
     // (de-)serialize

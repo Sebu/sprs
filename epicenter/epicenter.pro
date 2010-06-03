@@ -10,7 +10,8 @@ LIBS = -L../epicore \
     -lepicore \
     -L/homes/wheel/seb/playground/lib \
     -lcv \
-    -lhighgui
+    -lhighgui \
+    -lgomp
 SOURCES += main.cpp \
     mainwindow.cpp \
     glwidget.cpp \
@@ -20,6 +21,6 @@ HEADERS += mainwindow.h \
     calculationthread.h
 FORMS += mainwindow.ui
 QMAKE_CXXFLAGS += -fopenmp
-# CONFIG += debug
+CONFIG += debug
 
 DEPENDPATH += ../epicore

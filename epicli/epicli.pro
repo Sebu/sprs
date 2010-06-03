@@ -11,7 +11,7 @@ CONFIG   += console
 CONFIG   -= app_bundle
 
 INCLUDEPATH = /homes/wheel/seb/playground/include ../
-LIBS = -L../epicore -lepicore -L/homes/wheel/seb/playground/lib -lcv -lhighgui
+LIBS = -L../epicore -lepicore -L/homes/wheel/seb/playground/lib -lcv -lhighgui -lgomp
 
 TEMPLATE = app
 

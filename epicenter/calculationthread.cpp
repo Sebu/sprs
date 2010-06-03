@@ -52,26 +52,12 @@ bool CalculationThread::singleStep(int x, int y) {
 
         Match* match = block->matches_->at(i);
         Polygon hull = match->hull_;
-        Polygon bbox = match->bbox_;
 
-
-        // coverage area
-        /*/
-        for (uint j=0; j<seedmap->blocks_.size(); j++) {
-            Patch *p = seedmap->blocks_[j];
-            if ((p->hull_.intersects(hull)))
-                cv::rectangle(tmpImage, p->hull_.verts[0], p->hull_.verts[2], cv::Scalar(0,100,100,100));
-        }
-        //*/
 
         // highlight match
 
         for(int j=0; j<4; j++)
             cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,255-match->error_*colorScale,match->error_*colorScale,100));
-
-        cv::line(tmpImage, bbox.verts[0], hull.verts[0], cv::Scalar(200,0,0,100));
-
-
 
         foreach(cv::Point2f p, block->pointsSrc_)
             cv::line(tmpImage, p, p, cv::Scalar(0,155,00,100));
@@ -89,7 +75,7 @@ bool CalculationThread::singleStep(int x, int y) {
     if(block->finalMatch_) {
         // highlight match
         for(int j=0; j<4; j++)
-            cv::line(tmpImage, block->finalMatch_->hull_.verts[j], block->finalMatch_->hull_.verts[(j+1) % 4], cv::Scalar(0,255,0,100));
+            cv::line(tmpImage, block->finalMatch_->hull_.verts[j], block->finalMatch_->hull_.verts[(j+1) % 4], cv::Scalar(100,255,0,100));
     }
 
     cv::Mat reconstruction(seedmap->debugReconstruction());

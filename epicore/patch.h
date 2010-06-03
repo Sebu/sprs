@@ -32,33 +32,27 @@ public:
     std::vector<cv::Point2f> pointsSrc_;
 
     int x_, y_, s_;
+    cv::Mat transScaleFlipMat_;
     int size_;
     float variance_;
-
-    SearchCriteria* crit_;
-
-    bool verbose_;
-
     bool isBlock_;
     bool transformed_;
     bool loadsMatches_;
     bool sharesMatches_;
+    Polygon hull_;
 
+
+    SearchCriteria* crit_;
+    bool verbose_;
 
     bool satisfied_;
     bool inChart_;
     bool candidate_;
-    Chart *chart_;
-//    int blocks_;
 
-    Polygon hull_;
-
-    std::string epitomeName_;
-
-    Match *bestMatch_;
+    Chart* chart_;
+    Match* bestMatch_;
     Match* finalMatch_;
     std::vector<Match*>* matches_;
-
     std::vector<Patch*> neighbours_;
     std::vector<Match*> overlapingMatches_;
 
@@ -67,12 +61,10 @@ public:
 
     cv::Mat patchColor_;
     cv::Mat patchGray_;
-//    cv::Mat patchGrayBig_;
 
     cv::MatND colorHist_;
     OrientHistFast* orientHist_;
 
-    cv::Mat transScaleFlipMat_;
 
     Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int, int, int, float, int, bool);
 
@@ -83,7 +75,7 @@ public:
 
     void resetMatches();
 
-    void correctFinalMatch();
+//    void correctFinalMatch();
     void copyMatches();
 
     cv::Scalar getHistMean() { return histMean_; }

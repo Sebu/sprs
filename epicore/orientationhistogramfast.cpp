@@ -47,7 +47,7 @@ void OrientHistFast::genSingle(cv::Mat& image) {
             float dy = pixel - pixel_y;
 
 
-            direction.at<double>(y,x) = cv::fastAtan2(dx ,dy);
+            direction.at<double>(y,x) = cv::fastAtan2(dy ,dx);
 
             float ctmp = sqrt(dx*dx + dy*dy);
             contrast.at<double>(y,x) = ctmp;
@@ -85,7 +85,7 @@ float OrientHistFast::minDiff(OrientHistFast* other) {
     float angle=0;
 
     float min = FLT_MAX;
-    for(int j=0; j < this->numBins_; j++) {
+    for(uint j=0; j < this->numBins_; j++) {
         float sum = this->diff(other, j);
         if (sum<min) { min=sum; angle=j*factor_;}
     }

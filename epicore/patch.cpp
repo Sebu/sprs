@@ -17,6 +17,7 @@ void Patch::resetMatches() {
     matches_ = 0;
 }
 
+/*
 void Patch::correctFinalMatch() {
     if(!loadsMatches_ || !finalMatch_) return;
     if(verbose_)
@@ -29,6 +30,7 @@ void Patch::correctFinalMatch() {
         finalMatch_->t_.colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
 }
+*/
 
 void Patch::copyMatches() {
     if(!loadsMatches_) return;
@@ -41,13 +43,10 @@ void Patch::copyMatches() {
         Match* newMatch = new Match(*oldMatch);
         newMatch->block_ = this;
 
-        // recalculate colorScale
+        // recalculate error
         newMatch->t_.colorScale_=cv::Scalar::all(1.0f);
-        cv::Mat reconstruction( newMatch->reconstruct() );
-        cv::Scalar reconstructionMean = cv::mean(reconstruction);
-        for(uint i=0; i<4; i++)
-            newMatch->t_.colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
-
+        newMatch->error_ =  reconError(newMatch) / (s_*s_);
+//      if (newMatch->error_ < crit_->maxError_)
         newVector->push_back(newMatch);
     }
 
@@ -64,12 +63,10 @@ void Patch::deserialize(std::ifstream& ifs) {
     for(int j=0; j<size; j++) {
         Match* match = new Match(0);
         match->sourceImage_ = sourceColor_;
-        match->s_ = s_;
-        match -> transScaleFlipMat_ = transScaleFlipMat_;
+        transScaleFlipMat_.copyTo(match ->t_.transformMat_);
         match->block_ = this;
         match->deserialize(ifs);
         match->calcHull();
-        match->calcPos();
         matches_->push_back(match);
 
     }
@@ -145,13 +142,13 @@ void Patch::findFeatures() {
 
         }
     }
+//    variance_ =  variance_ / ((patchGray_.cols*patchGray_.rows)-1);
     variance_ =  sqrt( variance_ / ((patchGray_.cols*patchGray_.rows)-1) );
 
-    std::cout << "variance " << variance_ << std::endl;
+    if(verbose_)
+        std::cout << "variance " << variance_ << std::endl;
 
     // track initial features
-
-
     cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
     if(pointsSrc_.size()<3)
@@ -168,8 +165,7 @@ bool Patch::trackFeatures(Match* match) {
     cv::Mat rotated(match->warp());
 
     cv::Mat grayRotated;
-
-    cv::cvtColor(rotated, grayRotated, CV_BGR2GRAY);
+    cv::cvtColor(rotated, grayRotated, CV_RGB2GRAY);
 
     //*/
     std::vector<cv::Point2f>    pointsDest;
@@ -177,11 +173,11 @@ bool Patch::trackFeatures(Match* match) {
     std::vector<float>          err;
 
 
-    cv::calcOpticalFlowPyrLK( patchGray_, grayRotated,
+    cv::calcOpticalFlowPyrLK( patchColor_, rotated,
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
-                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 30, 0.01), 1.0);
+                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 20, 0.1));
 
 
 
@@ -199,7 +195,7 @@ bool Patch::trackFeatures(Match* match) {
 
     std::vector<cv::Point2f> srcTri, destTri;
 
-    for(uint j = 0; j < 3; j++ ) { // features.size(); j++) {
+    for(uint j = 0; j < 3; j++) { // features.size(); j++) {
         int i = features[j]->idx_;
         cv::Point2f s,d;
         s.x = pointsSrc_[i].x;
@@ -225,8 +221,12 @@ bool Patch::trackFeatures(Match* match) {
         cv::Mat tmp = getTransform(destTri, srcTri);
         // cv::Mat tmp = cv::estimateRigidTransform(cv::Mat(destTri), cv::Mat(srcTri), true);
         // cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
-        cv::Mat selection( match->warpMat_, cv::Rect(0,0,3,2) );
+        cv::Mat warpMat = cv::Mat::eye(3,3,CV_64FC1);
+        cv::Mat selection( warpMat, cv::Rect(0,0,3,2) );
         tmp.copyTo(selection);
+
+        match->t_.transformMat_ = warpMat * match->t_.transformMat_;
+
         match->transformed_ = true;
     }
     //*/
@@ -237,14 +237,17 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other) {
 
 
-     //double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
+     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-     //if(histDiff > 1.5) return 0;
+     if(histDiff > 1.5) return 0;
 
 
 
     // 4.1 rotation, orientation/gradient histogram
     float orientation = orientHist_->minDiff(other.orientHist_);
+
+//    std::cout << orientation << std::endl;
+//    orientation = 0;
 
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
@@ -260,34 +263,30 @@ Match* Patch::match(Patch& other) {
     if ((int)orientation!=0) {
         cv::Point2f center( (s_/2), (s_/2) );
 
-        cv::Mat rotMat = cv::getRotationMatrix2D(center, -orientation, 1.0f);
-        cv::Mat selection( match->rotMat_, cv::Rect(0,0,3,2) );
+        cv::Mat rMat = cv::Mat::eye(3,3,CV_64FC1);
+        cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
+        cv::Mat selection( rMat, cv::Rect(0,0,3,2) );
         rotMat.copyTo(selection);
+        match->t_.transformMat_ = rMat * match->t_.transformMat_;
         match->transformed_ = true;
     }
 
-    match->calcTransform();
 
     // 4.1 KLT matching
     trackFeatures(match);
 
-    // calc final transformation
-    match->calcTransform();
-
     // 4 reconstruction error
-    float reconstructionError =  reconError(match) / (s_*s_);
+    match->error_ =  reconError(match) / (s_*s_);
 
-    //    std::cout << reconstructionError << std::endl;
 
-    if(x_ == other.x_ && y_  == other.y_ && reconstructionError > crit_->maxError_ && other.isBlock_) {
+    //DEBUG
+    if(x_ == other.x_ && y_  == other.y_ && match->error_ > crit_->maxError_ && other.isBlock_) {
         if(verbose_)
-            std::cout << other.x_/s_ << " " << other.y_/s_ << " " << orientation << " bad buddy: " << reconstructionError << std::endl;
-        std::cout << match->warpMat_.at<double>(0,0) << " " << match->warpMat_.at<double>(0,1) << " " << match->warpMat_.at<double>(0,2) << std::endl;
-        std::cout << match->warpMat_.at<double>(1,0) << " " << match->warpMat_.at<double>(1,1) << " " << match->warpMat_.at<double>(1,2) << std::endl;
+            std::cout << other.x_/s_ << " " << other.y_/s_ << " " << orientation << " bad buddy: " << match->error_ << std::endl;
+//        std::cout << match->warpMat_.at<double>(0,0) << " " << match->warpMat_.at<double>(0,1) << " " << match->warpMat_.at<double>(0,2) << std::endl;
+//        std::cout << match->warpMat_.at<double>(1,0) << " " << match->warpMat_.at<double>(1,1) << " " << match->warpMat_.at<double>(1,2) << std::endl;
     }
 
-    // reconstruction error too high? skip
-    match->error_ = reconstructionError;
     return match;
 }
 
@@ -301,12 +300,13 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
 
     cv::Mat transMat = cv::Mat::eye(3,3,CV_64FC1);
     cv::Mat scaleMat = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat flipMat = cv::Mat::eye(3,3,CV_64FC1);
+
     transMat.at<double>(0,2)=-x_;
     transMat.at<double>(1,2)=-y_;
     scaleMat.at<double>(0,0)/=scale;
     scaleMat.at<double>(1,1)/=scale;
     // flip :)
-    cv::Mat flipMat = cv::Mat::eye(3,3,CV_64FC1);
     switch(flip) {
     case 1:
         flipMat.at<double>(0,0)=-1.0f;
@@ -327,7 +327,7 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
     cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
     cv::warpAffine(sourceColor_, patchColor_, selection, cv::Size(s_, s_));
     // cache gray patch version
-    cv::cvtColor(patchColor_, patchGray_, CV_BGR2GRAY);
+    cv::cvtColor(patchColor_, patchGray_, CV_RGB2GRAY);
 
     // cache color histogram
     int channels[] = {0, 1, 2};
@@ -346,12 +346,7 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
     orientHist_ = new OrientHistFast(this, 36);
     setHistMean( cv::mean(patchColor_) );
 
-    if(isBlock_) {
-//        cv::Mat tmpP;
-//        cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
-//        cv::warpAffine(sourceColor_, tmpP, selection, cv::Size(s_, s_));
-//        cv::cvtColor(tmpP, patchGrayBig_, CV_BGR2GRAY);
-    } else {
+    if(!isBlock_) {
         patchColor_.release();
         patchGray_.release();
     }

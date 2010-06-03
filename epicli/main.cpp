@@ -9,7 +9,7 @@
 
 SeedMap* seedmap;
 
-void terminate (int param)
+void terminate(int param)
 {
     seedmap->termCalculate_ = 1;
 }
@@ -25,21 +25,25 @@ int main(int argc, char *argv[])
     if (prev_fn==SIG_IGN) signal(SIGTERM,SIG_IGN);
 
     // command line parsing
-    float error=0.16;
-    bool verbose= false;
-    bool atlasSearch=0;
+    float error = 0.16f;
+    float alpha = 1.5f;
+    bool verbose = false;
+    bool dbSearch = 0;
     int  s = 12;
     int winsize = 6;
     std::string fullName;
 
     int opt;
-    while ((opt = getopt(argc, argv, "ab:e:i:vw:")) != -1) {
+    while ((opt = getopt(argc, argv, "a:b:de:i:vw:")) != -1) {
         switch(opt) {
         case 'a':
-            atlasSearch = true;
+            alpha = atoi(optarg);
             break;
         case 'b':
             s = atoi(optarg);
+            break;
+        case 'd':
+            dbSearch = true;
             break;
         case 'e':
             error = atof(optarg);
@@ -55,7 +59,7 @@ int main(int argc, char *argv[])
             break;
         case '?':
         default: /* '?' */
-            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-v] [-e error] [-atlasSearch] [-b blocksize]" << std::endl;
+            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-v] [-e error] [-dbSearch] [-b blocksize] [-w winsize]" << std::endl;
             exit(EXIT_FAILURE);
         }
     }
@@ -72,6 +76,8 @@ int main(int argc, char *argv[])
     cv::Mat image = cv::imread(fullName);
     seedmap = new SeedMap(s, true);
     seedmap->crit_.maxError_ = error;
+    seedmap->crit_.alpha_ = alpha;
+    seedmap->crit_.kltWinSize_ = winsize;
     seedmap->verbose_ = verbose;
     seedmap->setImage(image);
     //seedmap->deserialize(fullName);
@@ -84,7 +90,7 @@ int main(int argc, char *argv[])
     seedmap->searchInOriginal_ = false;
 
     cv::Mat base;
-    if(atlasSearch) {
+    if(dbSearch) {
         if(verbose) std::cout << "testing epitomes" << std::endl;
 
         foreach( QString name, dir.entryList(QStringList("*.epi.png")) ) {

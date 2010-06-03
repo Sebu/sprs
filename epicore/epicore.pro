@@ -6,11 +6,12 @@ QT -= gui
 TARGET = epicore
 TEMPLATE = lib
 DEFINES += EPICORE_LIBRARY
-debug:DEFINES += DEBUG
+# debug:DEFINES += DEBUG
 INCLUDEPATH += /homes/wheel/seb/playground/include
 LIBS += -L/homes/wheel/seb/playground/lib \
     -lcv \
-    -lhighgui
+    -lhighgui \
+    -lgomp
 SOURCES += epicore.cpp \
     patch.cpp \
     seedmap.cpp \

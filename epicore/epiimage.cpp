@@ -70,17 +70,14 @@ void EpiImage::reconstruct(cv::Mat& img) {
 
 
 void EpiImage::genTexture() {
-    texture_ = cv::Mat::zeros(cv::Size(blocksx_*s_,blocksy_*s_), CV_8UC3);
+    texture_ = cv::Mat::ones(cv::Size(blocksx_*s_,blocksy_*s_), CV_8UC3);
 
     float color = 0;
     float step = 255.0f/charts_.size();
     foreach(Chart* epi, charts_) {
         foreach(Patch* block, epi->chartBlocks_) {
-                Vector2f v = block->hull_.verts[0];
-                int x = v.m_v[0];
-                int y = v.m_v[1];
 //                cv::rectangle(texture_, block->hull_.verts[0], block->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255),-2);
-                copyBlock(block->patchColor_, texture_, cv::Rect(0, 0, s_, s_), cv::Rect(x,y, s_, s_) );
+                copyBlock(block->patchColor_, texture_, cv::Rect(0, 0, s_, s_), cv::Rect(block->x_, block->y_, s_, s_) );
         }
         color += step;
     }

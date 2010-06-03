@@ -146,8 +146,6 @@ void SeedMap::generateCharts() {
 
     genNeighbours();
 
-//    uint blocksx_ = baseImage_.cols / s_;
-//    uint blocksy_ = baseImage_.rows / s_;
     foreach(Patch* block, blocks_) {
         if(!block->matches_ || block->finalMatch_) continue;
 
@@ -184,7 +182,8 @@ void SeedMap::generateCharts() {
         Chart *bestChart = findBestChart();
         if(!bestChart) break;
 
-        std::cout << bestChart->benefit_ << std::endl;
+        if(verbose_)
+            std::cout << bestChart->benefit_ << std::endl;
 
 
         foreach(Patch *b, bestChart->satBlocks_) {
@@ -203,8 +202,6 @@ void SeedMap::generateCharts() {
     };
 
     optimizeCharts();
-
-//    image_.texture_ = genEpitomeMap();
 
     for(uint i=0; i<blocksy_; i++) {
         for(uint j=0; j<blocksx_; j++) {
@@ -260,10 +257,6 @@ void SeedMap::optimizeCharts() {
 }
 
 void SeedMap::genNeighbours() {
-    // neighbours
-    // FIXME: :D
-//    uint blocksx_ = baseImage_.cols/s_;
-//    uint blocksy_ = baseImage_.rows/s_;
 
     for(uint y=0; y<blocksy_; y++) {
         for(uint x=0; x<blocksx_; x++) {
@@ -328,8 +321,6 @@ void SeedMap::serialize(std::string fileName) {
 
 void SeedMap::resetMatches() {
     matchStep_=0;
-    //    for(uint i=0; i<blocks_.size(); i++)
-    //        blocks_[i]->resetMatches();
 }
 
 void SeedMap::matchAll() {
@@ -341,8 +332,7 @@ void SeedMap::matchAll() {
     matchStep_=0;
 
 
-    if(verbose_)
-        std::cout << "match time: " <<  timer.elapsed() << std::endl;
+    std::cout << "match time: " <<  timer.elapsed() << std::endl;
 }
 
 Patch* SeedMap::matchNext() {
@@ -383,7 +373,6 @@ void SeedMap::match(Patch* block) {
                 if (match->error_ < crit_.maxError_) {
 
                     match->calcHull();
-                    match->calcPos();
 
                     if(verbose_) {
                         std::cout << seed->x_ << " " << seed->y_ << " " <<
@@ -446,12 +435,14 @@ void SeedMap::match(Patch* block) {
 
 
 cv::Mat SeedMap::debugReconstruction() {
-    debugImages["reconstuct"] = cv::Mat::zeros(sourceImage_.size(), CV_8UC3);
+    debugImages["reconstuct"] = cv::Mat::ones(sourceImage_.size(), CV_8UC3);
 
 
     if(!image_.transforms_.empty()) {
 
-        std::cout << "final match reconstruction" << std::endl;
+        if(verbose_)
+            std::cout << "final match reconstruction" << std::endl;
+
         image_.reconstruct(debugImages["reconstuct"]);
 
     }  else {
@@ -459,17 +450,12 @@ cv::Mat SeedMap::debugReconstruction() {
         for(uint i=0; i< blocks_.size(); i++) {
             Patch* block = blocks_[i];
 
-            if ((!block->matches_ || block->matches_->empty()) && !block->finalMatch_) continue;
+            if (!block->matches_ || block->matches_->empty()) continue;
 
+            Match *m = block->matches_->front();
 
-            Match* m = 0;
-            if(done_) m = block->finalMatch_;
-            else m = block->matches_->front();
-
-            if(m) {
-                cv::Mat reconstruction(m->t_.reconstruct(debugImages["epitomemap"], s_));
-                copyBlock(reconstruction, debugImages["reconstuct"] , cv::Rect(0, 0, s_, s_), cv::Rect(block->x_, block->y_, s_, s_) );
-            }
+            cv::Mat reconstruction(m->reconstruct());
+            copyBlock(reconstruction, debugImages["reconstuct"] , cv::Rect(0, 0, s_, s_), cv::Rect(block->x_, block->y_, s_, s_) );
         }
 
     }
@@ -479,15 +465,9 @@ cv::Mat SeedMap::debugReconstruction() {
 
 void SeedMap::setImage(cv::Mat &image) {
 
-    // add border to image
-//    int rightBorder =  s_ - (image.cols % s_);
-//    int bottomBorder = s_ - (image.rows % s_);
-//    sourceImage_ = cv::Mat::zeros(image.size()+cv::Size(rightBorder,bottomBorder), image.type());
-//    cv::Mat region(sourceImage_, cv::Rect(cv::Point(0,0),image.size()));
-//    image.copyTo(region);
     sourceImage_ = image;
     // create gray version
-    cv::cvtColor(sourceImage_, sourceGray_, CV_BGR2GRAY);
+    cv::cvtColor(sourceImage_, sourceGray_, CV_RGB2GRAY);
 
     // add patches
     blocksx_ =  sourceImage_.cols / s_;
@@ -515,9 +495,6 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
 
         float scaleWidth  = source.cols / scale;
         float scaleHeight = source.rows / scale;
-
-//        int width =  ((scaleWidth- s_) / gridstep_) + 1;
-//        int height = ((scaleHeight-s_) / gridstep_) + 1;
 
         int width =  ( ( scaleWidth - ((int)scaleWidth % s_) ) / gridstep_  ) - 3;
         int height = ( ( scaleHeight - ((int)scaleHeight % s_) ) / gridstep_ ) - 3;
@@ -564,12 +541,6 @@ void SeedMap::addSeedsFromEpitome() {
 
 void SeedMap::setReconSource(cv::Mat& base, int depth) {
 
-    // add border to base
-    //    int rightBorder =  s_ - (base.cols % s_);
-    //    int bottomBorder = s_ - (base.rows % s_);
-    //    baseImage_ = cv::Mat::zeros(base.size()+cv::Size(rightBorder,bottomBorder), base.type());
-    //    cv::Mat baseRegion(baseImage_, cv::Rect(cv::Point(0,0),base.size()));
-    //    base.copyTo(baseRegion);
     baseImage_ = base;
 
     // remove all old seeds
@@ -586,6 +557,4 @@ SeedMap::SeedMap(int s, bool searchInOriginal)
     : termCalculate_(0), s_(s), gridstep_(s/4), matchStep_(0), searchInOriginal_(searchInOriginal),
     satisfiedBlocks_(0), done_(0), verbose_(1)
 {
-    std::cout <<  s_ << std::endl;
-
 }
