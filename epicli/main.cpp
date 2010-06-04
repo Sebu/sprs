@@ -30,14 +30,14 @@ int main(int argc, char *argv[])
     bool verbose = false;
     bool dbSearch = 0;
     int  s = 12;
-    int winsize = 3;
+    int winsize = 5;
     std::string fullName;
 
     int opt;
     while ((opt = getopt(argc, argv, "a:b:de:i:vw:")) != -1) {
         switch(opt) {
         case 'a':
-            alpha = atoi(optarg);
+            alpha = atof(optarg);
             break;
         case 'b':
             s = atoi(optarg);
@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
     cv::Mat image = cv::imread(fullName);
     seedmap = new SeedMap(s, true);
     seedmap->crit_.maxError_ = error;
-    seedmap->crit_.alpha_ = alpha;
-    seedmap->crit_.kltWinSize_ = winsize;
+//    seedmap->crit_.alpha_ = alpha;
+//    seedmap->crit_.kltWinSize_ = winsize;
     seedmap->verbose_ = verbose;
     seedmap->setImage(image);
     //seedmap->deserialize(fullName);
@@ -87,11 +87,11 @@ int main(int argc, char *argv[])
     QDir dir(epiPath);
 
 
-    seedmap->searchInOriginal_ = false;
 
     cv::Mat base;
     if(dbSearch) {
         if(verbose) std::cout << "testing epitomes" << std::endl;
+        seedmap->searchInOriginal_ = false;
 
         foreach( QString name, dir.entryList(QStringList("*.epi.png")) ) {
             std::string nameStr = (epiPath + name).toStdString();
@@ -109,9 +109,7 @@ int main(int argc, char *argv[])
     if(verbose)
     std::cout << "testing original" << std::endl;
     if(!seedmap->termCalculate_ || !seedmap->done_) {
-        base = cv::imread(fullName);
-        seedmap->searchInOriginal_ = true;
-        seedmap->setReconSource(base,3);
+        seedmap->setReconSource(image, 3);
         seedmap->matchAll();
         if(!seedmap->termCalculate_) {
 

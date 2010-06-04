@@ -148,7 +148,7 @@ void SeedMap::generateCharts() {
     genNeighbours();
 
     foreach(Patch* block, blocks_) {
-        if(!block->matches_ || block->finalMatch_) continue;
+        if(!block->matches_ || block->finalMatch_ || block->loadsMatches_) continue;
 
 
         foreach(Match* match, *(block->matches_)) {
@@ -338,6 +338,8 @@ void SeedMap::matchAll() {
 
     std::cout << std::fixed << std::setprecision(2);
     do {
+
+        blocksDone++;
         if((long)current > last) {
             last = current;
         }
@@ -347,11 +349,10 @@ void SeedMap::matchAll() {
         for (long i=0; i<last/length; i++) std::cout << "=";
         std::cout << ">";
         for (long i=0; i<100/length-(last/length); i++) std::cout << ".";
-        std::cout << "]" << last  << "%  ETA " << deltaT << "min" << std::flush;
+        std::cout << "]" << last  << "%  ETA " << deltaT << "min  " << std::flush;
 
-        blocksDone++;
     } while(!termCalculate_ && matchNext());
-    matchStep_=0;
+    // matchStep_=0;
 
     std::cout << std::endl;
 
