@@ -81,25 +81,7 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 }
 
 
-float OrientHistFast::minDiff(OrientHistFast* other) {
-    float angle=0;
 
-    float min = FLT_MAX;
-    for(uint j=0; j < this->numBins_; j++) {
-        float sum = this->diff(other, j);
-        if (sum<min) { min=sum; angle=j*factor_;}
-    }
-
-    return angle;
-}
-
-float OrientHistFast::diff(OrientHistFast* other, int offset) {
-    float sum=0;
-    for (int i=0; i < numBins_; i++){
-        sum += pow(this->bins_[i]-other->bins_[ (i+offset) % numBins_ ], 2);
-    }
-    return sum;
-}
 
 OrientHistFast::OrientHistFast(Patch* patch, int numBins) : bins_(0), numBins_(numBins)
 {

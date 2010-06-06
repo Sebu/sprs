@@ -25,7 +25,7 @@ public:
     int blocksx_;
     int blocksy_;
 
-    int satisfiedBlocks_;
+    long blocksDone_;
     bool done_;
 
     bool searchInOriginal_;

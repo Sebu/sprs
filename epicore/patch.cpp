@@ -17,20 +17,6 @@ void Patch::resetMatches() {
     matches_ = 0;
 }
 
-/*
-void Patch::correctFinalMatch() {
-    if(!loadsMatches_ || !finalMatch_) return;
-    if(verbose_)
-        std::cout << "correcting color of final match" << std::endl;
-
-    finalMatch_->t_.colorScale_=(cv::Scalar::all(1.0f));
-    cv::Mat reconstruction( finalMatch_->reconstruct() );
-    cv::Scalar reconstructionMean = cv::mean(reconstruction);
-    for(uint i=0; i<4; i++)
-        finalMatch_->t_.colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
-
-}
-*/
 
 void Patch::copyMatches() {
     if(!loadsMatches_) return;
@@ -121,35 +107,39 @@ float Patch::reconError(Match* m) {
             float b = ( ((float)vr[2]*m->t_.colorScale_[2]) - (float)vo[2] )/255.0f;
 
             dist += (r*r)+(g*g)+(b*b);
+//            if(dist * errorFactor_ > crit_->maxError_) return FLT_MAX;
         }
 
     }
 
-    return dist / ( pow( variance_, crit_->alpha_) + 0.0000000001f );
+    return dist * errorFactor_;
 }
 
 void Patch::findFeatures() {
 
     // precalculate variance
-    variance_ = 0.0;
+    float variance = 0.0;
     cv::Scalar mean = cv::mean(patchGray_);
 
     for (int y=0; y<patchGray_.rows; y++) {
         for(int x=0; x<patchGray_.cols; x++) {
             uchar p = cv::saturate_cast<uchar>(patchGray_.at<uchar>(y,x));
             float v = ((float)p-(float)mean[0]) / 255.0f;
-            variance_ += v*v;
+            variance += v*v;
 
         }
     }
-//    variance_ =  variance_ / ((patchGray_.cols*patchGray_.rows)-1);
-    variance_ =  sqrt( variance_ / ((patchGray_.cols*patchGray_.rows)-1) );
+    variance =  sqrt( variance / ((patchGray_.cols*patchGray_.rows)-1) );
 
     if(verbose_)
-        std::cout << "variance " << variance_ << std::endl;
+        std::cout << "variance " << variance << std::endl;
+
+    errorFactor_ = 1.0 / ( pow( variance, crit_->alpha_) + 0.0000000001f );
+    errorFactor_ /= s_*s_;
 
     // track initial features
-    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
+    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
+//    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
     if(pointsSrc_.size()<3)
         if(verbose_)
@@ -177,7 +167,7 @@ bool Patch::trackFeatures(Match* match) {
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
-                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 20, 0.1));
+                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 30, 0.1));
 
 
 
@@ -195,7 +185,7 @@ bool Patch::trackFeatures(Match* match) {
 
     std::vector<cv::Point2f> srcTri, destTri;
 
-    for(uint j = 0; j < 3; j++) { // features.size(); j++) {
+    for(uint j = 0; j < features.size(); j++) {
         int i = features[j]->idx_;
         cv::Point2f s,d;
         s.x = pointsSrc_[i].x;
@@ -205,6 +195,7 @@ bool Patch::trackFeatures(Match* match) {
         srcTri.push_back(s);
         destTri.push_back(d);
     }
+
 
 
     bool same = true;
@@ -246,12 +237,10 @@ Match* Patch::match(Patch& other) {
     // 4.1 rotation, orientation/gradient histogram
     float orientation = orientHist_->minDiff(other.orientHist_);
 
-//    std::cout << orientation << std::endl;
-//    orientation = 0;
 
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
-    //    std::cout << diff << std::endl;
+//    std::cout << diff << std::endl;
     if(diff > crit_->maxOrient_) return 0;
 
 
@@ -271,12 +260,11 @@ Match* Patch::match(Patch& other) {
         match->transformed_ = true;
     }
 
-
     // 4.1 KLT matching
-//    trackFeatures(match);
+    trackFeatures(match);
 
     // 4 reconstruction error
-    match->error_ =  reconError(match) / (s_*s_);
+    match->error_ =  reconError(match);
 
 
     //DEBUG
@@ -291,7 +279,7 @@ Match* Patch::match(Patch& other) {
 }
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), sharesMatches_(0), matches_(0), bestMatch_(0), finalMatch_(0), sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), variance_(0), isBlock_(isBlock)
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), sharesMatches_(0), matches_(0), bestMatch_(0), finalMatch_(0), sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), errorFactor_(0), isBlock_(isBlock)
 {
 
     size_ = s_ * s_;

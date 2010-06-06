@@ -21,8 +21,31 @@ public:
     void genOrientHists();
     void genSingle(cv::Mat&);
 
-    float minDiff(OrientHistFast* other);
-    float diff(OrientHistFast* other, int offset);
+
+    inline	 float minDiff(OrientHistFast* other) {
+        float angle=0;
+
+        float min = FLT_MAX;
+        for(uint j=0; j < numBins_; j++) {
+            float sum=0;
+            for (int i=0; i < numBins_; i++){
+                sum += pow(bins_[i]-other->bins_[ (i+j) % numBins_ ], 2);
+                if (sum>=min) break;
+            }
+            if (sum<min) { min=sum; angle=j*factor_;}
+        }
+
+        return angle;
+    }
+
+    inline float diff(OrientHistFast* other, int offset) {
+        float sum=0;
+        for (int i=0; i < numBins_; i++){
+            sum += pow(bins_[i]-other->bins_[ (i+offset) % numBins_ ], 2);
+        }
+        return sum;
+    }
+
 
 
 

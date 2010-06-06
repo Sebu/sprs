@@ -331,26 +331,21 @@ void SeedMap::matchAll() {
     timer.start();
     long blocks = blocks_.size();
     float step = 100.0f / blocks;
-    float current = 0.0;
     long last = 0;
     long length = 2;
-    long blocksDone = 0;
+    long blocksCalced = 0;
 
     std::cout << std::fixed << std::setprecision(2);
     do {
-
-        blocksDone++;
-        if((long)current > last) {
-            last = current;
-        }
-        current += step;
-        float deltaT = (((float)timer.elapsed() /60000.0f) / (float)blocksDone) * (blocks-blocksDone);
+        last = step*blocksDone_;
+        float deltaT = (((float)timer.elapsed() /60000.0f) / (float)blocksCalced) * (blocks-blocksDone_);
         std::cout << "\r [";
         for (long i=0; i<last/length; i++) std::cout << "=";
         std::cout << ">";
         for (long i=0; i<100/length-(last/length); i++) std::cout << ".";
-        std::cout << "]" << last  << "%  ETA " << deltaT << "min  " << std::flush;
+        std::cout << "]" << last  << "%  ETA " << deltaT << "min  " << blocksDone_ << std::flush;
 
+        blocksCalced++;
     } while(!termCalculate_ && matchNext());
     // matchStep_=0;
 
@@ -383,7 +378,6 @@ void SeedMap::match(Patch* block) {
     if (!block->matches_) {
         block->matches_ = new std::vector<Match*>;
 
-
         bool breakIt = false;
 
         #pragma omp parallel for
@@ -412,6 +406,7 @@ void SeedMap::match(Patch* block) {
                      if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
 
                          if (!seed->matches_) {
+                                blocksDone_++;
                                 seed->matches_=block->matches_;
                                 seed->loadsMatches_ = true;
                                 block->sharesMatches_ = true;
@@ -440,6 +435,7 @@ void SeedMap::match(Patch* block) {
         if (block->matches_->empty() || termCalculate_) {
             block->resetMatches();
         }
+        blocksDone_++;
 
     } else {
         if(verbose_)
@@ -447,11 +443,8 @@ void SeedMap::match(Patch* block) {
 
     }
 
-    if (block->matches_ && !block->matches_->empty()) {
-        satisfiedBlocks_++;
-        if(satisfiedBlocks_==blocks_.size())
-            done_=true;
-    }
+    if(blocksDone_==blocks_.size()) done_=true;
+
 
 
 }
@@ -579,6 +572,6 @@ void SeedMap::setReconSource(cv::Mat& base, int depth) {
 
 SeedMap::SeedMap(int s, bool searchInOriginal)
     : termCalculate_(0), s_(s), gridstep_(s/4), matchStep_(0), searchInOriginal_(searchInOriginal),
-    satisfiedBlocks_(0), done_(0), verbose_(1)
+    done_(0), verbose_(1), blocksDone_(0)
 {
 }

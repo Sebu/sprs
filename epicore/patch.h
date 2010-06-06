@@ -34,7 +34,7 @@ public:
     int x_, y_, s_;
     cv::Mat transScaleFlipMat_;
     int size_;
-    float variance_;
+    float errorFactor_;
     bool isBlock_;
     bool transformed_;
     bool loadsMatches_;
