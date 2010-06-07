@@ -75,7 +75,6 @@ public:
 
     void resetMatches();
 
-//    void correctFinalMatch();
     void copyMatches();
 
     cv::Scalar getHistMean() { return histMean_; }

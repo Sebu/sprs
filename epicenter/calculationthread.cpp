@@ -48,23 +48,24 @@ bool CalculationThread::singleStep(int x, int y) {
     cv::Mat tmpImage = base_.clone();
 
     float colorScale = 255.0 / seedmap->crit_.maxError_;
-    for(uint i=0; i<block->matches_->size(); i++) {
+    if(!block->finalMatch_) {
+        for(uint i=0; i<block->matches_->size(); i++) {
 
-        Match* match = block->matches_->at(i);
-        Polygon hull = match->hull_;
-
-
-        // highlight match
-
-        for(int j=0; j<4; j++)
-            cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,255-match->error_*colorScale,match->error_*colorScale,100));
-
-        foreach(cv::Point2f p, block->pointsSrc_)
-            cv::line(tmpImage, p, p, cv::Scalar(0,155,00,100));
+            Match* match = block->matches_->at(i);
+            Polygon hull = match->hull_;
 
 
+            // highlight match
+
+            for(int j=0; j<4; j++)
+                cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,255-match->error_*colorScale,match->error_*colorScale,100));
+
+            foreach(cv::Point2f p, block->pointsSrc_)
+                cv::line(tmpImage, p, p, cv::Scalar(0,155,00,100));
+
+
+        }
     }
-
     if(block->bestMatch_) {
         std::cout << "best match: " <<  block->bestMatch_->error_ << std::endl;
         block->bestMatch_->calcHull();

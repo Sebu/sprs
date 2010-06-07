@@ -21,10 +21,25 @@ public:
     void genOrientHists();
     void genSingle(cv::Mat&, int);
 
-    float minDiff(OrientHist* other);
-    float diff(OrientHist* other, int offset=0);
+    inline float minDiff(OrientHist* other) {
+        float angle=0;
 
+        float min = FLT_MAX;
+        for(uint j=0; j < this->numBins_; j++) {
+            float sum = this->diff(other, j);
+            if (sum<min) { min=sum; angle=j*factor_;}
+        }
 
+        return angle;
+    }
+
+    inline float diff(OrientHist* other, int offset) {
+        float sum=0;
+        for (uint i=0; i < numBins_; i++){
+            sum += pow(this->bins_[i] - other->bins_[ offset*numBins_ + i], 2);
+        }
+        return sum;
+    }
 
 };
 

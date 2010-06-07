@@ -72,6 +72,7 @@ void EpiImage::reconstruct(cv::Mat& img) {
 void EpiImage::genTexture() {
     texture_ = cv::Mat::ones(cv::Size(blocksx_*s_,blocksy_*s_), CV_8UC3);
 
+
     float color = 0;
     float step = 255.0f/charts_.size();
     foreach(Chart* epi, charts_) {

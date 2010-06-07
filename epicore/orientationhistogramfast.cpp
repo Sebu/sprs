@@ -49,7 +49,8 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 
             direction.at<double>(y,x) = cv::fastAtan2(dy ,dx);
 
-            float ctmp = sqrt(dx*dx + dy*dy);
+//            float ctmp = sqrt(dx*dx + dy*dy);
+            float ctmp = dx*dx + dy*dy;
             contrast.at<double>(y,x) = ctmp;
             sumContrast += ctmp;
             count++;
@@ -64,12 +65,13 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
-            if(contrast.at<double>(y,x) > threshold ) {
+            //if(contrast.at<double>(y,x) > threshold ) {
                 int dir = (int) (direction.at<double>(y,x) / factor_);
-                bins[  dir  ]++;
-            }
+                bins[  dir  ] += contrast.at<double>(y,x);
+            //}
         }
     }
+
     for(int i=0; i<numBins_; i++) {
         float n2 = bins[ (i-2) % numBins_]*1.0;
         float n1 = bins[ (i-1) % numBins_]*4.0;

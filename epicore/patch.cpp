@@ -138,8 +138,8 @@ void Patch::findFeatures() {
     errorFactor_ /= s_*s_;
 
     // track initial features
-    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
-//    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
+//    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
+    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
     if(pointsSrc_.size()<3)
         if(verbose_)
@@ -185,7 +185,7 @@ bool Patch::trackFeatures(Match* match) {
 
     std::vector<cv::Point2f> srcTri, destTri;
 
-    for(uint j = 0; j < features.size(); j++) {
+    for(uint j = 0; j < 3; j++) {
         int i = features[j]->idx_;
         cv::Point2f s,d;
         s.x = pointsSrc_[i].x;
