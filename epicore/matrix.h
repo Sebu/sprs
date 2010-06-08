@@ -211,9 +211,9 @@ public:
     static Polygon square(float x, float y, float w, float h) {
         Polygon p;
         p.verts.push_back(Vector2f(x,y));
-        p.verts.push_back(Vector2f(x+w,y));
-        p.verts.push_back(Vector2f(x+w,y+h));
-        p.verts.push_back(Vector2f(x,y+h));
+        p.verts.push_back(Vector2f(x+w-1,y));
+        p.verts.push_back(Vector2f(x+w-1,y+h-1));
+        p.verts.push_back(Vector2f(x,y+h-1));
         return p;
     }
 

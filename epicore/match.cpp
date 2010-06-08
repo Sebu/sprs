@@ -20,9 +20,9 @@ Match::Match(Patch* seed)
 
 void Match::calcHull() {
     double points[4][2] = { {0 , 0},
-                            {block_->s_, 0},
-                            {block_->s_, block_->s_},
-                            {0, block_->s_}
+                            {block_->s_-1, 0},
+                            {block_->s_-1, block_->s_-1},
+                            {0, block_->s_-1}
     };
 
     cv::Mat selection(t_.transformMat_, cv::Rect(0,0,3,2));

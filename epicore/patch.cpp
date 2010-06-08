@@ -89,7 +89,7 @@ float Patch::reconError(Match* m) {
     for(uint i=0; i<4; i++)
         m->t_.colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
-    if(m->t_.colorScale_[0]>crit_->maxColor_ || m->t_.colorScale_[1]>crit_->maxColor_ || m->t_.colorScale_[2]>crit_->maxColor_) {
+    if(m->t_.colorScale_[0]>1.25f || m->t_.colorScale_[1]>1.25f || m->t_.colorScale_[2]>1.25f) {
         return FLT_MAX;
     }
 
@@ -228,9 +228,9 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other) {
 
 
-     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
+//     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-     if(histDiff > crit_->maxColor_) return 0;
+//     if(histDiff > crit_->maxColor_) return 0;
 
 
 
@@ -250,7 +250,7 @@ Match* Patch::match(Patch& other) {
 
     // apply initial rotation
     if ((int)orientation!=0) {
-        cv::Point2f center( (s_/2), (s_/2) );
+        cv::Point2f center( (float)(s_/2), (float)(s_/2) );
 
         cv::Mat rMat = cv::Mat::eye(3,3,CV_64FC1);
         cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
@@ -298,12 +298,12 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
     switch(flip) {
     case 1:
         flipMat.at<double>(0,0)=-1.0f;
-        flipMat.at<double>(0,2)=s_;
+        flipMat.at<double>(0,2)=s_-1;
         transformed_ = true;
         break;
     case 2:
         flipMat.at<double>(1,1)=-1.0f;
-        flipMat.at<double>(1,2)=s_;
+        flipMat.at<double>(1,2)=s_-1;
         transformed_ = true;
         break;
     default:
