@@ -12,6 +12,8 @@ bool errorSorter (Feature* i, Feature* j) { return (i->error_ < j->error_ ); }
 
 void Patch::resetMatches() {
     if(!matches_) return;
+    foreach(Match *m, *matches_)
+        delete m;
     matches_->clear();
     delete matches_;
     matches_ = 0;

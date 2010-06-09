@@ -44,6 +44,8 @@ public:
     cv::Mat sourceGray_;
     cv::Mat baseImage_;
 
+    std::string fileName_;
+
     SeedMap(int s, bool);
 
     void setImage(cv::Mat& image);
@@ -66,6 +68,7 @@ public:
     void deserialize(std::string fileName);
 
     // epitome generation
+    std::vector<Patch*> genCoveredBlocks(Match *match);
     void genNeighbours();
     Chart* generateChart(Patch*);
     void generateCharts();

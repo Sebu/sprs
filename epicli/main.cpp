@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
     // original
     cv::Mat image = cv::imread(fullName);
     seedmap = new SeedMap(s, true);
+    seedmap->fileName_ = fileName;
     seedmap->crit_.maxError_ = error;
 //    seedmap->crit_.alpha_ = alpha;
 //    seedmap->crit_.kltWinSize_ = winsize;
