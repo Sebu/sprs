@@ -70,31 +70,8 @@ Matrix4 Matrix4::inverse()
     return id;
 }
 
-bool Polygon::isInFrontOf(const Vector2f& point, const Vector2f& dir) {
-    bool front = false, back = false;
-    for(uint i=0; i<verts.size(); i++) {
-        float t = dir*(verts[i]-point);
-        if(t > 0) front=true;
-        else if(t < 0) back=true;
-        if(front && back) return false;
-    }
-    return front;
-}
-
-bool Polygon::isInFrontOf(Polygon& rhs) {
-    for(uint i=0,j=verts.size()-1; i<verts.size(); j=i, i++) {
-        Vector2f tmp = verts[i] - verts[j];
-        Vector2f perp(tmp.m_v[1], -tmp.m_v[0]);
-        if( rhs.isInFrontOf(verts[j], perp ) ) return true;
-    }
-    return false;
-}
 
 
-bool Polygon::intersects(Polygon& rhs) {
-    if (rhs.isInFrontOf(*this) || isInFrontOf(rhs)) return false;
-    return true;
-}
 AABB Polygon::getBox() {
     AABB box;
     for(uint i=0; i<verts.size(); i++) {

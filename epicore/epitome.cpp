@@ -8,40 +8,41 @@
 
 int Chart::staticCounter_ = 0;
 
-Chart::Chart(cv::Mat* image) : maxX_(0), minX_(INT_MAX), maxY_(0), minY_(INT_MAX), benefit_(0), baseImage_(image)
+Chart::Chart(cv::Mat* image) : benefit_(0), baseImage_(image)
 {
     id_ = staticCounter_++;
 }
 
 
-void Chart::caclDimensions() {
+void Chart::caclBBox() {
     // align
     for(uint i=0; i< chartBlocks_.size(); i++) {
         Patch *block = chartBlocks_[i];
 
         // find min x and y
-        if(block->x_ < minX_) minX_ = block->x_;
-        if(block->y_ < minY_) minY_ = block->y_;
-        if(block->x_+block->s_ > maxX_) maxX_ = block->x_+block->s_;
-        if(block->y_+block->s_ > maxY_) maxY_ = block->y_+block->s_;
+        if(block->x_ < bbox_.min.m_v[0]) bbox_.min.m_v[0] = block->x_;
+        if(block->y_ < bbox_.min.m_v[1]) bbox_.min.m_v[1] = block->y_;
+        if(block->x_+block->s_-1 > bbox_.max.m_v[0]) bbox_.max.m_v[0] = block->x_+block->s_-1;
+        if(block->y_+block->s_-1 > bbox_.max.m_v[1]) bbox_.max.m_v[1] = block->y_+block->s_-1;
 
     }
-    std::cout << minX_ << " " << minY_ << std::endl;
 }
 
+
+
 cv::Mat Chart::getMap() {
-    caclDimensions();
-    int width = maxX_-minX_;
-    int height = maxY_-minY_;
-    std::cout << width << " " << height << " " << minX_ << " " << minY_ << " " << chartBlocks_.size() << std::endl;
+    caclBBox();
+    int width = bbox_.width();
+    int height = bbox_.height();
+    std::cout << width << " " << height << " " << chartBlocks_.size() << std::endl;
 
     cv::Mat map = cv::Mat::zeros(height, width, CV_8UC3);
     for(uint i=0; i< chartBlocks_.size(); i++) {
         Patch *block = chartBlocks_[i];
         // save seeds
-        std::cout << block->x_ - minX_ << " " << block->y_ - minY_ << std::endl;
-        cv::Mat selection(map, cv::Rect( block->x_ - minX_, block->y_ - minY_, block->s_ , block->s_ ));
-        (*baseImage_)(cv::Rect(block->x_,block->y_, block->s_ , block->s_ )).copyTo(selection);
+//        std::cout << block->x_ - minX_ << " " << block->y_ - minY_ << std::endl;
+//        cv::Mat selection(map, cv::Rect( block->x_ - minX_, block->y_ - minY_, block->s_ , block->s_ ));
+//        (*baseImage_)(cv::Rect(block->x_,block->y_, block->s_ , block->s_ )).copyTo(selection);
     }
    return map;
 }
@@ -50,7 +51,7 @@ void Chart::save()
 {
     if (chartBlocks_.empty()) return;
 
-    caclDimensions();
+    caclBBox();
 
     std::stringstream fileName;
     fileName << "../epitomes/" << id_;
@@ -62,7 +63,7 @@ void Chart::save()
 
 
     std::ofstream ofs( (fileName.str() + ".txt").c_str() );
-    ofs << maxX_-minX_ << " " << maxY_-minY_ << " ";
+//    ofs << maxX_-minX_ << " " << maxY_-minY_ << " ";
     for(uint i=0; i< chartBlocks_.size(); i++) {
         Patch *block = chartBlocks_[i];
         // save seeds
@@ -70,7 +71,7 @@ void Chart::save()
         (*baseImage_)(cv::Rect(block->x_,block->y_, block->s_ , block->s_ )).copyTo(selection);
 
         // save seed positions
-        ofs << block->x_ - minX_ << " " << block->y_ - minY_ << " ";
+//        ofs << block->x_ - minX_ << " " << block->y_ - minY_ << " ";
     }
     ofs.close();
 

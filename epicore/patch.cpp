@@ -228,9 +228,9 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other) {
 
 
-//     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
+     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
 //    std::cout << histDiff << std::endl;
-//     if(histDiff > crit_->maxColor_) return 0;
+     if(histDiff > crit_->maxColor_) return 0;
 
 
 
@@ -283,7 +283,7 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
 {
 
     size_ = s_ * s_;
-    hull_ = Polygon::square(x_,y_,s_,s_);
+    hull_ = Polygon::Square(x_,y_,s_,s_);
 
 
     cv::Mat transMat = cv::Mat::eye(3,3,CV_64FC1);

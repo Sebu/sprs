@@ -11,8 +11,7 @@ public:
     int id_;
 
 
-    int maxX_, minX_, maxY_, minY_;
-
+    AABB bbox_;
 
     cv::Mat* baseImage_;
 
@@ -22,7 +21,8 @@ public:
     int benefit_;
 
     Chart(cv::Mat*);
-    void caclDimensions();
+
+    void caclBBox();
 
     cv::Mat getMap();
 

@@ -197,6 +197,18 @@ public:
 
     }
 
+    inline float width() {
+       return max.m_v[0]-min.m_v[0];
+    }
+
+    inline float height() {
+        return max.m_v[1]-min.m_v[1];
+    }
+
+    inline float area() {
+        return width()*height();
+    }
+
     inline bool intersect(AABB& box) {
         if (box.min.m_v[0]>max.m_v[0] &&  box.min.m_v[1]>max.m_v[1]) return false;
         if (box.max.m_v[0]<min.m_v[0] &&  box.max.m_v[1]<min.m_v[1]) return false;
@@ -208,7 +220,7 @@ class Polygon {
 public:
     std::vector<Vector2f> verts;
 
-    static Polygon square(float x, float y, float w, float h) {
+    static Polygon Square(float x, float y, float w, float h) {
         Polygon p;
         p.verts.push_back(Vector2f(x,y));
         p.verts.push_back(Vector2f(x+w-1,y));
@@ -217,9 +229,31 @@ public:
         return p;
     }
 
-    bool isInFrontOf(const Vector2f& point, const Vector2f& dir);
-    bool isInFrontOf(Polygon& rhs);
-    bool intersects(Polygon& rhs);
+    inline bool isInFrontOf(const Vector2f& point, const Vector2f& dir) {
+        bool front = false, back = false;
+        for(uint i=0; i<verts.size(); i++) {
+            float t = dir*(verts[i]-point);
+            if(t > 0) front=true;
+            else if(t < 0) back=true;
+            if(front && back) return false;
+        }
+        return front;
+    }
+
+    inline bool isInFrontOf(Polygon& rhs) {
+        for(uint i=0,j=verts.size()-1; i<verts.size(); j=i, i++) {
+            Vector2f tmp = verts[i] - verts[j];
+            Vector2f perp(tmp.m_v[1], -tmp.m_v[0]);
+            if( rhs.isInFrontOf(verts[j], perp ) ) return true;
+        }
+        return false;
+    }
+
+
+    inline bool intersects(Polygon& rhs) {
+        if (rhs.isInFrontOf(*this) || isInFrontOf(rhs)) return false;
+        return true;
+    }
 
     AABB getBox();
 
