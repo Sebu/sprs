@@ -121,6 +121,7 @@ void Patch::findFeatures() {
     float variance = 0.0;
     cv::Scalar mean = cv::mean(patchGray_);
 
+
     for (int y=0; y<patchGray_.rows; y++) {
         for(int x=0; x<patchGray_.cols; x++) {
             uchar p = cv::saturate_cast<uchar>(patchGray_.at<uchar>(y,x));
@@ -129,6 +130,7 @@ void Patch::findFeatures() {
 
         }
     }
+
     variance =  sqrt( variance / ((patchGray_.cols*patchGray_.rows)-1) );
 
     if(verbose_)
@@ -138,8 +140,8 @@ void Patch::findFeatures() {
     errorFactor_ /= s_*s_;
 
     // track initial features
-//    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
-    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
+    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
+//    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
     if(pointsSrc_.size()<3)
         if(verbose_)
@@ -167,7 +169,7 @@ bool Patch::trackFeatures(Match* match) {
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
-                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 30, 0.1));
+                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 50, 0.01));
 
 
 
@@ -279,7 +281,7 @@ Match* Patch::match(Patch& other) {
 }
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), sharesMatches_(0), matches_(0), bestMatch_(0), finalMatch_(0), sourceColor_(sourceImage), sourceGray_(sourceGray), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), errorFactor_(0), isBlock_(isBlock)
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), sharesMatches_(0), matches_(0), bestMatch_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), errorFactor_(0), isBlock_(isBlock)
 {
 
     size_ = s_ * s_;
@@ -317,6 +319,8 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
     // cache gray patch version
     cv::cvtColor(patchColor_, patchGray_, CV_RGB2GRAY);
 
+
+
     // cache color histogram
     int channels[] = {0, 1, 2};
     int sbins = 8;
@@ -330,7 +334,6 @@ Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, fl
 
 
     // generate orientation histogram
-    // FIXME: use interface for switching between fast and slow version
     orientHist_ = new OrientHistFast(this, 36);
     setHistMean( cv::mean(patchColor_) );
 

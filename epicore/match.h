@@ -44,9 +44,6 @@ public:
     Polygon hull_;
     Polygon bbox_;
     cv::Mat sourceImage_;
-
-
-
     std::vector<Patch*> coveredBlocks_;
 
     Match(Patch* seed=0);

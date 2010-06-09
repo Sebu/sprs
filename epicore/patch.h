@@ -57,7 +57,7 @@ public:
     std::vector<Match*> overlapingMatches_;
 
     cv::Mat sourceColor_;
-    cv::Mat sourceGray_;
+//    cv::Mat sourceGray_;
 
     cv::Mat patchColor_;
     cv::Mat patchGray_;

@@ -22,7 +22,7 @@ void OrientHist::genOrientHists() {
         cv::Mat transform = rotMat * patch_->transScaleFlipMat_;
         cv::Mat rotPatch;
         cv::Mat selectionT(transform, cv::Rect(0,0,3,2));
-        cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->s_, patch_->s_));
+//        cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->s_, patch_->s_));
 
         genSingle(rotPatch, i);
 
@@ -49,8 +49,8 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
     //
     //      blur the initial histogram by [1 4 6 4 1] averaging filter.
 
-    cv::Mat contrast = cv::Mat::zeros(image.size(), CV_32F);
-    cv::Mat direction = cv::Mat::zeros(image.size(), CV_32F);
+    cv::Mat contrast = cv::Mat::zeros(image.size(), CV_32FC1);
+    cv::Mat direction = cv::Mat::zeros(image.size(), CV_32FC1);
 
 
 
@@ -67,11 +67,11 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
             float dy = pixel - pixel_y;
 
 
-            direction.at<double>(y,x) = cv::fastAtan2(dy ,dx);
+            direction.at<float>(y,x) = cv::fastAtan2(dy ,dx);
 
 //            float ctmp = sqrt(dx*dx + dy*dy);
             float ctmp = dx*dx + dy*dy;
-            contrast.at<double>(y,x) = ctmp;
+            contrast.at<float>(y,x) = ctmp;
             sumContrast += ctmp;
             count++;
 
@@ -85,9 +85,9 @@ void OrientHist::genSingle(cv::Mat& image, int offset) {
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
-//            if(contrast.at<double>(y,x) > threshold ) {
-                int dir = (int) (direction.at<double>(y,x) / factor_);
-                bins[  dir  ] += contrast.at<double>(y,x);
+//            if(contrast.at<float>(y,x) > threshold ) {
+                int dir = (int) (direction.at<float>(y,x) / factor_);
+                bins[  dir  ] += contrast.at<float>(y,x);
 //            }
         }
     }
