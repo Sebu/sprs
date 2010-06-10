@@ -50,6 +50,7 @@ public:
     bool candidate_;
 
     Chart* chart_;
+    Chart* satChart_;
     Match* bestMatch_;
     Match* finalMatch_;
     std::vector<Match*>* matches_;

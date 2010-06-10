@@ -8,6 +8,109 @@
 #include "cv_ext.h"
 #include "epitome.h"
 
+
+bool chartSizeSorter (Chart* i, Chart* j) { return (i->bbox_.area() > j->bbox_.area()); }
+bool positionCostSorter (PCost* i, PCost* j) { return (i->cost_ < j->cost_); }
+
+std::vector<Polyomino*> EpiImage::genPolyominos(Chart* chart) {
+    std::vector<Polyomino*> polyos;
+
+    for(int flip=0; flip<3; flip++) {
+        for(int angle=0; angle<360; angle+=90)
+            polyos.push_back( new Polyomino(angle, flip, s_, chart) );
+    }
+
+
+    return polyos;
+}
+
+
+std::list<PCost*> EpiImage::genPCost(std::vector<Polyomino*> polyos, uint width, uint height) {
+    std::list<PCost*> pCosts;
+
+    // create
+    foreach(Polyomino* polyo, polyos) {
+        for(uint y=0; y<height+1; y++) {
+            for(uint x=0; x<width+1; x++) {
+                PCost* p = new PCost();
+                p->x_ = x;
+                p->y_ = y;
+                p->polyo_ = polyo;
+
+                uint newWidth = std::max(width, x+polyo->w_);
+                uint newHeight = std::max(height, y+polyo->h_);
+                p->cost_ = newWidth * newHeight;
+                pCosts.push_back(p);
+            }
+        }
+
+    }
+
+
+    pCosts.sort(positionCostSorter);
+    return pCosts;
+}
+
+void EpiImage::pack() {
+
+    int size[] = {blocksx_*20, blocksy_*20};
+    cv::SparseMat grid(2, size, CV_8U);
+
+    charts_.sort(chartSizeSorter);
+    Chart* first = charts_.front();
+    width_ = ceil(first->bbox_.width()/s_);
+    height_ = ceil(first->bbox_.height()/s_);
+
+    foreach(Chart* bestChart, charts_) {
+
+        std::vector<Polyomino*> polyos = genPolyominos(bestChart);
+
+        std::list<PCost*> pCosts = genPCost(polyos, width_, height_);
+
+
+        bestChart->transform_ = cv::Mat::eye(3,3,CV_64FC1);
+
+        foreach(PCost* pCost, pCosts)
+        {
+            Polyomino* p = pCost->polyo_;
+//            std::cout << "try pack position" << pCost->x_ << " " << pCost->y_ << std::endl;
+
+
+            if(p->intersect(grid, pCost->x_, pCost->y_)) continue;
+
+            // save transformation in chart
+            cv::Mat transMat = cv::Mat::eye(3,3,CV_64FC1);
+            transMat.at<double>(0,2)=pCost->x_*s_;
+            transMat.at<double>(1,2)=pCost->y_*s_;
+
+
+            bestChart->transform_= transMat * p->transform_;
+
+            // mark grid cells covered
+            for(uint yi=0; yi<p->h_; yi++)
+                for(uint xi=0; xi<p->w_; xi++) {
+                if(p->pgrid_[yi*p->w_+xi]) {
+//                    std::cout << "in use" << xi+pCost->x_ << " " << yi+pCost->y_ << std::endl;
+                    grid.ref<uchar>(xi+pCost->x_,yi+pCost->y_) = 1;
+                }
+            }
+
+            width_ = std::max(width_, pCost->x_+p->w_);
+            height_ = std::max(height_, pCost->y_+p->h_);
+
+            break;
+        }
+
+
+        foreach(PCost* c, pCosts) { delete c; }
+        pCosts.clear();
+
+        foreach(Polyomino* p, polyos) { delete p; }
+        polyos.clear();
+    }
+
+}
+
 EpiImage::EpiImage()
 {
 }
@@ -22,14 +125,6 @@ void EpiImage::saveTexture(std::string fileName) {
     // save texture
     cv::imwrite((fileName + ".epi.png").c_str(), Texture());
 
-    // chart cache data
-    std::ofstream ofs( (fileName + ".epi.txt").c_str() );
-    foreach(Chart* c, charts_) {
-        ofs << c->chartBlocks_.size() << " ";
-        foreach(Patch* b,c->chartBlocks_)
-            ofs << b->x_ << " " << b->y_ << " ";
-    }
-    ofs.close();
 }
 
 void EpiImage::save(std::string fileName) {
@@ -38,14 +133,16 @@ void EpiImage::save(std::string fileName) {
     ofs << blocksx_ << " " << blocksy_ << " " << s_ << " ";
 
     foreach(Transform *transform, transforms_)
-         transform->save(ofs);
+        transform->save(ofs);
 
     ofs.close();
 }
 
 
 void EpiImage::load(std::string fileName) {
+    std::cout << fileName << std::endl;
     std::ifstream ifs( (fileName + ".map").c_str() );
+    texture_ = cv::imread( (fileName + ".epi.png").c_str());
 
     ifs >> blocksx_ >> blocksy_ >> s_;
 
@@ -55,6 +152,13 @@ void EpiImage::load(std::string fileName) {
         transforms_.push_back(transform);
     }
     ifs.close();
+}
+
+void EpiImage::saveRecontruction(std::string fileName) {
+
+    cv::Mat img = cv::Mat::ones(cv::Size(blocksx_*s_, blocksy_*s_), CV_8UC3);
+    reconstruct(img);
+    cv::imwrite((fileName + ".recon.png").c_str(), img);
 }
 
 void EpiImage::reconstruct(cv::Mat& img) {
@@ -70,18 +174,34 @@ void EpiImage::reconstruct(cv::Mat& img) {
 
 
 void EpiImage::genTexture() {
-    texture_ = cv::Mat::ones(cv::Size(blocksx_*s_,blocksy_*s_), CV_8UC3);
 
+    pack();
+    texture_ = cv::Mat::ones(cv::Size(width_*s_, height_*s_), CV_8UC3);
+//     texture_ = cv::Mat::ones(cv::Size(blocksx_*s_, blocksy_*s_), CV_8UC3);
+
+    cv::rectangle(texture_, cv::Point(0,0), cv::Point(width_*s_, height_*s_),cv::Scalar(255,0,255),-1);
 
     float color = 0;
     float step = 255.0f/charts_.size();
     foreach(Chart* epi, charts_) {
         foreach(Patch* block, epi->chartBlocks_) {
-//                cv::rectangle(texture_, block->hull_.verts[0], block->hull_.verts[2],cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255),-1);
-            cv::line(texture_, block->hull_.verts[0], block->hull_.verts[2], cv::Scalar((128-(int)color) % 255,(255-(int)color) % 255,(int)color,255));
+            if(!block->inChart_) continue;
 
-            if(block->inChart_)
-                    copyBlock(block->patchColor_, texture_, cv::Rect(0, 0, s_, s_), cv::Rect(block->x_, block->y_, s_, s_) );
+            for(int srcY=block->y_; srcY<block->y_+s_; srcY++) {
+                for(int srcX=block->x_; srcX<block->x_+s_; srcX++) {
+                    cv::Mat p = (cv::Mat_<double>(3,1) << srcX, srcY, 1);
+                    cv::Mat a =  epi->transform_ * p;
+                    //  cv::Mat a =   p;
+
+                    float destX = a.at<double>(0,0);
+                    float destY = a.at<double>(0,1);
+
+                    texture_.at<cv::Vec3b>(destY, destX) = block->sourceColor_.at<cv::Vec3b>(srcY, srcX);
+
+                }
+
+            }
+
         }
         color += step;
     }

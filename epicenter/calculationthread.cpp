@@ -28,7 +28,6 @@ void CalculationThread::step2() {
 bool CalculationThread::singleStep(int x, int y) {
     if(!seedmap) init();
 
-    QMutex mutex;
     Patch* block = 0;
     if(x==-1)
         block = seedmap->matchNext();

@@ -28,13 +28,14 @@ int main(int argc, char *argv[])
     float error = 0.16f;
     float alpha = 1.5f;
     bool verbose = false;
+    bool onlyRestore = false;
     bool dbSearch = 0;
     int  s = 12;
     int winsize = 5;
     std::string fullName;
 
     int opt;
-    while ((opt = getopt(argc, argv, "a:b:de:i:vw:")) != -1) {
+    while ((opt = getopt(argc, argv, "a:b:de:i:vw:r:")) != -1) {
         switch(opt) {
         case 'a':
             alpha = atof(optarg);
@@ -50,6 +51,10 @@ int main(int argc, char *argv[])
             break;
         case 'i':
             fullName = optarg;
+            break;
+        case 'r':
+            fullName = optarg;
+            onlyRestore = true;
             break;
         case 'v':
             verbose = true;
@@ -68,6 +73,16 @@ int main(int argc, char *argv[])
     size_t found=fullName.find_last_of("/\\");
     std::string pathName = fullName.substr(0,found);
     std::string fileName = fullName.substr(found+1);
+
+
+    if(onlyRestore) {
+       EpiImage img;
+       img.load(fullName);
+       std::cout << img.blocksx_ << std::endl;
+       img.saveRecontruction(fullName);
+       exit(0);
+    }
+
 
     if(verbose)
     std::cout << fileName << " " << pathName << " " << std::endl;
@@ -109,6 +124,7 @@ int main(int argc, char *argv[])
     // search in original image
     if(verbose)
     std::cout << "testing original" << std::endl;
+    std::string epiName = (epiPath+fileName.c_str()).toStdString();
     if(!seedmap->termCalculate_ || !seedmap->done_) {
         seedmap->setReconSource(image, 3);
         seedmap->matchAll();
@@ -117,8 +133,8 @@ int main(int argc, char *argv[])
             time_t seconds;
             seconds = time(0);
             QString tString( QTime::currentTime().toString("hhmmsszzz") );
-            std::string epiName = (epiPath+tString+fileName.c_str()).toStdString();
-
+//            std::string epiName = (epiPath+tString+fileName.c_str()).toStdString();
+            //            std::string epiName = fullName;
             if(verbose)
                 std::cout << epiName << std::endl;
             seedmap->generateCharts();
@@ -133,13 +149,14 @@ int main(int argc, char *argv[])
     // finished? save image
     std::cout << fullName << std::endl;
     if(seedmap->done_)
-        seedmap->image_.save(fullName);
+        seedmap->image_.save(epiName); //fullName);
 
     // save a preview of reconstruction
     if(seedmap->done_)
         std::cout << "done" << std::endl;
 
-    seedmap->saveReconstruction(fullName);
+    seedmap->image_.saveRecontruction(epiName); //fullName);
 
+    exit(0);
 
 }

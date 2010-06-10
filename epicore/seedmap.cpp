@@ -84,7 +84,7 @@ Chart *SeedMap::findBestChart() {
     foreach(Patch *block, blocks_) {
         if(block->inChart_ || block->satisfied_ || block->loadsMatches_) continue;
 
-        Chart *chart = new Chart(&baseImage_);
+        Chart *chart = new Chart(baseImage_);
 
         // mark the whole match region
         foreach(Match *match, block->overlapingMatches_) {
@@ -95,7 +95,7 @@ Chart *SeedMap::findBestChart() {
 
             std::vector<Patch*> coveredBlocks = genCoveredBlocks(match);
             foreach(Patch *b, coveredBlocks) {
-                if(b->candidate_) continue;
+                if(b->candidate_ || b->inChart_ ) continue;
                 b->candidate_=true;
                 chart->chartBlocks_.push_back(b);
                 chart->benefit_--;
@@ -231,6 +231,7 @@ void SeedMap::generateCharts() {
         }
 
         growChart(bestChart);
+        bestChart->caclBBox();
 
         image_.charts_.push_back(bestChart);
 
@@ -238,9 +239,24 @@ void SeedMap::generateCharts() {
 
     optimizeCharts();
 
+    image_.genTexture();
+
     for(uint i=0; i<blocksy_; i++) {
         for(uint j=0; j<blocksx_; j++) {
-            image_.transforms_.push_back(&(getPatch(j,i)->finalMatch_->t_));
+            Patch* block = getPatch(j,i);
+            Match* final = block->finalMatch_;
+
+            if(!block->satChart_) std::cout << "what?" << std::endl;
+
+            cv::Mat selection1(block->satChart_->transform_, cv::Rect(0,0,3,2));
+            cv::Mat inverted = cv::Mat::eye(3,3,CV_64FC1);
+            cv::Mat selection2(inverted, cv::Rect(0,0,3,2));
+            invertAffineTransform(selection1, selection2);
+
+            Transform* t= new Transform();
+            t->colorScale_ = final->t_.colorScale_;
+            t->transformMat_ = final->t_.transformMat_ * inverted;
+            image_.transforms_.push_back(t);
         }
     }
 
@@ -267,6 +283,7 @@ void SeedMap::optimizeCharts() {
             }
             if(covered) {
                 block->finalMatch_ = new Match(*match);
+                block->satChart_ = chart;
                 break;
             }
         }
@@ -380,7 +397,7 @@ void SeedMap::matchAll() {
         for (long i=0; i<last/length; i++) std::cout << "=";
         std::cout << ">";
         for (long i=0; i<100/length-(last/length); i++) std::cout << ".";
-        std::cout << "]" << last  << "%  ETA " << deltaT << "min  " << fileName_ << std::flush;
+        std::cout << "]" << last  << "%  ETA " << deltaT << "min  " << fileName_ << "         " << std::flush;
 
         blocksCalced++;
     } while(!termCalculate_ && matchNext());
