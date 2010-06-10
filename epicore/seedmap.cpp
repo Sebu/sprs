@@ -95,7 +95,7 @@ Chart *SeedMap::findBestChart() {
 
             std::vector<Patch*> coveredBlocks = genCoveredBlocks(match);
             foreach(Patch *b, coveredBlocks) {
-                if(b->candidate_ || b->inChart_ ) continue;
+                if(b->candidate_) continue;
                 b->candidate_=true;
                 chart->chartBlocks_.push_back(b);
                 chart->benefit_--;
