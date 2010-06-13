@@ -5,10 +5,12 @@
 
 #include "patch.h"
 #include "match.h"
+#include "seedmap.h"
 #include "cv_ext.h"
 
-
 bool errorSorter (Feature* i, Feature* j) { return (i->error_ < j->error_ ); }
+
+int Patch::idCounter_ = 0;
 
 void Patch::resetMatches() {
     if(!matches_) return;
@@ -21,7 +23,7 @@ void Patch::resetMatches() {
 
 
 void Patch::copyMatches() {
-    if(!loadsMatches_) return;
+    if(!parent_) return;
     if(verbose_)
         std::cout << "correcting colors of all matches" << std::endl;
 
@@ -34,30 +36,60 @@ void Patch::copyMatches() {
         // recalculate error
         newMatch->t_.colorScale_=cv::Scalar::all(1.0f);
         newMatch->error_ =  reconError(newMatch) / (s_*s_);
-//      if (newMatch->error_ < crit_->maxError_)
+        //      if (newMatch->error_ < crit_->maxError_)
         newVector->push_back(newMatch);
     }
 
     matches_ = newVector;
 }
 
+void Patch::serialize(std::ofstream& ofs) {
+    ofs << x_ << " " << y_ << " ";
 
-void Patch::deserialize(std::ifstream& ifs) {
-    ifs >> x_ >> y_;
-    int size;
-    ifs >> size;
-    if (size==-1) return;
-    matches_ = new std::vector<Match*>;
-    for(int j=0; j<size; j++) {
-        Match* match = new Match(0);
-        match->sourceImage_ = sourceColor_;
-        transScaleFlipMat_.copyTo(match ->t_.transformMat_);
-        match->block_ = this;
-        match->deserialize(ifs);
-        match->calcHull();
-        matches_->push_back(match);
+    int mode = 0;
+    if (sharesMatches_) mode = PATCH_SHARE;
+    if (parent_) mode = PATCH_LOAD;
+    ofs << mode << " ";
 
+    if (parent_) {
+        int id = parent_->id_;
+        ofs << id << " ";
+    } else {
+        ofs << matches_->size() << " ";
+        for(uint j=0; j<matches_->size(); j++) {
+            matches_->at(j)->serialize(ofs);
+        }
     }
+}
+
+void Patch::deserialize(std::ifstream& ifs, SeedMap* map) {
+    int mode, size;
+
+    ifs >> x_ >> y_ >> mode >> size;
+
+    switch(mode) {
+    case PATCH_LOAD: {
+            int id = size;
+            parent_ = map->blocks_[id];
+            matches_ = parent_->matches_;
+            break;
+        }
+    case PATCH_SHARE:
+        sharesMatches_=true;
+    default: {
+            matches_ = new std::vector<Match*>;
+            for(int j=0; j<size; j++) {
+                Match* match = new Match(0);
+                match->block_ = this;
+                match->deserialize(ifs);
+                matches_->push_back(match);
+
+            }
+            break;
+        }
+    }
+
+
 }
 
 void Patch::save(std::ofstream& ofs) {
@@ -66,19 +98,7 @@ void Patch::save(std::ofstream& ofs) {
 }
 
 
-void Patch::serialize(std::ofstream& ofs) {
-    ofs << x_ << " " << y_ << " ";
 
-
-    if (matches_) {
-        ofs << matches_->size() << " " << std::endl;
-        for(uint j=0; j<matches_->size(); j++) {
-            matches_->at(j)->serialize(ofs);
-        }
-    } else {
-        ofs << -1 << " ";
-    }
-}
 
 float Patch::reconError(Match* m) {
 
@@ -109,7 +129,7 @@ float Patch::reconError(Match* m) {
             float b = ( ((float)vr[2]*m->t_.colorScale_[2]) - (float)vo[2] )/255.0f;
 
             dist += (r*r)+(g*g)+(b*b);
-//            if(dist * errorFactor_ > crit_->maxError_) return FLT_MAX;
+            //            if(dist * errorFactor_ > crit_->maxError_) return FLT_MAX;
         }
 
     }
@@ -143,7 +163,7 @@ void Patch::findFeatures() {
 
     // track initial features
     cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
-//    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
+    //    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
     if(pointsSrc_.size()<3)
         if(verbose_)
@@ -232,9 +252,9 @@ bool Patch::trackFeatures(Match* match) {
 Match* Patch::match(Patch& other) {
 
 
-     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
-//    std::cout << histDiff << std::endl;
-     if(histDiff > crit_->maxColor_) return 0;
+    double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
+    //    std::cout << histDiff << std::endl;
+    if(histDiff > crit_->maxColor_) return 0;
 
 
 
@@ -244,7 +264,7 @@ Match* Patch::match(Patch& other) {
 
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
-//    std::cout << diff << std::endl;
+    //    std::cout << diff << std::endl;
     if(diff > crit_->maxOrient_) return 0;
 
 
@@ -275,16 +295,18 @@ Match* Patch::match(Patch& other) {
     if(x_ == other.x_ && y_  == other.y_ && match->error_ > crit_->maxError_ && other.isBlock_) {
         if(verbose_)
             std::cout << other.x_/s_ << " " << other.y_/s_ << " " << orientation << " bad buddy: " << match->error_ << std::endl;
-//        std::cout << match->warpMat_.at<double>(0,0) << " " << match->warpMat_.at<double>(0,1) << " " << match->warpMat_.at<double>(0,2) << std::endl;
-//        std::cout << match->warpMat_.at<double>(1,0) << " " << match->warpMat_.at<double>(1,1) << " " << match->warpMat_.at<double>(1,2) << std::endl;
+        //        std::cout << match->warpMat_.at<double>(0,0) << " " << match->warpMat_.at<double>(0,1) << " " << match->warpMat_.at<double>(0,2) << std::endl;
+        //        std::cout << match->warpMat_.at<double>(1,0) << " " << match->warpMat_.at<double>(1,1) << " " << match->warpMat_.at<double>(1,2) << std::endl;
     }
 
     return match;
 }
 
 Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), loadsMatches_(0), sharesMatches_(0), matches_(0), bestMatch_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), satChart_(0), errorFactor_(0), isBlock_(isBlock)
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), parent_(0), sharesMatches_(0), matches_(0), bestMatch_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), satChart_(0), errorFactor_(0), isBlock_(isBlock)
 {
+
+    id_ = idCounter_++;
 
     size_ = s_ * s_;
     hull_ = Polygon::Square(x_,y_,s_,s_);

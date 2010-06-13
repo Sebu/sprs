@@ -82,7 +82,7 @@ Chart *SeedMap::findBestChart() {
     Chart *bestChart = 0;
 
     foreach(Patch *block, blocks_) {
-        if(block->inChart_ || block->satisfied_ || block->loadsMatches_) continue;
+        if(block->inChart_ || block->satisfied_ || block->parent_) continue;
 
         Chart *chart = new Chart(baseImage_);
 
@@ -171,7 +171,7 @@ void SeedMap::generateCharts() {
 
     if(termCalculate_) return;
 
-    /*
+    //*
     foreach(Patch *seed, seeds_) {
         if(!seed->isBlock_) {
             delete seed;
@@ -183,7 +183,7 @@ void SeedMap::generateCharts() {
     genNeighbours();
 
     foreach(Patch* block, blocks_) {
-        if(!block->matches_ || block->finalMatch_ || block->loadsMatches_) continue;
+        if(!block->matches_ || block->finalMatch_ || block->parent_) continue;
 
 
         foreach(Match* match, *(block->matches_)) {
@@ -246,7 +246,7 @@ void SeedMap::generateCharts() {
             Patch* block = getPatch(j,i);
             Match* final = block->finalMatch_;
 
-            if(!block->satChart_) std::cout << "what?" << std::endl;
+            if(!block->satChart_) std::cout << "what no satChart?" << std::endl;
 
             cv::Mat selection1(block->satChart_->transform_, cv::Rect(0,0,3,2));
             cv::Mat inverted = cv::Mat::eye(3,3,CV_64FC1);
@@ -270,12 +270,13 @@ void SeedMap::optimizeCharts() {
     // find best matches in charts
     foreach(Patch* block, blocks_) {
         if(!block->matches_) continue;
-        if(block->loadsMatches_) block->copyMatches();
+        if(block->parent_) block->copyMatches();
         std::sort(block->matches_->begin(), block->matches_->end(), matchSorter);
         foreach(Match* match,*block->matches_) {
             bool covered = true;
             Chart *chart = 0;
             std::vector<Patch*> coveredBlocks = genCoveredBlocks(match);
+            if(coveredBlocks.empty()) continue;
             foreach(Patch* b, coveredBlocks) {
                 if(!b->inChart_) { covered = false; break; }
                 if(!chart) chart=b->chart_;
@@ -287,8 +288,10 @@ void SeedMap::optimizeCharts() {
                 break;
             }
         }
-        if(block->loadsMatches_) block->resetMatches();
-        if(!block->sharesMatches_) block->resetMatches();
+        if(!block->satChart_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED1" << std::endl;
+        if(!block->finalMatch_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED2" << std::endl;
+        if(!block->satChart_ && !block->chart_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED3" << std::endl;
+        if(block->parent_ || !block->sharesMatches_) block->resetMatches();
     }
 
     // trimm
@@ -339,7 +342,16 @@ void SeedMap::genNeighbours() {
 
 }
 
+void SeedMap::serialize(std::string fileName) {
+    std::ofstream ofs( (fileName + ".cache").c_str() );
 
+    ofs << s_ << " " << gridstep_ << " " << crit_.maxError_ << " ";
+    ofs << blocks_.size() << " ";
+    for(uint i=0; i<blocks_.size(); i++)
+        blocks_[i]->serialize(ofs);
+
+    ofs.close();
+}
 
 void SeedMap::deserialize(std::string fileName) {
     if (!searchInOriginal_) return;
@@ -353,26 +365,17 @@ void SeedMap::deserialize(std::string fileName) {
             int size;
             ifs >> size;
             for(int i=0; i<size; i++)
-                blocks_[i]->deserialize(ifs);
+                blocks_[i]->deserialize(ifs,this);
 
             std::cout << "deserialize done" << std::endl;
         }
     }
 
     ifs.close();
+
+    done_ =true;
 }
 
-
-void SeedMap::serialize(std::string fileName) {
-    std::ofstream ofs( (fileName + ".cache").c_str() );
-
-    ofs << s_ << " " << gridstep_ << " " << crit_.maxError_ << " ";
-    ofs << blocks_.size() << " ";
-    for(uint i=0; i<blocks_.size(); i++)
-        blocks_[i]->serialize(ofs);
-
-    ofs.close();
-}
 
 void SeedMap::resetMatches() {
     matchStep_=0;
@@ -413,6 +416,8 @@ Patch* SeedMap::matchNext() {
     match(patch);
     return patch;
 }
+
+
 
 Patch* SeedMap::getPatch(int x, int y) {
     Patch* patch = blocks_[y * blocksx_ + x];
@@ -461,7 +466,7 @@ void SeedMap::match(Patch* block) {
                         if (!seed->matches_) {
                             blocksDone_++;
                             seed->matches_=block->matches_;
-                            seed->loadsMatches_ = true;
+                            seed->parent_ = block;
                             block->sharesMatches_ = true;
                         }
                     }

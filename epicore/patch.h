@@ -11,7 +11,7 @@
 
 class Match;
 class Chart;
-
+class SeedMap;
 
 class Feature
 {
@@ -21,7 +21,8 @@ public:
     float error_;
 };
 
-
+#define PATCH_LOAD  1
+#define PATCH_SHARE 2
 class Patch
 {
 private:
@@ -29,6 +30,10 @@ private:
 
 
 public:
+    static int idCounter_;
+    int id_;
+
+
     std::vector<cv::Point2f> pointsSrc_;
 
     int x_, y_, s_;
@@ -37,7 +42,7 @@ public:
     float errorFactor_;
     bool isBlock_;
     bool transformed_;
-    bool loadsMatches_;
+    Patch* parent_;
     bool sharesMatches_;
     Polygon hull_;
 
@@ -83,7 +88,7 @@ public:
 
     void save(std::ofstream&);
     void serialize(std::ofstream&);
-    void deserialize(std::ifstream&);
+    void deserialize(std::ifstream&, SeedMap*);
 
 };
 

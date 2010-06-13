@@ -11,9 +11,8 @@ Match::Match(Patch* seed)
     : error_(0.0f), transformed_(0)
 {
     if (!seed) return;
-
     seed->transScaleFlipMat_.copyTo(t_.transformMat_);
-    sourceImage_ = seed->sourceColor_;
+//    sourceImage_ = seed->sourceColor_;
 
 }
 
@@ -60,7 +59,7 @@ void Transform::load(std::ifstream& ifs) {
 
 void Transform::save(std::ofstream& ofs) {
     for (int i=0; i<2; i++)
-        for(int j=0; j<transformMat_.cols; j++)
+        for(int j=0; j<3; j++)
             ofs << transformMat_.at<double>(i,j) << " ";
     ofs << colorScale_[0] << " " << colorScale_[1] << " " << colorScale_[2] << " ";
 }
@@ -72,20 +71,16 @@ void Match::save(std::ofstream& ofs) {
 
 void Match::serialize(std::ofstream& ofs) {
 
-    for (int i=0; i<2; i++)
-        for(int j=0; j<3; j++)
-            ofs << t_.transformMat_.at<double>(i,j) << " ";
-    ofs << t_.colorScale_[0] << " " << t_.colorScale_[1] << " " << t_.colorScale_[2] << " ";
+    t_.save(ofs);
     ofs << error_ << " ";
 }
 
 void Match::deserialize(std::ifstream& ifs) {
 
-    for (int i=0; i<2; i++)
-        for(int j=0; j<3; j++)
-            ifs >> t_.transformMat_.at<double>(i,j);
-    ifs >> t_.colorScale_[0] >> t_.colorScale_[1] >>  t_.colorScale_[2];
+    t_.load(ifs);
     ifs >> error_;
+
+    calcHull();
 }
 
 
@@ -99,7 +94,7 @@ cv::Mat Transform::warp(cv::Mat &src, uint s) {
 }
 
 cv::Mat Match::warp() {
-    return t_.warp(sourceImage_, block_->s_);
+    return t_.warp(block_->sourceColor_, block_->s_);
 }
 
 
@@ -120,7 +115,7 @@ cv::Mat Transform::reconstruct(cv::Mat &src, uint s) {
 }
 
 cv::Mat Match::reconstruct() {
-   return t_.reconstruct(sourceImage_, block_->s_);
+   return t_.reconstruct(block_->sourceColor_, block_->s_);
 }
 
 

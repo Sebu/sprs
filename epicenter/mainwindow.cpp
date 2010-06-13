@@ -69,13 +69,11 @@ void MainWindow::changeImage() {
 
 
 void MainWindow::saveImage() {
-    // save demo reconstruction
-//    QString saveName = QFileDialog::getSaveFileName(this,tr("Save Image"), (fileName_ + ".recon.jpg").c_str(), tr("Image Files (*.png *.jpeg *.jpg *.bmp)"));
     // save matches
     calcThread.seedmap->serialize(fileName_);
-    calcThread.seedmap->saveReconstruction(fileName_); //saveName.toStdString());
-    calcThread.seedmap->image_.save(fileName_);
-    calcThread.seedmap->image_.saveTexture(fileName_);
+//    calcThread.seedmap->image_.save(fileName_);
+//    calcThread.seedmap->image_.saveTexture(fileName_);
+//    calcThread.seedmap->image_.saveRecontruction(fileName_);
 
 }
 

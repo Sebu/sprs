@@ -36,18 +36,12 @@ public:
     // things to save aka transform
     Transform t_;
     bool transformed_;
-
     float error_;
+    Polygon hull_;
 
     Patch* block_;
 
-    Polygon hull_;
-    Polygon bbox_;
-    cv::Mat sourceImage_;
-
     Match(Patch* seed=0);
-
-
     bool isPatch();
 
     cv::Mat warp();
