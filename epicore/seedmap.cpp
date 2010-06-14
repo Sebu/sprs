@@ -171,7 +171,7 @@ void SeedMap::generateCharts() {
 
     if(termCalculate_) return;
 
-    //*
+    /*
     foreach(Patch *seed, seeds_) {
         if(!seed->isBlock_) {
             delete seed;
@@ -369,11 +369,12 @@ void SeedMap::deserialize(std::string fileName) {
 
             std::cout << "deserialize done" << std::endl;
         }
+        done_ =true;
     }
 
     ifs.close();
 
-    done_ =true;
+
 }
 
 
@@ -382,6 +383,8 @@ void SeedMap::resetMatches() {
 }
 
 void SeedMap::matchAll() {
+
+    resetMatches();
 
     QTime timer;
 
@@ -482,6 +485,7 @@ void SeedMap::match(Patch* block) {
                     {
                         if(block->bestMatch_) delete block->bestMatch_;
                         block->bestMatch_ = match;
+                        block->bestMatch_->calcHull();
                     }
                 } else {
                     delete match;
@@ -522,8 +526,7 @@ cv::Mat SeedMap::debugReconstruction() {
 
     }  else {
 
-        for(uint i=0; i< blocks_.size(); i++) {
-            Patch* block = blocks_[i];
+        foreach(Patch* block,  blocks_) {
 
             if (!block->matches_ || block->matches_->empty()) continue;
 

@@ -127,6 +127,7 @@ int main(int argc, char *argv[])
     std::string epiName = (epiPath+fileName.c_str()).toStdString();
     if(!seedmap->termCalculate_ || !seedmap->done_) {
         seedmap->setReconSource(image, 3);
+        seedmap->deserialize(fullName);
         seedmap->matchAll();
         if(!seedmap->termCalculate_) {
 
