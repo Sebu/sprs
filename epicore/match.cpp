@@ -24,6 +24,7 @@ void Match::calcHull() {
                             {-1, block_->s_}
     };
 
+    hull_.verts.clear();
     cv::Mat selection(t_.transformMat_, cv::Rect(0,0,3,2));
     cv::Mat inverted;
     invertAffineTransform(selection, inverted);

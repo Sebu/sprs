@@ -32,7 +32,6 @@ void Patch::copyMatches() {
     foreach(Match *oldMatch, *(this->matches_)) {
         Match* newMatch = new Match(*oldMatch);
         newMatch->block_ = this;
-//        newMatch->calcHull();
 
         // recalculate error
         newMatch->t_.colorScale_=cv::Scalar::all(1.0f);
