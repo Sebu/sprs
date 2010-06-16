@@ -579,7 +579,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
 
 
         // generate new seeds
-        for(uint flip=0; flip<3; flip++) {
+        for(uint flip=0; flip<1; flip++) {
             for(uint y=0; y<height; y++) {
                 int localY = y*gridstep_;
                 for(uint x=0; x<width; x++) {
