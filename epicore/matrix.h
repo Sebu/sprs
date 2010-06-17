@@ -193,6 +193,13 @@ public:
     Vector2f min;
     Vector2f max;
 
+    static AABB Square(float x, float y, float w, float h) {
+        AABB b;
+        b.min=Vector2f(x,y);
+        b.max=Vector2f(x+w-1,y+h-1);
+        return b;
+    }
+
     AABB(): min(Vector2f(FLT_MAX,FLT_MAX)), max(Vector2f(0,0)) {
 
     }
@@ -209,9 +216,16 @@ public:
         return width()*height();
     }
 
+    /*
     inline bool intersect(AABB& box) {
         if (box.min.m_v[0]>max.m_v[0] &&  box.min.m_v[1]>max.m_v[1]) return false;
         if (box.max.m_v[0]<min.m_v[0] &&  box.max.m_v[1]<min.m_v[1]) return false;
+        return true;
+    }
+    */
+    inline bool inside(Vector2f& vec) {
+        if (vec.m_v[0]>max.m_v[0] || vec.m_v[1]>max.m_v[1]) return false;
+        if (vec.m_v[0]<min.m_v[0] || vec.m_v[1]<min.m_v[1]) return false;
         return true;
     }
 };
@@ -223,9 +237,9 @@ public:
     static Polygon Square(float x, float y, float w, float h) {
         Polygon p;
         p.verts.push_back(Vector2f(x,y));
-        p.verts.push_back(Vector2f(x+w-1,y));
-        p.verts.push_back(Vector2f(x+w-1,y+h-1));
-        p.verts.push_back(Vector2f(x,y+h-1));
+        p.verts.push_back(Vector2f(x+w,y));
+        p.verts.push_back(Vector2f(x+w,y+h));
+        p.verts.push_back(Vector2f(x,y+h));
         return p;
     }
 
@@ -253,6 +267,20 @@ public:
     inline bool intersects(Polygon& rhs) {
         if (rhs.isInFrontOf(*this) || isInFrontOf(rhs)) return false;
         return true;
+    }
+
+    inline bool inside(AABB& box) {
+        for(uint i=0; i<verts.size(); i++) {
+            if (!box.inside(verts[i])) return false;
+        }
+        return true;
+    }
+
+    inline bool intersect(AABB& box) {
+        for(uint i=0; i<verts.size(); i++) {
+            if (box.inside(verts[i])) return true;
+        }
+        return false;
     }
 
     AABB getBox();

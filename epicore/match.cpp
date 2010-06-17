@@ -12,16 +12,15 @@ Match::Match(Patch* seed)
 {
     if (!seed) return;
     seed->transScaleFlipMat_.copyTo(t_.transformMat_);
-//    sourceImage_ = seed->sourceColor_;
 
 }
 
 
 void Match::calcHull() {
-    double points[4][2] = { {-1, -1},
-                            {block_->s_, -1},
+    double points[4][2] = { {0, 0},
+                            {block_->s_, 0},
                             {block_->s_, block_->s_},
-                            {-1, block_->s_}
+                            {0, block_->s_}
     };
 
     hull_.verts.clear();

@@ -171,6 +171,7 @@ void SeedMap::generateCharts() {
 
     if(termCalculate_) return;
 
+    //TODO: free some memory
     /*
     foreach(Patch *seed, seeds_) {
         if(!seed->isBlock_) {
@@ -434,62 +435,44 @@ void SeedMap::saveReconstruction(std::string fileName) {
 
 void SeedMap::match(Patch* block) {
 
-    block->findFeatures();
-
     if (!block->matches_) {
         block->matches_ = new std::vector<Match*>;
 
         bool breakIt = false;
 
-#pragma omp parallel for
+        #pragma omp parallel for
         for(ulong i=0; i< seeds_.size(); i++) {
             Patch* seed = seeds_[i];
 
             if(!termCalculate_ && !breakIt) {
                 Match* match = block->match(*seed);
 
-                if (!match) continue;
-                if (match->error_ < crit_.maxError_) {
+                if (match) {
 
                     match->calcHull();
+                    if(match->hull_.inside(bbox_)) {
+                        #pragma omp critical
+                        block->matches_->push_back(match);
 
-                    if(verbose_) {
-                        std::cout << seed->x_ << " " << seed->y_ << " " <<
-                                "\t\t orient.: " << "\t\t error: " << match->error_;
-                        //std::cout << " " << other.scale_;
-                        if(block->x_ ==seed->x_ && block->y_==seed->y_ && seed->isBlock_) std::cout << "\tfound myself!";
-                        std::cout << std::endl;
-                    }
+                        if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
 
-#pragma omp critical
-                    block->matches_->push_back(match);
-
-                    if (!match->transformed_ && seed->isBlock_ && searchInOriginal_) {
-
-                        if (!seed->matches_) {
-                            blocksDone_++;
-                            seed->matches_=block->matches_;
-                            seed->parent_ = block;
-                            block->sharesMatches_ = true;
+                            if (!seed->matches_) {
+                                blocksDone_++;
+                                seed->matches_=block->matches_;
+                                seed->parent_ = block;
+                                block->sharesMatches_ = true;
+                            }
                         }
+
+                        if (!searchInOriginal_) {
+                            block->finalMatch_ = match;
+                            breakIt=true;
+                        }
+
                     }
 
-                    if (!searchInOriginal_) {
-                        block->finalMatch_ = match;
-                        breakIt=true;
-                    }
-
-
-                } else if ( match->error_ > 0.0f && (!block->bestMatch_ ||  match->error_ < block->bestMatch_->error_) ){
-#pragma omp critical
-                    {
-                        if(block->bestMatch_) delete block->bestMatch_;
-                        block->bestMatch_ = match;
-                        block->bestMatch_->calcHull();
-                    }
-                } else {
-                    delete match;
                 }
+
             }
 
         }
@@ -544,8 +527,6 @@ cv::Mat SeedMap::debugReconstruction() {
 void SeedMap::setImage(cv::Mat &image) {
 
     sourceImage_ = image;
-    // create gray version
-    cv::cvtColor(sourceImage_, sourceGray_, CV_RGB2GRAY);
 
     // add patches
     blocksx_ =  sourceImage_.cols / s_;
@@ -557,9 +538,10 @@ void SeedMap::setImage(cv::Mat &image) {
 
     for(int y=0; y<blocksy_; y++)
         for(int x=0; x<blocksx_; x++) {
-        Patch* block = new Patch( sourceImage_, sourceGray_, x*s_, y*s_, s_,  1.0f, 0, true);
+        Patch* block = new Patch( sourceImage_,  x*s_, y*s_, s_,  1.0f, 0, true);
         block->crit_ = &crit_;
         block->verbose_ = verbose_;
+        block->findFeatures();
         blocks_.push_back(block);
     }
 }
@@ -592,7 +574,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
                         seed = getPatch(indexX, indexY);
                     }
                     if(!seed) {
-                        seed = new Patch( source, sourceGray_, localX, localY, s_,  scale, flip, false);
+                        seed = new Patch( source, localX, localY, s_,  scale, flip, false);
                         seed->crit_ = &crit_;
                         seed->verbose_ = verbose_;
                     }
@@ -621,6 +603,10 @@ void SeedMap::setReconSource(cv::Mat& base, int depth) {
 
     baseImage_ = base;
 
+    bbox_.min.m_v[0] = -1.0f;
+    bbox_.min.m_v[1] = -1.0f;
+    bbox_.max.m_v[0] = baseImage_.cols;
+    bbox_.max.m_v[1] = baseImage_.rows;
     // remove all old seeds
     foreach(Patch* seed, seeds_) {
         delete seed;

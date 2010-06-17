@@ -11,8 +11,8 @@ int Chart::staticCounter_ = 0;
 Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
 
     cv::Mat centerMat = cv::Mat::eye(3,3,CV_64FC1);
-    float xoffset = chart->bbox_.min.m_v[0] + (chart->bbox_.width()/2);
-    float yoffset = chart->bbox_.min.m_v[1] + (chart->bbox_.height()/2);
+    float xoffset = chart->bbox_.min.m_v[0] + (chart->bbox_.width()/2.0f);
+    float yoffset = chart->bbox_.min.m_v[1] + (chart->bbox_.height()/2.0f);
     centerMat.at<double>(0,2)=-xoffset;
     centerMat.at<double>(1,2)=-yoffset;
 
@@ -41,13 +41,13 @@ Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
     float whalf=0, hhalf=0;
     // HACK: for convenience :)
     if(angle==0 || angle == 180) {
-        whalf = chart->bbox_.width()/2;
-        hhalf = chart->bbox_.height()/2;
+        whalf = chart->bbox_.width()/2.0f;
+        hhalf = chart->bbox_.height()/2.0f;
         w_ = ceil(chart->bbox_.width()/s);
         h_ = ceil(chart->bbox_.height()/s);
     } else {
-        whalf = chart->bbox_.height()/2;
-        hhalf = chart->bbox_.width()/2;
+        whalf = chart->bbox_.height()/2.0f;
+        hhalf = chart->bbox_.width()/2.0f;
         w_ = ceil(chart->bbox_.height()/s);
         h_ = ceil(chart->bbox_.width()/s);
     }
@@ -59,9 +59,8 @@ Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
 
     transform_ = transMat * rotMat * flipMat * centerMat;
 
-
     foreach(Patch* p, chart->chartBlocks_) {
-        cv::Mat point = (cv::Mat_<double>(3,1) << p->x_, p->y_, 1);
+        cv::Mat point = (cv::Mat_<double>(3,1) << p->x_+s/2, p->y_+s/2, 1.0f);
         cv::Mat a =  transform_ * point;
         uint x = a.at<double>(0,0) / s;
         uint y = a.at<double>(0,1) / s;

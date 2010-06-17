@@ -16,8 +16,8 @@ std::vector<Polyomino*> EpiImage::genPolyominos(Chart* chart) {
     std::vector<Polyomino*> polyos;
 
     for(int flip=0; flip<3; flip++) {
-//        for(int angle=0; angle<360; angle+=90)
-            polyos.push_back( new Polyomino(0, flip, s_, chart) );
+        for(int angle=0; angle<360; angle+=90)
+            polyos.push_back( new Polyomino(angle, flip, s_, chart) );
     }
 
 

@@ -19,9 +19,11 @@ void CalculationThread::step() {
 void CalculationThread::step2() {
     if(!seedmap) init();
     seedmap->generateCharts();
-
     cv::Mat epitomeMap(seedmap->image_.Texture());
     debugWidgetL->fromIpl( epitomeMap, "epitome map" );
+    debugWidgetL->updateGL();
+    cv::Mat recon2(seedmap->debugReconstruction());
+    debugWidgetL->fromIpl( recon2, "reconstruction" );
     debugWidgetL->updateGL();
 }
 
@@ -84,10 +86,9 @@ bool CalculationThread::singleStep(int x, int y) {
 
 
 
-    cv::Mat reconstruction(seedmap->debugReconstruction());
-    debugWidgetL->fromIpl( reconstruction, "reconstruction" );
-    debugWidgetL->updateGL();
-
+   cv::Mat reconstruction(seedmap->debugReconstruction());
+   debugWidgetL->fromIpl( reconstruction, "reconstruction" );
+   debugWidgetL->updateGL();
 
 
     return true;
@@ -112,13 +113,5 @@ void CalculationThread::run() {
 
     while(singleStep()) {}
 
-    // FANCY DEBUG outputs
-    cv::Mat reconstruction(seedmap->debugReconstruction());
-    cv::Mat error( image_.cols, image_.rows, CV_8UC1);
-    //    error = image - reconstruction;
-
-    //    debugWidgetL->fromIpl( error, "error");
-
-    debugWidgetL->update();
 
 }

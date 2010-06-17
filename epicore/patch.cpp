@@ -162,8 +162,8 @@ void Patch::findFeatures() {
     errorFactor_ /= s_*s_;
 
     // track initial features
-    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
-    //    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
+//    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
+    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
     if(pointsSrc_.size()<3)
         if(verbose_)
@@ -209,7 +209,7 @@ bool Patch::trackFeatures(Match* match) {
 
     std::vector<cv::Point2f> srcTri, destTri;
 
-    for(uint j = 0; j < 3; j++) {
+    for(uint j = 0; j < features.size(); j++) {
         int i = features[j]->idx_;
         cv::Point2f s,d;
         s.x = pointsSrc_[i].x;
@@ -290,25 +290,26 @@ Match* Patch::match(Patch& other) {
     // 4 reconstruction error
     match->error_ =  reconError(match);
 
+    if (match->error_ > crit_->maxError_) {delete match; return 0; }
 
     //DEBUG
-    if(x_ == other.x_ && y_  == other.y_ && match->error_ > crit_->maxError_ && other.isBlock_) {
-        if(verbose_)
-            std::cout << other.x_/s_ << " " << other.y_/s_ << " " << orientation << " bad buddy: " << match->error_ << std::endl;
-        //        std::cout << match->warpMat_.at<double>(0,0) << " " << match->warpMat_.at<double>(0,1) << " " << match->warpMat_.at<double>(0,2) << std::endl;
-        //        std::cout << match->warpMat_.at<double>(1,0) << " " << match->warpMat_.at<double>(1,1) << " " << match->warpMat_.at<double>(1,2) << std::endl;
+    if(verbose_) {
+        std::cout << other.x_ << " " << other.y_ << " " <<
+                "\t\t orient.: " << "\t\t error: " << match->error_;
+        //std::cout << " " << other.scale_;
+        if(x_ ==other.x_ && y_==other.y_ && other.isBlock_) std::cout << "\tfound myself!";
+        std::cout << std::endl;
     }
 
     return match;
 }
 
-Patch::Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), parent_(0), sharesMatches_(0), matches_(0), bestMatch_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), satChart_(0), errorFactor_(0), isBlock_(isBlock)
+Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, bool isBlock):
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), parent_(0), sharesMatches_(0), matches_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), satChart_(0), errorFactor_(0), isBlock_(isBlock)
 {
 
     id_ = idCounter_++;
 
-    size_ = s_ * s_;
     hull_ = Polygon::Square(x_,y_,s_,s_);
 
 

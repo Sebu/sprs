@@ -19,6 +19,7 @@ class EPICORESHARED_EXPORT SeedMap
 public:
     bool termCalculate_;
 
+    AABB bbox_;
     int s_;
     int gridstep_;
 

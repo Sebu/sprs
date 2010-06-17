@@ -38,7 +38,6 @@ public:
 
     int x_, y_, s_;
     cv::Mat transScaleFlipMat_;
-    int size_;
     float errorFactor_;
     bool isBlock_;
     bool transformed_;
@@ -56,14 +55,12 @@ public:
 
     Chart* chart_;
     Chart* satChart_;
-    Match* bestMatch_;
     Match* finalMatch_;
     std::vector<Match*>* matches_;
     std::vector<Patch*> neighbours_;
     std::vector<Match*> overlapingMatches_;
 
     cv::Mat sourceColor_;
-//    cv::Mat sourceGray_;
 
     cv::Mat patchColor_;
     cv::Mat patchGray_;
@@ -72,7 +69,7 @@ public:
     OrientHistFast* orientHist_;
 
 
-    Patch(cv::Mat& sourceImage, cv::Mat& sourceGray, int, int, int, float, int, bool);
+    Patch(cv::Mat& sourceImage, int, int, int, float, int, bool);
 
     void findFeatures();
     float reconError(Match*);
