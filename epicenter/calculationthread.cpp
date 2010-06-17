@@ -43,7 +43,7 @@ bool CalculationThread::singleStep(int x, int y) {
 
     if (!block) return false;
 
-    /*
+
     if (!block->matches_) return true;
     cv::Mat tmpImage = base_.clone();
 
@@ -66,11 +66,6 @@ bool CalculationThread::singleStep(int x, int y) {
 
         }
     }
-    if(block->bestMatch_) {
-        std::cout << "best match: " <<  block->bestMatch_->error_ << std::endl;
-        for(int j=0; j<4; j++)
-            cv::line(tmpImage, block->bestMatch_->hull_.verts[j], block->bestMatch_->hull_.verts[(j+1) % 4], cv::Scalar(155,155,0,100));
-    }
 
     if(block->finalMatch_) {
         // highlight match
@@ -81,7 +76,7 @@ bool CalculationThread::singleStep(int x, int y) {
 
     debugWidgetR->fromIpl( tmpImage, "preview" );
     debugWidgetR->updateGL();
-    */
+
 
 
 
