@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
     if (prev_fn==SIG_IGN) signal(SIGTERM,SIG_IGN);
 
     // command line parsing
-    float error = 0.16f;
-    float alpha = 1.5f;
+    float error = 0.4f;
+    float alpha = 1.3f;
     bool verbose = false;
     bool onlyRestore = false;
     bool dbSearch = 0;
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     seedmap = new SeedMap(s, true);
     seedmap->fileName_ = fileName;
     seedmap->crit_.maxError_ = error;
-//    seedmap->crit_.alpha_ = alpha;
+    seedmap->crit_.alpha_ = alpha;
 //    seedmap->crit_.kltWinSize_ = winsize;
     seedmap->verbose_ = verbose;
     seedmap->setImage(image);

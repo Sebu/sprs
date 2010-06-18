@@ -70,10 +70,10 @@ void MainWindow::changeImage() {
 
 void MainWindow::saveImage() {
     // save matches
-    calcThread.seedmap->serialize(fileName_);
-//    calcThread.seedmap->image_.save(fileName_);
-//    calcThread.seedmap->image_.saveTexture(fileName_);
-//    calcThread.seedmap->image_.saveRecontruction(fileName_);
+    if(!calcThread.seedmap->done_) calcThread.seedmap->serialize(fileName_);
+    calcThread.seedmap->image_.saveTexture(fileName_);
+    calcThread.seedmap->image_.save(fileName_);
+    calcThread.seedmap->image_.saveRecontruction(fileName_);
 
 }
 

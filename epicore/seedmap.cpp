@@ -271,7 +271,7 @@ void SeedMap::optimizeCharts() {
     // find best matches in charts
     foreach(Patch* block, blocks_) {
         if(!block->matches_) continue;
-        if(block->parent_) block->copyMatches();
+        if(block->parent_) block->copyMatches(baseImage_);
         std::sort(block->matches_->begin(), block->matches_->end(), matchSorter);
         foreach(Match* match,*block->matches_) {
             bool covered = true;
@@ -289,14 +289,14 @@ void SeedMap::optimizeCharts() {
                 break;
             }
         }
-        if(!block->satChart_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED1" << std::endl;
+        if(!block->finalMatch_ && block->chart_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED1" << std::endl;
         if(!block->finalMatch_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED2" << std::endl;
         if(!block->satChart_ && !block->chart_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED3" << std::endl;
         if(block->parent_ || !block->sharesMatches_) block->resetMatches();
     }
 
     // trimm
-    //*
+    /*
     foreach(Patch* block, blocks_) {
         block->inChart_ = false;
     }
@@ -515,7 +515,7 @@ cv::Mat SeedMap::debugReconstruction() {
 
             Match *m = block->matches_->front();
 
-            cv::Mat reconstruction(m->reconstruct());
+            cv::Mat reconstruction(m->t_.reconstruct(baseImage_, s_));
             copyBlock(reconstruction, debugImages["reconstuct"] , cv::Rect(0, 0, s_, s_), cv::Rect(block->x_, block->y_, s_, s_) );
         }
 

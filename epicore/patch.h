@@ -72,13 +72,13 @@ public:
     Patch(cv::Mat& sourceImage, int, int, int, float, int, bool);
 
     void findFeatures();
-    float reconError(Match*);
+    float reconError(Match*, cv::Mat&);
     bool trackFeatures(Match*);
     Match* match(Patch&);
 
     void resetMatches();
 
-    void copyMatches();
+    void copyMatches(cv::Mat& base);
 
     cv::Scalar getHistMean() { return histMean_; }
     void setHistMean(cv::Scalar _hist_mean) { this->histMean_ = _hist_mean; }
