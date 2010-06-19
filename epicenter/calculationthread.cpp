@@ -61,7 +61,7 @@ bool CalculationThread::singleStep(int x, int y) {
                 cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,255-match->error_*colorScale,match->error_*colorScale,100));
 
             foreach(cv::Point2f p, block->pointsSrc_)
-                cv::line(tmpImage, p, p, cv::Scalar(0,155,00,100));
+                cv::line(tmpImage, p+cv::Point2f(block->x_,block->y_), p+cv::Point2f(block->x_,block->y_), cv::Scalar(0,155,00,100));
 
 
         }

@@ -88,7 +88,7 @@ cv::Mat Transform::warp(cv::Mat &src, uint s) {
 
     cv::Mat warped;
     cv::Mat selection(transformMat_, cv::Rect(0,0,3,2));
-    cv::warpAffine(src, warped, selection, cv::Size(s, s));
+    cv::warpAffine(src, warped, selection, cv::Size(s, s), cv::INTER_NEAREST);
 
     return warped;
 }

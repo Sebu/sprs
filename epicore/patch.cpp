@@ -116,22 +116,24 @@ float Patch::reconError(Match* m, cv::Mat& reconstruction) {
     float dist=0.0f;
     for (int y=0; y<reconstruction.rows; y++) {
 
-        cv::Vec3b* orig = patchColor_.ptr<cv::Vec3b>(y);
+        cv::Vec3b* orig = sourceColor_.ptr<cv::Vec3b>(y+y_);
         cv::Vec3b* recon = reconstruction.ptr<cv::Vec3b>(y);
         for(int x=0; x<reconstruction.cols; x++) {
 
-            cv::Vec3b vo = orig[x];
+            cv::Vec3b vo = orig[x+x_];
             cv::Vec3b vr = recon[x];
-            float r = ( ((float)vr[0]*m->t_.colorScale_[0]) - (float)vo[0] )/255.0f;
-            float g = ( ((float)vr[1]*m->t_.colorScale_[1]) - (float)vo[1] )/255.0f;
-            float b = ( ((float)vr[2]*m->t_.colorScale_[2]) - (float)vo[2] )/255.0f;
+            float r = ( ((float)vr[0]*m->t_.colorScale_[0]) - (float)vo[0] ) / 255.0;
+            float g = ( ((float)vr[1]*m->t_.colorScale_[1]) - (float)vo[1] ) / 255.0;
+            float b = ( ((float)vr[2]*m->t_.colorScale_[2]) - (float)vo[2] ) / 255.0;
 
-            dist += (r*r)+(g*g)+(b*b);
+            float val =  (r+g+b)/3.0;
+            dist +=  (r*r)+(g*g)+(b*b);
             //            if(dist * errorFactor_ > crit_->maxError_) return FLT_MAX;
         }
 
     }
 
+//    std::cout << dist * errorFactor_ << std::endl;
     return dist * errorFactor_;
 }
 
@@ -139,47 +141,46 @@ void Patch::findFeatures() {
 
     // precalculate variance
     float variance = 0.0;
+
+
     cv::Scalar mean = cv::mean(patchGray_);
 
 
     for (int y=0; y<patchGray_.rows; y++) {
         for(int x=0; x<patchGray_.cols; x++) {
             uchar p = cv::saturate_cast<uchar>(patchGray_.at<uchar>(y,x));
-            float v = ((float)p-(float)mean[0]) / 255.0f;
+            float v = ((float)p-(float)mean[0]) / 255.0;
             variance += v*v;
 
         }
     }
 
-    variance =  sqrt( variance / ((patchGray_.cols*patchGray_.rows)-1) );
+   variance =  sqrt(variance / (patchGray_.cols*patchGray_.rows));
 
     if(verbose_)
-        std::cout << "variance " << variance << std::endl;
+        std::cout << "variance " << variance << " " << mean[0] << std::endl;
 
     errorFactor_ = 1.0 / ( pow( variance, crit_->alpha_) + 0.0000000001f );
     errorFactor_ /= s_*s_;
 
     // track initial features
-    cv::goodFeaturesToTrack(patchGray_, pointsSrc_, 10, 0.02, 1.0, cv::Mat());
-//    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
+    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
     if(pointsSrc_.size()<3)
         if(verbose_)
             std::cout << "not enougth features found @ " << x_/s_ << " " << y_/s_ << std::endl;
 
 }
-bool Patch::trackFeatures(Match* match) {
+bool Patch::trackFeatures(Match* match, cv::Mat& reconstruction) {
 
-    //    return true;
+
     if(pointsSrc_.size()<3) return true;
 
 
-    cv::Mat rotated(match->warp());
-
     cv::Mat grayRotated;
-    cv::cvtColor(rotated, grayRotated, CV_RGB2GRAY);
+    cv::cvtColor(reconstruction, grayRotated, CV_RGB2GRAY);
 
-    //*/
+
     std::vector<cv::Point2f>    pointsDest;
     std::vector<uchar>          status;
     std::vector<float>          err;
@@ -189,7 +190,7 @@ bool Patch::trackFeatures(Match* match) {
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
-                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 50, 0.01));
+                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 50, 0.001));
 
 
 
@@ -232,7 +233,7 @@ bool Patch::trackFeatures(Match* match) {
 
     if(!same) {
         cv::Mat tmp = getTransform(destTri, srcTri);
-        // cv::Mat tmp = cv::estimateRigidTransform(cv::Mat(destTri), cv::Mat(srcTri), true);
+//        cv::Mat tmp = cv::estimateRigidTransform(cv::Mat(destTri), cv::Mat(srcTri), true);
         // cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
         cv::Mat warpMat = cv::Mat::eye(3,3,CV_64FC1);
         cv::Mat selection( warpMat, cv::Rect(0,0,3,2) );
@@ -263,7 +264,7 @@ Match* Patch::match(Patch& other) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
     //    std::cout << diff << std::endl;
-//    if(diff > crit_->maxOrient_) return 0;
+    if(diff > crit_->maxOrient_) return 0;
 
 
     Match* match = new Match(&other);
@@ -282,8 +283,10 @@ Match* Patch::match(Patch& other) {
         match->transformed_ = true;
     }
 
+    cv::Mat rotated(match->t_.warp(other.sourceColor_ ,s_));
+
     // 4.1 KLT matching
-    trackFeatures(match);
+    trackFeatures(match, rotated);
 
     // reconstruct
     cv::Mat reconstruction( match->t_.reconstruct(other.sourceColor_, s_) );
@@ -341,9 +344,16 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
     transScaleFlipMat_ =   transMat * flipMat * scaleMat;
 
     cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
-    cv::warpAffine(sourceColor_, patchColor_, selection, cv::Size(s_, s_));
+
+    cv::Mat patchColor;
+    cv::Mat patchGray;
+    cv::warpAffine(sourceColor_, patchColor , selection, cv::Size(s_, s_));
     // cache gray patch version
-    cv::cvtColor(patchColor_, patchGray_, CV_RGB2GRAY);
+    cv::cvtColor(patchColor, patchGray_, CV_RGB2GRAY);
+
+    if(isBlock_) {
+        patchColor_ = patchColor;
+    }
 
 
 
@@ -353,7 +363,7 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
     int histSize[] = {sbins, sbins, sbins};
     float sranges[] = { 0, 255 };
     const float* ranges[] = { sranges, sranges, sranges };
-    cv::calcHist( &patchColor_, 1, channels, cv::Mat(), // do not use mask
+    cv::calcHist( &patchColor, 1, channels, cv::Mat(), // do not use mask
                   colorHist_, 3, histSize, ranges,
                   true, // the histogram is uniform
                   false );
@@ -361,11 +371,11 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
 
     // generate orientation histogram
     orientHist_ = new OrientHistFast(this, 36);
-    setHistMean( cv::mean(patchColor_) );
+    setHistMean( cv::mean(patchColor) );
 
-    if(!isBlock_) {
-        patchColor_.release();
-        patchGray_.release();
-    }
+    if(!isBlock_)
+        patchGray_ = cv::Mat();
+
+
 
 }

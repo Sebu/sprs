@@ -30,7 +30,7 @@ public:
             float sum=0;
             for (int i=0; i < numBins_; i++){
                 sum += pow(bins_[i]-other->bins_[ (i+j) % numBins_ ], 2);
-                if (sum>=min) break;
+//                if (sum>=min) break;
             }
             if (sum<min) { min=sum; angle=j*factor_;}
         }

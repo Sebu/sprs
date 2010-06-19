@@ -22,9 +22,10 @@ void OrientHist::genOrientHists() {
         cv::Mat transform = rotMat * patch_->transScaleFlipMat_;
         cv::Mat rotPatch;
         cv::Mat selectionT(transform, cv::Rect(0,0,3,2));
-//        cv::warpAffine(patch_->sourceGray_, rotPatch, selectionT, cv::Size(patch_->s_, patch_->s_));
-
-        genSingle(rotPatch, i);
+        cv::warpAffine(patch_->sourceColor_, rotPatch, selectionT, cv::Size(patch_->s_, patch_->s_));
+        cv::Mat gray;
+        cv::cvtColor(rotPatch, gray, CV_RGB2GRAY);
+        genSingle(gray, i);
 
     }
 }

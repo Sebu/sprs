@@ -109,20 +109,20 @@ cv::Mat Chart::getMap() {
    return map;
 }
 
-void Chart::save()
+void Chart::save(std::string fileName)
 {
     if (chartBlocks_.empty()) return;
 
-    std::stringstream fileName;
-    fileName << "../epitomes/" << id_;
+    std::stringstream saveName;
+    saveName << fileName << ".chart" << id_;
 
-    std::cout << fileName << std::endl;
+    std::cout << saveName << std::endl;
     //*
-    cv::Mat tilesImage = cv::Mat::zeros(12 , chartBlocks_.size()*12, CV_8UC3);
+    cv::Mat tilesImage = cv::Mat::zeros(12, chartBlocks_.size()*12, CV_8UC3);
 
 
 
-    std::ofstream ofs( (fileName.str() + ".txt").c_str() );
+    std::ofstream ofs( (saveName.str() + ".txt").c_str() );
 //    ofs << maxX_-minX_ << " " << maxY_-minY_ << " ";
     for(uint i=0; i< chartBlocks_.size(); i++) {
         Patch *block = chartBlocks_[i];
@@ -135,7 +135,7 @@ void Chart::save()
     }
     ofs.close();
 
-    cv::imwrite((fileName.str() + ".png"), tilesImage);
+    cv::imwrite((saveName.str() + ".png"), tilesImage);
     //*/
 
 }

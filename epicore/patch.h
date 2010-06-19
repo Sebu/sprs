@@ -73,7 +73,7 @@ public:
 
     void findFeatures();
     float reconError(Match*, cv::Mat&);
-    bool trackFeatures(Match*);
+    bool trackFeatures(Match*, cv::Mat&);
     Match* match(Patch&);
 
     void resetMatches();

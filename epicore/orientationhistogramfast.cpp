@@ -72,6 +72,7 @@ void OrientHistFast::genSingle(cv::Mat& image) {
         }
     }
 
+
     for(int i=0; i<numBins_; i++) {
         float n2 = bins[ (i-2) % numBins_]*1.0;
         float n1 = bins[ (i-1) % numBins_]*4.0;

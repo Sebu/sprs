@@ -29,7 +29,7 @@ public:
 
     cv::Mat getMap();
 
-    void save();
+    void save(std::string fileName);
 
 
 };
