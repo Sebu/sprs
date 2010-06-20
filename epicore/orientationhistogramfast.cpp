@@ -60,14 +60,14 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 
     float threshold = (sumContrast / count) * 2.0f;
 
-    float* bins = new float[numBins_];
+    float bins[numBins_];
     for(int i=0; i<numBins_; i++) bins[i]=0.0f;
 
     for(int y=0; y<image.rows-1; y++) {
         for (int x=0; x<image.cols-1; x++) {
             //if(contrast.at<float>(y,x) > threshold ) {
                 int dir = round(direction.at<float>(y,x) / factor_);
-                bins[  dir  ] += contrast.at<float>(y,x);
+                bins[  dir % numBins_  ] += contrast.at<float>(y,x);
             //}
         }
     }
@@ -81,6 +81,7 @@ void OrientHistFast::genSingle(cv::Mat& image) {
         float p2 = bins[ (i+2) % numBins_]*1.0;
         bins_[i] = (n2 + n1 + o + p1 + p2)/16.0;
     }
+
 }
 
 
@@ -91,10 +92,17 @@ OrientHistFast::OrientHistFast(Patch* patch, int numBins) : bins_(0), numBins_(n
     patch_ = patch;
     bins_ = new float[numBins_];
 
-    factor_ = 360/numBins_;
+    factor_ = 360.0f/numBins_;
     // init with 0s
     for(int i=0; i<numBins_; i++) bins_[i]=0.0f;
 
-    genSingle(patch->patchGray_);
+    cv::Mat patchColor;
+    cv::Mat patchGray;
+    cv::Mat selection(patch->transScaleFlipMat_, cv::Rect(0,0,3,2));
+    cv::warpAffine(patch->sourceColor_, patchColor , selection, cv::Size(patch->s_, patch->s_));
+    // cache gray patch version
+    cv::cvtColor(patchColor, patchGray, CV_RGB2GRAY);
+
+    genSingle(patchGray);
 
 }

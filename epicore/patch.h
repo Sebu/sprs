@@ -61,9 +61,7 @@ public:
     std::vector<Match*> overlapingMatches_;
 
     cv::Mat sourceColor_;
-
     cv::Mat patchColor_;
-    cv::Mat patchGray_;
 
     cv::MatND colorHist_;
     OrientHistFast* orientHist_;

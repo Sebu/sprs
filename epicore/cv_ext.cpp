@@ -25,7 +25,7 @@ cv::Mat getTransform( const std::vector<cv::Point2f> src, const std::vector<cv::
     if (size==3)
       solve( A, B, X); //, cv::DECOMP_SVD);
     else
-      solve( A, B, X, cv::DECOMP_SVD);
+      solve( A, B, X, cv::DECOMP_QR);
     return M;
 }
 

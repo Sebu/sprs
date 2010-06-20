@@ -142,20 +142,26 @@ void Patch::findFeatures() {
     // precalculate variance
     float variance = 0.0;
 
+    cv::Mat patchColor;
+    cv::Mat patchGray;
+    cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
+    cv::warpAffine(sourceColor_, patchColor , selection, cv::Size(s_, s_));
+    // cache gray patch version
+    cv::cvtColor(patchColor, patchGray, CV_RGB2GRAY);
 
-    cv::Scalar mean = cv::mean(patchGray_);
+    cv::Scalar mean = cv::mean(patchGray);
 
 
-    for (int y=0; y<patchGray_.rows; y++) {
-        for(int x=0; x<patchGray_.cols; x++) {
-            uchar p = cv::saturate_cast<uchar>(patchGray_.at<uchar>(y,x));
+    for (int y=0; y<patchGray.rows; y++) {
+        for(int x=0; x<patchGray.cols; x++) {
+            uchar p = cv::saturate_cast<uchar>(patchGray.at<uchar>(y,x));
             float v = ((float)p-(float)mean[0]) / 255.0;
             variance += v*v;
 
         }
     }
 
-   variance =  sqrt(variance / (patchGray_.cols*patchGray_.rows));
+   variance =  sqrt(variance / (patchGray.cols*patchGray.rows));
 
     if(verbose_)
         std::cout << "variance " << variance << " " << mean[0] << std::endl;
@@ -164,7 +170,7 @@ void Patch::findFeatures() {
     errorFactor_ /= s_*s_;
 
     // track initial features
-    cv::goodFeaturesToTrack(patchGray_, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
+    cv::goodFeaturesToTrack(patchGray, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
     if(pointsSrc_.size()<3)
         if(verbose_)
@@ -186,7 +192,7 @@ bool Patch::trackFeatures(Match* match, cv::Mat& reconstruction) {
     std::vector<float>          err;
 
 
-    cv::calcOpticalFlowPyrLK( patchGray_, grayRotated,
+    cv::calcOpticalFlowPyrLK( patchColor_, reconstruction,
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
@@ -208,22 +214,31 @@ bool Patch::trackFeatures(Match* match, cv::Mat& reconstruction) {
 
     std::vector<cv::Point2f> srcTri, destTri;
 
-    for(uint j = 0; j < 3; j++) {
+    cv::Mat P(features.size(),3,CV_64FC1);
+    cv::Mat Q(features.size(),3,CV_64FC1);
+
+    for(uint j = 0; j < features.size(); j++) {
         int i = features[j]->idx_;
-        cv::Point2f s,d;
-        s.x = pointsSrc_[i].x;
-        s.y = pointsSrc_[i].y;
-        d.x = pointsDest[i].x;
-        d.y = pointsDest[i].y;
-        srcTri.push_back(s);
-        destTri.push_back(d);
+        P.at<double>(j,0) = pointsDest[i].x;
+        P.at<double>(j,1) = pointsDest[i].y;
+        P.at<double>(j,2) = 1.0;
+        Q.at<double>(j,0) = pointsSrc_[i].x;
+        Q.at<double>(j,1) = pointsSrc_[i].y;
+        Q.at<double>(j,2) = 1.0;
+        //        cv::Point2f s,d;
+//        s.x = pointsSrc_[i].x;
+//        s.y = pointsSrc_[i].y;
+//        d.x = pointsDest[i].x;
+//        d.y = pointsDest[i].y;
+//        srcTri.push_back(s);
+//        destTri.push_back(d);
     }
 
 
 
     bool same = true;
-    for(int i=0; i<3; i++) {
-        if(srcTri[i].x!=destTri[i].x ||  srcTri[i].y!=destTri[i].y) {
+    for(int j=0; j<features.size(); j++) {
+        if(P.at<double>(j,0)!=Q.at<double>(j,0) ||  P.at<double>(j,1)!=Q.at<double>(j,1)) {
             same = false;
             break;
         }
@@ -232,18 +247,20 @@ bool Patch::trackFeatures(Match* match, cv::Mat& reconstruction) {
 
 
     if(!same) {
-        cv::Mat tmp = getTransform(destTri, srcTri);
+
+          cv::Mat tmp = (P.t()*P).inv() * (P.t() * Q);
+//        cv::Mat tmp = getTransform(destTri, srcTri);
 //        cv::Mat tmp = cv::estimateRigidTransform(cv::Mat(destTri), cv::Mat(srcTri), true);
         // cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
         cv::Mat warpMat = cv::Mat::eye(3,3,CV_64FC1);
         cv::Mat selection( warpMat, cv::Rect(0,0,3,2) );
         tmp.copyTo(selection);
 
-        match->t_.transformMat_ = warpMat * match->t_.transformMat_;
+        match->t_.transformMat_ = tmp.t() * match->t_.transformMat_;
 
         match->transformed_ = true;
     }
-    //*/
+  //*/
 
     return true;
 
@@ -343,18 +360,9 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
 
     transScaleFlipMat_ =   transMat * flipMat * scaleMat;
 
-    cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
-
     cv::Mat patchColor;
-    cv::Mat patchGray;
+    cv::Mat selection(transScaleFlipMat_, cv::Rect(0,0,3,2));
     cv::warpAffine(sourceColor_, patchColor , selection, cv::Size(s_, s_));
-    // cache gray patch version
-    cv::cvtColor(patchColor, patchGray_, CV_RGB2GRAY);
-
-    if(isBlock_) {
-        patchColor_ = patchColor;
-    }
-
 
 
     // cache color histogram
@@ -368,14 +376,11 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
                   true, // the histogram is uniform
                   false );
 
-
     // generate orientation histogram
     orientHist_ = new OrientHistFast(this, 36);
     setHistMean( cv::mean(patchColor) );
 
-    if(!isBlock_)
-        patchGray_ = cv::Mat();
-
-
-
+    if(isBlock_) {
+        patchColor_ = patchColor;
+    }
 }
