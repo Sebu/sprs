@@ -133,7 +133,7 @@ float Patch::reconError(Match* m, cv::Mat& reconstruction) {
 
     }
 
-//    std::cout << dist * errorFactor_ << std::endl;
+    //    std::cout << dist * errorFactor_ << std::endl;
     return dist * errorFactor_;
 }
 
@@ -161,7 +161,7 @@ void Patch::findFeatures() {
         }
     }
 
-   variance =  sqrt(variance / (patchGray.cols*patchGray.rows));
+    variance =  sqrt(variance / (patchGray.cols*patchGray.rows));
 
     if(verbose_)
         std::cout << "variance " << variance << " " << mean[0] << std::endl;
@@ -212,8 +212,6 @@ bool Patch::trackFeatures(Match* match, cv::Mat& reconstruction) {
 
     std::sort(features.begin(), features.end(), errorSorter);
 
-    std::vector<cv::Point2f> srcTri, destTri;
-
     cv::Mat P(features.size(),3,CV_64FC1);
     cv::Mat Q(features.size(),3,CV_64FC1);
 
@@ -225,46 +223,23 @@ bool Patch::trackFeatures(Match* match, cv::Mat& reconstruction) {
         Q.at<double>(j,0) = pointsSrc_[i].x;
         Q.at<double>(j,1) = pointsSrc_[i].y;
         Q.at<double>(j,2) = 1.0;
-        //        cv::Point2f s,d;
-//        s.x = pointsSrc_[i].x;
-//        s.y = pointsSrc_[i].y;
-//        d.x = pointsDest[i].x;
-//        d.y = pointsDest[i].y;
-//        srcTri.push_back(s);
-//        destTri.push_back(d);
     }
 
 
+    cv::Mat tmp = ((P.t()*P).inv() * (P.t() * Q)).t();
 
-    bool same = true;
-    for(int j=0; j<features.size(); j++) {
-        if(P.at<double>(j,0)!=Q.at<double>(j,0) ||  P.at<double>(j,1)!=Q.at<double>(j,1)) {
-            same = false;
-            break;
-        }
-    }
+    cv::Mat diff = tmp - cv::Mat::eye(3,3,CV_64FC1);
 
-
-
-    if(!same) {
-
-          cv::Mat tmp = (P.t()*P).inv() * (P.t() * Q);
-//        cv::Mat tmp = getTransform(destTri, srcTri);
-//        cv::Mat tmp = cv::estimateRigidTransform(cv::Mat(destTri), cv::Mat(srcTri), true);
-        // cv::Mat tmp = cv::getAffineTransform(destTri, srcTri);
-        cv::Mat warpMat = cv::Mat::eye(3,3,CV_64FC1);
-        cv::Mat selection( warpMat, cv::Rect(0,0,3,2) );
-        tmp.copyTo(selection);
-
-        match->t_.transformMat_ = tmp.t() * match->t_.transformMat_;
-
+    if(cv::countNonZero(diff)) {
         match->transformed_ = true;
+        match->t_.transformMat_ = tmp * match->t_.transformMat_;
     }
-  //*/
+
 
     return true;
-
 }
+
+
 Match* Patch::match(Patch& other) {
 
 
@@ -303,7 +278,8 @@ Match* Patch::match(Patch& other) {
     cv::Mat rotated(match->t_.warp(other.sourceColor_ ,s_));
 
     // 4.1 KLT matching
-    trackFeatures(match, rotated);
+    if(id_!=other.id_)
+        trackFeatures(match, rotated);
 
     // reconstruct
     cv::Mat reconstruction( match->t_.reconstruct(other.sourceColor_, s_) );
