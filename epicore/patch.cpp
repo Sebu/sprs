@@ -172,31 +172,41 @@ void Patch::findFeatures() {
     // track initial features
     cv::goodFeaturesToTrack(patchGray, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
+    for(int i=0; i<pointsSrc_.size(); i++) {
+        pointsSrc_[i].x += 5;
+        pointsSrc_[i].y += 5;
+    }
+
     if(pointsSrc_.size()<3)
         if(verbose_)
             std::cout << "not enougth features found @ " << x_/s_ << " " << y_/s_ << std::endl;
 
 }
-bool Patch::trackFeatures(Match* match, cv::Mat& reconstruction) {
+bool Patch::trackFeatures(Patch& other, Match* match) {
 
 
     if(pointsSrc_.size()<3) return true;
-
-
-    cv::Mat grayRotated;
-    cv::cvtColor(reconstruction, grayRotated, CV_RGB2GRAY);
-
 
     std::vector<cv::Point2f>    pointsDest;
     std::vector<uchar>          status;
     std::vector<float>          err;
 
 
+    int offset = 5;
+    Transform t2;
+    cv::Mat offsetMat = cv::Mat::eye(3,3,CV_64FC1);
+    offsetMat.at<double>(0,2)=offset;
+    offsetMat.at<double>(1,2)=offset;
+
+    t2.transformMat_ = offsetMat * match->t_.transformMat_;
+    cv::Mat reconstruction = t2.warp(other.sourceColor_ ,s_+offset+offset);
+
+
     cv::calcOpticalFlowPyrLK( patchColor_, reconstruction,
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
-                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 50, 0.001));
+                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 30, 0.01));
 
 
 
@@ -275,11 +285,9 @@ Match* Patch::match(Patch& other) {
         match->transformed_ = true;
     }
 
-    cv::Mat rotated(match->t_.warp(other.sourceColor_ ,s_));
-
     // 4.1 KLT matching
     if(id_!=other.id_)
-        trackFeatures(match, rotated);
+        trackFeatures(other, match);
 
     // reconstruct
     cv::Mat reconstruction( match->t_.reconstruct(other.sourceColor_, s_) );
@@ -357,6 +365,12 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
     setHistMean( cv::mean(patchColor) );
 
     if(isBlock_) {
-        patchColor_ = patchColor;
+        int offset = 5;
+        Transform t1;
+        cv::Mat offsetMat = cv::Mat::eye(3,3,CV_64FC1);
+        offsetMat.at<double>(0,2)=offset;
+        offsetMat.at<double>(1,2)=offset;
+        t1.transformMat_ = offsetMat * transScaleFlipMat_;
+        patchColor_ = t1.warp(sourceColor_, s_+offset+offset);
     }
 }
