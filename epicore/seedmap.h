@@ -70,12 +70,12 @@ public:
 
     // epitome generation
     std::vector<Patch*> genCoveredBlocks(Match *match);
-    void genNeighbours();
+    void findNeighbours();
     Chart* generateChart(Patch*);
     void generateCharts();
     Chart* findBestChart();
     void growChart(Chart *chart);
-    void optimizeCharts();
+    void findFinalMatches();
 
     // debug
     std::map<std::string, cv::Mat> debugImages;

@@ -38,14 +38,15 @@ void SeedMap::growChart(Chart *chart) {
 
         foreach(Match* match, newBlock->overlapingMatches_) {
             if(match->block_->satisfied_) continue;
-            match->block_->satisfied_ = true;
             std::vector<Patch*> coveredBlocks = genCoveredBlocks(match);
+            bool satisfiable = true;
             foreach (Patch* innerBlock, coveredBlocks) {
                 if (innerBlock->inChart_) continue;
-                match->block_->satisfied_ = false;
+                satisfiable = false;
                 break;
             }
-            if (match->block_->satisfied_) {
+            if (satisfiable) {
+                match->block_->satisfied_ = true;
                 satBlocks.push_back(match->block_);
                 benefit++;
             }
@@ -82,18 +83,28 @@ Chart *SeedMap::findBestChart() {
     Chart *bestChart = 0;
 
     foreach(Patch *block, blocks_) {
-        if(block->inChart_ || block->satisfied_ || block->parent_) continue;
+        if(block->satisfied_) continue;
 
         Chart *chart = new Chart(baseImage_);
 
         // mark the whole match region
         foreach(Match *match, block->overlapingMatches_) {
             if(match->block_->inChart_ || match->block_->satisfied_) continue;
+            std::vector<Patch*> coveredBlocks = genCoveredBlocks(match);
+
+
+            bool uselessMatch = false;
+            foreach(Patch *b, coveredBlocks) {
+                if(b->inChart_) uselessMatch = true;
+            }
+            if(uselessMatch) continue;
+
+
+
             match->block_->satisfied_=true;
             chart->satBlocks_.push_back(match->block_);
             chart->benefit_++;
 
-            std::vector<Patch*> coveredBlocks = genCoveredBlocks(match);
             foreach(Patch *b, coveredBlocks) {
                 if(b->candidate_) continue;
                 b->candidate_=true;
@@ -102,18 +113,20 @@ Chart *SeedMap::findBestChart() {
             }
         }
 
+
         // did we satisfy other blocks?
         foreach(Patch* b, chart->chartBlocks_) {
             foreach(Match* match, b->overlapingMatches_) {
                 if(match->block_->satisfied_) continue;
-                match->block_->satisfied_ = true;
                 std::vector<Patch*> coveredBlocks = genCoveredBlocks(match);
+                bool satisfiable = true;
                 foreach (Patch* innerBlock, coveredBlocks) {
                     if (innerBlock->candidate_) continue;
-                    match->block_->satisfied_ = false;
+                    satisfiable = false;
                     break;
                 }
-                if (match->block_->satisfied_) {
+                if (satisfiable) {
+                    match->block_->satisfied_ = true;
                     chart->satBlocks_.push_back(match->block_);
                     chart->benefit_++;
                 }
@@ -130,7 +143,7 @@ Chart *SeedMap::findBestChart() {
             b->candidate_=false;
         }
 
-        if(chart->benefit_>bestBenefit) {
+        if(chart->benefit_>bestBenefit && chart->satBlocks_.size() > 0) {
             bestBenefit = chart->benefit_;
             bestChart = chart;
         } else {
@@ -146,7 +159,8 @@ Chart *SeedMap::findBestChart() {
 
 std::vector<Patch*> SeedMap::genCoveredBlocks(Match *match) {
 
-    std::vector<Patch*>coveredBlocks;
+    std::vector<Patch*> coveredBlocks;
+
     // calc bbox of match
     AABB box = match->hull_.getBox();
     uint minx = floor( std::max(box.min.m_v[0] / s_, 0.0f) );
@@ -157,8 +171,7 @@ std::vector<Patch*> SeedMap::genCoveredBlocks(Match *match) {
 
     for(uint y=miny; y<=maxy; y++) {
         for(uint x=minx; x<=maxx; x++) {
-            Patch* b = blocks_.at(y*blocksx_ + x);
-
+            Patch* b = getPatch(x,y);
             if (b->hull_.intersects(match->hull_)) {
                 coveredBlocks.push_back(b);
             }
@@ -169,19 +182,7 @@ std::vector<Patch*> SeedMap::genCoveredBlocks(Match *match) {
 
 void SeedMap::generateCharts() {
 
-    if(termCalculate_) return;
-
-    //TODO: free some memory
-    /*
-    foreach(Patch *seed, seeds_) {
-        if(!seed->isBlock_) {
-            delete seed;
-            seed=0;
-        }
-    }
-    //*/
-
-    genNeighbours();
+    findNeighbours();
 
     foreach(Patch* block, blocks_) {
         if(!block->matches_ || block->finalMatch_ || block->parent_) continue;
@@ -198,8 +199,7 @@ void SeedMap::generateCharts() {
 
             for(uint y=miny; y<=maxy; y++) {
                 for(uint x=minx; x<=maxx; x++) {
-                    Patch* b = blocks_.at(y*blocksx_ + x);
-
+                    Patch* b = getPatch(x,y);
                     if (b->hull_.intersects(match->hull_)) {
                         b->overlapingMatches_.push_back(match);
                     }
@@ -219,7 +219,7 @@ void SeedMap::generateCharts() {
         if(!bestChart) break;
 
         if(verbose_)
-            std::cout << bestChart->benefit_ << std::endl;
+            std::cout << bestChart->benefit_ << " " <<  bestChart->chartBlocks_.size() << " " <<  bestChart->satBlocks_.size()  << std::endl;
 
 
         foreach(Patch *b, bestChart->satBlocks_) {
@@ -238,13 +238,13 @@ void SeedMap::generateCharts() {
 
     };
 
-    optimizeCharts();
+    findFinalMatches();
 
     image_.genTexture();
 
-    for(uint i=0; i<blocksy_; i++) {
-        for(uint j=0; j<blocksx_; j++) {
-            Patch* block = getPatch(j,i);
+    // copy transforms
+    foreach(Patch *block, blocks_) {
+//            Patch* block = getPatch(j,i);
             Match* final = block->finalMatch_;
 
             if(!block->satChart_) std::cout << "what no satChart?" << std::endl;
@@ -258,7 +258,7 @@ void SeedMap::generateCharts() {
             t->colorScale_ = final->t_.colorScale_;
             t->transformMat_ = final->t_.transformMat_ * inverted;
             image_.transforms_.push_back(t);
-        }
+
     }
 
 
@@ -266,7 +266,7 @@ void SeedMap::generateCharts() {
 
 
 
-void SeedMap::optimizeCharts() {
+void SeedMap::findFinalMatches() {
 
     // find best matches in charts
     foreach(Patch* block, blocks_) {
@@ -289,9 +289,6 @@ void SeedMap::optimizeCharts() {
                 break;
             }
         }
-        if(!block->finalMatch_ && block->chart_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED1" << std::endl;
-        if(!block->finalMatch_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED2" << std::endl;
-        if(!block->satChart_ && !block->chart_) std::cout << "BLOCK " << block->x_ << " " << block->y_ << "NOT COVERED3" << std::endl;
         if(block->parent_ || !block->sharesMatches_) block->resetMatches();
     }
 
@@ -310,12 +307,16 @@ void SeedMap::optimizeCharts() {
     }
     //*/
     foreach(Patch *b, blocks_) {
-        if(!b->finalMatch_) std::cout<<" missing " << b->x_ << " " << b->y_ << std::endl;
+        if(!b->finalMatch_) {
+            std::cout<<" missing " << b->x_ << " " << b->y_;
+            if(b->inChart_) std::cout << "!!!";
+            std::cout << std::endl;
+        }
     }
 
 }
 
-void SeedMap::genNeighbours() {
+void SeedMap::findNeighbours() {
 
     for(uint y=0; y<blocksy_; y++) {
         for(uint x=0; x<blocksx_; x++) {
@@ -424,8 +425,7 @@ Patch* SeedMap::matchNext() {
 
 
 Patch* SeedMap::getPatch(int x, int y) {
-    Patch* patch = blocks_[y * blocksx_ + x];
-    return patch;
+    return blocks_[y * blocksx_ + x];
 }
 
 void SeedMap::saveReconstruction(std::string fileName) {
