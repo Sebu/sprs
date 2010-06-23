@@ -38,7 +38,7 @@ void Patch::copyMatches(cv::Mat& base) {
         oldMatch->t_.transformMat_.copyTo(t.transformMat_);
         newMatch->t_ = t;
         newMatch->calcHull();
-        cv::Mat reconstruction( newMatch->t_.reconstruct(base, s_) );
+        cv::Mat reconstruction( newMatch->t_.warp(base, s_) );
         newMatch->error_ =  reconError(newMatch, reconstruction);
         //      if (newMatch->error_ < crit_->maxError_)
         newVector->push_back(newMatch);
@@ -197,17 +197,17 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
 
 
     int offset = (20-s_)/2;
-    Transform t2;
+    Transform t1;
     cv::Mat offsetMat = cv::Mat::eye(3,3,CV_64FC1);
     offsetMat.at<double>(0,2)=offset;
     offsetMat.at<double>(1,2)=offset;
 
-    t2.transformMat_ = offsetMat * match->t_.transformMat_;
-    cv::Mat ret = t2.warp(other.sourceColor_ ,s_+offset+offset);
+    t1.transformMat_ = offsetMat * match->t_.transformMat_;
+    cv::Mat ret = t1.reconstruct(other.sourceColor_ ,s_+offset+offset);
     cv::Mat reconstruction;
     cv::cvtColor(ret, reconstruction, CV_RGB2GRAY);
 
-    cv::calcOpticalFlowPyrLK( patchColor_, reconstruction,
+    cv::calcOpticalFlowPyrLK( patchGray_, reconstruction,
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
@@ -270,7 +270,7 @@ Match* Patch::match(Patch& other) {
 
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_);
-    //    std::cout << diff << std::endl;
+//        std::cout << diff << std::endl;
     if(diff > crit_->maxOrient_) return 0;
 
 
@@ -290,6 +290,9 @@ Match* Patch::match(Patch& other) {
         match->transformed_ = true;
     }
 
+//    cv::Mat reconstruction = match->t_.warp(other.sourceColor_, s_);
+//    match->error_ =  reconError(match, reconstruction);
+
     // 4.1 KLT matching
     if(id_!=other.id_)
         trackFeatures(other, match);
@@ -298,10 +301,10 @@ Match* Patch::match(Patch& other) {
     cv::Mat selection(match->t_.transformMat_, cv::Rect(0,0,3,2));
     cv::Mat inverted;
     invertAffineTransform(selection, inverted);
-    if(cv::countNonZero(inverted)==0) {std::cout << "degenerated match" << std::endl; delete match; return 0; }
+    if(cv::countNonZero(inverted)==0) { delete match; return 0; }
 
     // reconstruct
-    cv::Mat reconstruction( match->t_.reconstruct(other.sourceColor_, s_) );
+    cv::Mat reconstruction = match->t_.warp(other.sourceColor_, s_);
 
     // 4 reconstruction error
     match->error_ =  reconError(match, reconstruction);
@@ -384,6 +387,6 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
         offsetMat.at<double>(1,2)=offset;
         t1.transformMat_ = offsetMat * transScaleFlipMat_;
         cv::Mat patch = t1.warp(sourceColor_, s_+offset+offset);
-        cv::cvtColor(patch, patchColor_, CV_RGB2GRAY);
+        cv::cvtColor(patch, patchGray_, CV_RGB2GRAY);
     }
 }

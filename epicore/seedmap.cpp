@@ -182,8 +182,6 @@ void SeedMap::generateCharts() {
 
     foreach(Patch* block, blocks_) {
         if(!block->matches_ || block->finalMatch_ || block->parent_) continue;
-
-
         foreach(Match* match, *(block->matches_)) {
             // calc bbox of match
             AABB box = match->hull_.getBox();
@@ -191,7 +189,6 @@ void SeedMap::generateCharts() {
             uint miny = floor( std::max(box.min.m_v[1] / s_, 0.0f) );
             uint maxx = ceil( std::min(box.max.m_v[0] / s_, (float)blocksx_-1.0f) );
             uint maxy = ceil( std::min(box.max.m_v[1] / s_, (float)blocksy_-1.0f) );
-
 
             for(uint y=miny; y<=maxy; y++) {
                 for(uint x=minx; x<=maxx; x++) {
@@ -201,6 +198,8 @@ void SeedMap::generateCharts() {
                     }
                 }
             }
+
+
         }
     }
 
@@ -239,7 +238,6 @@ void SeedMap::generateCharts() {
 
     // copy transforms
     foreach(Patch *block, blocks_) {
-//            Patch* block = getPatch(j,i);
             Match* final = block->finalMatch_;
 
             if(!block->satisfied_) std::cout << "what no satChart?" << std::endl;
