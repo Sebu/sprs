@@ -69,6 +69,14 @@ bool CalculationThread::singleStep(int x, int y) {
 
     if(block->finalMatch_) {
         // highlight match
+        cv::Mat selection(block->finalMatch_->t_.transformMat_, cv::Rect(0,0,3,2));
+        cv::Mat inverted;
+        invertAffineTransform(selection, inverted);
+        for (int i=0; i<2; i++)
+            for(int j=0; j<3; j++)
+                std::cout << inverted.at<double>(i,j) << " ";
+        for(int j=0; j<4; j++)
+            std::cout << block->finalMatch_->hull_.verts[j].m_v[0] << " " << block->finalMatch_->hull_.verts[j].m_v[1] << std::endl;
         for(int j=0; j<4; j++)
             cv::line(tmpImage, block->finalMatch_->hull_.verts[j], block->finalMatch_->hull_.verts[(j+1) % 4], cv::Scalar(100,255,0,100));
     }

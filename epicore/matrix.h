@@ -200,7 +200,7 @@ public:
         return b;
     }
 
-    AABB(): min(Vector2f(FLT_MAX,FLT_MAX)), max(Vector2f(0,0)) {
+    AABB(): min(Vector2f(FLT_MAX,FLT_MAX)), max(Vector2f(FLT_MIN,FLT_MIN)) {
 
     }
 

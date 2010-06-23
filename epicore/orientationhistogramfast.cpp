@@ -89,7 +89,6 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 
 OrientHistFast::OrientHistFast(Patch* patch, int numBins) : bins_(0), numBins_(numBins)
 {
-    patch_ = patch;
     bins_ = new float[numBins_];
 
     factor_ = 360.0f/numBins_;

@@ -49,12 +49,10 @@ public:
     SearchCriteria* crit_;
     bool verbose_;
 
-    bool satisfied_;
-    bool inChart_;
-    bool candidate_;
+    Chart* satisfied_;
+    Chart* inChart_;
+    Chart* candidate_;
 
-    Chart* chart_;
-    Chart* satChart_;
     Match* finalMatch_;
     std::vector<Match*>* matches_;
     std::vector<Patch*> neighbours_;

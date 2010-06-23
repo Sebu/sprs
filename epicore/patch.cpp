@@ -32,11 +32,14 @@ void Patch::copyMatches(cv::Mat& base) {
     foreach(Match *oldMatch, *(this->matches_)) {
         Match* newMatch = new Match(*oldMatch);
         newMatch->block_ = this;
-
         // recalculate error
-        newMatch->t_.colorScale_=cv::Scalar::all(1.0f);
+        Transform t;
+        t.colorScale_=cv::Scalar::all(1.0f);
+        oldMatch->t_.transformMat_.copyTo(t.transformMat_);
+        newMatch->t_ = t;
+        newMatch->calcHull();
         cv::Mat reconstruction( newMatch->t_.reconstruct(base, s_) );
-        newMatch->error_ =  reconError(newMatch, reconstruction) / (s_*s_);
+        newMatch->error_ =  reconError(newMatch, reconstruction);
         //      if (newMatch->error_ < crit_->maxError_)
         newVector->push_back(newMatch);
     }
@@ -172,9 +175,10 @@ void Patch::findFeatures() {
     // track initial features
     cv::goodFeaturesToTrack(patchGray, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
+    int offset = (20-s_)/2;
     for(int i=0; i<pointsSrc_.size(); i++) {
-        pointsSrc_[i].x += 10;
-        pointsSrc_[i].y += 10;
+        pointsSrc_[i].x += (float)offset;
+        pointsSrc_[i].y += (float)offset;
     }
 
     if(pointsSrc_.size()<3)
@@ -192,7 +196,7 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
     std::vector<float>          err;
 
 
-    int offset = 10;
+    int offset = (20-s_)/2;
     Transform t2;
     cv::Mat offsetMat = cv::Mat::eye(3,3,CV_64FC1);
     offsetMat.at<double>(0,2)=offset;
@@ -276,7 +280,7 @@ Match* Patch::match(Patch& other) {
 
     // apply initial rotation
     if ((int)orientation!=0) {
-        cv::Point2f center( (float)(s_/2), (float)(s_/2));
+        cv::Point2f center( (float)(s_/2)+0.5, (float)(s_/2)+0.5);
 
         cv::Mat rMat = cv::Mat::eye(3,3,CV_64FC1);
         cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
@@ -290,6 +294,12 @@ Match* Patch::match(Patch& other) {
     if(id_!=other.id_)
         trackFeatures(other, match);
 
+
+    cv::Mat selection(match->t_.transformMat_, cv::Rect(0,0,3,2));
+    cv::Mat inverted;
+    invertAffineTransform(selection, inverted);
+    if(cv::countNonZero(inverted)==0) {std::cout << "degenerated match" << std::endl; delete match; return 0; }
+
     // reconstruct
     cv::Mat reconstruction( match->t_.reconstruct(other.sourceColor_, s_) );
 
@@ -297,6 +307,7 @@ Match* Patch::match(Patch& other) {
     match->error_ =  reconError(match, reconstruction);
 
     if (match->error_ > crit_->maxError_) {delete match; return 0; }
+
 
     //DEBUG
     if(verbose_) {
@@ -311,7 +322,7 @@ Match* Patch::match(Patch& other) {
 }
 
 Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), parent_(0), sharesMatches_(0), matches_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), chart_(0), satChart_(0), errorFactor_(0), isBlock_(isBlock)
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), parent_(0), sharesMatches_(0), matches_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), errorFactor_(0), isBlock_(isBlock)
 {
 
     id_ = idCounter_++;
@@ -366,7 +377,7 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
     setHistMean( cv::mean(patchColor) );
 
     if(isBlock_) {
-        int offset = 10;
+        int offset = (20-s_)/2;
         Transform t1;
         cv::Mat offsetMat = cv::Mat::eye(3,3,CV_64FC1);
         offsetMat.at<double>(0,2)=offset;
