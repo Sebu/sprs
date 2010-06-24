@@ -12,6 +12,7 @@
 
 // bool tileSorter (Patch* i, Patch* j) { return (i->blocks_ > j->blocks_ ); }
 bool chartSorter (Chart* i, Chart* j) { return (i->benefit_ > j->benefit_ ); }
+bool overlapSorter (Patch* i, Patch* j) { return (i->overlapingMatches_.size() > j->overlapingMatches_.size() ); }
 
 void SeedMap::growChart(Chart *chart) {
 
@@ -26,6 +27,7 @@ void SeedMap::growChart(Chart *chart) {
 
     while(!newBlocks.empty()) {
 
+//        newBlocks.sort(overlapSorter);
 
         std::vector<Patch*> satBlocks;
 
