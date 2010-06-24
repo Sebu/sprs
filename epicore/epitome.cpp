@@ -10,20 +10,20 @@ int Chart::staticCounter_ = 0;
 
 Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
 
-    cv::Mat centerMat = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat centerMat = cv::Mat::eye(3,3,CV_32FC1);
     float xoffset = chart->bbox_.min.m_v[0] + (chart->bbox_.width()/2.0f);
     float yoffset = chart->bbox_.min.m_v[1] + (chart->bbox_.height()/2.0f);
-    centerMat.at<double>(0,2)=-xoffset;
-    centerMat.at<double>(1,2)=-yoffset;
+    centerMat.at<float>(0,2)=-xoffset;
+    centerMat.at<float>(1,2)=-yoffset;
 
     // flip :)
-    cv::Mat flipMat = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat flipMat = cv::Mat::eye(3,3,CV_32FC1);
     switch(flip) {
     case 1:
-        flipMat.at<double>(0,0)=-1.0f;
+        flipMat.at<float>(0,0)=-1.0f;
         break;
     case 2:
-        flipMat.at<double>(1,1)=-1.0f;
+        flipMat.at<float>(1,1)=-1.0f;
         break;
     default:
         break;
@@ -31,13 +31,13 @@ Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
 
     // rotation
     cv::Point2f center(0, 0);
-    cv::Mat rotMat = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat rotMat = cv::Mat::eye(3,3,CV_32FC1);
     cv::Mat rMat = cv::getRotationMatrix2D(center, angle, 1.0f);
     cv::Mat selection( rotMat, cv::Rect(0,0,3,2) );
     rMat.copyTo(selection);
 
 
-    cv::Mat transMat = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat transMat = cv::Mat::eye(3,3,CV_32FC1);
     float whalf=0, hhalf=0;
     // HACK: for convenience :)
     if(angle==0 || angle == 180) {
@@ -54,16 +54,16 @@ Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
     pgrid_ = new bool[w_*h_];
     for(uint i=0; i<w_*h_; i++) pgrid_[i] = false;
 
-    transMat.at<double>(0,2)=whalf;
-    transMat.at<double>(1,2)=hhalf;
+    transMat.at<float>(0,2)=whalf;
+    transMat.at<float>(1,2)=hhalf;
 
     transform_ = transMat * rotMat * flipMat * centerMat;
 
     foreach(Patch* p, chart->chartBlocks_) {
-        cv::Mat point = (cv::Mat_<double>(3,1) << p->x_+s/2, p->y_+s/2, 1.0f);
+        cv::Mat point = (cv::Mat_<float>(3,1) << p->x_+s/2, p->y_+s/2, 1.0f);
         cv::Mat a =  transform_ * point;
-        uint x = a.at<double>(0,0) / s;
-        uint y = a.at<double>(0,1) / s;
+        uint x = a.at<float>(0,0) / s;
+        uint y = a.at<float>(0,1) / s;
         pgrid_[y*w_ + x] = true;
     }
 

@@ -243,7 +243,7 @@ void SeedMap::generateCharts() {
             if(!block->satisfied_) std::cout << "what no satChart?" << std::endl;
 
             cv::Mat selection1(block->satisfied_->transform_, cv::Rect(0,0,3,2));
-            cv::Mat inverted = cv::Mat::eye(3,3,CV_64FC1);
+            cv::Mat inverted = cv::Mat::eye(3,3,CV_32FC1);
             cv::Mat selection2(inverted, cv::Rect(0,0,3,2));
             invertAffineTransform(selection1, selection2);
 
@@ -262,7 +262,9 @@ void SeedMap::generateCharts() {
 void SeedMap::findFinalMatches() {
 
     // find best matches in charts
-    foreach(Patch* block, blocks_) {
+    #pragma omp parallel for
+    for(ulong i=0; i<  blocks_.size(); i++) {
+        Patch* block = blocks_[i];
         if(!block->matches_) continue;
         if(block->parent_) block->copyMatches(baseImage_);
         std::sort(block->matches_->begin(), block->matches_->end(), matchSorter);

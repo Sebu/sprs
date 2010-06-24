@@ -8,7 +8,7 @@
 
 void OrientHist::genOrientHists() {
 
-    cv::Mat rotMat = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat rotMat = cv::Mat::eye(3,3,CV_32FC1);
 
     for(uint i=0; i<numBins_; i++) {
         cv::Point2f center( (patch_->s_/2), (patch_->s_/2) );

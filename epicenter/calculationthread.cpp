@@ -74,7 +74,7 @@ bool CalculationThread::singleStep(int x, int y) {
         invertAffineTransform(selection, inverted);
         for (int i=0; i<2; i++)
             for(int j=0; j<3; j++)
-                std::cout << inverted.at<double>(i,j) << " ";
+                std::cout << inverted.at<float>(i,j) << " ";
         for(int j=0; j<4; j++)
             std::cout << block->finalMatch_->hull_.verts[j].m_v[0] << " " << block->finalMatch_->hull_.verts[j].m_v[1] << std::endl;
         for(int j=0; j<4; j++)

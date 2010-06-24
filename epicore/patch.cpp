@@ -198,9 +198,9 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
 
     int offset = (20-s_)/2;
     Transform t1;
-    cv::Mat offsetMat = cv::Mat::eye(3,3,CV_64FC1);
-    offsetMat.at<double>(0,2)=offset;
-    offsetMat.at<double>(1,2)=offset;
+    cv::Mat offsetMat = cv::Mat::eye(3,3,CV_32FC1);
+    offsetMat.at<float>(0,2)=offset;
+    offsetMat.at<float>(1,2)=offset;
 
     t1.transformMat_ = offsetMat * match->t_.transformMat_;
     cv::Mat ret = t1.reconstruct(other.sourceColor_ ,s_+offset+offset);
@@ -227,23 +227,23 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
 
     std::sort(features.begin(), features.end(), errorSorter);
 
-    cv::Mat P(features.size(),3,CV_64FC1);
-    cv::Mat Q(features.size(),3,CV_64FC1);
+    cv::Mat P(features.size(),3,CV_32FC1);
+    cv::Mat Q(features.size(),3,CV_32FC1);
 
     for(uint j = 0; j < features.size(); j++) {
         int i = features[j]->idx_;
-        P.at<double>(j,0) = pointsDest[i].x;
-        P.at<double>(j,1) = pointsDest[i].y;
-        P.at<double>(j,2) = 1.0;
-        Q.at<double>(j,0) = pointsSrc_[i].x;
-        Q.at<double>(j,1) = pointsSrc_[i].y;
-        Q.at<double>(j,2) = 1.0;
+        P.at<float>(j,0) = pointsDest[i].x;
+        P.at<float>(j,1) = pointsDest[i].y;
+        P.at<float>(j,2) = 1.0;
+        Q.at<float>(j,0) = pointsSrc_[i].x;
+        Q.at<float>(j,1) = pointsSrc_[i].y;
+        Q.at<float>(j,2) = 1.0;
     }
 
 
     cv::Mat tmp = ((P.t()*P).inv() * (P.t() * Q)).t();
 
-    cv::Mat diff = tmp - cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat diff = tmp - cv::Mat::eye(3,3,CV_32FC1);
 
     if(cv::countNonZero(diff)) {
         match->transformed_ = true;
@@ -282,10 +282,13 @@ Match* Patch::match(Patch& other) {
     if ((int)orientation!=0) {
         cv::Point2f center( (float)(s_/2)+0.5, (float)(s_/2)+0.5);
 
-        cv::Mat rMat = cv::Mat::eye(3,3,CV_64FC1);
+        cv::Mat rMat = cv::Mat::eye(3,3,CV_32FC1);
         cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
-        cv::Mat selection( rMat, cv::Rect(0,0,3,2) );
-        rotMat.copyTo(selection);
+
+        for(int y=0; y<2; y++)
+            for(int x=0; x<3; x++)
+                rMat.at<float>(y,x) = (float)rotMat.at<double>(y,x);
+
         match->t_.transformMat_ = rMat * match->t_.transformMat_;
         match->transformed_ = true;
     }
@@ -333,24 +336,24 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
     hull_ = Polygon::Square(x_,y_,s_,s_);
 
 
-    cv::Mat transMat = cv::Mat::eye(3,3,CV_64FC1);
-    cv::Mat scaleMat = cv::Mat::eye(3,3,CV_64FC1);
-    cv::Mat flipMat = cv::Mat::eye(3,3,CV_64FC1);
+    cv::Mat transMat = cv::Mat::eye(3,3,CV_32FC1);
+    cv::Mat scaleMat = cv::Mat::eye(3,3,CV_32FC1);
+    cv::Mat flipMat = cv::Mat::eye(3,3,CV_32FC1);
 
-    transMat.at<double>(0,2)=-x_;
-    transMat.at<double>(1,2)=-y_;
-    scaleMat.at<double>(0,0)/=scale;
-    scaleMat.at<double>(1,1)/=scale;
+    transMat.at<float>(0,2)=-x_;
+    transMat.at<float>(1,2)=-y_;
+    scaleMat.at<float>(0,0)/=scale;
+    scaleMat.at<float>(1,1)/=scale;
     // flip :)
     switch(flip) {
     case 1:
-        flipMat.at<double>(0,0)=-1.0f;
-        flipMat.at<double>(0,2)=s_;
+        flipMat.at<float>(0,0)=-1.0f;
+        flipMat.at<float>(0,2)=s_;
         transformed_ = true;
         break;
     case 2:
-        flipMat.at<double>(1,1)=-1.0f;
-        flipMat.at<double>(1,2)=s_;
+        flipMat.at<float>(1,1)=-1.0f;
+        flipMat.at<float>(1,2)=s_;
         transformed_ = true;
         break;
     default:
@@ -382,9 +385,9 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
     if(isBlock_) {
         int offset = (20-s_)/2;
         Transform t1;
-        cv::Mat offsetMat = cv::Mat::eye(3,3,CV_64FC1);
-        offsetMat.at<double>(0,2)=offset;
-        offsetMat.at<double>(1,2)=offset;
+        cv::Mat offsetMat = cv::Mat::eye(3,3,CV_32FC1);
+        offsetMat.at<float>(0,2)=offset;
+        offsetMat.at<float>(1,2)=offset;
         t1.transformMat_ = offsetMat * transScaleFlipMat_;
         cv::Mat patch = t1.warp(sourceColor_, s_+offset+offset);
         cv::cvtColor(patch, patchGray_, CV_RGB2GRAY);

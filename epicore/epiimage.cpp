@@ -68,7 +68,7 @@ void EpiImage::pack() {
         std::list<PCost*> pCosts = genPCost(polyos, width_, height_);
 
 
-        bestChart->transform_ = cv::Mat::eye(3,3,CV_64FC1);
+        bestChart->transform_ = cv::Mat::eye(3,3,CV_32FC1);
 
         foreach(PCost* pCost, pCosts)
         {
@@ -79,9 +79,9 @@ void EpiImage::pack() {
             if(p->intersect(grid, pCost->x_, pCost->y_)) continue;
 
             // save transformation in chart
-            cv::Mat transMat = cv::Mat::eye(3,3,CV_64FC1);
-            transMat.at<double>(0,2)=pCost->x_*s_;
-            transMat.at<double>(1,2)=pCost->y_*s_;
+            cv::Mat transMat = cv::Mat::eye(3,3,CV_32FC1);
+            transMat.at<float>(0,2)=pCost->x_*s_;
+            transMat.at<float>(1,2)=pCost->y_*s_;
 
 
             bestChart->transform_= transMat * p->transform_;
@@ -123,7 +123,7 @@ cv::Mat EpiImage::Texture() {
 void EpiImage::saveTexture(std::string fileName) {
 
     // save texture
-    cv::imwrite((fileName + ".epi.png").c_str(), Texture());
+    cv::imwrite((fileName + ".epi.jpeg").c_str(), Texture());
 
 }
 
@@ -142,7 +142,7 @@ void EpiImage::save(std::string fileName) {
 void EpiImage::load(std::string fileName) {
     std::cout << fileName << std::endl;
     std::ifstream ifs( (fileName + ".map").c_str() );
-    texture_ = cv::imread( (fileName + ".epi.png").c_str());
+    texture_ = cv::imread( (fileName + ".epi.jpeg").c_str());
 
     ifs >> blocksx_ >> blocksy_ >> s_;
 
@@ -158,7 +158,7 @@ void EpiImage::saveRecontruction(std::string fileName) {
 
     cv::Mat img = cv::Mat::ones(cv::Size(blocksx_*s_, blocksy_*s_), CV_8UC3);
     reconstruct(img);
-    cv::imwrite((fileName + ".recon.png").c_str(), img);
+    cv::imwrite((fileName + ".recon.jpeg").c_str(), img);
 }
 
 void EpiImage::reconstruct(cv::Mat& img) {
@@ -189,12 +189,12 @@ void EpiImage::genTexture() {
 
             for(int srcY=block->y_; srcY<block->y_+s_; srcY++) {
                 for(int srcX=block->x_; srcX<block->x_+s_; srcX++) {
-                    cv::Mat p = (cv::Mat_<double>(3,1) << srcX, srcY, 1);
+                    cv::Mat p = (cv::Mat_<float>(3,1) << srcX, srcY, 1);
                     cv::Mat a =  epi->transform_ * p;
 //                      cv::Mat a =   p;
 
-                    float destX = a.at<double>(0,0);
-                    float destY = a.at<double>(0,1);
+                    float destX = a.at<float>(0,0);
+                    float destY = a.at<float>(0,1);
 
                     texture_.at<cv::Vec3b>(destY, destX) = block->sourceColor_.at<cv::Vec3b>(srcY, srcX);
 

@@ -17,7 +17,7 @@ public:
 
     Transform() {
         colorScale_ = cv::Scalar::all(1.0f);
-        transformMat_ = cv::Mat::eye(3,3,CV_64FC1);
+        transformMat_ = cv::Mat::eye(3,3,CV_32FC1);
     }
 
     cv::Mat warp(cv::Mat&, uint);

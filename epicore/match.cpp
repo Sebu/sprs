@@ -17,7 +17,7 @@ Match::Match(Patch* seed)
 
 
 void Match::calcHull() {
-    double points[4][2] = { {0, 0},
+    float points[4][2] = { {0, 0},
                             {block_->s_, 0},
                             {block_->s_, block_->s_},
                             {0, block_->s_}
@@ -29,12 +29,12 @@ void Match::calcHull() {
     invertAffineTransform(selection, inverted);
 
     for(int i=0; i<4; i++ ) {
-        cv::Mat p = (cv::Mat_<double>(3,1) << points[i][0], points[i][1], 1);
+        cv::Mat p = (cv::Mat_<float>(3,1) << points[i][0], points[i][1], 1);
 
         cv::Mat a =  inverted * p;
         Vector2f point;
-        point.m_v[0] = a.at<double>(0,0);
-        point.m_v[1] = a.at<double>(0,1);
+        point.m_v[0] = a.at<float>(0,0);
+        point.m_v[1] = a.at<float>(0,1);
         hull_.verts.push_back(point);
     }
 
@@ -53,14 +53,14 @@ void Match::calcHull() {
 void Transform::load(std::ifstream& ifs) {
     for (int i=0; i<2; i++)
         for(int j=0; j<3; j++)
-            ifs >> transformMat_.at<double>(i,j);
+            ifs >> transformMat_.at<float>(i,j);
     ifs >> colorScale_[0] >> colorScale_[1] >> colorScale_[2];
 }
 
 void Transform::save(std::ofstream& ofs) {
     for (int i=0; i<2; i++)
         for(int j=0; j<3; j++)
-            ofs << transformMat_.at<double>(i,j) << " ";
+            ofs << transformMat_.at<float>(i,j) << " ";
     ofs << colorScale_[0] << " " << colorScale_[1] << " " << colorScale_[2] << " ";
 }
 
