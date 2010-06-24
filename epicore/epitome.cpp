@@ -33,8 +33,9 @@ Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
     cv::Point2f center(0, 0);
     cv::Mat rotMat = cv::Mat::eye(3,3,CV_32FC1);
     cv::Mat rMat = cv::getRotationMatrix2D(center, angle, 1.0f);
-    cv::Mat selection( rotMat, cv::Rect(0,0,3,2) );
-    rMat.copyTo(selection);
+    for(int y=0; y<2; y++)
+        for(int x=0; x<3; x++)
+            rotMat.at<float>(y,x) = (float)rMat.at<double>(y,x);
 
 
     cv::Mat transMat = cv::Mat::eye(3,3,CV_32FC1);

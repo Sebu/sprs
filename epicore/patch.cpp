@@ -282,14 +282,13 @@ Match* Patch::match(Patch& other) {
     if ((int)orientation!=0) {
         cv::Point2f center( (float)(s_/2)+0.5, (float)(s_/2)+0.5);
 
-        cv::Mat rMat = cv::Mat::eye(3,3,CV_32FC1);
-        cv::Mat rotMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
-
+        cv::Mat rotMat = cv::Mat::eye(3,3,CV_32FC1);
+        cv::Mat rMat = cv::getRotationMatrix2D(center, orientation, 1.0f);
         for(int y=0; y<2; y++)
             for(int x=0; x<3; x++)
-                rMat.at<float>(y,x) = (float)rotMat.at<double>(y,x);
+                rotMat.at<float>(y,x) = (float)rMat.at<double>(y,x);
 
-        match->t_.transformMat_ = rMat * match->t_.transformMat_;
+        match->t_.transformMat_ = rotMat * match->t_.transformMat_;
         match->transformed_ = true;
     }
 
