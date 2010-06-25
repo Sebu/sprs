@@ -143,7 +143,6 @@ float Patch::reconError(Match* m, cv::Mat& reconstruction) {
 void Patch::findFeatures() {
 
     // precalculate variance
-    float variance = 0.0;
 
     cv::Mat patchColor;
     cv::Mat patchGray;
@@ -152,9 +151,10 @@ void Patch::findFeatures() {
     // cache gray patch version
     cv::cvtColor(patchColor, patchGray, CV_RGB2GRAY);
 
+
     cv::Scalar mean = cv::mean(patchGray);
 
-
+    float variance = 0.0;
     for (int y=0; y<patchGray.rows; y++) {
         for(int x=0; x<patchGray.cols; x++) {
             uchar p = cv::saturate_cast<uchar>(patchGray.at<uchar>(y,x));
@@ -164,7 +164,7 @@ void Patch::findFeatures() {
         }
     }
 
-    variance =  sqrt(variance / (patchGray.cols*patchGray.rows));
+    variance =  sqrt(variance / (float)(patchGray.cols*patchGray.rows));
 
     if(verbose_)
         std::cout << "variance " << variance << " " << mean[0] << std::endl;
@@ -260,7 +260,7 @@ Match* Patch::match(Patch& other) {
 
     double histDiff = cv::compareHist(colorHist_, other.colorHist_,CV_COMP_CHISQR) / (s_*s_);
     //    std::cout << histDiff << std::endl;
-    if(histDiff > crit_->maxColor_) return 0;
+//    if(histDiff > crit_->maxColor_) return 0;
 
 
 
@@ -327,7 +327,7 @@ Match* Patch::match(Patch& other) {
 }
 
 Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, bool isBlock):
-        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), parent_(0), sharesMatches_(0), matches_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), errorFactor_(0), isBlock_(isBlock)
+        histMean_(cv::Scalar::all(0.0f)), x_(x), y_(y), s_(s), parent_(0), sharesMatches_(0), benefit_(1), matches_(0), finalMatch_(0), sourceColor_(sourceImage), transformed_(0), satisfied_(0), inChart_(0), candidate_(0), errorFactor_(0), isBlock_(isBlock)
 {
 
     id_ = idCounter_++;

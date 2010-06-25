@@ -49,8 +49,8 @@ void OrientHistFast::genSingle(cv::Mat& image) {
 
             direction.at<float>(y,x) = cv::fastAtan2(dy ,dx);
 
-//            float ctmp = sqrt(dx*dx + dy*dy);
-            float ctmp = dx*dx + dy*dy;
+            float ctmp = sqrt(dx*dx + dy*dy);
+//            float ctmp = dx*dx + dy*dy;
             contrast.at<float>(y,x) = ctmp;
             sumContrast += ctmp;
             count++;

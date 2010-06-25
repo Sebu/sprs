@@ -43,6 +43,7 @@ public:
     bool transformed_;
     Patch* parent_;
     bool sharesMatches_;
+    int benefit_;
     Polygon hull_;
 
 

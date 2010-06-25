@@ -50,7 +50,7 @@ void SeedMap::growChart(Chart *chart) {
             if (satisfiable) {
                 match->block_->satisfied_ = chart;
                 satBlocks.push_back(match->block_);
-                benefit++;
+                benefit += match->block_->benefit_;
             }
         }
 
@@ -103,7 +103,7 @@ Chart *SeedMap::findBestChart() {
 
             match->block_->satisfied_=chart;
             chart->satBlocks_.push_back(match->block_);
-            chart->benefit_++;
+            chart->benefit_ += match->block_->benefit_;
 
             foreach(Patch *b, coveredBlocks) {
                 if(b->candidate_) continue;
@@ -128,7 +128,7 @@ Chart *SeedMap::findBestChart() {
                 if (satisfiable) {
                     match->block_->satisfied_ = chart;
                     chart->satBlocks_.push_back(match->block_);
-                    chart->benefit_++;
+                    chart->benefit_ += match->block_->benefit_;
                 }
             }
 
@@ -459,6 +459,7 @@ void SeedMap::match(Patch* block) {
                                 seed->matches_=block->matches_;
                                 seed->parent_ = block;
                                 block->sharesMatches_ = true;
+                                block->benefit_++;
                             }
                         }
                         }
