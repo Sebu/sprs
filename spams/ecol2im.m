@@ -1,7 +1,7 @@
 function M = ecol2im(I, n, width)
 
 [rows, cols] = size(I);
-m = rows / n;
+m = rows / n
 nn = width / n;
 mm = cols / nn;
 M = zeros(mm*m,nn*n);
