@@ -164,7 +164,7 @@ void Patch::findFeatures() {
         }
     }
 
-    variance =  variance / (float)(patchGray.cols*patchGray.rows);
+    variance =  sqrt(variance / (float)(patchGray.cols*patchGray.rows));
 
     if(verbose_)
         std::cout << "variance " << variance << " " << mean[0] << std::endl;

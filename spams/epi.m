@@ -17,7 +17,7 @@ param.lambda=0.15;
 param.iter=500;  % let us see what happens after 100 iterations.
 
 tic
- D = mexTrainDL(X2,param);
+D = mexTrainDL(X2,param);
 t=toc;
 fprintf('time of computation for Dictionary Learning: %f\n',t);
 % ImD=displayPatches(D);
