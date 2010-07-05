@@ -1,0 +1,11 @@
+*.aux
+*.lof
+*.log
+*.lot
+*.met
+*.nav
+*.o
+*.pdf
+*.toc
+*.user
+
