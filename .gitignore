@@ -9,7 +9,8 @@
 *.nav
 *.o
 *.pdf
-*.so
+*.so*
 *.toc
 *.user
-
+ui_*
+moc_*

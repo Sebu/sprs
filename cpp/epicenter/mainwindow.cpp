@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::addBase() {
 
-    std::string bName = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
+    std::string bName = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
     if(bName=="") return;
     calcThread.searchInOriginal_ = false;
     calcThread.base_ = cv::imread( bName );

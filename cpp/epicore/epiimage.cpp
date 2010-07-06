@@ -176,10 +176,10 @@ void EpiImage::reconstruct(cv::Mat& img) {
 void EpiImage::genTexture() {
 
     pack();
-    texture_ = cv::Mat::ones(cv::Size(width_*s_, height_*s_), CV_8UC3);
-//     texture_ = cv::Mat::ones(cv::Size(blocksx_*s_, blocksy_*s_), CV_8UC3);
+//    texture_ = cv::Mat::ones(cv::Size(width_*s_, height_*s_), CV_8UC3);
+    texture_ = cv::Mat::ones(cv::Size(blocksx_*s_, blocksy_*s_), CV_8UC3);
 
-    cv::rectangle(texture_, cv::Point(0,0), cv::Point(width_*s_, height_*s_),cv::Scalar(255,0,255),-1);
+    cv::rectangle(texture_, cv::Point(0,0), cv::Point(texture_.rows, texture_.cols),cv::Scalar(255,0,255),-1);
 
     float color = 0;
     float step = 255.0f/charts_.size();
@@ -190,8 +190,8 @@ void EpiImage::genTexture() {
             for(int srcY=block->y_; srcY<block->y_+s_; srcY++) {
                 for(int srcX=block->x_; srcX<block->x_+s_; srcX++) {
                     cv::Mat p = (cv::Mat_<float>(3,1) << srcX, srcY, 1);
-                    cv::Mat a =  epi->transform_ * p;
-//                      cv::Mat a =   p;
+//                    cv::Mat a =  epi->transform_ * p;
+                      cv::Mat a =   p;
 
                     float destX = a.at<float>(0,0);
                     float destY = a.at<float>(0,1);

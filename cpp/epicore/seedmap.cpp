@@ -251,7 +251,7 @@ void SeedMap::generateCharts() {
 
             Transform* t= new Transform();
             t->colorScale_ = final->t_.colorScale_;
-            t->transformMat_ = final->t_.transformMat_ * inverted;
+            t->transformMat_ = final->t_.transformMat_ ; //* inverted;
             image_.transforms_.push_back(t);
 
     }

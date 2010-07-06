@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     std::string fullName;
 
     int opt;
-    while ((opt = getopt(argc, argv, "a:b:de:i:vw:r:")) != -1) {
+    while ((opt = getopt(argc, argv, "a:b:de:i:vw:r:o:")) != -1) {
         switch(opt) {
         case 'a':
             alpha = atof(optarg);
@@ -52,6 +52,9 @@ int main(int argc, char *argv[])
         case 'i':
             fullName = optarg;
             break;
+        case 'o':
+            fullName = optarg;
+            break;
         case 'r':
             fullName = optarg;
             onlyRestore = true;
@@ -64,7 +67,7 @@ int main(int argc, char *argv[])
             break;
         case '?':
         default: /* '?' */
-            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-v] [-e error] [-dbSearch] [-b blocksize] [-w winsize]" << std::endl;
+            std::cerr << "Usage: " << argv[0] << " [-i input_file] [-o outputpath] [-v] [-e error] [-dbSearch] [-b blocksize] [-w winsize]" << std::endl;
             exit(EXIT_FAILURE);
         }
     }

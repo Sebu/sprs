@@ -9,7 +9,7 @@ clients = `cat clients.#{clientsext}`.split
 jobs = `cat jobs.#{jobsext}`.split 
 
 jobs.zip(clients).each do |job, client| 
-  cmd = "ssh #{client} -f --  ~/git/epitome/client.rb -i #{job} #{other_args}"
+  cmd = "ssh #{client} -f --  ~/git/diplom/cpp/client.rb -i #{job} #{other_args}"
   puts "submitting job #{job} to #{client}.. #{cmd}"
   system cmd
 end
