@@ -1,4 +1,7 @@
+*.a
 *.aux
+*.bbl
+*.blg
 *.lof
 *.log
 *.lot
@@ -6,6 +9,7 @@
 *.nav
 *.o
 *.pdf
+*.so
 *.toc
 *.user
 

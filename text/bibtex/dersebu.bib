@@ -1,0 +1,111 @@
+@incollection{Bay2006SURF,
+    abstract = {In this paper, we present a novel scale- and rotation-invariant interest point detector and descriptor, coined SURF (Speeded Up Robust Features). It approximates or even outperforms previously proposed schemes with respect to repeatability, distinctiveness, and robustness, yet can be computed and compared much faster. This is achieved by relying on integral images for image convolutions; by building on the strengths of the leading existing detectors and descriptors (in casu, using a Hessian matrix-based measure for the detector, and a distribution-based descriptor); and by simplifying these methods to the essential. This leads to a combination of novel detection, description, and matching steps. The paper presents experimental results on a standard evaluation set, as well as on imagery obtained in the context of a real-life object recognition application. Both show SURF's strong performance.},
+    address = {Berlin, Heidelberg},
+    author = {Bay, Herbert and Tuytelaars, Tinne and Van Gool, Luc},
+    booktitle = {Computer Vision – ECCV 2006 },
+    chapter = {32},
+    citeulike-article-id = {2708013},
+    citeulike-linkout-0 = {http://dx.doi.org/10.1007/11744023\_32},
+    citeulike-linkout-1 = {http://www.springerlink.com/content/e580h2k58434p02k},
+    doi = {10.1007/11744023\_32},
+    editor = {Leonardis, Ale\v{s} and Bischof, Horst and Pinz, Axel},
+    isbn = {978-3-540-33832-1},
+    journal = {Computer Vision – ECCV 2006},
+    pages = {404--417},
+    posted-at = {2010-07-05 13:37:28},
+    priority = {2},
+    publisher = {Springer Berlin Heidelberg},
+    series = {Lecture Notes in Computer Science},
+    title = {SURF: Speeded Up Robust Features},
+    url = {http://dx.doi.org/10.1007/11744023\_32},
+    volume = {3951},
+    year = {2006}
+}
+
+@inproceedings{Jojic2003Epitomic,
+    abstract = {We present novel simple appearance and shape models that we call
+ epitomes. The epitome of an image is its miniature, condensed
+ version containing the essence of the textural and shape properties
+ of the image. As opposed to previously used simple image models,
+ such as templates or basis functions, the size of the epitome is
+ considerably smaller than the size of the image or object it
+ represents, but the epitome still contains most constitute elements
+ needed to reconstruct the image (Fig. 1). A collection of images
+ often shares an epitome, e.g., when images are a few consecutive
+ frames from a video sequence, or when they are photographs of
+ similar objects.A particular image in a collection is defined by
+ its epitome and a smooth mapping from the epitome to the image
+ pixels. When the epitomic representation is used within a
+ hierarchical generative model, appropriate inference algorithms can
+ be derived to extract the epitome from a single image or a
+ collection of images and at the same time perform various inference
+ tasks, such as image segmentation, motion estimation, object
+ removal and super-resolution.},
+    address = {Washington, DC, USA},
+    author = {Jojic, Nebojsa and Frey, Brendan J. and Kannan, Anitha},
+    booktitle = {ICCV '03: Proceedings of the Ninth IEEE International Conference on Computer Vision},
+    citeulike-article-id = {7345820},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=946676},
+    isbn = {0-7695-1950-4},
+    keywords = {epitome},
+    pages = {34+},
+    posted-at = {2010-07-05 13:34:05},
+    priority = {3},
+    publisher = {IEEE Computer Society},
+    title = {Epitomic analysis of appearance and shape},
+    url = {http://portal.acm.org/citation.cfm?id=946676},
+    year = {2003}
+}
+
+@inproceedings{Wang2008Factoring,
+    abstract = {We reduce transmission bandwidth and memory space for images by factoring their repeated content. A transform map and a condensed epitome are created such that all image blocks can be reconstructed from transformed epitome patches. The transforms may include affine deformation and color scaling to account for perspective and tonal variations across the image. The factored representation allows efficient random-access through a simple indirection, and can therefore be used for real-time texture mapping without expansion in memory. Our scheme is orthogonal to traditional image compression, in the sense that the epitome is amenable to further compression such as DXT. Moreover it allows a new mode of progressivity, whereby generic features appear before unique detail. Factoring is also effective across a collection of images, particularly in the context of image-based rendering. Eliminating redundant content lets us include textures that are several times as large in the same memory space.},
+    address = {New York, NY, USA},
+    author = {Wang, Huamin and Wexler, Yonatan and Ofek, Eyal and Hoppe, Hugues},
+    booktitle = {SIGGRAPH '08: ACM SIGGRAPH 2008 papers},
+    citeulike-article-id = {3313606},
+    citeulike-linkout-0 = {http://portal.acm.org/citation.cfm?id=1399504.1360613},
+    citeulike-linkout-1 = {http://dx.doi.org/10.1145/1399504.1360613},
+    doi = {10.1145/1399504.1360613},
+    isbn = {978-1-4503-0112-1},
+    keywords = {affine, compression, computer, deformation, epitome, vision},
+    location = {Los Angeles, California},
+    pages = {1--10},
+    posted-at = {2010-07-05 13:15:51},
+    priority = {0},
+    publisher = {ACM},
+    title = {Factoring repeated content within and among images},
+    url = {http://dx.doi.org/10.1145/1399504.1360613},
+    year = {2008}
+}
+
+@article{Mairal2010Online,
+    abstract = {Sparse coding--that is, modelling data vectors as sparse linear combinations
+of basis elements--is widely used in machine learning, neuroscience, signal
+processing, and statistics. This paper focuses on the large-scale matrix
+factorization problem that consists of learning the basis set, adapting it to
+specific data. Variations of this problem include dictionary learning in signal
+processing, non-negative matrix factorization and sparse principal component
+analysis. In this paper, we propose to address these tasks with a new online
+optimization algorithm, based on stochastic approximations, which scales up
+gracefully to large datasets with millions of training samples, and extends
+naturally to various matrix factorization formulations, making it suitable for
+a wide range of learning problems. A proof of convergence is presented, along
+with experiments with natural images and genomic data demonstrating that it
+leads to state-of-the-art performance in terms of speed and optimization for
+both small and large datasets.},
+    archivePrefix = {arXiv},
+    author = {Mairal, Julien and Bach, Francis and Ponce, Jean and Sapiro, Guillermo},
+    citeulike-article-id = {5695195},
+    citeulike-linkout-0 = {http://arxiv.org/abs/0908.0050},
+    citeulike-linkout-1 = {http://arxiv.org/pdf/0908.0050},
+    day = {11},
+    eprint = {0908.0050},
+    keywords = {coding, computer, dictionary, learning, sparse, vision},
+    month = {Feb},
+    posted-at = {2010-07-05 13:13:35},
+    priority = {0},
+    title = {Online Learning for Matrix Factorization and Sparse Coding},
+    url = {http://arxiv.org/abs/0908.0050},
+    year = {2010}
+}
+
