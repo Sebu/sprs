@@ -1,6 +1,6 @@
-function D = gendicts(filename, s)
+function D = gendict(IN, s)
 
-X= eim2col(double(imread(filename))/255, [s s], s/4);
+X=eim2col(IN, [s s], s/4);
 X=X./repmat(sqrt(sum(X.^2)),[size(X,1) 1]);
 
 param.K=100;  % learns a dictionary with 100 elements
@@ -16,4 +16,5 @@ fprintf('time of computation for Dictionary Learning: %f\n',t);
 
 save(strcat(filename,'.dict'), 'D');
 
+end
 

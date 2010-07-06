@@ -1,6 +1,5 @@
 function X = eim2col(O, D, step)
-
-
+%eim2col extended image to column (with multi channel and step support)
 
 [height, width, channels] = size(O);
 m = D(1);
@@ -33,4 +32,5 @@ for c=1:channels
     end
 end
 
+end
 

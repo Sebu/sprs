@@ -1,5 +1,5 @@
 function X = ecol2im(I, S, D)
-
+%ecol2im extended column to image (with multi channel support)
 
 
 
@@ -29,3 +29,6 @@ for c=1:channels
     X(:,:,c) = M;
 end
 X = X(1:height, 1:width, :);
+
+
+end
