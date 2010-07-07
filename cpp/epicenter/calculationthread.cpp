@@ -11,17 +11,18 @@ CalculationThread::CalculationThread()
 }
 
 void CalculationThread::step() {
-    //    for (int i=0; i<ui->stepSpin->value(); i++)
-
     singleStep();
 }
 
 void CalculationThread::step2() {
     if(!seedmap) init();
     seedmap->generateCharts();
+
+
     cv::Mat epitomeMap(seedmap->image_.Texture());
     debugWidgetL->fromIpl( epitomeMap, "epitome map" );
-    debugWidgetL->updateGL();
+    cv::Mat epitomeMapDebug(seedmap->image_.DebugTexture());
+    debugWidgetL->fromIpl( epitomeMapDebug, "debug epitome map" );
     cv::Mat recon2(seedmap->debugReconstruction());
     debugWidgetL->fromIpl( recon2, "reconstruction" );
     debugWidgetL->updateGL();

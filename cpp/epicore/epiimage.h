@@ -20,6 +20,7 @@ public:
     uint width_, height_;
 
     cv::Mat texture_;
+    cv::Mat debugTexture_;
     std::list<Chart*> charts_;
 
     EpiImage();
@@ -27,6 +28,8 @@ public:
     cv::Mat Texture();
     void genTexture();
 
+    cv::Mat DebugTexture();
+    void genDebugTexture();
 
     // chart packing
     void pack();

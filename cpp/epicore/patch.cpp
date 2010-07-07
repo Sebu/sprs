@@ -40,7 +40,6 @@ void Patch::copyMatches(cv::Mat& base) {
         newMatch->calcHull();
         cv::Mat reconstruction( newMatch->t_.warp(base, s_) );
         newMatch->error_ =  reconError(newMatch, reconstruction);
-        //      if (newMatch->error_ < crit_->maxError_)
         newVector->push_back(newMatch);
     }
 
@@ -129,9 +128,8 @@ float Patch::reconError(Match* m, cv::Mat& reconstruction) {
             float g = ( ((float)vr[1]*m->t_.colorScale_[1]) - (float)vo[1] ) / 255.0;
             float b = ( ((float)vr[2]*m->t_.colorScale_[2]) - (float)vo[2] ) / 255.0;
 
-            float val =  (r+g+b)/3.0;
             dist +=  (r*r)+(g*g)+(b*b);
-            //            if(dist * errorFactor_ > crit_->maxError_) return FLT_MAX;
+            if(dist * errorFactor_ > crit_->maxError_) return FLT_MAX;
         }
 
     }
@@ -164,7 +162,7 @@ void Patch::findFeatures() {
         }
     }
 
-    variance =  sqrt(variance / (float)(patchGray.cols*patchGray.rows));
+    variance =  variance / (float)(patchGray.cols*patchGray.rows);
 
     if(verbose_)
         std::cout << "variance " << variance << " " << mean[0] << std::endl;

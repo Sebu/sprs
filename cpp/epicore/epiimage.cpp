@@ -115,15 +115,11 @@ EpiImage::EpiImage()
 {
 }
 
-cv::Mat EpiImage::Texture() {
-    if (texture_.empty()) genTexture();
-    return texture_;
-}
-
 void EpiImage::saveTexture(std::string fileName) {
 
     // save texture
     cv::imwrite((fileName + ".epi.jpeg").c_str(), Texture());
+    cv::imwrite((fileName + ".debugepi.jpeg").c_str(), Texture());
 
 }
 
@@ -172,38 +168,60 @@ void EpiImage::reconstruct(cv::Mat& img) {
 
 }
 
+cv::Mat EpiImage::DebugTexture() {
+    if (debugTexture_.empty()) genDebugTexture();
+    return debugTexture_;
+}
 
-void EpiImage::genTexture() {
+void EpiImage::genDebugTexture() {
+    debugTexture_ = cv::Mat::ones(cv::Size(blocksx_*s_, blocksy_*s_), CV_8UC3);
 
-    pack();
-//    texture_ = cv::Mat::ones(cv::Size(width_*s_, height_*s_), CV_8UC3);
-    texture_ = cv::Mat::ones(cv::Size(blocksx_*s_, blocksy_*s_), CV_8UC3);
+    cv::rectangle(debugTexture_, cv::Point(0,0), cv::Point(debugTexture_.cols, debugTexture_.rows),cv::Scalar(255,0,255),-1);
 
-    cv::rectangle(texture_, cv::Point(0,0), cv::Point(texture_.rows, texture_.cols),cv::Scalar(255,0,255),-1);
-
-    float color = 0;
-    float step = 255.0f/charts_.size();
-    foreach(Chart* epi, charts_) {
+     foreach(Chart* epi, charts_) {
         foreach(Patch* block, epi->chartBlocks_) {
             if(!block->inChart_) continue;
 
             for(int srcY=block->y_; srcY<block->y_+s_; srcY++) {
                 for(int srcX=block->x_; srcX<block->x_+s_; srcX++) {
                     cv::Mat p = (cv::Mat_<float>(3,1) << srcX, srcY, 1);
-//                    cv::Mat a =  epi->transform_ * p;
-                      cv::Mat a =   p;
-
-                    float destX = a.at<float>(0,0);
-                    float destY = a.at<float>(0,1);
-
-                    texture_.at<cv::Vec3b>(destY, destX) = block->sourceColor_.at<cv::Vec3b>(srcY, srcX);
-
+                    cv::Mat a =   p;
+                    debugTexture_.at<cv::Vec3b>(a.at<float>(0,1), a.at<float>(0,0)) = block->sourceColor_.at<cv::Vec3b>(srcY, srcX);
                 }
 
             }
 
         }
-        color += step;
+    }
+}
+
+
+cv::Mat EpiImage::Texture() {
+    if (texture_.empty()) genTexture();
+    return texture_;
+}
+
+
+void EpiImage::genTexture() {
+
+    pack();
+
+    texture_ = cv::Mat::ones(cv::Size(width_*s_, height_*s_), CV_8UC3);
+    cv::rectangle(texture_, cv::Point(0,0), cv::Point(texture_.cols, texture_.rows),cv::Scalar(255,0,255),-1);
+
+    foreach(Chart* epi, charts_) {
+        foreach(Patch* block, epi->chartBlocks_) {
+            if(!block->inChart_) continue;
+            for(int srcY=block->y_; srcY<block->y_+s_; srcY++) {
+                for(int srcX=block->x_; srcX<block->x_+s_; srcX++) {
+                    cv::Mat p = (cv::Mat_<float>(3,1) << srcX, srcY, 1);
+                    cv::Mat a =  epi->transform_ * p;
+                    texture_.at<cv::Vec3b>(a.at<float>(0,1), a.at<float>(0,0)) = block->sourceColor_.at<cv::Vec3b>(srcY, srcX);
+                }
+
+            }
+
+        }
     }
 
 }

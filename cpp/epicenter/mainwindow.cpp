@@ -51,7 +51,7 @@ void MainWindow::addBase() {
 
 void MainWindow::changeImage() {
 
-    fileName_ = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
+    fileName_ = QFileDialog::getOpenFileName(this,tr("Open Image"), "../../../../Bilder", tr("Image Files (*.png *.jpeg *.jpg *.bmp)")).toStdString();
     if(fileName_=="") return;
 
     if(calcThread.seedmap) delete calcThread.seedmap;
