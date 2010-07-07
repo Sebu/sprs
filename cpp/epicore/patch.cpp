@@ -173,7 +173,7 @@ void Patch::findFeatures() {
     // track initial features
     cv::goodFeaturesToTrack(patchGray, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
 
-    int offset = (20-s_)/2;
+    int offset = 0; //(20-s_)/2;
     for(int i=0; i<pointsSrc_.size(); i++) {
         pointsSrc_[i].x += (float)offset;
         pointsSrc_[i].y += (float)offset;
@@ -194,7 +194,7 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
     std::vector<float>          err;
 
 
-    int offset = (20-s_)/2;
+    int offset = 0; //(20-s_)/2;
     Transform t1;
     cv::Mat offsetMat = cv::Mat::eye(3,3,CV_32FC1);
     offsetMat.at<float>(0,2)=offset;
@@ -209,7 +209,7 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
                               pointsSrc_, pointsDest,
                               status, err,
                               cv::Size(crit_->kltWinSize_,crit_->kltWinSize_), crit_->kltMaxLvls_,
-                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 40, 0.01));
+                              cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 40, 0.001));
 
 
 
@@ -269,7 +269,7 @@ Match* Patch::match(Patch& other) {
     // orientation still to different
     float diff = orientHist_->diff(other.orientHist_,orientation/orientHist_->factor_) / (s_*s_);
 //    std::cout << diff << std::endl;
-    if(diff > crit_->maxOrient_) return 0;
+//    if(diff > crit_->maxOrient_) return 0;
 
 
     Match* match = new Match(&other);
@@ -380,7 +380,7 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
     setHistMean( cv::mean(patchColor) );
 
     if(isBlock_) {
-        int offset = (20-s_)/2;
+        int offset = 0;//(20-s_)/2;
         Transform t1;
         cv::Mat offsetMat = cv::Mat::eye(3,3,CV_32FC1);
         offsetMat.at<float>(0,2)=offset;
