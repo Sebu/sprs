@@ -39,6 +39,7 @@ bool CalculationThread::singleStep(int x, int y) {
         int ylocal = ((float)y/400.0) * (seedmap->sourceImage_.size().height / blockSize_);
 
         block = seedmap->getPatch(xlocal,ylocal);
+        std::cout << block->errorFactor_ << std::endl;
         seedmap->match(block);
     }
 
@@ -61,8 +62,10 @@ bool CalculationThread::singleStep(int x, int y) {
             for(int j=0; j<4; j++)
                 cv::line(tmpImage, hull.verts[j], hull.verts[(j+1) % 4], cv::Scalar(0,255-match->error_*colorScale,match->error_*colorScale,100));
 
-            foreach(cv::Point2f p, block->pointsSrc_)
-                cv::line(tmpImage, p+cv::Point2f(block->x_,block->y_), p+cv::Point2f(block->x_,block->y_), cv::Scalar(0,155,00,100));
+            foreach(cv::Point2f p, block->pointsSrc_) {
+                cv::Point2f f =  cv::Point2f(p.x, p.y) + cv::Point2f(block->x_,block->y_);
+                cv::line(tmpImage, f, f, cv::Scalar(0,155,00,100));
+            }
 
 
         }

@@ -129,12 +129,10 @@ float Patch::reconError(Match* m, cv::Mat& reconstruction) {
             float b = ( ((float)vr[2]*m->t_.colorScale_[2]) - (float)vo[2] ) / 255.0;
 
             dist +=  (r*r)+(g*g)+(b*b);
-            if(dist * errorFactor_ > crit_->maxError_) return FLT_MAX;
+//            if(dist * errorFactor_ > crit_->maxError_) return FLT_MAX;
         }
 
     }
-
-    //    std::cout << dist * errorFactor_ << std::endl;
     return dist * errorFactor_;
 }
 
@@ -164,16 +162,16 @@ void Patch::findFeatures() {
 
     variance =  variance / (float)(patchGray.cols*patchGray.rows);
 
-    if(verbose_)
-        std::cout << "variance " << variance << " " << mean[0] << std::endl;
+//    if(verbose_)
+//        std::cout << "variance " << variance << " " << mean[0] << std::endl;
 
     errorFactor_ = 1.0 / ( pow( variance, crit_->alpha_) + 0.0000000001f );
     errorFactor_ /= s_*s_;
 
     // track initial features
-    cv::goodFeaturesToTrack(patchGray, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_);
+    cv::goodFeaturesToTrack(patchGray, pointsSrc_,  crit_->gfNumFeatures_, crit_->gfQualityLvl_, crit_->gfMinDist_, cv::Mat(), 5, true);
 
-    int offset = 0; //(20-s_)/2;
+    int offset = (20-s_)/2;
     for(int i=0; i<pointsSrc_.size(); i++) {
         pointsSrc_[i].x += (float)offset;
         pointsSrc_[i].y += (float)offset;
@@ -194,7 +192,7 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
     std::vector<float>          err;
 
 
-    int offset = 0; //(20-s_)/2;
+    int offset = (20-s_)/2;
     Transform t1;
     cv::Mat offsetMat = cv::Mat::eye(3,3,CV_32FC1);
     offsetMat.at<float>(0,2)=offset;
@@ -290,10 +288,10 @@ Match* Patch::match(Patch& other) {
         match->transformed_ = true;
     }
 
-//    cv::Mat reconstruction = match->t_.warp(other.sourceColor_, s_);
-//    match->error_ =  reconError(match, reconstruction);
+//    cv::Mat rec = match->t_.warp(other.sourceColor_, s_);
+//    match->error_ =  reconError(match, rec);
 
-    // 4.1 KLT matching
+//     4.1 KLT matching
     if(id_!=other.id_)
         trackFeatures(other, match);
 
@@ -380,7 +378,7 @@ Patch::Patch(cv::Mat& sourceImage, int x, int  y, int s, float scale, int flip, 
     setHistMean( cv::mean(patchColor) );
 
     if(isBlock_) {
-        int offset = 0;//(20-s_)/2;
+        int offset = (20-s_)/2;
         Transform t1;
         cv::Mat offsetMat = cv::Mat::eye(3,3,CV_32FC1);
         offsetMat.at<float>(0,2)=offset;
