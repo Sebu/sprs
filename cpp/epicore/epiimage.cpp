@@ -119,7 +119,7 @@ void EpiImage::saveTexture(std::string fileName) {
 
     // save texture
     cv::imwrite((fileName + ".epi.jpeg").c_str(), Texture());
-    cv::imwrite((fileName + ".debugepi.jpeg").c_str(), Texture());
+    cv::imwrite((fileName + ".debugepi.jpeg").c_str(), DebugTexture());
 
 }
 
