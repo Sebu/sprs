@@ -4,5 +4,6 @@
    export LD_LIBRARY_PATH=~/uni/diplom/SPAMS/libs_ext/mkl32/
    export DYLD_LIBRARY_PATH=~/uni/diplom/SPAMS/libs_ext/mkl32/
    export KMP_DUPLICATE_LIB_OK=true
-   matlab $* -nosplash -nodesktop -nojvm -r "addpath('~/uni/diplom/SPAMS/release/mkl32/'); addpath('~/uni/diplom/SPAMS/test_release'); testDict('$1', 12); exit;"
+   cd git/diplom/matlab
+   matlab $* -nosplash -nodesktop -nojvm -r "addpath('~/uni/diplom/SPAMS/release/mkl32/'); testDict('$1', 12); exit;"
 
