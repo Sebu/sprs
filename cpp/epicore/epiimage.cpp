@@ -118,8 +118,8 @@ EpiImage::EpiImage()
 void EpiImage::saveTexture(std::string fileName) {
 
     // save texture
-    cv::imwrite((fileName + ".epi.jpeg").c_str(), Texture());
-    cv::imwrite((fileName + ".debugepi.jpeg").c_str(), DebugTexture());
+    cv::imwrite((fileName + ".epi.png").c_str(), Texture());
+    cv::imwrite((fileName + ".debugepi.png").c_str(), DebugTexture());
 
 }
 
@@ -138,7 +138,7 @@ void EpiImage::save(std::string fileName) {
 void EpiImage::load(std::string fileName) {
     std::cout << fileName << std::endl;
     std::ifstream ifs( (fileName + ".map").c_str() );
-    texture_ = cv::imread( (fileName + ".epi.jpeg").c_str());
+    texture_ = cv::imread( (fileName + ".epi.png").c_str());
 
     ifs >> blocksx_ >> blocksy_ >> s_;
 
@@ -154,7 +154,7 @@ void EpiImage::saveRecontruction(std::string fileName) {
 
     cv::Mat img = cv::Mat::ones(cv::Size(blocksx_*s_, blocksy_*s_), CV_8UC3);
     reconstruct(img);
-    cv::imwrite((fileName + ".recon.jpeg").c_str(), img);
+    cv::imwrite((fileName + ".recon.png").c_str(), img);
 }
 
 void EpiImage::reconstruct(cv::Mat& img) {

@@ -1,14 +1,55 @@
-\documentclass[pt11,pdftex,a4paper]{scrbook}
+\documentclass[12pt,pdftex,a4paper]{scrbook}
+\linespread{1.5}
+% \usepackage{setspace}
+% \onehalfspacing
 
-\usepackage{setspace}
-\onehalfspacing
-\usepackage[german]{babel}
+% \usepackage[german]{babel}
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{url}
 \usepackage{tikz}
-\usepackage{listings}
 \usepackage{cite}
+\usepackage{url}
 
-% \pagestyle{fancy}
+% page header & footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[EL]{\thepage}% gerade Seiten, links
+\fancyhead[ER]{\leftmark}% gerade Seiten, rechts
+\fancyhead[OL]{\rightmark}% ungerade Seiten, links
+\fancyhead[OR]{\thepage}% ungerade Seiten, rechts
 
+\fancypagestyle{plain}{%
+\fancyhf{}
+\fancyhead[EL]{\thepage}% gerade Seiten, links
+\fancyhead[ER]{\leftmark}% gerade Seiten, rechts
+\fancyhead[OL]{\rightmark}% ungerade Seiten, links
+\fancyhead[OR]{\thepage}% ungerade Seiten, rechts
+
+}
+\renewcommand{\sectionmark}[1]{
+\markboth{\thesection{} #1}{\thesection{} #1}
+}
+\renewcommand{\subsectionmark}[1]{
+\markright{\thesubsection{} #1}
+}
+
+
+
+
+
+% LISTINGS
+\usepackage{xcolor,listings}
+ \usepackage{listings}
+ \lstloadlanguages{C,C++,Matlab}
+ \lstset{
+  language=C++,
+  basicstyle=\ttfamily,
+  basicstyle=\scriptsize,
+  keywordstyle=\color{red},
+  commentstyle=\color{blue},
+  stringstyle=\color{green},
+  backgroundcolor=\color{lightgray},
+  morecomment=[s][\color{blue}]{/*}{*/}
+  }

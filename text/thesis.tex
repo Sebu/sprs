@@ -3,13 +3,28 @@
 
 \begin{document}
 
+\frontmatter
 \include{chapters/title}
-\include{chapters/introduction}
+\include{chapters/absichtserklaerung}
+\include{chapters/abstract}
 
+\tableofcontents
+\listoffigures
+\listoftables
+
+\mainmatter
+\include{chapters/introduction}
+\include{chapters/overview}
+\include{chapters/method}
+\include{chapters/results}
+
+% \addcontentsline{toc}{chapter}{Appendix}
 \appendix
 \include{chapters/appendix}
 
+\backmatter
 % bibtex
+\addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{alpha}
 \bibliography{bibtex/dersebu}
 
