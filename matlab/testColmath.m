@@ -1,7 +1,7 @@
 
-s = 16;
+s = 12;
 
-I = double(imread('~/Bilder/test1.png')) /255;
+I = double(imread('~/Bilder/factorimage_data/epitomes/fig25_orig.png.epi.png')) /255;
 X=eim2col(I, [s s], s);
 X=X./repmat(sqrt(sum(X.^2)),[size(X,1) 1]);
 
@@ -14,4 +14,5 @@ tic
 D = mexTrainDL(X,param);
 t=toc;
 
+D=D./repmat(sqrt(sum(D.^2)),[size(D,1) 1]);
 colmatch(X,D);
