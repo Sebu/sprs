@@ -14,6 +14,7 @@ for n=1:width
     name=char(F(n))
     IN = double(imread(name)) /255;
     Xtmp=eim2col(IN, [s s], s);
+    Xtmp=eliminateEmpty(Xtmp);
     Xtmp=Xtmp./repmat(sqrt(sum(Xtmp.^2)),[size(Xtmp,1) 1]);
     if isempty(X)
         X = Xtmp;

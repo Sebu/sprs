@@ -21,9 +21,9 @@ for c=1:channels
             indexy = y*step;
             indexx = x*step;
             C = T(indexy+1:indexy+m,indexx+1:indexx+n);
-%            if sum(A(:)==1)==s*s
-                M(:,k) = C(:);
-                k=k+1;
+%            if sum(A(:)==0)== 
+            M(:,k) = C(:);
+            k=k+1;
 %            end
         end;
     end;

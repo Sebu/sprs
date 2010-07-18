@@ -1,6 +1,7 @@
 function D = gendict(IN, s)
 
 X=eim2col(IN, [s s], s);
+X=eliminateEmpty(X);
 X=X./repmat(sqrt(sum(X.^2)),[size(X,1) 1]);
 
 param.K=100;  % learns a dictionary with 100 elements
