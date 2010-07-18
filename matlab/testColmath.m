@@ -15,4 +15,4 @@ D = mexTrainDL(X,param);
 t=toc;
 
 D=D./repmat(sqrt(sum(D.^2)),[size(D,1) 1]);
-colmatch(X,D);
+colMatch(X,D);

@@ -1,4 +1,4 @@
-function [ Selection ] = colmatch( Reference, Signals )
+function [ Selection ] = colMatch( Reference, Signals )
 %COLMATCH Summary of this function goes here
 %   Detailed explanation goes here
 

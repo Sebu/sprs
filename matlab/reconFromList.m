@@ -16,7 +16,8 @@ for n=1:width
     alpha=mexLasso(INC, D, param);
     toc
     OUTC = D*alpha;
-    rmse(INC, OUTC)
+    error = rmse(INC, OUTC)
+    save(strcat(name,'.stat.txt'),'error','-ascii');
     OUT = ecol2im(OUTC, [s s], size(IN));
 %    save(strcat(filename,'.alpha'), 'alpha');
     imwrite(uint8(OUT*255), strcat(name,'.recon.png'));
