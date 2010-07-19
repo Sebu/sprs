@@ -14,17 +14,15 @@ for c=1:channels
     T =  I(:,:,c);
     maxm = mm-(m/step);
     maxn = nn-(n/step);
-    M = []; %ones([m*n, maxm*maxn]);
+    M = ones([m*n, maxm*maxn]);
     k = 1;
     for y=0:maxm
         for x=0:maxn
             indexy = y*step;
             indexx = x*step;
             C = T(indexy+1:indexy+m,indexx+1:indexx+n);
-%            if sum(A(:)==0)== 
             M(:,k) = C(:);
             k=k+1;
-%            end
         end;
     end;
     if isempty(X)

@@ -3,7 +3,7 @@ function [ O ] = eliminateEmpty( I )
 %   Detailed explanation goes here
 size(I)
 k=1;
-s=(size(I,1)/3)
+s=(size(I,1)/3) * 2
 O=[];
 for n=1:size(I, 2)
     if (sum(I(:,n)==1) ~= s)
