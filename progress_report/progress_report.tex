@@ -24,20 +24,36 @@ Inhalt
 \begin{block}{Problem}
 "Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square."
 \end{block}
-
 \end{frame}
+
 \section{motivation}
+\begin{frame}
 Dictionary based approachs shown better results from known set of transform based basis like wavelets
+as shown in "Sparse and redundant modeling of image content using an image-signature-dictionary"
 But what about a universal basis for natural images? 
 How many elements for a 'good' sparse representation?
 how to find this basis?
 origin in neuroscience (visual cortex) so we copy nature :)
 but computation is very cost intensive
 new approaches found 
+\end{frame}
+\subsection*{the problem}
+\subsection{comparission to dct/dwf}
+\begin{frame}
+* conversion (color etc.)
+* transform
+* (quantization)
+* (encoding)
 
-\subsection{advantages vs. fft/wavelet/pca}
 for orthonomal bases it's the same but for dict. based redundant overcomplete/overdetermined?
+it gets computational compelex
 
+\end{frame}
+
+
+\section{sparse coding}
+\begin{frame}
+\end{frame}
 \subsection{the problem}
 \begin{frame}
 \[ 
@@ -47,17 +63,35 @@ how does this regularization look like?
 l1-norm
 why does ?
 \end{frame}
-\subsection{new discoveries}
-\section{sparse coding}
 \subsection{basics}
+\begin{frame}
 why not PCA? leads to sparse dictionary but not to sparse decomposition
-\subsection{how?/optimization}
-*multiple ways
-**matching pursuit
-**LARS-lasso
-**homotopy
-cholesky decomposition
-\subsection{results}
-\subsection{problems}
+\end{frame}
 
+\subsection{how?/optimization}
+\begin{frame}
+*multiple ways
+**naive approach -> NP hard
+**homotopy
+**matching pursuit
+**cholesky decomposition
+**LARS-lasso
+\end{frame}
+
+\subsection{results}
+\begin{frame}
+\end{frame}
+
+\subsection{problems}
+\begin{frame}
+color bleeding as in "Learning High-Order MRF Priors of Color Images" and "Sparse learned representations for image restoration"
+\end{frame}
+
+\section{refenrences}
+\begin{frame}
+\end{frame}
+
+\section{backup}
+\begin{frame}
+\end{frame}
 \end{document}
