@@ -24,24 +24,39 @@ Inhalt
 \begin{block}{Problem}
 "Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square."
 \end{block}
-\begin{itemize}
-\item Punkt 1
-\item 2. Punkt
-\item dritter Punkt
-\end{itemize}
+
 \end{frame}
 \section{motivation}
-\subsection{advantages vs. fft/wavelet}
+Dictionary based approachs shown better results from known set of transform based basis like wavelets
+But what about a universal basis for natural images? 
+How many elements for a 'good' sparse representation?
+how to find this basis?
+origin in neuroscience (visual cortex) so we copy nature :)
+but computation is very cost intensive
+new approaches found 
+
+\subsection{advantages vs. fft/wavelet/pca}
+for orthonomal bases it's the same but for dict. based redundant overcomplete/overdetermined?
+
 \subsection{the problem}
 \begin{frame}
 \[ 
 \min_{\alpha\in} \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \psi(\alpha)
 \] 
+how does this regularization look like?
+l1-norm
+why does ?
 \end{frame}
 \subsection{new discoveries}
 \section{sparse coding}
 \subsection{basics}
-\subsection{optimization}
+why not PCA? leads to sparse dictionary but not to sparse decomposition
+\subsection{how?/optimization}
+*multiple ways
+**matching pursuit
+**LARS-lasso
+**homotopy
+cholesky decomposition
 \subsection{results}
 \subsection{problems}
 
