@@ -4,7 +4,7 @@
 \begin{document}
 
 \title{Sparse Coding}
-\subtitle{...progress report}
+% \subtitle{...progress report}
 \author{Sebastian Szczepanski}
 \institute[TU Berlin]{TU Berlin Computer Graphics}
 \date{\today}
@@ -18,18 +18,29 @@
 \tableofcontents[part=1,pausesections]
 \end{frame}
 
+
+\section{sparse representation}
 \begin{frame}
-\frametitle{Titel}
-Inhalt
-\begin{block}{Problem}
-"Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square."
-\end{block}
+can be achieved by
+* keep the dictionary small (wavelets,cosin)
+* constrain the number of elements in large redundant dictionarys (sparse coding)
+% \begin{block}{Problem}
+\end{frame}
+
+\begin{frame}
+>>Finding the set of M dictionary vectors that approximate a signal with a minimum
+error is NP-hard in redundant dictionaries.<<
+>>Finding such an exact decomposition for any , if it exists, is an NP-hard three-sets
+covering problem. Indeed,the choice of one element in the solution influences the
+choice of all others,which essentially requires us to try all possibilities.<<
+Small othonormal bases like wavelets,cosin,bandelets are >easy< to solve but what about big redundant dictionarys?
+%\end{block}
 \end{frame}
 
 \section{motivation}
 \begin{frame}
 Dictionary based approachs shown better results from known set of transform based basis like wavelets
-as shown in "Sparse and redundant modeling of image content using an image-signature-dictionary"
+as shown in >Sparse and redundant modeling of image content using an image-signature-dictionary<
 But what about a universal basis for natural images? 
 How many elements for a 'good' sparse representation?
 how to find this basis?
@@ -37,7 +48,8 @@ origin in neuroscience (visual cortex) so we copy nature :)
 but computation is very cost intensive
 new approaches found 
 \end{frame}
-\subsection*{the problem}
+
+\subsection{the problem}
 \subsection{comparission to dct/dwf}
 \begin{frame}
 * conversion (color etc.)
@@ -54,21 +66,29 @@ it gets computational compelex
 \section{sparse coding}
 \begin{frame}
 \end{frame}
+\section{the idea}
+..Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square.,,
+>>Olshausen and Field [391] observed that these
+dictionary vectors learned from natural images also look similar to the impulse
+response of simple cell neurons in the visual cortical area V1. It supports the idea
+of a biological adaptation to process visual scenes. <<
+
+\subsection{basics}
+\begin{frame}
+why not PCA? leads to sparse dictionary but not to sparse decomposition
+\end{frame}
 \subsection{the problem}
+
 \begin{frame}
 \[ 
-\min_{\alpha\in} \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \psi(\alpha)
+\min_{\alpha\in\mathbb{R}^{p}} f(a) + \underbrace{\psi(\alpha)}_{regularization}
+\min_{\alpha\in\mathbb{R}^{p}} \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
 \] 
 how does this regularization look like?
 l1-norm
 why does ?
 \end{frame}
-\subsection{basics}
-\begin{frame}
-why not PCA? leads to sparse dictionary but not to sparse decomposition
-\end{frame}
-
-\subsection{how?/optimization}
+\subsection{solutions}
 \begin{frame}
 *multiple ways
 **naive approach -> NP hard
@@ -78,13 +98,19 @@ why not PCA? leads to sparse dictionary but not to sparse decomposition
 **LARS-lasso
 \end{frame}
 
+\subsection{building dictinarys}
+\begin{frame}
+*neural network (see >Learning Multiple Layers of Features from Tiny Images<
+*trainig algo
+\end{frame}
+
 \subsection{results}
 \begin{frame}
 \end{frame}
 
-\subsection{problems}
+\subsection{problems (still)}
 \begin{frame}
-color bleeding as in "Learning High-Order MRF Priors of Color Images" and "Sparse learned representations for image restoration"
+color bleeding as in >Learning High-Order MRF Priors of Color Images< and >Sparse learned representations for image restoration<
 \end{frame}
 
 \section{refenrences}
