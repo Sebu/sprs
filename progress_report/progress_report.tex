@@ -3,7 +3,7 @@
 
 \begin{document}
 
-\title{Sparse Coding}
+\title{sparse coding of signals}
 % \subtitle{...progress report}
 \author{Sebastian Szczepanski}
 \institute[TU Berlin]{TU Berlin Computer Graphics}
@@ -15,18 +15,68 @@
 
 \begin{frame}
 \frametitle{Outline}
-\tableofcontents[part=1,pausesections]
+\tableofcontents %[pausesections]
 \end{frame}
 
 
-\section{sparse representation}
+\section{motivation}
+\subsection{signal compression}
 \begin{frame}
-can be achieved by
-* keep the dictionary small (wavelets,cosin)
-* constrain the number of elements in large redundant dictionarys (sparse coding)
-% \begin{block}{Problem}
+how? 
+\begin{itemize}
+\item loseless (clever encoding) 
+\item lossy (approximation) (conversion, basis transform, quantization, encoding) \
+\pause
+	\begin{itemize}
+	\item  keep the number basis small (DCT, DWT, other orthonormal bases)	
+	\pause
+	\item constrain the number of elements in large redundant dictionaries (sparse coding)
+	\end{itemize}
+\end{itemize}
 \end{frame}
 
+\subsection{sparse coding}
+
+%\begin{frame}
+%for orthonomal bases it's the same but for dict. based redundant overcomplete/overdetermined?
+%it gets computational compelex
+%\end{frame}
+
+
+\section{the idea}
+\begin{frame}
+
+Dictionary based approachs shown better results from known set of transform based basis like wavelets
+as shown in >Sparse and redundant modeling of image content using an image-signature-dictionary<
+\end{frame}
+
+\begin{frame}
+..Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square.,,
+>>Olshausen and Field [391] observed that these
+dictionary vectors learned from natural images also look similar to the impulse
+response of simple cell neurons in the visual cortical area V1. It supports the idea
+of a biological adaptation to process visual scenes. <<
+\end{frame}
+
+\subsection{basics}
+\begin{frame}
+% why not PCA? leads to sparse dictionary but not to sparse decomposition
+<picture of matrix an sparse code vector>
+\end{frame}
+
+\begin{frame}
+\[ 
+\min_{\alpha\in\mathbb{R}^{p}} f(a) + \underbrace{\psi(\alpha)}_{regularization} 
+\]
+\[
+\min_{\alpha\in\mathbb{R}^{p}} \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
+\] 
+how does this regularization look like? \\
+l1-norm
+
+\end{frame}
+
+\subsection{the problem}
 \begin{frame}
 >>Finding the set of M dictionary vectors that approximate a signal with a minimum
 error is NP-hard in redundant dictionaries.<<
@@ -37,68 +87,31 @@ Small othonormal bases like wavelets,cosin,bandelets are >easy< to solve but wha
 %\end{block}
 \end{frame}
 
-\section{motivation}
-\begin{frame}
-Dictionary based approachs shown better results from known set of transform based basis like wavelets
-as shown in >Sparse and redundant modeling of image content using an image-signature-dictionary<
-But what about a universal basis for natural images? 
-How many elements for a 'good' sparse representation?
-how to find this basis?
-origin in neuroscience (visual cortex) so we copy nature :)
-but computation is very cost intensive
-new approaches found 
-\end{frame}
-
-\subsection{the problem}
-\subsection{comparission to dct/dwf}
-\begin{frame}
-* conversion (color etc.)
-* transform
-* (quantization)
-* (encoding)
-
-for orthonomal bases it's the same but for dict. based redundant overcomplete/overdetermined?
-it gets computational compelex
-
-\end{frame}
-
-
-\section{sparse coding}
-\begin{frame}
-\end{frame}
-\section{the idea}
-..Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square.,,
->>Olshausen and Field [391] observed that these
-dictionary vectors learned from natural images also look similar to the impulse
-response of simple cell neurons in the visual cortical area V1. It supports the idea
-of a biological adaptation to process visual scenes. <<
-
-\subsection{basics}
-\begin{frame}
-why not PCA? leads to sparse dictionary but not to sparse decomposition
-\end{frame}
-\subsection{the problem}
-
-\begin{frame}
-\[ 
-\min_{\alpha\in\mathbb{R}^{p}} f(a) + \underbrace{\psi(\alpha)}_{regularization}
-\min_{\alpha\in\mathbb{R}^{p}} \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
-\] 
-how does this regularization look like?
-l1-norm
-why does ?
-\end{frame}
 \subsection{solutions}
 \begin{frame}
-*multiple ways
-**naive approach -> NP hard
-**homotopy
-**matching pursuit
-**cholesky decomposition
-**LARS-lasso
+multiple ways
+\begin{itemize}
+\item homotopy
+% \item cholesky decomposition
+\item matching pursuit
+\item LARS-lasso
+\end{itemize}
+\end{frame}
+
+\subsection{problems (still)}
+\begin{frame}
+color bleeding as in >Learning High-Order MRF Priors of Color Images< and >Sparse learned representations for image restoration<
 \end{frame}
 
 \subsection{building dictinarys}
+\begin{frame}
+* But what about a universal basis for natural images? 
+* How many elements for a 'good' sparse representation?
+** take all possible elements (fixed compression rate, gigantic data)
+** learn a dictionary until approximation of new images is good enough
+* how to find this basis?
+\end{frame}
+
 \begin{frame}
 *neural network (see >Learning Multiple Layers of Features from Tiny Images<
 *trainig algo
@@ -108,16 +121,13 @@ why does ?
 \begin{frame}
 \end{frame}
 
-\subsection{problems (still)}
-\begin{frame}
-color bleeding as in >Learning High-Order MRF Priors of Color Images< and >Sparse learned representations for image restoration<
-\end{frame}
-
 \section{refenrences}
 \begin{frame}
+\bibliographystyle{alpha}
+\bibliography{bibtex/dersebu}
+\nocite{}
+
+
 \end{frame}
 
-\section{backup}
-\begin{frame}
-\end{frame}
 \end{document}
