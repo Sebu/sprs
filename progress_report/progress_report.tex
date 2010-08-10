@@ -3,7 +3,7 @@
 
 \begin{document}
 
-\title{sparse coding of signals}
+\title{Sparse Coding of Images}
 % \subtitle{...progress report}
 \author{Sebastian Szczepanski}
 \institute[TU Berlin]{TU Berlin Computer Graphics}
@@ -23,12 +23,13 @@
 \subsection{signal compression}
 \begin{frame}
 how? 
+
 \begin{itemize}
 \item loseless (clever encoding) 
 \item lossy (approximation) (conversion, basis transform, quantization, encoding) \
 \pause
 	\begin{itemize}
-	\item  keep the number basis small (DCT, DWT, other orthonormal bases)	
+	\item  keep the number of bases vector small (DCT, DWT, other orthonormal bases)	
 	\pause
 	\item constrain the number of elements in large redundant dictionaries (sparse coding)
 	\end{itemize}
@@ -62,8 +63,13 @@ of a biological adaptation to process visual scenes. <<
 \begin{frame}
 % why not PCA? leads to sparse dictionary but not to sparse decomposition
 <picture of matrix an sparse code vector>
+\[
+\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} =\underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
+\underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
+\]
 \end{frame}
 
+\subsection{the problem}
 \begin{frame}
 \[ 
 \min_{\alpha\in\mathbb{R}^{p}} f(a) + \underbrace{\psi(\alpha)}_{regularization} 
@@ -76,7 +82,7 @@ l1-norm
 
 \end{frame}
 
-\subsection{the problem}
+
 \begin{frame}
 >>Finding the set of M dictionary vectors that approximate a signal with a minimum
 error is NP-hard in redundant dictionaries.<<
@@ -91,9 +97,10 @@ Small othonormal bases like wavelets,cosin,bandelets are >easy< to solve but wha
 \begin{frame}
 multiple ways
 \begin{itemize}
+\item K-SVM
 \item homotopy
 % \item cholesky decomposition
-\item matching pursuit
+\item (orthogonal) matching pursuit
 \item LARS-lasso
 \end{itemize}
 \end{frame}
@@ -114,7 +121,7 @@ color bleeding as in >Learning High-Order MRF Priors of Color Images< and >Spars
 
 \begin{frame}
 *neural network (see >Learning Multiple Layers of Features from Tiny Images<
-*trainig algo
+*trainig algoriths
 \end{frame}
 
 \subsection{results}
