@@ -20,18 +20,22 @@
 
 
 \section{motivation}
-\subsection{signal compression}
+\subsection{improve compression quality}
 \begin{frame}
-how? 
-
 \begin{itemize}
-\item loseless (clever encoding) 
-\item lossy (approximation) (conversion, basis transform, quantization, encoding) \
+\item basic idea for lossy compression
+	\begin{itemize}
+	\item  conversion, sparse base transform, quantization, encoding
+	\end{itemize}
+\pause
+\item improve sparse representation quality of natural images 
+\pause
+\item how?
 \pause
 	\begin{itemize}
-	\item  keep the number of bases vector small (DCT, DWT, other orthonormal bases)	
+	\item rather than a small designed dictionary (DCT, DWT, other orthonormal bases)	
 	\pause
-	\item constrain the number of elements in large redundant dictionaries (sparse coding)
+	\item we select a small number of atoms from a large redundant dictionary (sparse coding)
 	\end{itemize}
 \end{itemize}
 \end{frame}
@@ -46,25 +50,22 @@ how?
 
 \subsection{the idea}
 \begin{frame}
-chen1999 and erlandAharon2006 have shown that learn bases show better compression quality
-than ... wavelets 
-% as shown in >Sparse and redundant modeling of image content using an image-signature-dictionary<
-\end{frame}
-
-\subsection{basics}
-\begin{frame}
 % why not PCA? leads to sparse dictionary but not to sparse decomposition
 (picture of matrix an sparse code vector)
 \[
 \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
 \underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
 \]
-non arthonormal base/atom transform with a sparse coeficent vector
-compression, noise reduction, classification, impainting,  superresolution
+\begin{itemize}
+\item non arthonormal base/atom transform with a sparse coeficent vector
+\item compression, noisefind a linear combination of a “few” atoms from
+D that is “close” to the signal x
+\item usage reduction, classification, impainting,  superresolution
+\end{itemize}
 
 \end{frame}
 
-\subsection{origin}
+%\subsection{origin}
 \begin{frame}
 ..Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square...
 >>Olshausen and Field [391] observed that these
@@ -74,35 +75,55 @@ of a biological adaptation to process visual scenes. <<
 \end{frame}
 
 \begin{frame}
+\begin{itemize}
+\item \cite{Chen1999} and \cite{Aharon2006} have shown that learnd dictionaries show better compression quality
+than small designed dictionaries (wavelets etc.)
+\pause
+		\begin{itemize}
+		\item if dictionary is good enough :)
+  		\end{itemize}
+
+% as shown in >Sparse and redundant modeling of image content using an image-signature-dictionary<
+\item but choosing atoms from large dictionaries can lead to high computational complexity
+\end{itemize}
+\end{frame}
+
+\subsection{a closer look}
+\begin{frame}
 Small othonormal bases like wavelets,cosin,bandelets are >easy< to solve but what about big redundant dictionarys?
 >>Finding such an exact decomposition for any , if it exists, is an NP-hard three-sets
 covering problem. Indeed,the choice of one element in the solution influences the
 choice of all others,which essentially requires us to try all possibilities.<<
-
 %\end{block}
 \end{frame}
 
+
+
+
+
+
 \subsection{the problem}
 \begin{frame}
+sparse decomposition problem -> np-hard
 \[ 
 \min_{\alpha\in\mathbb{R}^{p}} f(a) + \underbrace{\psi(\alpha)}_{regularization} 
 \]
 \[
 \min_{\alpha\in\mathbb{R}^{p}} \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
 \] 
+
 how does this regularization look like? \\
-l1-norm
+l0-norm l1-norm
 
 \end{frame}
 
 \subsection{the solutions}
 \begin{frame}
-heuristics 
+heuristics
 \begin{itemize}
 % \item cholesky decomposition
 \item (orthogonal) matching pursuit
-\item homotopy, LARS-lasso
-\item K-SVD
+\item LARS-Lasso
 \end{itemize}
 \end{frame}
 
@@ -113,8 +134,9 @@ heuristics
 
 \subsubsection*{LARS}
 \begin{frame}
-(LARS-lasso desc.)
+(LARS-Lasso desc.)
 \end{frame}
+
 
 
 \subsection{problems (still)}
@@ -127,29 +149,50 @@ Why?
 \section{dictionaries}
 \subsection{building}
 \begin{frame}
-* But what about a universal basis for natural images? 
-* How many elements for a 'good' sparse representation?
-** take all possible elements (fixed compression rate, gigantic data)
-** learn a dictionary until approximation of new images is good enough
-* how to find this basis?
+\begin{itemize}
+\item But what about a universal basis for natural images? 
+\item How many elements for a 'good' sparse representation?
+\item take all possible elements (fixed compression rate, gigantic data)
+\item learn a dictionary until convergence of psnr of new images
+\item how to find this basis? (online training with constant addition of new images)
+\end{itemize}
 \end{frame}
 
 \begin{frame}
-*neural network (see >Learning Multiple Layers of Features from Tiny Images<)
-*trainig algorithms
+\begin{itemize}
+\item neural network (see >Learning Multiple Layers of Features from Tiny Images<)
+\item trainig algorithms
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+(dict learn pseudocode)
+\end{frame}
+
+\subsubsection*{convergence?}
+\begin{frame}
 \end{frame}
 
 \subsection{results}
 \begin{frame}
+(sample pictures compression) \\
+(psnr graph with 100 / 1000 / 10.000 images) \\
+(diff block sizes 8 12 16) \\
 \end{frame}
 
-\subsection{problems}
+\begin{frame}
+(conclusion)
+thanks to modern greedy algos. and online learning
+sparse coding became a solvable problem
+
+\end{frame}
+
 
 \section{refenrences}
 \begin{frame}
 \bibliographystyle{alpha}
 \bibliography{bibtex/dersebu}
-\nocite{}
+\nocite{*}
 
 
 \end{frame}
