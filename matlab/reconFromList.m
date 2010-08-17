@@ -18,7 +18,8 @@ for n=1:width
     toc
     OUTC = D*alpha;
     error = rmse(INC, OUTC)
-    save(strcat(name,'.stat.txt'),'error','-ascii');
+    db = psnr(INC,OUTC)
+    save(strcat(name,'.stat.txt'),'error','db','-ascii');
     save(strcat(name,'.alpha'),'alpha');
     OUT = ecol2im(OUTC, [s s], size(IN));
 %    save(strcat(filename,'.alpha'), 'alpha');

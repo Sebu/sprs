@@ -36,7 +36,7 @@ how?
 \end{itemize}
 \end{frame}
 
-\subsection{sparse coding}
+\section{sparse coding}
 
 %\begin{frame}
 %for orthonomal bases it's the same but for dict. based redundant overcomplete/overdetermined?
@@ -44,29 +44,42 @@ how?
 %\end{frame}
 
 
-\section{the idea}
+\subsection{the idea}
 \begin{frame}
-
-Dictionary based approachs shown better results from known set of transform based basis like wavelets
-as shown in >Sparse and redundant modeling of image content using an image-signature-dictionary<
+chen1999 and erlandAharon2006 have shown that learn bases show better compression quality
+than ... wavelets 
+% as shown in >Sparse and redundant modeling of image content using an image-signature-dictionary<
 \end{frame}
 
+\subsection{basics}
 \begin{frame}
-..Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square.,,
+% why not PCA? leads to sparse dictionary but not to sparse decomposition
+(picture of matrix an sparse code vector)
+\[
+\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
+\underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
+\]
+non arthonormal base/atom transform with a sparse coeficent vector
+compression, noise reduction, classification, impainting,  superresolution
+
+\end{frame}
+
+\subsection{origin}
+\begin{frame}
+..Sparse coding was originally developed for studying how neurons in the brain responded to visuals. It works by breaking down an image—for simplicity's sake, usually one in grayscale—into mathematical functions, pixel by pixel. The images that are broken down are just small patches of whole works, not much more than a dozen pixels square...
 >>Olshausen and Field [391] observed that these
 dictionary vectors learned from natural images also look similar to the impulse
 response of simple cell neurons in the visual cortical area V1. It supports the idea
 of a biological adaptation to process visual scenes. <<
 \end{frame}
 
-\subsection{basics}
 \begin{frame}
-% why not PCA? leads to sparse dictionary but not to sparse decomposition
-<picture of matrix an sparse code vector>
-\[
-\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
-\underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
-\]
+Small othonormal bases like wavelets,cosin,bandelets are >easy< to solve but what about big redundant dictionarys?
+>>Finding such an exact decomposition for any , if it exists, is an NP-hard three-sets
+covering problem. Indeed,the choice of one element in the solution influences the
+choice of all others,which essentially requires us to try all possibilities.<<
+
+%\end{block}
 \end{frame}
 
 \subsection{the problem}
@@ -82,35 +95,37 @@ l1-norm
 
 \end{frame}
 
-
+\subsection{the solutions}
 \begin{frame}
->>Finding the set of M dictionary vectors that approximate a signal with a minimum
-error is NP-hard in redundant dictionaries.<<
->>Finding such an exact decomposition for any , if it exists, is an NP-hard three-sets
-covering problem. Indeed,the choice of one element in the solution influences the
-choice of all others,which essentially requires us to try all possibilities.<<
-Small othonormal bases like wavelets,cosin,bandelets are >easy< to solve but what about big redundant dictionarys?
-%\end{block}
-\end{frame}
-
-\subsection{solutions}
-\begin{frame}
-multiple ways
+heuristics 
 \begin{itemize}
-\item K-SVM
-\item homotopy
 % \item cholesky decomposition
 \item (orthogonal) matching pursuit
-\item LARS-lasso
+\item homotopy, LARS-lasso
+\item K-SVD
 \end{itemize}
 \end{frame}
+
+
+\begin{frame}
+(matching persuit desc.)
+\end{frame}
+
+\subsubsection*{LARS}
+\begin{frame}
+(LARS-lasso desc.)
+\end{frame}
+
 
 \subsection{problems (still)}
 \begin{frame}
 color bleeding as in >Learning High-Order MRF Priors of Color Images< and >Sparse learned representations for image restoration<
+(picture from paper)
+Why?
 \end{frame}
 
-\subsection{building dictinarys}
+\section{dictionaries}
+\subsection{building}
 \begin{frame}
 * But what about a universal basis for natural images? 
 * How many elements for a 'good' sparse representation?
@@ -120,13 +135,15 @@ color bleeding as in >Learning High-Order MRF Priors of Color Images< and >Spars
 \end{frame}
 
 \begin{frame}
-*neural network (see >Learning Multiple Layers of Features from Tiny Images<
-*trainig algoriths
+*neural network (see >Learning Multiple Layers of Features from Tiny Images<)
+*trainig algorithms
 \end{frame}
 
 \subsection{results}
 \begin{frame}
 \end{frame}
+
+\subsection{problems}
 
 \section{refenrences}
 \begin{frame}
