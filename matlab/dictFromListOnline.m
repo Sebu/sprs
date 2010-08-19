@@ -3,7 +3,7 @@ function D = dictFromListOnline(filename,s)
 F = textread(filename,'%s');
 [width] = size(F, 1);
 
-param.K=s*s*3;  % learns a dictionary
+param.K=4096;  % learns a dictionary
 param.lambda=0.15;
 param.mode=0;
 % param.batchsize=1000;
@@ -27,6 +27,6 @@ for n=1:width
 end
 toc
 save(strcat(filename,'.online.dict'), 'D');
-O = ecol2im(D, [s s], [s*s s*s 3]);
+O = ecol2im(D, [s s], [s*64 s*64 3]);
 imwrite(uint8(O*10*255), strcat(filename,'.online.dict.png'));
 end
