@@ -74,7 +74,7 @@ Matrix4 Matrix4::inverse()
 
 AABB Polygon::getBox() {
     AABB box;
-    for(uint i=0; i<verts.size(); i++) {
+    for(unsigned int i=0; i<verts.size(); i++) {
         Vector2f vert = verts[i];
         if(vert.m_v[0]<box.min.m_v[0]) box.min.m_v[0] = vert.m_v[0];
         if(vert.m_v[1]<box.min.m_v[1]) box.min.m_v[1] = vert.m_v[1];

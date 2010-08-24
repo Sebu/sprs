@@ -29,8 +29,8 @@ signals:
      void clicked(int x, int y);
 
 protected:
-    QHash<QString, uint> _texImages;
-   QList<uint>  _values;
+    QHash<QString, unsigned int> _texImages;
+   QList<unsigned int>  _values;
     int _pos;
 
     void validatePos();

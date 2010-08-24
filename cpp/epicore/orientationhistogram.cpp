@@ -10,7 +10,7 @@ void OrientHist::genOrientHists() {
 
     cv::Mat rotMat = cv::Mat::eye(3,3,CV_32FC1);
 
-    for(uint i=0; i<numBins_; i++) {
+    for(unsigned int i=0; i<numBins_; i++) {
         cv::Point2f center( (patch_->s_/2), (patch_->s_/2) );
 
         float orientation = i*factor_;
@@ -110,7 +110,7 @@ OrientHist::OrientHist(Patch* patch, int numBins) : bins_(0), numBins_(numBins)
 
     factor_ = 360/numBins_;
     // init with 0s
-    for(uint i=0; i<numBins_*numBins_; i++) bins_[i]=0.0f;
+    for(unsigned int i=0; i<numBins_*numBins_; i++) bins_[i]=0.0f;
 
     genOrientHists();
 

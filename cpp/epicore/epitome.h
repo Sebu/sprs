@@ -39,10 +39,10 @@ class Polyomino
 {
 public:
     cv::Mat transform_;
-    uint w_, h_;
+    unsigned int w_, h_;
     bool* pgrid_;
 
-    Polyomino(uint, uint, uint, Chart*);
+    Polyomino(unsigned int, unsigned int, unsigned int, Chart*);
 
     inline bool intersect(cv::SparseMat grid, int x, int y) {
         for(int yi=0; yi<h_; yi++)
@@ -58,8 +58,8 @@ public:
 class PCost
 {
 public:
-    uint cost_;
-    uint x_, y_;
+    unsigned int cost_;
+    unsigned int x_, y_;
     Polyomino* polyo_;
 
 

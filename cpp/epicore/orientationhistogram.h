@@ -11,7 +11,7 @@ class OrientHist
 {
 public:
     float* bins_;
-    uint numBins_;
+    unsigned int numBins_;
     float factor_;
 
     Patch* patch_;
@@ -25,7 +25,7 @@ public:
         float angle=0;
 
         float min = FLT_MAX;
-        for(uint j=0; j < this->numBins_; j++) {
+        for(unsigned int j=0; j < this->numBins_; j++) {
             float sum = this->diff(other, j);
             if (sum<min) { min=sum; angle=j*factor_;}
         }
@@ -35,7 +35,7 @@ public:
 
     inline float diff(OrientHist* other, int offset) {
         float sum=0;
-        for (uint i=0; i < numBins_; i++){
+        for (unsigned int i=0; i < numBins_; i++){
             sum += pow(this->bins_[i] - other->bins_[ offset*numBins_ + i], 2);
         }
         return sum;

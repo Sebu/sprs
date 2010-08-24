@@ -51,7 +51,7 @@ bool CalculationThread::singleStep(int x, int y) {
 
     float colorScale = 255.0 / seedmap->crit_.maxError_;
     if(!block->finalMatch_) {
-        for(uint i=0; i<block->matches_->size(); i++) {
+        for(unsigned int i=0; i<block->matches_->size(); i++) {
 
             Match* match = block->matches_->at(i);
             Polygon hull = match->hull_;

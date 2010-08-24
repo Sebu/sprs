@@ -25,20 +25,20 @@ std::vector<Polyomino*> EpiImage::genPolyominos(Chart* chart) {
 }
 
 
-std::list<PCost*> EpiImage::genPCost(std::vector<Polyomino*> polyos, uint width, uint height) {
+std::list<PCost*> EpiImage::genPCost(std::vector<Polyomino*> polyos, unsigned int width, unsigned int height) {
     std::list<PCost*> pCosts;
 
     // create
     foreach(Polyomino* polyo, polyos) {
-        for(uint y=0; y<height+1; y++) {
-            for(uint x=0; x<width+1; x++) {
+        for(unsigned int y=0; y<height+1; y++) {
+            for(unsigned int x=0; x<width+1; x++) {
                 PCost* p = new PCost();
                 p->x_ = x;
                 p->y_ = y;
                 p->polyo_ = polyo;
 
-                uint newWidth = std::max(width, x+polyo->w_);
-                uint newHeight = std::max(height, y+polyo->h_);
+                unsigned int newWidth = std::max(width, x+polyo->w_);
+                unsigned int newHeight = std::max(height, y+polyo->h_);
                 p->cost_ = newWidth * newHeight;
                 pCosts.push_back(p);
             }
@@ -87,8 +87,8 @@ void EpiImage::pack() {
             bestChart->transform_= transMat * p->transform_;
 
             // mark grid cells covered
-            for(uint yi=0; yi<p->h_; yi++)
-                for(uint xi=0; xi<p->w_; xi++) {
+            for(unsigned int yi=0; yi<p->h_; yi++)
+                for(unsigned int xi=0; xi<p->w_; xi++) {
                 if(p->pgrid_[yi*p->w_+xi]) {
 //                    std::cout << "in use" << xi+pCost->x_ << " " << yi+pCost->y_ << std::endl;
                     grid.ref<uchar>(xi+pCost->x_,yi+pCost->y_) = 1;
@@ -159,8 +159,8 @@ void EpiImage::saveRecontruction(std::string fileName) {
 
 void EpiImage::reconstruct(cv::Mat& img) {
 
-    for(uint i=0; i<blocksy_; i++) {
-        for(uint j=0; j<blocksx_; j++) {
+    for(unsigned int i=0; i<blocksy_; i++) {
+        for(unsigned int j=0; j<blocksx_; j++) {
             cv::Mat reconstruction(transforms_[i*blocksx_+j]->reconstruct(texture_, s_));
             copyBlock(reconstruction, img, cv::Rect(0, 0, s_, s_), cv::Rect(j*s_, i*s_, s_, s_) );
         }

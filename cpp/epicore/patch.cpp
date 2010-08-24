@@ -59,7 +59,7 @@ void Patch::serialize(std::ofstream& ofs) {
         ofs << id << " ";
     } else {
         ofs << matches_->size() << " ";
-        for(uint j=0; j<matches_->size(); j++) {
+        for(unsigned int j=0; j<matches_->size(); j++) {
             matches_->at(j)->serialize(ofs);
         }
     }
@@ -108,7 +108,7 @@ float Patch::reconError(Match* m, cv::Mat& reconstruction) {
     // 4.1 translation, color scale
     // drop when over bright
     cv::Scalar reconstructionMean = cv::mean(reconstruction);
-    for(uint i=0; i<4; i++)
+    for(unsigned int i=0; i<4; i++)
         m->t_.colorScale_[i] = this->getHistMean()[i] / reconstructionMean[i];
 
     if(m->t_.colorScale_[0]>1.25f || m->t_.colorScale_[1]>1.25f || m->t_.colorScale_[2]>1.25f) {
@@ -212,7 +212,7 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
 
 
     std::vector<Feature*> features;
-    for(uint i = 0; i < status.size(); i++) {
+    for(unsigned int i = 0; i < status.size(); i++) {
         if(status[i]) {
             features.push_back(new Feature(i,err[i]));
         }
@@ -226,7 +226,7 @@ bool Patch::trackFeatures(Patch& other, Match* match) {
     cv::Mat P(features.size(),3,CV_32FC1);
     cv::Mat Q(features.size(),3,CV_32FC1);
 
-    for(uint j = 0; j < features.size(); j++) {
+    for(unsigned int j = 0; j < features.size(); j++) {
         int i = features[j]->idx_;
         P.at<float>(j,0) = pointsDest[i].x;
         P.at<float>(j,1) = pointsDest[i].y;

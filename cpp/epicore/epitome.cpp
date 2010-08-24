@@ -8,7 +8,7 @@
 
 int Chart::staticCounter_ = 0;
 
-Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
+Polyomino::Polyomino(unsigned int angle, unsigned int flip, unsigned int s, Chart* chart) {
 
     cv::Mat centerMat = cv::Mat::eye(3,3,CV_32FC1);
     float xoffset = chart->bbox_.min.m_v[0] + (chart->bbox_.width()/2.0f);
@@ -53,7 +53,7 @@ Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
         h_ = ceil(chart->bbox_.width()/s);
     }
     pgrid_ = new bool[w_*h_];
-    for(uint i=0; i<w_*h_; i++) pgrid_[i] = false;
+    for(unsigned int i=0; i<w_*h_; i++) pgrid_[i] = false;
 
     transMat.at<float>(0,2)=whalf;
     transMat.at<float>(1,2)=hhalf;
@@ -63,8 +63,8 @@ Polyomino::Polyomino(uint angle, uint flip, uint s, Chart* chart) {
     foreach(Patch* p, chart->chartBlocks_) {
         cv::Mat point = (cv::Mat_<float>(3,1) << p->x_+s/2, p->y_+s/2, 1.0f);
         cv::Mat a =  transform_ * point;
-        uint x = a.at<float>(0,0) / s;
-        uint y = a.at<float>(0,1) / s;
+        unsigned int x = a.at<float>(0,0) / s;
+        unsigned int y = a.at<float>(0,1) / s;
         pgrid_[y*w_ + x] = true;
     }
 
@@ -80,7 +80,7 @@ Chart::Chart(cv::Mat image) : benefit_(0), baseImage_(image)
 
 void Chart::caclBBox() {
     // align
-    for(uint i=0; i< chartBlocks_.size(); i++) {
+    for(unsigned int i=0; i< chartBlocks_.size(); i++) {
         Patch *block = chartBlocks_[i];
 
         // find min x and y
@@ -100,7 +100,7 @@ cv::Mat Chart::getMap() {
     std::cout << width << " " << height << " " << chartBlocks_.size() << std::endl;
 
     cv::Mat map = cv::Mat::zeros(height, width, CV_8UC3);
-    for(uint i=0; i< chartBlocks_.size(); i++) {
+    for(unsigned int i=0; i< chartBlocks_.size(); i++) {
         Patch *block = chartBlocks_[i];
         // save seeds
 //        std::cout << block->x_ - minX_ << " " << block->y_ - minY_ << std::endl;
@@ -125,7 +125,7 @@ void Chart::save(std::string fileName)
 
     std::ofstream ofs( (saveName.str() + ".txt").c_str() );
 //    ofs << maxX_-minX_ << " " << maxY_-minY_ << " ";
-    for(uint i=0; i< chartBlocks_.size(); i++) {
+    for(unsigned int i=0; i< chartBlocks_.size(); i++) {
         Patch *block = chartBlocks_[i];
         // save seeds
         cv::Mat selection(tilesImage, cv::Rect(i*block->s_ , 0, block->s_ , block->s_ ));

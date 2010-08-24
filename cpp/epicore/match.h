@@ -20,8 +20,8 @@ public:
         transformMat_ = cv::Mat::eye(3,3,CV_32FC1);
     }
 
-    cv::Mat warp(cv::Mat&, uint);
-    cv::Mat reconstruct(cv::Mat&, uint);
+    cv::Mat warp(cv::Mat&, unsigned int);
+    cv::Mat reconstruct(cv::Mat&, unsigned int);
 
     void load(std::ifstream&);
     void save(std::ofstream&);

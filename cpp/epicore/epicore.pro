@@ -7,8 +7,12 @@ TARGET = epicore
 TEMPLATE = lib
 DEFINES += EPICORE_LIBRARY
 # debug:DEFINES += DEBUG
-INCLUDEPATH += /homes/wheel/seb/playground/include
-LIBS += -L/homes/wheel/seb/playground/lib \
+INCLUDEPATH += /homes/wheel/seb/playground/include \
+    /opt/local/var/macports/software/opencv/2.1.0_0/opt/local/include
+LIBS += \
+    # -L/homes/wheel/seb/playground/lib \
+    -L/opt/local/var/macports/software/opencv/2.1.0_0/opt/local/lib \
+    -lcxcore \
     -lcv \
     -lhighgui \
     -lgomp

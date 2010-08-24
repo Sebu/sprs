@@ -17,7 +17,7 @@ public:
 
     int blocksx_, blocksy_, s_;
 
-    uint width_, height_;
+    unsigned int width_, height_;
 
     cv::Mat texture_;
     cv::Mat debugTexture_;
@@ -34,7 +34,7 @@ public:
     // chart packing
     void pack();
     std::vector<Polyomino*> genPolyominos(Chart* chart);
-    std::list<PCost*> genPCost(std::vector<Polyomino*>,uint, uint);
+    std::list<PCost*> genPCost(std::vector<Polyomino*>,unsigned int, unsigned int);
     bool intersect(Chart*);
 
 

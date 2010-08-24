@@ -161,14 +161,14 @@ std::vector<Patch*> SeedMap::genCoveredBlocks(Match *match) {
 
     // calc bbox of match
     AABB box = match->hull_.getBox();
-    uint minx = floor( std::max(box.min.m_v[0] / s_, 0.0f) );
-    uint miny = floor( std::max(box.min.m_v[1] / s_, 0.0f) );
-    uint maxx = ceil( std::min(box.max.m_v[0] / s_, (float)blocksx_-1.0f) );
-    uint maxy = ceil( std::min(box.max.m_v[1] / s_, (float)blocksy_-1.0f) );
+    unsigned int minx = floor( std::max(box.min.m_v[0] / s_, 0.0f) );
+    unsigned int miny = floor( std::max(box.min.m_v[1] / s_, 0.0f) );
+    unsigned int maxx = ceil( std::min(box.max.m_v[0] / s_, (float)blocksx_-1.0f) );
+    unsigned int maxy = ceil( std::min(box.max.m_v[1] / s_, (float)blocksy_-1.0f) );
 
 
-    for(uint y=miny; y<=maxy; y++) {
-        for(uint x=minx; x<=maxx; x++) {
+    for(unsigned int y=miny; y<=maxy; y++) {
+        for(unsigned int x=minx; x<=maxx; x++) {
             Patch* b = getPatch(x,y);
             if (b->hull_.intersects(match->hull_)) {
                 coveredBlocks.push_back(b);
@@ -187,13 +187,13 @@ void SeedMap::generateCharts() {
         foreach(Match* match, *(block->matches_)) {
             // calc bbox of match
             AABB box = match->hull_.getBox();
-            uint minx = floor( std::max(box.min.m_v[0] / s_, 0.0f) );
-            uint miny = floor( std::max(box.min.m_v[1] / s_, 0.0f) );
-            uint maxx = ceil( std::min(box.max.m_v[0] / s_, (float)blocksx_-1.0f) );
-            uint maxy = ceil( std::min(box.max.m_v[1] / s_, (float)blocksy_-1.0f) );
+            unsigned int minx = floor( std::max(box.min.m_v[0] / s_, 0.0f) );
+            unsigned int miny = floor( std::max(box.min.m_v[1] / s_, 0.0f) );
+            unsigned int maxx = ceil( std::min(box.max.m_v[0] / s_, (float)blocksx_-1.0f) );
+            unsigned int maxy = ceil( std::min(box.max.m_v[1] / s_, (float)blocksy_-1.0f) );
 
-            for(uint y=miny; y<=maxy; y++) {
-                for(uint x=minx; x<=maxx; x++) {
+            for(unsigned int y=miny; y<=maxy; y++) {
+                for(unsigned int x=minx; x<=maxx; x++) {
                     Patch* b = getPatch(x,y);
                     if (b->hull_.intersects(match->hull_)) {
                         b->overlapingMatches_.push_back(match);
@@ -315,8 +315,8 @@ void SeedMap::findFinalMatches() {
 
 void SeedMap::findNeighbours() {
 
-    for(uint y=0; y<blocksy_; y++) {
-        for(uint x=0; x<blocksx_; x++) {
+    for(unsigned int y=0; y<blocksy_; y++) {
+        for(unsigned int x=0; x<blocksx_; x++) {
             Patch* block = blocks_[y*blocksx_+x];
 
             if (x>0) {
@@ -346,7 +346,7 @@ void SeedMap::serialize(std::string fileName) {
 
     ofs << s_ << " " << gridstep_ << " " << crit_.maxError_ << " ";
     ofs << blocks_.size() << " ";
-    for(uint i=0; i<blocks_.size(); i++)
+    for(unsigned int i=0; i<blocks_.size(); i++)
         blocks_[i]->serialize(ofs);
 
     ofs.close();
@@ -551,7 +551,7 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
     // add seeds
     float scale = 1.0f;
 
-    for (uint z=0; z< depth; z++) {
+    for (unsigned int z=0; z< depth; z++) {
 
         float scaleWidth  = source.cols / scale;
         float scaleHeight = source.rows / scale;
@@ -561,10 +561,10 @@ void SeedMap::addSeedsFromImage(cv::Mat& source, int depth) {
 
 
         // generate new seeds
-        for(uint flip=0; flip<1; flip++) {
-            for(uint y=0; y<height; y++) {
+        for(unsigned int flip=0; flip<1; flip++) {
+            for(unsigned int y=0; y<height; y++) {
                 int localY = y*gridstep_;
-                for(uint x=0; x<width; x++) {
+                for(unsigned int x=0; x<width; x++) {
                     int localX = x*gridstep_;
                     Patch* seed = 0;
 

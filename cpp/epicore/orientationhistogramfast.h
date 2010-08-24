@@ -11,7 +11,7 @@ class OrientHistFast
 {
 public:
     float* bins_;
-    uint numBins_;
+    unsigned int numBins_;
     float factor_;
 
     OrientHistFast(Patch*, int);
@@ -24,7 +24,7 @@ public:
         float angle=0;
 
         float min = FLT_MAX;
-        for(uint j=0; j < numBins_; j++) {
+        for(unsigned int j=0; j < numBins_; j++) {
             float sum=0;
             for (int i=0; i < numBins_; i++){
                 sum += pow(bins_[i]-other->bins_[ (i+j) % numBins_ ], 2);

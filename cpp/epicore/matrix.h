@@ -245,7 +245,7 @@ public:
 
     inline bool isInFrontOf(const Vector2f& point, const Vector2f& dir) {
         bool front = false, back = false;
-        for(uint i=0; i<verts.size(); i++) {
+        for(unsigned int i=0; i<verts.size(); i++) {
             float t = dir*(verts[i]-point);
             if(t > 0) front=true;
             else if(t < 0) back=true;
@@ -255,7 +255,7 @@ public:
     }
 
     inline bool isInFrontOf(Polygon& rhs) {
-        for(uint i=0,j=verts.size()-1; i<verts.size(); j=i, i++) {
+        for(unsigned int i=0, j=verts.size()-1; i<verts.size(); j=i, i++) {
             Vector2f tmp = verts[i] - verts[j];
             Vector2f perp(tmp.m_v[1], -tmp.m_v[0]);
             if( rhs.isInFrontOf(verts[j], perp ) ) return true;
@@ -270,14 +270,14 @@ public:
     }
 
     inline bool inside(AABB& box) {
-        for(uint i=0; i<verts.size(); i++) {
+        for(unsigned int i=0; i<verts.size(); i++) {
             if (!box.inside(verts[i])) return false;
         }
         return true;
     }
 
     inline bool intersect(AABB& box) {
-        for(uint i=0; i<verts.size(); i++) {
+        for(unsigned int i=0; i<verts.size(); i++) {
             if (box.inside(verts[i])) return true;
         }
         return false;

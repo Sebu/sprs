@@ -35,7 +35,7 @@ public:
 
     bool verbose_;
 
-    uint matchStep_;
+    unsigned int matchStep_;
 
     std::vector<Patch*> seeds_;
     std::vector<Patch*> blocks_;
