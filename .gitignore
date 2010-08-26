@@ -2,6 +2,7 @@
 *.aux
 *.bbl
 *.blg
+*.dylib
 *.lof
 *.log
 *.lot
@@ -14,4 +15,5 @@
 *.user
 ui_*
 moc_*
+.DS_Store
 *.*~
