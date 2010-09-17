@@ -3,7 +3,7 @@ function D = dictFromList(filename,s)
 F = textread(filename,'%s');
 [width] = size(F, 1);
 
-param.K=4096;  % learns a dictionary
+param.K=16384;  % learns a dictionary
 param.lambda=0.15;
 param.mode=0;
 param.batchsize=1000;
@@ -27,6 +27,6 @@ size(X)
 D = mexTrainDL(X, param);
 
 save(strcat(filename,'.dict'), 'D');
-O = ecol2im(D, [s s], [s*64 s*64 3]);
-imwrite(uint8(O*10*255), strcat(filename,'.dict.png'));
+O = ecol2im(D, [s s], [s*128 s*128 3]);
+imwrite(uint8(O*10*255), strcat(filename,'.dict.8.png'));
 end
