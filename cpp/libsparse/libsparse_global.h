@@ -1,0 +1,12 @@
+#ifndef LIBSPARSE_GLOBAL_H
+#define LIBSPARSE_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(LIBSPARSE_LIBRARY)
+#  define LIBSPARSESHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define LIBSPARSESHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // LIBSPARSE_GLOBAL_H
