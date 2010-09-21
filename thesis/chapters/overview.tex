@@ -1,18 +1,47 @@
 \chapter{Overview}
 
 
-\section{problem}
+\section{Problem}
+Signal representation via linear combination of <> .
+\section{Image bases}
+\subsection{basis transformation}
+
+\subsection{sparse coding}
+Solve a under-determined linear system of equations. 
+Da=X
+<>
+In the last 15 years several sparse coding algorithms have been proposed. Some that solve the initial problem <> greedyly, the (orthogonal) matching pursuit, and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
+large linear system solvers with few optimization constraints. The LARS-Lasso, basis pursuit, FOCUSS?
 
 
-\section{sparse coding}
 blaa \footnote{test 123} blub
 
-\section{image bases}
-\subsection{mathematical}
-\subsection{learned/trained/natural?}
-\label{•} 
+
+\section{Dictionaries}
+\subsection{analytical}
+\subsection{learned and over-complete}
+In the last decade several learning algorithms have been proposed which try to a universal basis that 
+can sparsly reconstruct a set of "trainig data" with minimal error. 
+K-SVD
+MOD
+Online learning
+Mairal2010
+
+\subsection{Learning for the Task}
+It has been shown that learning basis specicial for certain tasks can lead to the best results\cite{}.  <>
+Based on this discovery will also concentrate on a specific class. <> Join the basis for natural images and cartoon/line images.
+We will also concentrate on real pratical data. This means typically 3-channel data of 1+ megapixel images found on image hosting services like flickr,<>,<>.
 
 \section{Image database}
 
+\section{Related work}
+- multi-scale
+- multi-channel
+- hirarchy
+- 
 
-\section{estimated outcome}
+- training with a neural network
+Learning Multiple Layers of Features from Tiny Images, Alex Krizhevsky, 2009.
+\url{http://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf}
+
+\section{Goal}
