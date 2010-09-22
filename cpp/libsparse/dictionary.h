@@ -10,11 +10,11 @@ public:
     int numElements_;
     float* elements_;
 
-    void DEntry( int numElements ) : numElements_(numElements) {
+    DEntry( int numElements ) : numElements_(numElements) {
         float* elements_ = new float[numElements_];
     }
 
-    void ~DEntry() {
+    ~DEntry() {
         delete[] elements_;
     }
 };
