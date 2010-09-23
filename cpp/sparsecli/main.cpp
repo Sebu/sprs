@@ -8,12 +8,41 @@
 using namespace vigra;
 using namespace vigra::linalg;
 
+void update_dict(Matrix<double> D, Matrix<double> A, Matrix<double> B) {
+    for(int j=0; j < D.columnCount(); j++) {
+        Matrix<double> a = A.columnVector(j);
+        Matrix<double> b = B.columnVector(j);
+        Matrix<double> d = D.columnVector(j);
+        Matrix<double> u = (1/A(j,j)) * (b-D*a) + d;
+        d = (1/fmax(u.norm(),0)) * u;
+//        Matrix<double> tmp = (1/ fmax(u.norm(),0) )*u;
+//        for (int i=0; i<tmp.rowCount(); i++)
+//            D(j,i) = tmp(i,0);
+    }
+}
+
+void learn_dict(Matrix<double> X, int k) {
+    int m = X.rowCount();
+    int T = X.columnCount();
+    Matrix<double> A(k, k), B(m, k), D(m,k);
+    for(int t=0; t<T; t++) {
+        Matrix<double> x = X.columnVector(t);
+
+        //TODO: sparse code: min ....
+        Matrix<double> a(T,1);
+
+        A = A + a*a.transpose();
+        B = B + x*a.transpose();
+        update_dict(D,A,B);
+    }
+}
+
 int main(int argc, char *argv[])
 {
 //    Libsparse* s = new Libsparse();
 
 
-    int m = 4, n = 40;
+    int m = 4, n = 12;
     Matrix<double> A(m, n), b(m, 1);
 
     // fill A and b
