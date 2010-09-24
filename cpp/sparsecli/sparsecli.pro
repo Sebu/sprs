@@ -16,13 +16,13 @@ TEMPLATE = app
 
 
 
-INCLUDEPATH += /homes/wheel/seb/playground/include
+unix:INCLUDEPATH += /homes/wheel/seb/playground/include
+macx:INCLUDEPATH += /Users/sebastian/uni/diplom/vigra-1.7.0-src/include \
+                    /opt/local/var/macports/software/opencv/2.1.0_0/opt/local/include
 
 LIBS += -L/homes/wheel/seb/playground/lib
 
-INCLUDEPATH += /homes/wheel/seb/libsparse/include \
-    ../ \
-    /opt/local/var/macports/software/opencv/2.1.0_0/opt/local/include
+INCLUDEPATH += ../
 LIBS += \
     -L/opt/local/var/macports/software/opencv/2.1.0_0/opt/local/lib \
     -L../libsparse -llibsparse \
