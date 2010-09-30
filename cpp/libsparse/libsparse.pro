@@ -16,7 +16,8 @@ SOURCES += libsparse.cpp \
 
 HEADERS += libsparse.h\
         libsparse_global.h \
-    dictionary.h
+    dictionary.h \
+    vigra_ext.h
 
 
 INCLUDEPATH += /homes/wheel/seb/playground/include \
