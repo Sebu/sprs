@@ -17,7 +17,8 @@ SOURCES += libsparse.cpp \
 HEADERS += libsparse.h\
         libsparse_global.h \
     dictionary.h \
-    vigra_ext.h
+    vigra_ext.h \
+    regression.hxx
 
 
 INCLUDEPATH += /homes/wheel/seb/playground/include \

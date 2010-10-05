@@ -1,7 +1,7 @@
 #ifndef VIGRA_EXT_H
 #define VIGRA_EXT_H
 
-#include <vigra/regression.hxx>
+#include "regression.hxx"
 #include <vigra/random.hxx>
 #include <iostream>
 
@@ -28,9 +28,7 @@ void init_random(MultiArrayView< 2, T, C >& m) {
 
 Matrix<double> dense_vector(ArrayVector<int>  active_set, Matrix<double>  sparse_vector, int size) {
 
-    std::cout << size << std::endl;
     Matrix<double> dense_vector(size,1);
-    std::cout << size << std::endl;
     dense_vector.init(0.0);
     for (unsigned int i = 0; i < active_set.size(); i++)
         dense_vector(active_set[i],0) = sparse_vector(i,0);
