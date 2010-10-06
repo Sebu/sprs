@@ -15,8 +15,7 @@ using namespace vigra::linalg;
 
 void update_dict(Matrix<double>& D, Matrix<double>& A, Matrix<double>& B) {
 
-#pragma omp parallel for
-    for(int i=0; i < 10; i++) {
+    for(int i=0; i < 5; i++) {
         for(int j=0; j < D.columnCount(); j++) {
             Matrix<double> a = A.columnVector(j);
             if(A(j,j)==0.0) continue;
@@ -46,16 +45,19 @@ Matrix<double> lasso(Matrix<double>& x, Matrix<double>& D) {
     // run leastAngleRegression() in  LASSO mode
     int numSolutions = leastAngleRegression(D, x, active_sets, solutions, opts);
 
-    for (MultiArrayIndex k = 0; k < numSolutions; ++k) {
-        Matrix<double> dense_solution = dense_vector(active_sets[k], solutions[k], D.columnCount());
-        double lsq = (mmul(D,dense_solution)-x).squaredNorm();
-        //        std::cout <<  k << " " << sum(solutions[k]) <<  " " << solutions[k].size() << std::endl;
-        double error = 0.5*lsq + sum(solutions[k]);
-        if(error<bestError) { bestError=error; bestIndex=k; }
-    }
 
-    Matrix<double> bla = dense_vector(active_sets[bestIndex], solutions[bestIndex], D.columnCount());;
-    return bla;
+    //std::cout << bestIndex << std::endl;
+
+//    for (MultiArrayIndex k = 0; k < numSolutions; ++k) {
+//        Matrix<double> dense_solution = dense_vector(active_sets[k], solutions[k], D.columnCount());
+//        double lsq = (mmul(D,dense_solution)-x).squaredNorm();
+//        //        std::cout <<  k << " " << sum(solutions[k]) <<  " " << solutions[k].size() << std::endl;
+//        double error = 0.5*lsq + sum(solutions[k]);
+//        if(error<bestError) { bestError=error; bestIndex=k; }
+//    }
+
+    bestIndex = numSolutions - 1;
+    return dense_vector(active_sets[bestIndex], solutions[bestIndex], D.columnCount());
 }
 
 
@@ -71,7 +73,7 @@ Matrix<double> learn_dict(Matrix<double>& samples, int dict_size, int iterations
 
     // fill D with random start data
     init_random(D);
-    prepareColumns(D, D, DataPreparationGoals(UnitNorm));
+    prepareColumns(D, D, DataPreparationGoals(ZeroMean|UnitVariance)); //UnitNorm));
 
     for(int t=0; t<iterations; t++) {
 
@@ -98,7 +100,7 @@ Matrix<double> learn_dict(Matrix<double>& samples, int dict_size, int iterations
 int main(int argc, char *argv[])
 {
 
-    cv::Mat inputImage = cv::imread("/home/seb/Bilder/bild5.jpg");
+    cv::Mat inputImage = cv::imread("/homes/wheel/seb/Bilder/lena.jpg");
 
     int size = 8;
     int m = size*size*3;
@@ -140,9 +142,9 @@ int main(int argc, char *argv[])
     cv::Mat outputImage(rowMax,colMax,CV_8UC3);
 
     index = 0;
-    for(int j=100; j<200; j+=size) {
-        for(int i=150; i<200; i+=size) {
-
+    for(int j=0; j<(rowMax-size); j+=size) {
+        for(int i=0; i<(colMax-size); i+=size) {
+            index = (j/8)*((rowMax-size)/8) + (i/8);
             Matrix<double> signal = training_set.columnVector(index);
             Matrix<double> a = lasso(signal, D);
             Matrix<double> recon_vigra = D*a;
@@ -152,14 +154,12 @@ int main(int argc, char *argv[])
             cv::Mat tmp = recon_cv.reshape(3, size);
             cv::Mat region( outputImage,  cv::Rect(i,j,size,size) );
             tmp.copyTo(region);
-
-            index++;
         }
     }
 
     //    std::cout << D << "b: " << signal << "a: " << a <<  std::endl;
 
 
-    cv::imwrite("/home/seb/Bilder/recon_lasso.jpg", outputImage);
+    cv::imwrite("/homes/wheel/seb/Bilder/recon_lasso.jpg", outputImage);
 
 }
