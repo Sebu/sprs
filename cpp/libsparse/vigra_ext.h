@@ -37,5 +37,34 @@ Matrix<double> dense_vector(ArrayVector<int>  active_set, Matrix<double>  sparse
 }
 
 
+Matrix<double> lasso(Matrix<double>& x, Matrix<double>& D) {
+
+    int bestIndex = 0;
+    double bestError = FLT_MAX;
+    ArrayVector<ArrayVector<int> > active_sets;
+    ArrayVector<Matrix<double> > solutions;
+
+
+    LeastAngleRegressionOptions opts;
+    opts.lasso();
+    opts.maxSolutionCount(10);
+    // run leastAngleRegression() in  LASSO mode
+    int numSolutions = leastAngleRegression(D, x, active_sets, solutions, opts);
+
+
+    //std::cout << bestIndex << std::endl;
+
+//    for (MultiArrayIndex k = 0; k < numSolutions; ++k) {
+//        Matrix<double> dense_solution = dense_vector(active_sets[k], solutions[k], D.columnCount());
+//        double lsq = (mmul(D,dense_solution)-x).squaredNorm();
+//        //        std::cout <<  k << " " << sum(solutions[k]) <<  " " << solutions[k].size() << std::endl;
+//        double error = 0.5*lsq + sum(solutions[k]);
+//        if(error<bestError) { bestError=error; bestIndex=k; }
+//    }
+
+    bestIndex = numSolutions - 1;
+    return dense_vector(active_sets[bestIndex], solutions[bestIndex], D.columnCount());
+}
+
 
 #endif // VIGRA_EXT_H

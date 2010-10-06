@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "libsparse_global.h"
-
+#include "vigra_ext.h"
 
 class DEntry {
 public:
@@ -11,7 +11,7 @@ public:
     float* elements_;
 
     DEntry( int numElements ) : numElements_(numElements) {
-        float* elements_ = new float[numElements_];
+        elements_ = new float[numElements_];
     }
 
     ~DEntry() {
@@ -21,11 +21,18 @@ public:
 
 class LIBSPARSESHARED_EXPORT Dictionary {
 private:
-    std::vector<DEntry*> elements_;
+   // std::vector<DEntry*> elements_;
+    vigra::Matrix<double>* data_;
+    int signalSize_;
+    int elementCount_;
 public:
-    Dictionary();
-    DEntry* getFirst();
-    DEntry* getLast();
+    Dictionary(int,int);
+   // DEntry* getFirst();
+   // DEntry* getLast();
+    vigra::Matrix<double> & getData();
+    void initRandom();
+    void update(Matrix<double>&, Matrix<double>&);
+    void learn(Matrix<double>&, int);
 
 };
 
