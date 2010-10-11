@@ -5,19 +5,19 @@
 #include "libsparse_global.h"
 #include "vigra_ext.h"
 
-class DEntry {
-public:
-    int numElements_;
-    float* elements_;
+//class DEntry {
+//public:
+//    int numElements_;
+//    float* elements_;
 
-    DEntry( int numElements ) : numElements_(numElements) {
-        elements_ = new float[numElements_];
-    }
+//    DEntry( int numElements ) : numElements_(numElements) {
+//        elements_ = new float[numElements_];
+//    }
 
-    ~DEntry() {
-        delete[] elements_;
-    }
-};
+//    ~DEntry() {
+//        delete[] elements_;
+//    }
+//};
 
 class LIBSPARSESHARED_EXPORT Dictionary {
 private:
@@ -29,10 +29,12 @@ public:
     Dictionary(int,int);
    // DEntry* getFirst();
    // DEntry* getLast();
-    vigra::Matrix<double> & getData();
+    const vigra::Matrix<double> & getData();
     void initRandom();
+    void initFromData(Matrix<double> & data);
     void update(Matrix<double>&, Matrix<double>&);
     void learn(Matrix<double>&, int);
+    void debugSaveImage(char* filename);
 
 };
 
