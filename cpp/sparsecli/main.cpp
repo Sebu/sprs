@@ -18,7 +18,7 @@ using namespace vigra::linalg;
 int main(int argc, char *argv[])
 {
 
-    cv::Mat inputImage = cv::imread("/homes/wheel/seb/Bilder/lena.png",0);
+    cv::Mat inputImage = cv::imread("/home/seb/Bilder/bild5.jpg",0);
 
     int size = 12;
     int m = size*size;
