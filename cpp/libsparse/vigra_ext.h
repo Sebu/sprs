@@ -47,7 +47,7 @@ Matrix<double> lasso(Matrix<double>& x, Matrix<double>& D) {
 
     LeastAngleRegressionOptions opts;
     opts.lasso();
-    opts.maxSolutionCount(10);
+    opts.maxSolutionCount(20);
     // run leastAngleRegression() in  LASSO mode
     int numSolutions = leastAngleRegression(D, x, active_sets, solutions, opts);
 

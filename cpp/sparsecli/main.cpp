@@ -18,10 +18,31 @@ using namespace vigra::linalg;
 int main(int argc, char *argv[])
 {
 
-    cv::Mat inputImage = cv::imread("/home/seb/Bilder/bild5.jpg",0);
+    std::string inputFilename = "/homes/wheel/seb/Bilder/lena.png";
 
-    int size = 12;
-    int m = size*size;
+    int verbose = 0;
+    int opt;
+
+    while ((opt = getopt(argc, argv, "i:v")) != -1) {
+        switch(opt) {
+        case 'i':
+            inputFilename = optarg;
+            break;
+        case 'v':
+            verbose = true;
+            break;
+        case '?':
+        default: /* '?' */
+            std::cerr << "Usage: " << argv[0] << " [-i input_file]" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+
+        cv::Mat inputImage = cv::imread(inputFilename,0);
+
+    int size = 8;
+    int channels = 1;
+    int m = size*size*channels;
 
     int rowMax = inputImage.rows;
     int colMax = inputImage.cols;
@@ -55,47 +76,37 @@ int main(int argc, char *argv[])
     std::cout << "train set fill complete " <<  index << std::endl;
 
 
-    Dictionary dict(m, 225);
+    Dictionary dict(size,1, 400);
 
-//    dict.initRandom();
-    dict.initFromData(training_set);
-    dict.learn(training_set, 1000);
+    dict.initRandom();
+//    dict.initFromData(training_set);
+    dict.learn(training_set, 200);
+    dict.debugSaveImage("/homes/wheel/seb/Bilder/dict_lasso.jpg");
+
     Matrix<double> D = dict.getData();
 
-    prepareColumns(D, D, DataPreparationGoals(UnitNorm));
+    dict.save("/homes/wheel/seb/Bilder/bla.dict");
+    dict.load("/homes/wheel/seb/Bilder/bla.dict");
 
-    cv::Mat outputImage(size*15,size*15,CV_8UC1);
-    for(int j=0; j<size*15; j+=size) {
-        for(int i=0; i<size*15; i+=size) {
-            index = ceil(j/size)*15 + ceil(i/size);
-            Matrix<double> d = D.columnVector(index);
+    cv::Mat outputImage(rowMax,colMax,CV_8UC(channels));
+
+    for(int j=0; j<rowMax/2; j+=size) {
+        for(int i=0; i<colMax/2; i+=size) {
+            index = ceil((float)j)*ceil((float)colMax) + ceil((float)i);
+            Matrix<double> signal = training_set.columnVector(index);
+            Matrix<double> a = lasso(signal, D);
+            Matrix<double> recon_vigra = D*a;
             cv::Mat recon_cv(1,m,CV_8U);
-            for(int ii=0; ii<m; ii++) {
-                recon_cv.at<uchar>(0,ii) = (uchar)((d(ii,0)+1.0)*128.0);
-            }
-            cv::Mat tmp = recon_cv.reshape(1, size);
+            for(int ii=0; ii<m; ii++)
+                recon_cv.at<uchar>(0,ii) = (uchar)(recon_vigra(ii,0)/scaling(0,index));
+            cv::Mat tmp = recon_cv.reshape(channels, size);
             cv::Mat region( outputImage,  cv::Rect(i,j,size,size) );
             tmp.copyTo(region);
         }
     }
-//    cv::Mat outputImage(rowMax,colMax,CV_8UC1);
-//    for(int j=0; j<rowMax/2; j+=size) {
-//        for(int i=0; i<colMax/2; i+=size) {
-//            index = ceil((float)j/(float)size)*ceil((float)colMax/(float)size) + ceil((float)i/(float)size);
-//            Matrix<double> signal = training_set.columnVector(index);
-//            Matrix<double> a = lasso(signal, D);
-//            Matrix<double> recon_vigra = D*a;
-//            cv::Mat recon_cv(1,m,CV_8U);
-//            for(int ii=0; ii<m; ii++)
-//                recon_cv.at<uchar>(0,ii) = (uchar)(recon_vigra(ii,0)/scaling(0,index));
-//            cv::Mat tmp = recon_cv.reshape(1, size);
-//            cv::Mat region( outputImage,  cv::Rect(i,j,size,size) );
-//            tmp.copyTo(region);
-//        }
-//    }
+    cv::imwrite("/homes/wheel/seb/Bilder/lena.recon.png", outputImage);
 
     //    std::cout << D << "b: " << signal << "a: " << a <<  std::endl;
 
-    cv::imwrite("/homes/wheel/seb/Bilder/dict_lasso.jpg", outputImage);
 
 }

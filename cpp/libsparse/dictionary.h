@@ -25,8 +25,10 @@ private:
     vigra::Matrix<double>* data_;
     int signalSize_;
     int elementCount_;
+    int channels_;
+    int size_;
 public:
-    Dictionary(int,int);
+    Dictionary(int, int, int);
    // DEntry* getFirst();
    // DEntry* getLast();
     const vigra::Matrix<double> & getData();
@@ -35,7 +37,8 @@ public:
     void update(Matrix<double>&, Matrix<double>&);
     void learn(Matrix<double>&, int);
     void debugSaveImage(char* filename);
-
+    void save(char* filename);
+    void load(char* filename);
 };
 
 #endif // DICTIONARY_H
