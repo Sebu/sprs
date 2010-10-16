@@ -27,3 +27,5 @@ INCLUDEPATH += ../
 LIBS += -L../libsparse -llibsparse -lcxcore -lcv -lhighgui -lgomp
 
 SOURCES += main.cpp
+
+HEADERS +=

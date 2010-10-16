@@ -2,7 +2,9 @@
 #include <opencv/highgui.h>
 #include <fstream>
 
+#include "coderlasso.h"
 #include "dictionary.h"
+#include "vigra_ext.h"
 
 Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size*channels),
     elementCount_(elementCount), channels_(channels), size_(size)
@@ -11,7 +13,7 @@ Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), sign
 }
 
 
-void Dictionary::save(char *fileName) {
+void Dictionary::save(const char* fileName) {
     std::ofstream ofs( fileName );
 
     ofs << signalSize_ << " " << elementCount_ << " " << channels_ << " " << size_ << " ";
@@ -21,7 +23,7 @@ void Dictionary::save(char *fileName) {
     ofs.close();
 }
 
-void Dictionary::load(char *fileName) {
+void Dictionary::load(const char* fileName) {
     std::ifstream ifs( fileName );
 
     if (ifs) {
@@ -56,51 +58,8 @@ void Dictionary::initFromData(Matrix<double> & data) {
 
 
 
-const vigra::Matrix<double> & Dictionary::getData() {
+vigra::Matrix<double> & Dictionary::getData() {
     return *data_;
-}
-
-void Dictionary::update(Matrix<double>& A, Matrix<double>& B) {
-
-    for(int i=0; i < 1; i++) {
-        for(int j=0; j < elementCount_; j++) {
-            Matrix<double> a = A.columnVector(j);
-            Matrix<double> b = B.columnVector(j);
-            Matrix<double> d = data_->columnVector(j);
-            //            std::cout << A(j,j) << std::endl;
-            if(A(j,j)==0.0) continue;
-            Matrix<double> u = ( (1.0/A(j,j)) * (b-((*data_)*a)) ) + d;
-            Matrix<double> tmp = (1.0/fmax(u.norm(),1.0)) * u;
-            for(int i=0; i< signalSize_; i++)
-                (*data_)(i,j) = tmp(i,0);
-        }
-    }
-
-}
-
-void Dictionary::learn(Matrix<double>& samples, int iterations) {
-
-    Matrix<double> A(elementCount_, elementCount_), B(signalSize_, elementCount_);
-
-    // init A,B with 0
-    A.init(0.0); B.init(0.0);
-
-    for(int t=0; t<iterations; t++) {
-
-        // draw sample from trainig set
-        Matrix<double> sample = samples.columnVector(t);
-
-        // sparse code sample
-        Matrix<double> a = lasso(sample,*data_);
-
-        std::cout << "Iteration: " <<  t << std::endl;
-
-        A = A + mmul(a,a.transpose());
-        B = B + mmul(sample,a.transpose());
-        // update step (algo. 2)
-        update(A,B);
-    }
-
 }
 
 

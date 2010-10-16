@@ -3,25 +3,10 @@
 
 #include <vector>
 #include "libsparse_global.h"
-#include "vigra_ext.h"
-
-//class DEntry {
-//public:
-//    int numElements_;
-//    float* elements_;
-
-//    DEntry( int numElements ) : numElements_(numElements) {
-//        elements_ = new float[numElements_];
-//    }
-
-//    ~DEntry() {
-//        delete[] elements_;
-//    }
-//};
+#include "vigra/matrix.hxx"
 
 class LIBSPARSESHARED_EXPORT Dictionary {
 private:
-   // std::vector<DEntry*> elements_;
     vigra::Matrix<double>* data_;
     int signalSize_;
     int elementCount_;
@@ -29,16 +14,21 @@ private:
     int size_;
 public:
     Dictionary(int, int, int);
-   // DEntry* getFirst();
-   // DEntry* getLast();
-    const vigra::Matrix<double> & getData();
+    vigra::Matrix<double> & getData();
+    int getSignalSize() {return signalSize_; }
+    int getElementCount() {return elementCount_; }
+    int getChannels() {return channels_; }
+    int getSize() {return size_; }
     void initRandom();
-    void initFromData(Matrix<double> & data);
-    void update(Matrix<double>&, Matrix<double>&);
-    void learn(Matrix<double>&, int);
+    void initFromData(vigra::Matrix<double> & data);
+
+
+    void save(const char* filename);
+    void load(const char* filename);
+
+
+    // debug
     void debugSaveImage(char* filename);
-    void save(char* filename);
-    void load(char* filename);
 };
 
 #endif // DICTIONARY_H

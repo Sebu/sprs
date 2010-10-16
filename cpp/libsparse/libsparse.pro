@@ -23,10 +23,23 @@ macx:LIBS += -L/opt/local/var/macports/software/opencv/2.1.0_0/opt/local/lib
 LIBS += -lcxcore -lcv -lhighgui -lgomp
 
 SOURCES += libsparse.cpp \
-    dictionary.cpp
+    dictionary.cpp \
+    coder.cpp \
+    coderlasso.cpp \
+    trainer.cpp \
+    trainermairal.cpp \
+    vigra_ext.cpp \
+    samples.cpp \
+    coderomp.cpp
 
 HEADERS += libsparse.h\
         libsparse_global.h \
     dictionary.h \
     vigra_ext.h \
-    regression.hxx
+    regression.hxx \
+    coder.h \
+    coderlasso.h \
+    trainer.h \
+    trainermairal.h \
+    samples.h \
+    coderomp.h
