@@ -4,6 +4,7 @@
 #include <vector>
 #include "libsparse_global.h"
 #include "vigra/matrix.hxx"
+#include "samples.h"
 
 class LIBSPARSESHARED_EXPORT Dictionary {
 private:
@@ -20,7 +21,7 @@ public:
     int getChannels() {return channels_; }
     int getSize() {return size_; }
     void initRandom();
-    void initFromData(vigra::Matrix<double> & data);
+    void initFromData(Samples& data);
 
 
     void save(const char* filename);

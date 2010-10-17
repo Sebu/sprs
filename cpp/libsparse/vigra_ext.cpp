@@ -1,5 +1,29 @@
 #include "vigra_ext.h"
 
+int maxabs(Matrix<double>& c)
+{
+  int maxid=1, k;
+  int m = c.rowCount();
+  double absval, maxval = 0;
+
+  for (k=1; k<=m; ++k) {
+    absval = fabs(c(k,1));
+    if (absval > maxval) {
+      maxval = absval;
+      maxid = k;
+    }
+  }
+  return maxid;
+}
+
+
+void vec_assign(Matrix<double>& y, Matrix<double>& x, Matrix<int>& ind, int k, int start)
+{
+  int i;
+  for (i=0; i<k; ++i)
+    y(i,1) = x(ind(i,1), start+1);
+}
+
 
 Matrix<double> dense_vector(ArrayVector<int>  active_set, Matrix<double>  sparse_vector, int size) {
 

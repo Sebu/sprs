@@ -44,13 +44,14 @@ void Dictionary::initRandom() {
     prepareColumns((*data_), (*data_), DataPreparationGoals(UnitNorm));
 }
 
-void Dictionary::initFromData(Matrix<double> & data) {
+void Dictionary::initFromData(Samples& data) {
     srand ( time(NULL) );
-    for(int j=0; j<data_->size(1); j++) {
-        int pos  = rand() % data.columnCount();
+
+    for(int j=0; j<data.getData().size(1); j++) {
+        int pos  = rand() % data.getData().columnCount();
         std::cout << pos  << std::endl;
-        for(int i=0; i<data_->size(0); i++) {
-            (*data_)(i,j) = data(i,pos);
+        for(int i=0; i<data.getData().size(0); i++) {
+            (*data_)(i,j) = data.getData()(i,pos);
         }
     }
 }

@@ -25,6 +25,8 @@ void init_random(MultiArrayView< 2, T, C >& m) {
             m(i,j) = rand();
 }
 
+int maxabs(Matrix<double>& c);
+void vec_assign(Matrix<double>& y, Matrix<double>& x, Matrix<int>& ind, int k, int start);
 Matrix<double> dense_vector(ArrayVector<int>  active_set, Matrix<double>  sparse_vector, int size);
 Matrix<double> lasso(Matrix<double>& x, Matrix<double>& D);
 

@@ -16,8 +16,8 @@ void Samples::load(std::string& fileName, int winSize, int channels) {
 
     int m = winSize*winSize*channels;
 
-    int rowMax = inputImage.rows;
-    int colMax = inputImage.cols;
+    rowMax = inputImage.rows;
+    colMax = inputImage.cols;
     int n = ceil((float)rowMax) * ceil((float)colMax);
 
     std::cout << n << std::endl;

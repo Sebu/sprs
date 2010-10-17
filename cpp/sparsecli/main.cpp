@@ -3,6 +3,7 @@
 #include <libsparse/dictionary.h>
 #include <libsparse/trainermairal.h>
 #include <libsparse/coderlasso.h>
+#include <libsparse/coderomp.h>
 #include <libsparse/samples.h>
 #include <libsparse/regression.hxx>
 #include <vigra/random.hxx>
@@ -21,7 +22,7 @@ using namespace vigra::linalg;
 int main(int argc, char *argv[])
 {
 
-    std::string inputFilename = "/home/seb/Bilder/bild5.jpg";
+    std::string inputFilename = "/home/seb/Bilder/koala.png";
 
     int verbose = 0;
     int opt;
@@ -42,38 +43,41 @@ int main(int argc, char *argv[])
     }
 
     int winSize = 12;
+    int channels = 1;
     Samples samples;
-    samples.load(inputFilename, winSize, 1);
+    samples.load(inputFilename, winSize, channels);
     std::cout << "train set fill complete " << std::endl;
 
-    Dictionary dict(winSize, 1, 400);
+    Dictionary dict(winSize, 1, 225);
     dict.initRandom();
-    //    dict.initFromData(training_set);
+    //dict.initFromData(samples);
 
     TrainerMairal trainer;
-    trainer.train(samples, dict, 200);
+   // trainer.train(samples, dict,  1000);
 
-    dict.debugSaveImage("/home/seb/Bilder/dict_lasso.jpg");
-    dict.save("/home/seb/Bilder/bla.dict");
+    //dict.debugSaveImage("/home/seb/Bilder/dict_lasso.jpg");
+    //dict.save("/home/seb/Bilder/bla.dict");
     dict.load("/home/seb/Bilder/bla.dict");
 
+    CoderOMP coder;
 
-//    cv::Mat outputImage(rowMax,colMax,CV_8UC(channels));
-//    for(int j=0; j<rowMax/2; j+=size) {
-//        for(int i=0; i<colMax/2; i+=size) {
-//            index = ceil((float)j)*ceil((float)colMax) + ceil((float)i);
-//            Matrix<double> signal = training_set.columnVector(index);
-//            Matrix<double> a = lasso(signal, D);
-//            Matrix<double> recon_vigra = D*a;
-//            cv::Mat recon_cv(1,m,CV_8U);
-//            for(int ii=0; ii<m; ii++)
-//                recon_cv.at<uchar>(0,ii) = (uchar)(recon_vigra(ii,0)/scaling(0,index));
-//            cv::Mat tmp = recon_cv.reshape(channels, size);
-//            cv::Mat region( outputImage,  cv::Rect(i,j,size,size) );
-//            tmp.copyTo(region);
-//        }
-//    }
-//    cv::imwrite("/home/seb/Bilder/lena.recon.png", outputImage);
+    int m = winSize*winSize*channels;
+    cv::Mat outputImage(samples.rowMax, samples.colMax, CV_8UC(channels));
+    for(int j=0; j<samples.rowMax/2; j+=winSize) {
+        for(int i=0; i<samples.colMax/2; i+=winSize) {
+            int index = ceil((float)j)*ceil((float)samples.colMax) + ceil((float)i);
+            Matrix<double> signal = samples.getData().columnVector(index);
+            Matrix<double> a = coder.code(signal, dict);
+            Matrix<double> recon_vigra = dict.getData()*a;
+            cv::Mat recon_cv(1,m,CV_8U);
+            for(int ii=0; ii<m; ii++)
+                recon_cv.at<uchar>(0,ii) = (uchar)(recon_vigra(ii,0)/(*(samples.scaling_))(0,index));
+            cv::Mat tmp = recon_cv.reshape(channels, winSize);
+            cv::Mat region( outputImage,  cv::Rect(i,j,winSize, winSize) );
+            tmp.copyTo(region);
+        }
+    }
+    cv::imwrite("/home/seb/Bilder/lena.recon.png", outputImage);
 
 
 }
