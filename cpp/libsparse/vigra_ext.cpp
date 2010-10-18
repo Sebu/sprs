@@ -6,8 +6,8 @@ int maxabs(Matrix<double>& c)
   int m = c.rowCount();
   double absval, maxval = 0;
 
-  for (k=1; k<=m; ++k) {
-    absval = fabs(c(k,1));
+  for (k=0; k<m; ++k) {
+    absval = fabs(c(k,0));
     if (absval > maxval) {
       maxval = absval;
       maxid = k;
@@ -21,7 +21,7 @@ void vec_assign(Matrix<double>& y, Matrix<double>& x, Matrix<int>& ind, int k, i
 {
   int i;
   for (i=0; i<k; ++i)
-    y(i,1) = x(ind(i,1), start+1);
+    y(i,0) = x(ind(i,0), start);
 }
 
 
@@ -45,7 +45,7 @@ Matrix<double> lasso(Matrix<double>& x, Matrix<double>& D) {
 
     LeastAngleRegressionOptions opts;
     opts.lasso();
-    opts.maxSolutionCount(20);
+    opts.maxSolutionCount(10);
     // run leastAngleRegression() in  LASSO mode
     int numSolutions = leastAngleRegression(D, x, active_sets, solutions, opts);
 

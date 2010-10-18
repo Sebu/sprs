@@ -22,7 +22,7 @@ using namespace vigra::linalg;
 int main(int argc, char *argv[])
 {
 
-    std::string inputFilename = "/home/seb/Bilder/koala.png";
+    std::string inputFilename = "/home/seb/Bilder/lena.png";
 
     int verbose = 0;
     int opt;
@@ -53,11 +53,11 @@ int main(int argc, char *argv[])
     //dict.initFromData(samples);
 
     TrainerMairal trainer;
-   // trainer.train(samples, dict,  1000);
+    trainer.train(samples, dict,  10);
 
-    //dict.debugSaveImage("/home/seb/Bilder/dict_lasso.jpg");
-    //dict.save("/home/seb/Bilder/bla.dict");
-    dict.load("/home/seb/Bilder/bla.dict");
+    dict.debugSaveImage("/home/seb/Bilder/dict_lasso.jpg");
+    dict.save("/home/seb/Bilder/bla.dict");
+//    dict.load("/home/seb/Bilder/bla.dict");
 
     CoderOMP coder;
 
@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
             cv::Mat tmp = recon_cv.reshape(channels, winSize);
             cv::Mat region( outputImage,  cv::Rect(i,j,winSize, winSize) );
             tmp.copyTo(region);
+            std::cout << "restore" << j*samples.rowMax+i << std::endl;
         }
     }
     cv::imwrite("/home/seb/Bilder/lena.recon.png", outputImage);

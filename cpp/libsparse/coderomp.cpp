@@ -5,6 +5,9 @@
 #include <string.h>
 #include <vigra/matrix.hxx>
 #include <vigra/linear_algebra.hxx>
+#include <vigra/multi_array.hxx>
+
+typedef MultiArray<2, double>::difference_type Shape;
 
 CoderOMP::CoderOMP()
 {
@@ -29,25 +32,31 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
 
     /*** allocate output matrix ***/
     vigra::Matrix<double> Gamma (m,L);
+    Gamma.init(0.0);
 
     /*** helper arrays ***/
     vigra::Matrix<double> alpha;            /* contains D'*residual */
-    vigra::Matrix<double> c;                /* orthogonal projection result */
     vigra::Matrix<int> ind(n,1);            /* indices of selected atoms */
     vigra::Matrix<int> selected_atoms(m,1); /* binary array with 1's for selected atoms */
 
     /* current number of columns in Dsub / Gsub / Lchol */
     int allocated_cols = erroromp ? (int)(ceil(sqrt((double)n)/2.0) + 1.01) : T;
+    vigra::Matrix<double> c(allocated_cols,1);           /* orthogonal projection result */
+    c.init(0.0);
 
     /* Cholesky decomposition of D_I'*D_I */
     vigra::Matrix<double> Lchol(n,allocated_cols);
+    Lchol.init(0.0);
 
     /* temporary vectors for various computations */
     vigra::Matrix<double> tempvec1(m,1);
+    tempvec1.init(0.0);
     vigra::Matrix<double> tempvec2(m,1);
+    tempvec2.init(0.0);
 
     /* matrix containing G(:,ind) - the columns of G corresponding to the selected atoms, in order of selection */
     vigra::Matrix<double> Gsub(m,allocated_cols);
+    Gsub.init(0.0);
 
     /*** initializations for error omp ***/
     if (erroromp) {
@@ -63,7 +72,7 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
         /* initialize residual norm and deltaprev for error-omp */
 
         if (erroromp) {
-            resnorm = XtX(signum,1);
+            resnorm = XtX(signum,0);
             deltaprev = 0;     /* delta tracks the value of gamma'*G*gamma */
         }
         else {
@@ -80,7 +89,7 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
 
             /* mark all atoms as unselected */
             for (i=0; i<m; ++i) {
-                selected_atoms(i,1) = 0;
+                selected_atoms(i,0) = 0;
             }
 
         }
@@ -94,75 +103,72 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
 
             /* stop criterion: selected same atom twice, or inner product too small */
 
-            if (selected_atoms(pos,1) || alpha(pos,1)*alpha(pos,1)<1e-14) {
+//            std::cout << pos << std::endl;
+            if (selected_atoms(pos,0) || alpha(pos,0)*alpha(pos,0)<1e-14) {
                 break;
             }
 
 
             /* mark selected atom */
 
-            ind(i,1) = pos;
-            selected_atoms(pos,1) = 1;
+            ind(i,0) = pos;
+            selected_atoms(pos,0) = 1;
 
 
-            /* matrix reallocation */
-
-//            if (erroromp && i>=allocated_cols) {
-
-//                allocated_cols = (int)(ceil(allocated_cols*MAT_INC_FACTOR) + 1.01);
-
-//                Lchol = (double*)mxRealloc(Lchol,n*allocated_cols*sizeof(double));
-
-//                Gsub = (double*)mxRealloc(Gsub,m*allocated_cols*sizeof(double));
-//            }
-
-
-            /* append column to Gsub or Dsub */
+             /* append column to Gsub or Dsub */
             for (j=0; j<m; ++j)
                 Gsub(j, i) = G(j, pos);
 
             /*** Cholesky update ***/
 
             if (i==0) {
-                Lchol(1,1) = 1;
+                Lchol(0,0) = 1.0;
             }
             else {
 
                 /* incremental Cholesky decomposition: compute next row of Lchol */
 
+
                 vec_assign(tempvec1, Gsub, ind, i, i);            /* extract tempvec1 := Gsub(ind,i) */
 
                 /* compute tempvec2 = Lchol \ tempvec1 */
-                vigra::linalg::linearSolveLowerTriangular(Lchol, tempvec1, tempvec2);
+                linearSolveLowerTriangularC(Lchol.subarray(Shape(0,0), Shape(i+1,i+1)),
+                                            tempvec1.subarray(Shape(0,0), Shape(i+1,1)),
+                                            tempvec2);
 
                 for (j=0; j<i; ++j) {                              /* write tempvec2 to end of Lchol */
-                    Lchol(i,j) = tempvec2(j,1);
+                    Lchol(i,j) = tempvec2(j,0);
                 }
                 /* compute Lchol(i,i) */
-                Lchol(i,i) = sqrt(1-(tempvec2.transpose(),tempvec2)(1,1));
+                Lchol(i,i) = sqrt(1.0-(tempvec2.transpose()*tempvec2)(0,0));
             }
 
 
             i++;
 
-            std::cout << "here3" << std::endl;
             /* perform orthogonal projection and compute sparse coefficients */
             vec_assign(tempvec1, DtX, ind, i, signum);           /* extract tempvec1 = DtX(ind) */
-            std::cout << "here3" << std::endl;
-            vigra::linalg::choleskySolve(Lchol,tempvec1,c);      /* solve LL'c = tempvec1 for c */
+
+             /* solve LL'c = tempvec1 for c */
+            choleskySolveC(Lchol.subarray(Shape(0,0), Shape(i+1,i+1)),
+                           tempvec1.subarray(Shape(0,0), Shape(i+1,1)),
+                           c);
 
 
 
+//            std::cout << "c: " << c << std::endl;
             /* update alpha = D'*residual */
 
             tempvec1 = Gsub*c;                                    /* compute tempvec1 := Gsub*c */
             alpha = DtX.columnVector(signum);                     /* set alpha = D'*x */
+//            std::cout << "apre: " << alpha << std::endl;
+//            std::cout << "tmp: " << tempvec1 << std::endl;
             alpha = alpha - tempvec1;                             /* compute alpha := alpha - tempvec1 */
-
+//            std::cout << "apost: " << alpha << std::endl;
             /* update residual norm */
             if (erroromp) {
                 vec_assign(tempvec2, tempvec1, ind, i, 0);   /* assign tempvec2 := tempvec1(ind) */
-                delta = (c.transpose()*tempvec2)(1,1);       /* compute c'*tempvec2 */
+                delta = (c.transpose()*tempvec2)(0,0);       /* compute c'*tempvec2 */
                 resnorm = resnorm - delta + deltaprev;       /* residual norm update */
                 deltaprev = delta;
             }
@@ -172,7 +178,7 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
 
         /*** generate output vector gamma ***/
         for (j=0; j<i; ++j) {
-            Gamma(ind(j,1),signum) = c(j,1);
+            Gamma(ind(j,0),signum) = c(j,0);
         }
 
     }

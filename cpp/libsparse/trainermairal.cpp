@@ -2,9 +2,13 @@
 #include "trainermairal.h"
 #include "dictionary.h"
 #include "coderlasso.h"
+#include "coderomp.h"
 #include "samples.h"
 
 #include <iostream>
+
+#include <vigra/multi_array.hxx>
+typedef vigra::MultiArray<2, double>::difference_type Shape;
 
 TrainerMairal::TrainerMairal()
 {
@@ -35,11 +39,12 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations) {
     // init A,B with 0
     A.init(0.0); B.init(0.0);
 
-    CoderLasso coder;
+    int batch=1;
+    CoderOMP coder;
     for(int t=0; t<iterations; t++) {
 
         // draw sample from trainig set
-        vigra::Matrix<double> sample = samples.getData().columnVector(t);
+        vigra::Matrix<double> sample = samples.getData().subarray(Shape(0,t*batch), Shape(D.getSignalSize(),t*batch+batch));//columnVector(t);
 
         // sparse code sample
         vigra::Matrix<double> a = coder.code(sample, D);
