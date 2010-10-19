@@ -16,7 +16,7 @@ TrainerMairal::TrainerMairal()
 
 void TrainerMairal::update(vigra::Matrix<double>& A, vigra::Matrix<double>& B, Dictionary& D) {
 
-    for(int i=0; i < 10; i++) {
+    for(int i=0; i < 1; i++) {
         for(int j=0; j < D.getElementCount(); j++) {
             vigra::Matrix<double> a = A.columnVector(j);
             vigra::Matrix<double> b = B.columnVector(j);
@@ -38,7 +38,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations) {
     // init A,B with 0
     A.init(0.0); B.init(0.0);
 
-    int batch=100;
+    int batch=1000;
     CoderOMP coder;
 
     for(int t=0; t<iterations; t++) {

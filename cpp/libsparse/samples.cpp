@@ -12,7 +12,7 @@ vigra::Matrix<double> & Samples::getData() {
     return *data_;
 }
 void Samples::load(std::string& fileName, int winSize, int channels) {
-    cv::Mat inputImage = cv::imread(fileName, 0);
+    cv::Mat inputImage = cv::imread(fileName);
 
     int m = winSize*winSize*channels;
 
@@ -20,7 +20,7 @@ void Samples::load(std::string& fileName, int winSize, int channels) {
     colMax = inputImage.cols;
     int n = ceil((float)rowMax) * ceil((float)colMax);
 
-    std::cout << n << std::endl;
+//    std::cout << n << std::endl;
     data_ = new vigra::Matrix<double>(m, n);
 
     int index = 0;
@@ -32,7 +32,7 @@ void Samples::load(std::string& fileName, int winSize, int channels) {
             cv::Mat warped;
             cv::warpAffine(inputImage, warped, transMat, cv::Size(winSize, winSize));
             cv::Mat tmp = warped.reshape(1,1);
-            std::cout << index << std::endl;
+//            std::cout << index << std::endl;
             for(int ii=0; ii<tmp.cols; ii++) {
                 (*data_)(ii,index) = tmp.at<uchar>(0,ii);
             }

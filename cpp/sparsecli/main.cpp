@@ -22,7 +22,7 @@ using namespace vigra::linalg;
 int main(int argc, char *argv[])
 {
 
-    std::string inputFilename = "/homes/wheel/seb/Bilder/lena.png";
+    std::string inputFilename = "/home/seb/Bilder/bild5.jpg";
 
     int verbose = 0;
     int opt;
@@ -42,22 +42,22 @@ int main(int argc, char *argv[])
         }
     }
 
-    int winSize = 12;
-    int channels = 1;
+    int winSize = 8;
+    int channels = 3;
     Samples samples;
     samples.load(inputFilename, winSize, channels);
     std::cout << "train set fill complete " << std::endl;
 
-    Dictionary dict(winSize, 1, 225);
-    //dict.initRandom();
-    dict.initFromData(samples);
+    Dictionary dict(winSize, channels, 400);
+    dict.initRandom();
+    //dict.initFromData(samples);
 
     TrainerMairal trainer;
-    trainer.train(samples, dict,  3);
+    trainer.train(samples, dict,  100);
 
-    dict.debugSaveImage("/homes/wheel/seb/Bilder/dict_lasso.jpg");
-//    dict.save("/homes/wheel/seb/Bilder/bla.dict");
-//    dict.load("/home/seb/Bilder/bla.dict");
+    dict.debugSaveImage("/home/seb/Bilder/dict_lasso.jpg");
+    dict.save("/home/seb/Bilder/bla.dict");
+    dict.load("/home/seb/Bilder/bla.dict");
 
     CoderLasso coder;
 
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
             std::cout << "restore" << j*samples.rowMax+i << std::endl;
         }
     }
-    cv::imwrite("/homes/wheel/seb/Bilder/lena.recon.png", outputImage);
+    cv::imwrite("/home/seb/Bilder/lena.recon.png", outputImage);
 
 
 }
