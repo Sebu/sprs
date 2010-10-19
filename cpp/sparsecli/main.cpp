@@ -22,7 +22,7 @@ using namespace vigra::linalg;
 int main(int argc, char *argv[])
 {
 
-    std::string inputFilename = "/home/seb/Bilder/lena.png";
+    std::string inputFilename = "/homes/wheel/seb/Bilder/lena.png";
 
     int verbose = 0;
     int opt;
@@ -49,17 +49,17 @@ int main(int argc, char *argv[])
     std::cout << "train set fill complete " << std::endl;
 
     Dictionary dict(winSize, 1, 225);
-    dict.initRandom();
-    //dict.initFromData(samples);
+    //dict.initRandom();
+    dict.initFromData(samples);
 
     TrainerMairal trainer;
-    trainer.train(samples, dict,  10);
+    trainer.train(samples, dict,  3);
 
-    dict.debugSaveImage("/home/seb/Bilder/dict_lasso.jpg");
-    dict.save("/home/seb/Bilder/bla.dict");
+    dict.debugSaveImage("/homes/wheel/seb/Bilder/dict_lasso.jpg");
+//    dict.save("/homes/wheel/seb/Bilder/bla.dict");
 //    dict.load("/home/seb/Bilder/bla.dict");
 
-    CoderOMP coder;
+    CoderLasso coder;
 
     int m = winSize*winSize*channels;
     cv::Mat outputImage(samples.rowMax, samples.colMax, CV_8UC(channels));
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
             std::cout << "restore" << j*samples.rowMax+i << std::endl;
         }
     }
-    cv::imwrite("/home/seb/Bilder/lena.recon.png", outputImage);
+    cv::imwrite("/homes/wheel/seb/Bilder/lena.recon.png", outputImage);
 
 
 }

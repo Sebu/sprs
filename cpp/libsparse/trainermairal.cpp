@@ -16,12 +16,11 @@ TrainerMairal::TrainerMairal()
 
 void TrainerMairal::update(vigra::Matrix<double>& A, vigra::Matrix<double>& B, Dictionary& D) {
 
-    for(int i=0; i < 1; i++) {
+    for(int i=0; i < 10; i++) {
         for(int j=0; j < D.getElementCount(); j++) {
             vigra::Matrix<double> a = A.columnVector(j);
             vigra::Matrix<double> b = B.columnVector(j);
             vigra::Matrix<double> d = D.getData().columnVector(j);
-            //            std::cout << A(j,j) << std::endl;
             if(A(j,j)==0.0) continue;
             vigra::Matrix<double> u = ( (1.0/A(j,j)) * (b-(D.getData()*a)) ) + d;
             vigra::Matrix<double> tmp = (1.0/fmax(u.norm(),1.0)) * u;
@@ -39,8 +38,9 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations) {
     // init A,B with 0
     A.init(0.0); B.init(0.0);
 
-    int batch=1;
+    int batch=100;
     CoderOMP coder;
+
     for(int t=0; t<iterations; t++) {
 
         // draw sample from trainig set

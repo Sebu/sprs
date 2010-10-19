@@ -31,7 +31,7 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
     vigra::Matrix<double> G = D.getData().transpose()*D.getData();
 
     /*** allocate output matrix ***/
-    vigra::Matrix<double> Gamma (m,L);
+    vigra::Matrix<double> Gamma(m,L);
     Gamma.init(0.0);
 
     /*** helper arrays ***/
@@ -42,21 +42,16 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
     /* current number of columns in Dsub / Gsub / Lchol */
     int allocated_cols = erroromp ? (int)(ceil(sqrt((double)n)/2.0) + 1.01) : T;
     vigra::Matrix<double> c(allocated_cols,1);           /* orthogonal projection result */
-    c.init(0.0);
 
     /* Cholesky decomposition of D_I'*D_I */
     vigra::Matrix<double> Lchol(n,allocated_cols);
-    Lchol.init(0.0);
 
     /* temporary vectors for various computations */
     vigra::Matrix<double> tempvec1(m,1);
-    tempvec1.init(0.0);
     vigra::Matrix<double> tempvec2(m,1);
-    tempvec2.init(0.0);
 
     /* matrix containing G(:,ind) - the columns of G corresponding to the selected atoms, in order of selection */
     vigra::Matrix<double> Gsub(m,allocated_cols);
-    Gsub.init(0.0);
 
     /*** initializations for error omp ***/
     if (erroromp) {
@@ -68,6 +63,11 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
 
     /**********************   perform omp for each signal   **********************/
     for (signum=0; signum<L; ++signum) {
+        tempvec1.init(0.0);
+        tempvec2.init(0.0);
+        c.init(0.0);
+        Gsub.init(0.0);
+        Lchol.init(0.0);
 
         /* initialize residual norm and deltaprev for error-omp */
 
@@ -140,7 +140,11 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
                     Lchol(i,j) = tempvec2(j,0);
                 }
                 /* compute Lchol(i,i) */
-                Lchol(i,i) = sqrt(1.0-(tempvec2.transpose()*tempvec2)(0,0));
+                double sum = 1.0-(tempvec2.transpose()*tempvec2)(0,0);
+                if ( sum <= 1e-14 ) {     /* Lchol(i,i) is zero => selected atoms are dependent */
+                    break;
+                }
+                Lchol(i,i) = sqrt(sum);
             }
 
 
@@ -160,11 +164,9 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
             /* update alpha = D'*residual */
 
             tempvec1 = Gsub*c;                                    /* compute tempvec1 := Gsub*c */
+
             alpha = DtX.columnVector(signum);                     /* set alpha = D'*x */
-//            std::cout << "apre: " << alpha << std::endl;
-//            std::cout << "tmp: " << tempvec1 << std::endl;
             alpha = alpha - tempvec1;                             /* compute alpha := alpha - tempvec1 */
-//            std::cout << "apost: " << alpha << std::endl;
             /* update residual norm */
             if (erroromp) {
                 vec_assign(tempvec2, tempvec1, ind, i, 0);   /* assign tempvec2 := tempvec1(ind) */
@@ -185,6 +187,7 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
 
     /* end omp */
 
+    std::cout << "wurst" << std::endl;
     return Gamma;
 }
 
@@ -386,5 +389,6 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
 //    free(ind);
 //    free(alpha);
 
-//    return Gamma;
+//      vigra::Matrix<double> bla = Gamma;
+//      return bla;
 //}
