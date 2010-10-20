@@ -12,20 +12,30 @@ vigra::Matrix<double> & Samples::getData() {
     return *data_;
 }
 void Samples::load(std::string& fileName, int winSize, int channels) {
-    cv::Mat inputImage = cv::imread(fileName);
+    cv::Mat inputImage;
+
+    switch(channels) {
+    case 1:
+       inputImage = cv::imread(fileName, 0);
+       break;
+    default:
+       inputImage = cv::imread(fileName);
+       break;
+
+    }
 
     int m = winSize*winSize*channels;
 
-    rowMax = inputImage.rows;
-    colMax = inputImage.cols;
-    int n = ceil((float)rowMax) * ceil((float)colMax);
+    rows_ = inputImage.rows;
+    cols_ = inputImage.cols;
+    int n = ceil((float)rows_) * ceil((float)cols_);
 
 //    std::cout << n << std::endl;
     data_ = new vigra::Matrix<double>(m, n);
 
     int index = 0;
-    for(int j=0; j<rowMax; j+=1) {
-        for(int i=0; i<colMax; i+=1) {
+    for(int j=0; j<rows_; j+=1) {
+        for(int i=0; i<cols_; i+=1) {
             cv::Mat transMat = cv::Mat::eye(2,3,CV_64FC1);
             transMat.at<double>(0,2)=-i;
             transMat.at<double>(1,2)=-j;

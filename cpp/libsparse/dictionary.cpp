@@ -47,10 +47,11 @@ void Dictionary::initRandom() {
 void Dictionary::initFromData(Samples& data) {
     srand ( time(NULL) );
 
-    for(int j=0; j<data.getData().size(1); j++) {
+
+    for(int j=0; j<this->elementCount_; j++) {
         int pos  = rand() % data.getData().columnCount();
-        std::cout << pos  << std::endl;
-        for(int i=0; i<data.getData().size(0); i++) {
+//        std::cout << j  << std::endl;
+        for(int i=0; i<data.getData().rowCount(); i++) {
             (*data_)(i,j) = data.getData()(i,pos);
         }
     }
@@ -64,13 +65,12 @@ vigra::Matrix<double> & Dictionary::getData() {
 }
 
 
-void Dictionary::debugSaveImage(char *filename) {
+void Dictionary::debugSaveImage(const char* filename) {
 
     int tmp = ceil(sqrt(elementCount_));
 
     vigra::Matrix<double> D(signalSize_, elementCount_);
     prepareColumns((*data_), D, DataPreparationGoals(UnitNorm));
-
 
     cv::Mat outputImage(size_*tmp, size_*tmp, CV_8UC(channels_));
     for(int j=0; j<size_*tmp; j+=size_) {
@@ -78,6 +78,7 @@ void Dictionary::debugSaveImage(char *filename) {
             int index = ceil(j/size_)*tmp + ceil(i/size_);
             Matrix<double> d = D.columnVector(index);
             cv::Mat recon_cv(1, signalSize_, CV_8U);
+
             for(int ii=0; ii<signalSize_; ii++) {
                 recon_cv.at<uchar>(0,ii) = (uchar)((d(ii,0)+1.0)*128.0);
             }

@@ -22,15 +22,16 @@ using namespace vigra::linalg;
 int main(int argc, char *argv[])
 {
 
-    std::string inputFilename = "/home/seb/Bilder/bild5.jpg";
 
     int verbose = 0;
     int opt;
 
+
+    std::string inputPath;
     while ((opt = getopt(argc, argv, "i:v")) != -1) {
         switch(opt) {
         case 'i':
-            inputFilename = optarg;
+            inputPath = optarg;
             break;
         case 'v':
             verbose = true;
@@ -42,43 +43,47 @@ int main(int argc, char *argv[])
         }
     }
 
+    std::string inputFilename = inputPath +  "lena_color.jpg";
+
     int winSize = 8;
     int channels = 3;
     Samples samples;
     samples.load(inputFilename, winSize, channels);
     std::cout << "train set fill complete " << std::endl;
 
-    Dictionary dict(winSize, channels, 400);
+    Dictionary dict(winSize, channels, 225);
     dict.initRandom();
-    //dict.initFromData(samples);
+//    dict.initFromData(samples);
 
     TrainerMairal trainer;
-    trainer.train(samples, dict,  100);
+//    trainer.train(samples, dict,  200);
 
-    dict.debugSaveImage("/home/seb/Bilder/dict_lasso.jpg");
-    dict.save("/home/seb/Bilder/bla.dict");
-    dict.load("/home/seb/Bilder/bla.dict");
+//    dict.save( (inputPath + "simple.dict").c_str() );
+    dict.load( (inputPath + "simple.dict").c_str() );
+    dict.debugSaveImage( (inputPath + "dict.png").c_str() );
 
-    CoderLasso coder;
+    CoderOMP coder;
 
     int m = winSize*winSize*channels;
-    cv::Mat outputImage(samples.rowMax, samples.colMax, CV_8UC(channels));
-    for(int j=0; j<samples.rowMax/2; j+=winSize) {
-        for(int i=0; i<samples.colMax/2; i+=winSize) {
-            int index = ceil((float)j)*ceil((float)samples.colMax) + ceil((float)i);
+
+    std::cout << "restore image" << std::endl;
+    cv::Mat outputImage(samples.rows_, samples.cols_, CV_8UC(channels));
+    for(int j=0; j<samples.rows_; j+=winSize) {
+        for(int i=0; i<samples.cols_; i+=winSize) {
+            int index = ceil((float)j)*ceil((float)samples.cols_) + ceil((float)i);
             Matrix<double> signal = samples.getData().columnVector(index);
             Matrix<double> a = coder.code(signal, dict);
             Matrix<double> recon_vigra = dict.getData()*a;
             cv::Mat recon_cv(1,m,CV_8U);
             for(int ii=0; ii<m; ii++)
-                recon_cv.at<uchar>(0,ii) = (uchar)(recon_vigra(ii,0)/(*(samples.scaling_))(0,index));
+                recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>(recon_vigra(ii,0)/(*(samples.scaling_))(0,index));
             cv::Mat tmp = recon_cv.reshape(channels, winSize);
             cv::Mat region( outputImage,  cv::Rect(i,j,winSize, winSize) );
             tmp.copyTo(region);
-            std::cout << "restore" << j*samples.rowMax+i << std::endl;
+//            std::cout << "restore" << j*samples.rows_+i << std::endl;
         }
     }
-    cv::imwrite("/home/seb/Bilder/lena.recon.png", outputImage);
+    cv::imwrite( inputPath + "lena_recon.jpg", outputImage);
 
 
 }

@@ -29,7 +29,7 @@ public:
 
 
     // debug
-    void debugSaveImage(char* filename);
+    void debugSaveImage(const char* filename);
 };
 
 #endif // DICTIONARY_H

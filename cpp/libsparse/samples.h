@@ -11,7 +11,7 @@ private:
    vigra::Matrix<double>* data_;
 public:
    vigra::Matrix<double>* scaling_;
-   int rowMax, colMax;
+   int rows_, cols_;
    Samples();
    vigra::Matrix<double> & getData();
    void load(std::string& fileName, int winSize, int channels);

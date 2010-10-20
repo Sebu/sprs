@@ -41,15 +41,20 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations) {
     int batch=1000;
     CoderOMP coder;
 
-    for(int t=0; t<iterations; t++) {
+
+
+    for(int t=0; t<batch*iterations; t+=batch) {
+
+
+//        if(t)
 
         // draw sample from trainig set
-        vigra::Matrix<double> sample = samples.getData().subarray(Shape(0,t*batch), Shape(D.getSignalSize(),t*batch+batch));//columnVector(t);
+        vigra::Matrix<double> sample = samples.getData().subarray(Shape(0,t), Shape(D.getSignalSize(),t+batch));
 
         // sparse code sample
         vigra::Matrix<double> a = coder.code(sample, D);
 
-        std::cout << "Iteration: " <<  t << std::endl;
+        std::cout << "samples: " <<  t << std::endl;
 
         A = A + mmul(a,a.transpose());
         B = B + mmul(sample,a.transpose());

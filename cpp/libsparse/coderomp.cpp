@@ -187,6 +187,6 @@ vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
 
     /* end omp */
 
-    std::cout << "wurst" << std::endl;
+//    std::cout << "wurst" << std::endl;
     return Gamma;
 }

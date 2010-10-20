@@ -11,6 +11,9 @@ public:
     TrainerMairal();
     void train(Samples& samples, Dictionary& D, int iterations);
     void update(vigra::Matrix<double>& A, vigra::Matrix<double>& B, Dictionary& D);
+    void pause(); // save A,B matrix
+    void save(const char* filename);
+    void laod(const char* filename);
 };
 
 #endif // TRAINERMAIRAL_H
