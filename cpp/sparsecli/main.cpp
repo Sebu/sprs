@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
 //    dict.initFromData(samples);
 
     TrainerMairal trainer;
-//    trainer.train(samples, dict,  200);
+    trainer.train(samples, dict,  30);
 
-//    dict.save( (inputPath + "simple.dict").c_str() );
+    dict.save( (inputPath + "simple.dict").c_str() );
     dict.load( (inputPath + "simple.dict").c_str() );
     dict.debugSaveImage( (inputPath + "dict.png").c_str() );
 
-    CoderOMP coder;
+    CoderLasso coder;
 
     int m = winSize*winSize*channels;
 

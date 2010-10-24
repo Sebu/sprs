@@ -79,8 +79,16 @@ void Dictionary::debugSaveImage(const char* filename) {
             Matrix<double> d = D.columnVector(index);
             cv::Mat recon_cv(1, signalSize_, CV_8U);
 
+            double min=FLT_MAX, max=FLT_MIN;
             for(int ii=0; ii<signalSize_; ii++) {
-                recon_cv.at<uchar>(0,ii) = (uchar)((d(ii,0)+1.0)*128.0);
+                double val = d(ii,0);
+                 if(val<min) min = val;
+                 if(val>max) max = val;
+            }
+            double scale = 255.0/(max - min);
+
+            for(int ii=0; ii<signalSize_; ii++) {
+                recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>((d(ii,0)-min)*scale);
             }
             cv::Mat tmp = recon_cv.reshape(channels_, size_);
             cv::Mat region( outputImage,  cv::Rect(i,j,size_,size_) );
