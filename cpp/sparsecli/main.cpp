@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
     int winSize = 8;
     int channels = 3;
-    Samples samples;
+    Samples samples; // (winSize, channels)
     samples.load(inputFilename, winSize, channels);
     std::cout << "train set fill complete " << std::endl;
 
@@ -56,34 +56,14 @@ int main(int argc, char *argv[])
 //    dict.initFromData(samples);
 
     TrainerMairal trainer;
-    trainer.train(samples, dict,  30);
+    trainer.train(samples, dict,  10);
 
     dict.save( (inputPath + "simple.dict").c_str() );
     dict.load( (inputPath + "simple.dict").c_str() );
     dict.debugSaveImage( (inputPath + "dict.png").c_str() );
 
-    CoderLasso coder;
-
-    int m = winSize*winSize*channels;
-
-    std::cout << "restore image" << std::endl;
-    cv::Mat outputImage(samples.rows_, samples.cols_, CV_8UC(channels));
-    for(int j=0; j<samples.rows_; j+=winSize) {
-        for(int i=0; i<samples.cols_; i+=winSize) {
-            int index = ceil((float)j)*ceil((float)samples.cols_) + ceil((float)i);
-            Matrix<double> signal = samples.getData().columnVector(index);
-            Matrix<double> a = coder.code(signal, dict);
-            Matrix<double> recon_vigra = dict.getData()*a;
-            cv::Mat recon_cv(1,m,CV_8U);
-            for(int ii=0; ii<m; ii++)
-                recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>(recon_vigra(ii,0)/(*(samples.scaling_))(0,index));
-            cv::Mat tmp = recon_cv.reshape(channels, winSize);
-            cv::Mat region( outputImage,  cv::Rect(i,j,winSize, winSize) );
-            tmp.copyTo(region);
-//            std::cout << "restore" << j*samples.rows_+i << std::endl;
-        }
-    }
-    cv::imwrite( inputPath + "lena_recon.jpg", outputImage);
+    std::string outputFilename = inputPath + "lena_recon.jpg";
+    samples.save( outputFilename , dict );
 
 
 }
