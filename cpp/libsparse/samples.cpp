@@ -65,6 +65,7 @@ void Samples::load(std::string& fileName, int winSize, int channels) {
     cols_ = ceil((float)imageRows_) * ceil((float)imageCols_);
     data_ = new vigra::Matrix<double>(rows_, cols_);
 
+    std::cout << imageRows_ << std::endl;
     int index = 0;
     for(int j=0; j<imageRows_; j+=1) {
         for(int i=0; i<imageCols_; i+=1) {
