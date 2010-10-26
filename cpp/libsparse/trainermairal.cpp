@@ -5,13 +5,52 @@
 #include "coderomp.h"
 #include "samples.h"
 
+#include <algorithm>
 #include <iostream>
+#include <fstream>
 
 #include <vigra/multi_array.hxx>
 typedef vigra::MultiArray<2, double>::difference_type Shape;
 
-TrainerMairal::TrainerMairal()
+TrainerMairal::TrainerMairal() : A_(0), B_(0)
 {
+}
+void TrainerMairal::save(const char* fileName) {
+    std::ofstream ofs( fileName );
+
+    ofs << A_->rowCount() << " " <<  A_->columnCount() << " ";
+    for(unsigned int i=0; i<A_->columnCount(); i++)
+        for(unsigned int j=0; j<A_->rowCount(); j++)
+            ofs << (*A_)(j,i) << " ";
+    ofs << B_->rowCount() << " " <<  B_->columnCount() << " ";
+    for(unsigned int i=0; i<B_->columnCount(); i++)
+        for(unsigned int j=0; j<B_->rowCount(); j++)
+            ofs << (*B_)(j,i) << " ";
+    ofs.close();
+}
+
+void TrainerMairal::load(const char* fileName) {
+    std::ifstream ifs( fileName );
+    int rows=0, cols=0;
+    if (ifs) {
+        ifs >> rows >> cols;
+        if(A_) delete A_;
+        A_ = new vigra::Matrix<double>(rows, cols);
+//        std::cout << rows << " " << cols << std::endl;
+        for(unsigned int i=0; i<cols; i++)
+            for(unsigned int j=0; j<rows; j++)
+                ifs >> (*A_)(j,i);
+        ifs >> rows >> cols;
+        if(B_) delete B_;
+        B_ = new vigra::Matrix<double>(rows, cols);
+//        std::cout << rows << " " << cols << std::endl;
+        for(unsigned int i=0; i<cols; i++)
+            for(unsigned int j=0; j<rows; j++)
+                ifs >> (*B_)(j,i);
+
+    }
+
+    ifs.close();
 }
 
 void TrainerMairal::update(vigra::Matrix<double>& A, vigra::Matrix<double>& B, Dictionary& D) {
@@ -31,35 +70,39 @@ void TrainerMairal::update(vigra::Matrix<double>& A, vigra::Matrix<double>& B, D
 
 }
 
-void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations) {
+void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int batch) {
 
-    vigra::Matrix<double> A(D.getElementCount(), D.getElementCount()), B(D.getSignalSize(), D.getElementCount());
-
-    // init A,B with 0
-    A.init(0.0); B.init(0.0);
-
-    int batch=1000;
     CoderOMP coder;
 
+    std::cout << "train..." << std::endl;
+    if(!A_ && !B_) {
+        A_ = new vigra::Matrix<double>(D.getElementCount(), D.getElementCount());
+        B_ = new vigra::Matrix<double>(D.getSignalSize(), D.getElementCount());
+        // init A,B with 0
+        A_->init(0.0); B_->init(0.0);
+//        std::cout << "init A &  B "<< std::endl;
+    }
+    std::cout << "train start" << std::endl;
 
-
-    for(int t=0; t<batch*iterations; t+=batch) {
-
-
-//        if(t)
+    int maximum = samples.cols_;
+    if (iterations) maximum = batch*iterations;
+    for(int t=0; t<maximum; t+=batch) {
 
         // draw sample from trainig set
-        vigra::Matrix<double> sample = samples.getData().subarray(Shape(0,t), Shape(D.getSignalSize(),t+batch));
+        int start = t;
+        int end = std::min(t+batch,samples.cols_);
+        if (start>=end) break;
+        std::cout << "samples: " <<  end-start << std::endl;
+        vigra::Matrix<double> sample = samples.getData().subarray(Shape(0,start), Shape(D.getSignalSize(),end));
 
         // sparse code sample
-        vigra::Matrix<double> a = coder.code(sample, D);
+        vigra::Matrix<double> a = coder.encode(sample, D);
 
-        std::cout << "samples: " <<  t << std::endl;
 
-        A = A + mmul(a,a.transpose());
-        B = B + mmul(sample,a.transpose());
+        (*A_) = (*A_) + mmul(a,a.transpose());
+        (*B_) = (*B_) + mmul(sample,a.transpose());
         // update step (algo. 2)
-        update(A, B, D);
+        update((*A_), (*B_), D);
     }
 
 }

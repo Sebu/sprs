@@ -8,7 +8,7 @@ class LIBSPARSESHARED_EXPORT CoderLasso : public Coder
 {
 public:
     CoderLasso();
-    vigra::Matrix<double> code(vigra::Matrix<double>&, Dictionary&);
+    vigra::Matrix<double> encode(vigra::Matrix<double>&, Dictionary&);
 };
 
 #endif // CODERLASSO_H

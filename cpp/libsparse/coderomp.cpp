@@ -13,7 +13,7 @@ CoderOMP::CoderOMP()
 {
 }
 
-vigra::Matrix<double> CoderOMP::code(vigra::Matrix<double>& X, Dictionary& D)
+vigra::Matrix<double> CoderOMP::encode(vigra::Matrix<double>& X, Dictionary& D)
 {
     int i, j, signum, pos;
     double eps2, resnorm, delta, deltaprev;
