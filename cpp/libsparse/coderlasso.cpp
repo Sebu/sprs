@@ -8,7 +8,7 @@ CoderLasso::CoderLasso()
 {
 }
 
-vigra::Matrix<double> CoderLasso::encode(vigra::Matrix<double>& s, Dictionary& D)
+MatrixXf CoderLasso::encode(MatrixXf& s, Dictionary& D)
 {
-    return lasso(s, D.getData());
+//    return lasso(s, D.getData());
 }

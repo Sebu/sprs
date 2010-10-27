@@ -1,9 +1,9 @@
 #include "vigra_ext.h"
 
-int maxabs(Matrix<double>& c)
+int maxabs(MatrixXf& c)
 {
   int maxid=1, k;
-  int m = c.rowCount();
+  int m = c.rows();
   double absval, maxval = 0;
 
   for (k=0; k<m; ++k) {
@@ -17,7 +17,7 @@ int maxabs(Matrix<double>& c)
 }
 
 
-void vec_assign(Matrix<double>& y, Matrix<double>& x, Matrix<int>& ind, int k, int start)
+void vec_assign(MatrixXf& y, MatrixXf& x, MatrixXi& ind, int k, int start)
 {
   int i;
   for (i=0; i<k; ++i)
@@ -25,9 +25,9 @@ void vec_assign(Matrix<double>& y, Matrix<double>& x, Matrix<int>& ind, int k, i
 }
 
 
-Matrix<double> dense_vector(ArrayVector<int>  active_set, Matrix<double>  sparse_vector, int size) {
+vigra::Matrix<double> dense_vector(vigra::ArrayVector<int>  active_set, vigra::Matrix<double>  sparse_vector, int size) {
 
-    Matrix<double> dense_vector(size,1);
+    vigra::Matrix<double> dense_vector(size,1);
     dense_vector.init(0.0);
     for (unsigned int i = 0; i < active_set.size(); i++)
         dense_vector(active_set[i],0) = sparse_vector(i,0);
@@ -35,19 +35,18 @@ Matrix<double> dense_vector(ArrayVector<int>  active_set, Matrix<double>  sparse
     return dense_vector;
 }
 
-Matrix<double> lasso(Matrix<double>& x, Matrix<double>& D) {
+vigra::Matrix<double> lasso(vigra::Matrix<double>& x, vigra::Matrix<double>& D) {
 
     int bestIndex = 0;
-    double bestError = FLT_MAX;
-    ArrayVector<ArrayVector<int> > active_sets;
-    ArrayVector<Matrix<double> > solutions;
+    vigra::ArrayVector<vigra::ArrayVector<int> > active_sets;
+    vigra::ArrayVector<vigra::Matrix<double> > solutions;
 
 
-    LeastAngleRegressionOptions opts;
+    vigra::linalg::LeastAngleRegressionOptions opts;
     opts.lasso();
     opts.maxSolutionCount(10);
     // run leastAngleRegression() in  LASSO mode
-    int numSolutions = leastAngleRegression(D, x, active_sets, solutions, opts);
+    int numSolutions = vigra::linalg::leastAngleRegression(D, x, active_sets, solutions, opts);
 
 
     //std::cout << bestIndex << std::endl;

@@ -3,19 +3,24 @@
 
 #include <vector>
 #include "libsparse_global.h"
-#include "vigra/matrix.hxx"
+//#include "vigra/matrix.hxx"
 #include "samples.h"
+
+
+#include <eigen2/Eigen/Core>
+USING_PART_OF_NAMESPACE_EIGEN
+
 
 class LIBSPARSESHARED_EXPORT Dictionary {
 private:
-    vigra::Matrix<double>* data_;
+    MatrixXf* data_;
     int signalSize_;
     int elementCount_;
     int channels_;
     int size_;
 public:
     Dictionary(int, int, int);
-    vigra::Matrix<double> & getData();
+    MatrixXf & getData();
     int getSignalSize() {return signalSize_; }
     int getElementCount() {return elementCount_; }
     int getChannels() {return channels_; }

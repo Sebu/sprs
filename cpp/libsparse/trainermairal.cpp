@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 
-#include <vigra/multi_array.hxx>
+//#include <vigra/multi_array.hxx>
 typedef vigra::MultiArray<2, double>::difference_type Shape;
 
 TrainerMairal::TrainerMairal() : A_(0), B_(0)
@@ -18,53 +18,51 @@ TrainerMairal::TrainerMairal() : A_(0), B_(0)
 void TrainerMairal::save(const char* fileName) {
     std::ofstream ofs( fileName );
 
-    ofs << A_->rowCount() << " " <<  A_->columnCount() << " ";
-    for(unsigned int i=0; i<A_->columnCount(); i++)
-        for(unsigned int j=0; j<A_->rowCount(); j++)
-            ofs << (*A_)(j,i) << " ";
-    ofs << B_->rowCount() << " " <<  B_->columnCount() << " ";
-    for(unsigned int i=0; i<B_->columnCount(); i++)
-        for(unsigned int j=0; j<B_->rowCount(); j++)
-            ofs << (*B_)(j,i) << " ";
+//    ofs << A_->rows() << " " <<  A_->cols() << " ";
+//    for(unsigned int i=0; i<A_->cols(); i++)
+//        for(unsigned int j=0; j<A_->rows(); j++)
+//            ofs << (*A_)(j,i) << " ";
+//    ofs << B_->rows() << " " <<  B_->cols() << " ";
+//    for(unsigned int i=0; i<B_->cols(); i++)
+//        for(unsigned int j=0; j<B_->rows(); j++)
+//            ofs << (*B_)(j,i) << " ";
     ofs.close();
 }
 
 void TrainerMairal::load(const char* fileName) {
     std::ifstream ifs( fileName );
     int rows=0, cols=0;
-    if (ifs) {
-        ifs >> rows >> cols;
-        if(A_) delete A_;
-        A_ = new vigra::Matrix<double>(rows, cols);
-//        std::cout << rows << " " << cols << std::endl;
-        for(unsigned int i=0; i<cols; i++)
-            for(unsigned int j=0; j<rows; j++)
-                ifs >> (*A_)(j,i);
-        ifs >> rows >> cols;
-        if(B_) delete B_;
-        B_ = new vigra::Matrix<double>(rows, cols);
-//        std::cout << rows << " " << cols << std::endl;
-        for(unsigned int i=0; i<cols; i++)
-            for(unsigned int j=0; j<rows; j++)
-                ifs >> (*B_)(j,i);
+//    if (ifs) {
+//        ifs >> rows >> cols;
+//        if(A_) delete A_;
+//        A_ = new MatrixXf(rows, cols);
+////        std::cout << rows << " " << cols << std::endl;
+//        for(unsigned int i=0; i<cols; i++)
+//            for(unsigned int j=0; j<rows; j++)
+//                ifs >> (*A_)(j,i);
+//        ifs >> rows >> cols;
+//        if(B_) delete B_;
+//        B_ = new MatrixXf(rows, cols);
+////        std::cout << rows << " " << cols << std::endl;
+//        for(unsigned int i=0; i<cols; i++)
+//            for(unsigned int j=0; j<rows; j++)
+//                ifs >> (*B_)(j,i);
 
-    }
+//    }
 
     ifs.close();
 }
 
-void TrainerMairal::update(vigra::Matrix<double>& A, vigra::Matrix<double>& B, Dictionary& D) {
+void TrainerMairal::update(MatrixXf& A, MatrixXf& B, Dictionary& D) {
 
     for(int i=0; i < 1; i++) {
         for(int j=0; j < D.getElementCount(); j++) {
-            vigra::Matrix<double> a = A.columnVector(j);
-            vigra::Matrix<double> b = B.columnVector(j);
-            vigra::Matrix<double> d = D.getData().columnVector(j);
-            if(A(j,j)==0.0) continue;
-            vigra::Matrix<double> u = ( (1.0/A(j,j)) * (b-(D.getData()*a)) ) + d;
-            vigra::Matrix<double> tmp = (1.0/fmax(u.norm(),1.0)) * u;
-            for(int i=0; i< D.getSignalSize(); i++)
-                D.getData()(i,j) = tmp(i,0);
+            MatrixXf a = A.col(j);
+            MatrixXf b = B.col(j);
+            MatrixXf d = D.getData().col(j);
+            if(A.coeff(j,j)==0.0) continue;
+            MatrixXf u = ( (1.0/A.coeff(j,j)) * (b-(D.getData()*a)) ) + d;
+            D.getData().col(j) = (1.0/fmax(u.norm(),1.0)) * u;
         }
     }
 
@@ -76,10 +74,12 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
     std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
-        A_ = new vigra::Matrix<double>(D.getElementCount(), D.getElementCount());
-        B_ = new vigra::Matrix<double>(D.getSignalSize(), D.getElementCount());
+        A_ = new MatrixXf(D.getElementCount(), D.getElementCount());
+        B_ = new MatrixXf(D.getSignalSize(), D.getElementCount());
         // init A,B with 0
-        A_->init(0.0); B_->init(0.0);
+        A_->setZero();
+        B_->setZero();
+//        std::cout << (*A_) << std::endl;
 //        std::cout << "init A &  B "<< std::endl;
     }
     std::cout << "train start" << std::endl;
@@ -93,17 +93,19 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         int end = std::min(t+batch,samples.cols_);
         if (start>=end) break;
         std::cout << "samples: " <<  end-start << std::endl;
-        vigra::Matrix<double> sample = samples.getData().subarray(Shape(0,start), Shape(D.getSignalSize(),end));
 
         // sparse code sample
+        MatrixXf sample = samples.getData().block(0,start,D.getSignalSize(),end-start);
+        MatrixXf a = coder.encode(sample, D);
 
-        vigra::Matrix<double> a = coder.encode(sample, D);
         std::cout << "wurst" << std::endl;
-
-        (*A_) = (*A_) + mmul(a,a.transpose());
-        (*B_) = (*B_) + mmul(sample,a.transpose());
+        (*A_) += a*a.transpose();
+        std::cout << "wurst" << std::endl;
+        (*B_) += sample*a.transpose();
         // update step (algo. 2)
+        std::cout << "wurst" << std::endl;
         update((*A_), (*B_), D);
+
     }
 
 }

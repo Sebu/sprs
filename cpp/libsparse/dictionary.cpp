@@ -6,10 +6,12 @@
 #include "dictionary.h"
 #include "vigra_ext.h"
 
+#include <eigen2/Eigen/Array>
+
 Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size*channels),
     elementCount_(elementCount), channels_(channels), size_(size)
 {
-    data_ = new vigra::Matrix<double>(signalSize_, elementCount_);
+    data_ = new MatrixXf(signalSize_, elementCount_);
 }
 
 
@@ -40,8 +42,11 @@ void Dictionary::load(const char* fileName) {
 
 
 void Dictionary::initRandom() {
-    init_random((*data_));
-    prepareColumns((*data_), (*data_), DataPreparationGoals(UnitNorm));
+    (*data_).setRandom();
+//    init_random((*data_));
+    for(int i=0; i<elementCount_; i++)
+        (*data_).col(i).normalize();
+    //prepareColumns((*data_), (*data_), vigra::linalg::DataPreparationGoals(vigra::linalg::UnitNorm));
 }
 
 void Dictionary::initFromData(Samples& data) {
@@ -49,9 +54,9 @@ void Dictionary::initFromData(Samples& data) {
 
 
     for(int j=0; j<this->elementCount_; j++) {
-        int pos  = rand() % data.getData().columnCount();
+        int pos  = rand() % data.getData().cols();
 //        std::cout << j  << std::endl;
-        for(int i=0; i<data.getData().rowCount(); i++) {
+        for(int i=0; i<data.getData().rows(); i++) {
             (*data_)(i,j) = data.getData()(i,pos);
         }
     }
@@ -60,7 +65,7 @@ void Dictionary::initFromData(Samples& data) {
 
 
 
-vigra::Matrix<double> & Dictionary::getData() {
+MatrixXf & Dictionary::getData() {
     return *data_;
 }
 
@@ -69,14 +74,14 @@ void Dictionary::debugSaveImage(const char* filename) {
 
     int tmp = ceil(sqrt(elementCount_));
 
-    vigra::Matrix<double> D(signalSize_, elementCount_);
-    prepareColumns((*data_), D, DataPreparationGoals(UnitNorm));
+    MatrixXf D = (*data_); //(signalSize_, elementCount_);
+//    vigra::linalg::prepareColumns((*data_), D, vigra::linalg::DataPreparationGoals(vigra::linalg::UnitNorm));
 
     cv::Mat outputImage(size_*tmp, size_*tmp, CV_8UC(channels_));
     for(int j=0; j<size_*tmp; j+=size_) {
         for(int i=0; i<size_*tmp; i+=size_) {
             int index = ceil(j/size_)*tmp + ceil(i/size_);
-            Matrix<double> d = D.columnVector(index);
+            MatrixXf d = D.col(index);
             cv::Mat recon_cv(1, signalSize_, CV_8U);
 
             double min=FLT_MAX, max=FLT_MIN;

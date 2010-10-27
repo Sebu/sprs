@@ -1,7 +1,11 @@
 #ifndef CODER_H
 #define CODER_H
 
-#include <vigra/matrix.hxx>
+//#include <vigra/matrix.hxx>
+
+#include <eigen2/Eigen/Core>
+#include <eigen2/Eigen/Sparse>
+USING_PART_OF_NAMESPACE_EIGEN
 
 class Dictionary;
 
@@ -11,7 +15,7 @@ private:
 
 public:
     Coder();
-    virtual vigra::Matrix<double> encode(vigra::Matrix<double>&, Dictionary&) = 0;
+    virtual MatrixXf encode(MatrixXf&, Dictionary&) = 0;
 //    virtual vigra::Matrix<double> decode(vigra::Matrix<double>&, Dictionary&) = 0;
 };
 

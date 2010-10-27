@@ -8,7 +8,7 @@ class CoderOMP : public Coder
 {
 public:
     CoderOMP();
-    vigra::Matrix<double> encode(vigra::Matrix<double>& X, Dictionary& D);
+    MatrixXf encode(MatrixXf& X, Dictionary& D);
 
 };
 
