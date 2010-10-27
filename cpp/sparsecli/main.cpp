@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
     int winSize = 8;
     int channels = 3;
-    Dictionary dict(winSize, channels, 255);
+    Dictionary dict(winSize, channels, 3000);
     dict.initRandom();
     TrainerMairal trainer;
     Samples samples; // (winSize, channels)
@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
     // for in qdir
     QString epiPath = QString(inputPath.c_str());
     QDir dir(epiPath);
+//    std::ifstream ifs( input );
     int counter = 0;
     foreach( QString name, dir.entryList(QStringList("*.png")) ) {
         if(!running) break;
@@ -99,3 +100,4 @@ int main(int argc, char *argv[])
 
 
 }
+

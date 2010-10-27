@@ -96,8 +96,9 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         vigra::Matrix<double> sample = samples.getData().subarray(Shape(0,start), Shape(D.getSignalSize(),end));
 
         // sparse code sample
-        vigra::Matrix<double> a = coder.encode(sample, D);
 
+        vigra::Matrix<double> a = coder.encode(sample, D);
+        std::cout << "wurst" << std::endl;
 
         (*A_) = (*A_) + mmul(a,a.transpose());
         (*B_) = (*B_) + mmul(sample,a.transpose());

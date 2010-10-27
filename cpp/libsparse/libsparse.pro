@@ -16,9 +16,8 @@ unix:LIBS += -L/homes/wheel/seb/playground/lib
 
 # Maces
 macx:INCLUDEPATH += /Users/sebastian/uni/diplom/vigra-1.7.0-src/include \
-                    /opt/local/var/macports/software/opencv/2.1.0_0/opt/local/include
-macx:LIBS += -L/opt/local/var/macports/software/opencv/2.1.0_0/opt/local/lib
-
+                    /Users/sebastian/uni/OpenCV-2.1.0/include
+macx:LIBS += -L/Users/sebastian/uni/OpenCV-2.1.0/lib
 # universal
 LIBS += -lcxcore -lcv -lhighgui -lgomp
 
