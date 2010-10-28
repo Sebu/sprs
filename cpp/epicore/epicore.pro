@@ -2,11 +2,13 @@
 # Project created by QtCreator 2010-01-12T18:57:11
 # -------------------------------------------------
 QT -= gui
-# CONFIG += debug
+
 TARGET = epicore
 TEMPLATE = lib
+
 DEFINES += EPICORE_LIBRARY
-# debug:DEFINES += DEBUG
+
+
 INCLUDEPATH += /homes/wheel/seb/playground/include \
     /opt/local/var/macports/software/opencv/2.1.0_0/opt/local/include
 LIBS += \
@@ -16,6 +18,7 @@ LIBS += \
     -lcv \
     -lhighgui \
     -lgomp
+
 SOURCES += epicore.cpp \
     patch.cpp \
     seedmap.cpp \
@@ -41,4 +44,3 @@ HEADERS += epicore.h \
     epitome.h \
     searchcriteria.h \
     epiimage.h
-QMAKE_CXXFLAGS += -fopenmp

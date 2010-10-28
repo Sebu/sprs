@@ -81,6 +81,7 @@ void Dictionary::debugSaveImage(const char* filename) {
     for(int j=0; j<size_*tmp; j+=size_) {
         for(int i=0; i<size_*tmp; i+=size_) {
             int index = ceil(j/size_)*tmp + ceil(i/size_);
+            if(index>=D.cols()) break;
             MatrixXf d = D.col(index);
             cv::Mat recon_cv(1, signalSize_, CV_8U);
 

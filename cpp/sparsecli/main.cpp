@@ -59,48 +59,40 @@ int main(int argc, char *argv[])
 
     std::string inputFilename = inputPath +  "lena_color.jpg";
 
-    int winSize = 8;
+    int winSize = 12;
     int channels = 3;
-    Samples samples; // (winSize, channels)
-    samples.loadImage(inputFilename, winSize, channels);
-    Dictionary dict(winSize, channels, 4096);
-    dict.initRandom();
-//    dict.initFromData(samples);
+    Samples samples;
+    Dictionary dict(winSize, channels, 512);
     TrainerMairal trainer;
-    trainer.train(samples, dict,  5, 1000);
-    dict.debugSaveImage( (inputPath + "dict.png").c_str() );
 
-//    // for in qdir
-//    QString epiPath = QString(inputPath.c_str());
-//    QDir dir(epiPath);
-////    std::ifstream ifs( input );
-//    int counter = 0;
-//    foreach( QString name, dir.entryList(QStringList("*.png")) ) {
-//        if(!running) break;
-//        std::string nameStr = (epiPath + name).toStdString();
-//        std::cout << nameStr << std::endl;
-//        samples.loadImage(nameStr, winSize, channels);
-//        std::cout << "train set fill complete " << std::endl;
-//        if(!running) break;
-//        trainer.train(samples, dict,  3, 1000);
+
+    // for in qdir
+    QString epiPath = QString(inputPath.c_str());
+    QDir dir(epiPath);
+    //    std::ifstream ifs( input );
+    int counter = 0;
+    foreach( QString name, dir.entryList(QStringList("*.png")) ) {
+        if(!running) break;
+        std::string nameStr = (epiPath + name).toStdString();
+        std::cout << nameStr << std::endl;
+        samples.loadImage(nameStr, winSize, channels, 2);
+        if(!counter) dict.initRandom();
+//        if(!counter) dict.initFromData(samples);
+        std::cout << "train set fill complete " << std::endl;
+        if(!running) break;
+        trainer.train(samples, dict,  0, 10000);
 //        dict.debugSaveImage( (inputPath + "dict_tmp.png").c_str() );
-//        counter++;
-//    }
+        counter++;
+    }
 
+    trainer.save((inputPath + "simple.online.tmp").c_str() );
+    dict.save( (inputPath + "simple.dict").c_str() );
 
-//    trainer.save((inputPath + "simple.tmpdict").c_str() );
-////    trainer.load((inputPath + "simple.tmpdict").c_str() );
-////    trainer.train(samples, dict,  10);
-//    dict.save( (inputPath + "simple.dict").c_str() );
-////    dict.load( (inputPath + "simple.dict").c_str() );
-////    dict.debugSaveImage( (inputPath + "dict.png").c_str() );
-
-//    // sample image
-////    std::string inputFilename = inputPath +  "stallone460klein.jpg";
-////    std::string outputFilename = inputPath + "lena_recon.jpg";
-////    Samples samples2;
-////    samples2.loadImage(inputFilename, winSize, channels, winSize);
-////    samples2.saveImage(outputFilename, dict );
+    // sample image
+    std::string outputFilename = inputPath + "lena_recon.jpg";
+    Samples samples2;
+    samples2.loadImage(inputFilename, winSize, channels, winSize);
+    samples2.saveImage(outputFilename, dict );
 
 
 }

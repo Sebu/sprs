@@ -9,7 +9,6 @@
 #include <iostream>
 #include <fstream>
 
-//#include <vigra/multi_array.hxx>
 typedef vigra::MultiArray<2, double>::difference_type Shape;
 
 TrainerMairal::TrainerMairal() : A_(0), B_(0)
@@ -92,19 +91,25 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         int start = t;
         int end = std::min(t+batch,samples.cols_);
         if (start>=end) break;
-        std::cout << "samples: " <<  end-start << std::endl;
+        std::cout << "samples: " <<  end << std::endl;
 
         // sparse code sample
         MatrixXf sample = samples.getData().block(0,start,D.getSignalSize(),end-start);
-        MatrixXf a = coder.encode(sample, D);
+        Eigen::SparseMatrix<float> a = coder.encode(sample, D);
 
-        std::cout << "wurst" << std::endl;
-        (*A_) += a*a.transpose();
-        std::cout << "wurst" << std::endl;
+//        std::cout << "a*a.transpose();" << std::endl;
+        Eigen::SparseMatrix<float> tmp = a*a.transpose();
+//        std::cout << "(*A_) += tmp;" << std::endl;
+        for (int k=0; k<tmp.outerSize(); ++k)
+          for (Eigen::SparseMatrix<float>::InnerIterator it(tmp,k); it; ++it) {
+              (*A_)(it.row(),it.col()) += it.value();
+          }
+
         (*B_) += sample*a.transpose();
         // update step (algo. 2)
-        std::cout << "wurst" << std::endl;
+//        std::cout << "update((*A_), (*B_), D);" << std::endl;
         update((*A_), (*B_), D);
+        D.debugSaveImage( "/home/seb/Bilder/dict_tmp.png" );
 
     }
 

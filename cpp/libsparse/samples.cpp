@@ -6,6 +6,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <iostream>
+#include <fstream>
 
 Samples::Samples() : data_(0) //, scaling_(0)
 {
@@ -15,33 +16,50 @@ MatrixXf & Samples::getData() {
     return *data_;
 }
 
-//void Samples::saveImage(std::string& fileName, Dictionary& dict) {
+void Samples::saveImage(std::string& fileName, Dictionary& dict) {
 
-//    CoderOMP coder;
-//    std::cout << "restore image" << std::endl;
-//    MatrixXf A = coder.encode((*data_), dict);
-//    MatrixXf recon_vigra = dict.getData()*A;
+    float quant = 20.0;
+    CoderOMP coder;
+    std::cout << "restore image" << std::endl;
+    Eigen::SparseMatrix<float> A = coder.encode((*data_), dict);
+
+    int count=0;
+    std::ofstream ofs( (fileName + ".sp").c_str(), std::ios::out | std::ios::binary );
+    for (int k=0; k<A.outerSize(); ++k)
+      for (Eigen::SparseMatrix<float>::InnerIterator it(A,k); it; ++it) {
+          short data=0;
+          data = (short)round(it.row());
+          ofs.write((char*)&data,sizeof(data));
+          data = (short)round(it.value()/quant);
+          A.coeffRef(it.row(),it.col()) = data;
+          ofs.write((char*)&data,sizeof(char));
+          if (data>count) count = data;
+      }
+    ofs.close();
+
+    std::cout << count << std::endl;
+    MatrixXf recon_vigra = dict.getData()*A;
 
 
-//    std::cout << "reorder image" << std::endl;
+    std::cout << "reorder image" << std::endl;
 
-//    cv::Mat outputImage(imageRows_+8, imageCols_+8, CV_8UC(channels_));
-//    cv::Mat recon_cv(1,rows_,CV_8U);
-//    int index = 0;//  ceil((float)j)*ceil((float)imageCols_) + ceil((float)i);
-//    for(int j=0; j<imageRows_; j+=winSize_) {
-//        for(int i=0; i<imageCols_; i+=winSize_) {
-////            std::cout << index << " " << i <<  " " << j <<  std::endl;
-//            for(int ii=0; ii<rows_; ii++)
-//                recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>(recon_vigra(ii,index)); // /(*(scaling_))(0,index));
-//            cv::Mat tmp = recon_cv.reshape(channels_, winSize_);
-//            cv::Mat region( outputImage,  cv::Rect(i,j,winSize_, winSize_) );
-//            tmp.copyTo(region);
-//            index++;
-//        }
-//    }
+    cv::Mat outputImage(imageRows_+8, imageCols_+8, CV_8UC(channels_));
+    cv::Mat recon_cv(1,rows_,CV_8U);
+    int index = 0;//  ceil((float)j)*ceil((float)imageCols_) + ceil((float)i);
+    for(int j=0; j<imageRows_; j+=winSize_) {
+        for(int i=0; i<imageCols_; i+=winSize_) {
+//            std::cout << index << " " << i <<  " " << j <<  std::endl;
+            for(int ii=0; ii<rows_; ii++)
+                recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>(recon_vigra(ii,index)*quant); // /(*(scaling_))(0,index));
+            cv::Mat tmp = recon_cv.reshape(channels_, winSize_);
+            cv::Mat region( outputImage,  cv::Rect(i,j,winSize_, winSize_) );
+            tmp.copyTo(region);
+            index++;
+        }
+    }
 
-//    cv::imwrite(fileName , outputImage);
-//}
+    cv::imwrite(fileName , outputImage);
+}
 
 bool Samples::loadImage(std::string& fileName, int winSize, int channels, int step) {
     cv::Mat inputImage;
@@ -66,7 +84,8 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     imageRows_ = inputImage.rows;
     imageCols_ = inputImage.cols;
     rows_ = winSize_*winSize_*channels_;
-    cols_ = ceil((float)imageRows_/(float)step) * ceil((float)imageCols_/float(step));
+    cols_ = ceil((float)imageRows_/(float)step) * ceil((float)imageCols_/(float)step);
+    std::cout << cols_ << " " << imageRows_ <<  " " << step <<std::endl;
     if(data_) delete data_;
     data_ = new MatrixXf(rows_, cols_);
 

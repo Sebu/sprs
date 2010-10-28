@@ -8,7 +8,7 @@ CoderLasso::CoderLasso()
 {
 }
 
-MatrixXf CoderLasso::encode(MatrixXf& s, Dictionary& D)
+Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& s, Dictionary& D)
 {
 //    return lasso(s, D.getData());
 }

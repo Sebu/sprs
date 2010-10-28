@@ -14,7 +14,7 @@ CoderOMP::CoderOMP()
 {
 }
 
-MatrixXf CoderOMP::encode(MatrixXf& X, Dictionary& D)
+Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
 {
     int i, j, signum, pos;
     double eps2, resnorm, delta, deltaprev;
@@ -32,16 +32,16 @@ MatrixXf CoderOMP::encode(MatrixXf& X, Dictionary& D)
     MatrixXf G = D.getData().transpose()*D.getData();
 
     /*** allocate output matrix ***/
-    MatrixXf Gamma = MatrixXf::Zero(m,L);
+    Eigen::SparseMatrix<float> Gamma(m,L); // = MatrixXf::Zero(m,L);
 
     /*** helper arrays ***/
-    MatrixXf alpha;            /* contains D'*residual */
-    MatrixXi ind(n,1);            /* indices of selected atoms */
-    MatrixXi selected_atoms(m,1); /* binary array with 1's for selected atoms */
+    VectorXf alpha;             /* contains D'*residual */
+    VectorXi ind(n);            /* indices of selected atoms */
+    VectorXi selected_atoms(m); /* binary array with 1's for selected atoms */
 
     /* current number of columns in Dsub / Gsub / Lchol */
     int allocated_cols = erroromp ? (int)(ceil(sqrt((double)n)/2.0) + 1.01) : T;
-    MatrixXf c(allocated_cols,1);           /* orthogonal projection result */
+    VectorXf c(allocated_cols);           /* orthogonal projection result */
 
     /* Cholesky decomposition of D_I'*D_I */
     MatrixXf Lchol(n,allocated_cols);
@@ -61,7 +61,9 @@ MatrixXf CoderOMP::encode(MatrixXf& X, Dictionary& D)
         }
     }
 
+//    std::cout  << "prep done" << std::endl;
     /**********************   perform omp for each signal   **********************/
+    Gamma.startFill();
     for (signum=0; signum<L; ++signum) {
         tempvec1.setZero(); //init(0.0);
         tempvec2.setZero();
@@ -89,7 +91,7 @@ MatrixXf CoderOMP::encode(MatrixXf& X, Dictionary& D)
 
             /* mark all atoms as unselected */
             for (i=0; i<m; ++i) {
-                selected_atoms(i,0) = 0;
+                selected_atoms(i) = 0;
             }
 
         }
@@ -112,13 +114,14 @@ MatrixXf CoderOMP::encode(MatrixXf& X, Dictionary& D)
 
             /* mark selected atom */
 
-            ind(i,0) = pos;
-            selected_atoms(pos,0) = 1;
+            ind(i) = pos;
+            selected_atoms(pos) = 1;
 
 
              /* append column to Gsub or Dsub */
-            for (j=0; j<m; ++j)
-                Gsub(j, i) = G(j, pos);
+            Gsub.col(i) = G.col(pos);
+//            for (j=0; j<m; ++j)
+//                Gsub(j, i) = G(j, pos);
 
             /*** Cholesky update ***/
 
@@ -140,7 +143,7 @@ MatrixXf CoderOMP::encode(MatrixXf& X, Dictionary& D)
 //                    Lchol(i,j) = tempvec2(j,0);
 //                }
                 /* compute Lchol(i,i) */
-                double sum = 1.0-(tempvec2.transpose()*tempvec2)(0,0);
+                double sum = 1.0-(tempvec2.block(0,0,i,1).transpose()*tempvec2.block(0,0,i,1))(0,0);
                 if ( sum <= 1e-14 ) {     /* Lchol(i,i) is zero => selected atoms are dependent */
                     break;
                 }
@@ -167,7 +170,7 @@ MatrixXf CoderOMP::encode(MatrixXf& X, Dictionary& D)
 //            std::cout << "c: " << c << std::endl;
             /* update alpha = D'*residual */
 
-            tempvec1 = Gsub*c;                                    /* compute tempvec1 := Gsub*c */
+            tempvec1 = Gsub.block(0,0, m,i)*c.block(0,0, i,1);    /* compute tempvec1 := Gsub*c */
 
 
             alpha = DtX.col(signum);                              /* set alpha = D'*x */
@@ -186,13 +189,13 @@ MatrixXf CoderOMP::encode(MatrixXf& X, Dictionary& D)
 
 
         /*** generate output vector gamma ***/
-//        Gamma.startFill();
+
         for (j=0; j<i; ++j) {
-            Gamma(ind(j,0),signum) = c(j,0);
+            Gamma.fillrand(ind(j,0),signum) = c(j,0);
         }
-//        Gamma.endFill();
 
     }
+    Gamma.endFill();
 
     /* end omp */
 

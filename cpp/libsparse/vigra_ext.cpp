@@ -1,13 +1,13 @@
 #include "vigra_ext.h"
 
-int maxabs(MatrixXf& c)
+int maxabs(VectorXf& c)
 {
   int maxid=1, k;
   int m = c.rows();
   double absval, maxval = 0;
 
   for (k=0; k<m; ++k) {
-    absval = fabs(c(k,0));
+    absval = fabs(c(k));
     if (absval > maxval) {
       maxval = absval;
       maxid = k;
@@ -17,11 +17,11 @@ int maxabs(MatrixXf& c)
 }
 
 
-void vec_assign(MatrixXf& y, MatrixXf& x, MatrixXi& ind, int k, int start)
+void vec_assign(MatrixXf& y, MatrixXf& x, VectorXi& ind, int k, int start)
 {
   int i;
   for (i=0; i<k; ++i)
-    y(i,0) = x(ind(i,0), start);
+    y(i,0) = x(ind(i), start);
 }
 
 

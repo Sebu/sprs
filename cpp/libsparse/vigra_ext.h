@@ -89,8 +89,8 @@ void init_random(vigra::MultiArrayView< 2, T, C >& m) {
             m(i,j) = rand();
 }
 
-int maxabs(MatrixXf& c);
-void vec_assign(MatrixXf& y, MatrixXf& x, MatrixXi& ind, int k, int start);
+int maxabs(VectorXf& c);
+void vec_assign(MatrixXf& y, MatrixXf& x, VectorXi& ind, int k, int start);
 //void vec_assign(vigra::Matrix<double>& y, vigra::Matrix<double>& x, vigra::Matrix<int>& ind, int k, int start);
 vigra::Matrix<double> dense_vector(vigra::ArrayVector<int>  active_set, vigra::Matrix<double>  sparse_vector, int size);
 vigra::Matrix<double> lasso(vigra::Matrix<double>& x, vigra::Matrix<double>& D);

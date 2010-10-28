@@ -8,7 +8,7 @@ class CoderOMP : public Coder
 {
 public:
     CoderOMP();
-    MatrixXf encode(MatrixXf& X, Dictionary& D);
+    Eigen::SparseMatrix<float> encode(MatrixXf& X, Dictionary& D);
 
 };
 
