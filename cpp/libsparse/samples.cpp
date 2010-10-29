@@ -49,8 +49,13 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict) {
     for(int j=0; j<imageRows_; j+=winSize_) {
         for(int i=0; i<imageCols_; i+=winSize_) {
 //            std::cout << index << " " << i <<  " " << j <<  std::endl;
-            for(int ii=0; ii<rows_; ii++)
-                recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>(recon_vigra(ii,index)*quant); // /(*(scaling_))(0,index));
+            for(int jj=0; jj<channels_; jj++){
+                for(int ii=0; ii<rows_/channels_; ii++) {
+                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(jj*(rows_/channels_)+ii, index)*quant);
+//                    recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>(recon_vigra(ii,index)*quant); // /(*(scaling_))(0,index));
+                }
+            }
+//            for(int ii=0; ii<rows_; ii++)
             cv::Mat tmp = recon_cv.reshape(channels_, winSize_);
             cv::Mat region( outputImage,  cv::Rect(i,j,winSize_, winSize_) );
             tmp.copyTo(region);
@@ -67,9 +72,9 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     channels_ = channels;
     winSize_ = winSize;
     switch(channels_) {
-    case 1:
-       inputImage = cv::imread(fileName, 0);
-       break;
+//    case 1:
+//       inputImage = cv::imread(fileName, 0);
+//       break;
     default:
        inputImage = cv::imread(fileName);
        break;
@@ -89,17 +94,26 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     if(data_) delete data_;
     data_ = new MatrixXf(rows_, cols_);
 
+    std::vector<cv::Mat> planes;
+    split(inputImage, planes);
+
     int index = 0;
     for(int j=0; j<imageRows_; j+=step) {
         for(int i=0; i<imageCols_; i+=step) {
+
             cv::Mat transMat = cv::Mat::eye(2,3,CV_64FC1);
             transMat.at<double>(0,2)=-i;
             transMat.at<double>(1,2)=-j;
             cv::Mat warped;
             cv::warpAffine(inputImage, warped, transMat, cv::Size(winSize_, winSize_));
-            cv::Mat tmp = warped.reshape(1,1);
-            for(int ii=0; ii<tmp.cols; ii++) {
-                (*data_)(ii,index) = tmp.at<uchar>(0,ii);
+            std::vector<cv::Mat> planes;
+            split(warped, planes);
+            for (int jj=0; jj<channels; jj++) {
+                cv::Mat tmp = planes[jj].reshape(1,1);
+                for(int ii=0; ii<rows_/channels_; ii++) {
+                    (*data_)(jj*(rows_/channels_)+ii,index) = tmp.at<uchar>(0,ii);
+                }
+
             }
             index++;
         }

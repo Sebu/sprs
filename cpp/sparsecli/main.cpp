@@ -12,6 +12,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <iostream>
+#include <fstream>
 #include <QDir>
 
 using namespace vigra;
@@ -59,21 +60,26 @@ int main(int argc, char *argv[])
 
     std::string inputFilename = inputPath +  "lena_color.jpg";
 
-    int winSize = 12;
+    int winSize = 8;
     int channels = 3;
     Samples samples;
-    Dictionary dict(winSize, channels, 512);
+    Dictionary dict(winSize, channels, 225);
     TrainerMairal trainer;
 
+//    dict.initRandom();
+//    samples.loadImage(inputFilename, winSize, channels, 2);
+//    trainer.train(samples, dict,  0, 10000);
 
     // for in qdir
-    QString epiPath = QString(inputPath.c_str());
-    QDir dir(epiPath);
-    //    std::ifstream ifs( input );
+//    QString epiPath = QString(inputPath.c_str());
+//    QDir dir(epiPath);
+    std::ifstream ifs( (inputPath + "list.txt").c_str() );
     int counter = 0;
-    foreach( QString name, dir.entryList(QStringList("*.png")) ) {
+//    foreach( Qtring name, dir.entryList(QStringList("*.png")) ) {
+    std::string nameStr;  // = (epiPath + name).toStdString();
+    while( !ifs.eof() ) {
         if(!running) break;
-        std::string nameStr = (epiPath + name).toStdString();
+        ifs >> nameStr;
         std::cout << nameStr << std::endl;
         samples.loadImage(nameStr, winSize, channels, 2);
         if(!counter) dict.initRandom();
@@ -84,6 +90,7 @@ int main(int argc, char *argv[])
 //        dict.debugSaveImage( (inputPath + "dict_tmp.png").c_str() );
         counter++;
     }
+    ifs.close();
 
     trainer.save((inputPath + "simple.online.tmp").c_str() );
     dict.save( (inputPath + "simple.dict").c_str() );

@@ -93,8 +93,10 @@ void Dictionary::debugSaveImage(const char* filename) {
             }
             double scale = 255.0/(max - min);
 
-            for(int ii=0; ii<signalSize_; ii++) {
-                recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>((d(ii,0)-min)*scale);
+            for(int jj=0; jj<channels_; jj++){
+                for(int ii=0; ii<signalSize_/channels_; ii++) {
+                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>((d(jj*(signalSize_/channels_)+ii,0)-min)*scale);
+                }
             }
             cv::Mat tmp = recon_cv.reshape(channels_, size_);
             cv::Mat region( outputImage,  cv::Rect(i,j,size_,size_) );
