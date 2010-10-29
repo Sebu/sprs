@@ -60,10 +60,10 @@ int main(int argc, char *argv[])
 
     std::string inputFilename = inputPath +  "lena_color.jpg";
 
-    int winSize = 8;
+    int winSize = 12;
     int channels = 3;
     Samples samples;
-    Dictionary dict(winSize, channels, 225);
+    Dictionary dict(winSize, channels, 4096);
     TrainerMairal trainer;
 
 //    dict.initRandom();
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
         if(!running) break;
         ifs >> nameStr;
         std::cout << nameStr << std::endl;
-        samples.loadImage(nameStr, winSize, channels, 2);
+        samples.loadImage(nameStr, winSize, channels);
         if(!counter) dict.initRandom();
 //        if(!counter) dict.initFromData(samples);
         std::cout << "train set fill complete " << std::endl;
