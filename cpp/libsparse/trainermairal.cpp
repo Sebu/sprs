@@ -109,7 +109,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         // update step (algo. 2)
 //        std::cout << "update((*A_), (*B_), D);" << std::endl;
         update((*A_), (*B_), D);
-        D.debugSaveImage( "/Users/sebastian/Bilder/dict_tmp.png" );
+        D.debugSaveImage( "/tmp/dict_tmp.png" );
 
     }
 

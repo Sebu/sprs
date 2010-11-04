@@ -1,13 +1,24 @@
 \chapter{Overview}
 
-
 \section{Problem}
 Signal representation via linear combination of <> .
-\section{Image bases}
+\section{signal representation}
+approximate signals via combination of limited signal samples
+Why?
+signal analysis, compression, denoise etc.
+\subsection{discrete signals}
 \subsection{basis transformation}
+\subsection{sparse codes/coding}
+Idea: interpret the basis transforms as sparse linear combination of dictionary atoms
+Benefit: decouple signal coding and dictionary design
 
-\subsection{sparse coding}
-Solve a under-determined linear system of equations. 
+
+solve under-determined linear system
+we want the sparsest solution
+
+measure sparsity via       l0-norm       ||a||0
+
+
 Da=X
 <>
 In the last 15 years several sparse coding algorithms have been proposed. Some that solve the initial problem <> greedyly, the (orthogonal) matching pursuit, and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
@@ -16,10 +27,24 @@ large linear system solvers with few optimization constraints. The LARS-Lasso, b
 
 blaa \footnote{test 123} blub
 
+||a||0 makes the problem NP-hard
+to get best solution you need to test every combination
+Solution:
+use greedy approach or 									make problem convex (e.g. use ||a||1)
+\subsubsection{matching pursuit}
+\subsubsection{orthogonal matching pursuit}
+\label{sec:omp}
+\subsubsection{LARS-Lasso}
 
-\section{Dictionaries}
+
+\section{Dictionaries/representation data}
 \subsection{analytical}
-\subsection{learned and over-complete}
+\subsubsection{consine}
+\subsubsection{wavelets}
+\subsection{learned over-complete}
+recent research has shown that learnd dictionaries show better compression quality than small analytic dictionaries \cite{Aharon2006KSVD} \cite{Chen1998Atomic} 
+
+
 In the last decade several learning algorithms have been proposed which try to a universal basis that 
 can sparsly reconstruct a set of "trainig data" with minimal error. 
 K-SVD
@@ -27,21 +52,34 @@ MOD
 Online learning
 Mairal2010
 
-\subsection{Learning for the Task}
+\section{Learning for the Task}
 It has been shown that learning basis specicial for certain tasks can lead to the best results\cite{}.  <>
-Based on this discovery will also concentrate on a specific class. <> Join the basis for natural images and cartoon/line images.
-We will also concentrate on real pratical data. This means typically 3-channel data of 1+ megapixel images found on image hosting services like flickr,<>,<>.
+Based on this discovery we will concentrate on a specific class. <> Join the basis for natural images and cartoon/line images.
+We will also concentrate on real pratical data. This means typically 3-channel data of 1+ megapixel images found on image hosting services like flickr, twitpic, etc.
 
 \section{Image database}
 
 \section{Related work}
-- multi-scale
-- multi-channel
-- hirarchy
-- 
+\subsection{denoising}
+Remove noisy signal from image
 
-- training with a neural network
-Learning Multiple Layers of Features from Tiny Images, Alex Krizhevsky, 2009.
+\subsection{in-paiting}
+fill missing parts by removing row from the dictionary
+
+\subsection{better structure}
+
+\subsubsection{multi-scale}
+\subsubsection{multi-channel}
+\subsubsection{hirarchy}
+\subsubsection{training with a neural network}
+Learning Multiple Layers of Features from Tiny Images, Alex Krizhevsky, 2009.\\
 \url{http://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf}
 
 \section{Goal}
+Evaluate the quality and size of learned big redundant dictionaries for 
+optimal sparse coding of large image databases.
+
+what about a universal dictionary for natural images? 
+how many elements for a 'good' sparse representation?
+add structure for speed and model improvements
+Multi-scale, multi-channel, hirarchy

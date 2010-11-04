@@ -1,15 +1,50 @@
-\documentclass[12pt,pdftex,a4paper]{scrbook}
+\documentclass[12pt,pdftex,a4paper,,appendixprefix,final,liststotoc,bibtotoc]{scrbook}
 \linespread{1.5}
 % \usepackage{setspace}
 % \onehalfspacing
 
 % \usepackage[german]{babel}
-\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}            % use lmodern fonts
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setcounter{secnumdepth}{3}     % limit enumeration depth
+\setcounter{tocdepth}{3}        % limit TOC depth
+\usepackage{varioref}           % nice refs
+\usepackage{amsmath}            % math fonts
+\usepackage{amssymb}            % math symbols
+\usepackage{units}   
+\usepackage[clearempty]{titlesec}
 \usepackage{url}
 \usepackage{tikz}
+\usepackage{todo}
+\usepackage[pdftex]{hyperref}
 \usepackage{cite}
-\usepackage{url}
+
+% LISTINGS
+\usepackage{fancyvrb}           % algorithm-boxes
+% \usepackage{xcolor,listings}
+\usepackage{listings}
+\definecolor{body}{rgb}{.8,.9,1.0}
+\definecolor{keyword}{rgb}{0.5,0.5,0}
+\lstloadlanguages{C,C++,Matlab}
+\lstset{ %
+  language=C++,
+  frame=tb,
+  numbers=left,
+  numberstyle=\tiny,
+%  basicstyle=\small,
+  basicstyle=\scriptsize,
+%  basicstyle=\footnotesize,
+%  backgroundcolor=\color{body},
+%  keywordstyle=\color{keyword},
+  commentstyle=\color{blue},
+  stringstyle=\color{green},  
+  morecomment=[s][\color{blue}]{/*}{*/}
+}
+
+% use nice footnote indentation
+\deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark}\,}
 
 % page header & footer
 \usepackage{fancyhdr}
@@ -39,17 +74,4 @@
 
 
 
-% LISTINGS
-\usepackage{xcolor,listings}
- \usepackage{listings}
- \lstloadlanguages{C,C++,Matlab}
- \lstset{
-  language=C++,
-  basicstyle=\ttfamily,
-  basicstyle=\scriptsize,
-  keywordstyle=\color{red},
-  commentstyle=\color{blue},
-  stringstyle=\color{green},
-  backgroundcolor=\color{lightgray},
-  morecomment=[s][\color{blue}]{/*}{*/}
-  }
+
