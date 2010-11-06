@@ -5,20 +5,20 @@
 #include <libsparse/coderlasso.h>
 #include <libsparse/coderomp.h>
 #include <libsparse/samples.h>
-#include <libsparse/regression.hxx>
-#include <vigra/random.hxx>
+//#include <libsparse/regression.hxx>
+//#include <vigra/random.hxx>
 
-#include <libsparse/vigra_ext.h>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+//#include <libsparse/vigra_ext.h>
+//#include <opencv/cv.h>
+//#include <opencv/highgui.h>
 #include <iostream>
 #include <fstream>
 #include <QDir>
+#include <signal.h>
 
 using namespace vigra;
 using namespace vigra::linalg;
 
-#include <signal.h>
 bool running = true;
 
 void terminate(int param)
@@ -42,11 +42,16 @@ int main(int argc, char *argv[])
     int opt;
 
 
-    std::string inputPath = "";
-    while ((opt = getopt(argc, argv, "i:v")) != -1) {
+    std::string inputFile = "";
+    std::string testFile = "";
+
+    while ((opt = getopt(argc, argv, "i:t:v")) != -1) {
         switch(opt) {
         case 'i':
-            inputPath = optarg;
+            inputFile = optarg;
+            break;
+        case 't':
+            testFile = optarg;
             break;
         case 'v':
             verbose = true;
@@ -58,7 +63,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    std::string inputFilename = inputPath +  "lena_color.jpg";
 
     int winSize = 12;
     int channels = 3;
@@ -73,7 +77,7 @@ int main(int argc, char *argv[])
     // for in qdir
 //    QString epiPath = QString(inputPath.c_str());
 //    QDir dir(epiPath);
-    std::ifstream ifs( (inputPath + "list.txt").c_str() );
+    std::ifstream ifs( (inputFile).c_str() );
     int counter = 0;
 //    foreach( Qtring name, dir.entryList(QStringList("*.png")) ) {
     std::string nameStr;  // = (epiPath + name).toStdString();
@@ -87,18 +91,18 @@ int main(int argc, char *argv[])
         std::cout << "train set fill complete " << std::endl;
         if(!running) break;
         trainer.train(samples, dict,  0, 10000);
-//        dict.debugSaveImage( (inputPath + "dict_tmp.png").c_str() );
         counter++;
     }
     ifs.close();
 
-    trainer.save((inputPath + "simple.online.tmp").c_str() );
-    dict.save( (inputPath + "simple.dict").c_str() );
+    dict.debugSaveImage( (inputFile + ".dict.png").c_str() );
+    trainer.save((inputFile + ".tmp").c_str() );
+    dict.save( (inputFile + ".dict").c_str() );
 
     // sample image
-    std::string outputFilename = inputPath + "lena_recon.jpg";
+    std::string outputFilename = testFile + ".recon.jpg";
     Samples samples2;
-    samples2.loadImage(inputFilename, winSize, channels, winSize);
+    samples2.loadImage(testFile, winSize, channels, winSize);
     samples2.saveImage(outputFilename, dict );
 
 

@@ -18,7 +18,7 @@ MatrixXf & Samples::getData() {
 
 void Samples::saveImage(std::string& fileName, Dictionary& dict) {
 
-    float quant = 20.0;
+    float quant = 1.0;
     CoderOMP coder;
     std::cout << "restore image" << std::endl;
     Eigen::SparseMatrix<float> A = coder.encode((*data_), dict);
@@ -31,7 +31,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict) {
           data = (short)round(it.row());
           ofs.write((char*)&data,sizeof(data));
           data = (short)round(it.value()/quant);
-          A.coeffRef(it.row(),it.col()) = data;
+          A.coeffRef(it.row(),it.col()) = it.value(); //data;
           ofs.write((char*)&data,sizeof(char));
           if (data>count) count = data;
       }
