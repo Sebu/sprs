@@ -12,12 +12,16 @@ signal analysis, compression, denoise etc.
 Idea: interpret the basis transforms as sparse linear combination of dictionary atoms
 Benefit: decouple signal coding and dictionary design
 
-
+\[
+\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
+\underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
+\]
 solve under-determined linear system
 we want the sparsest solution
-
+\[
+\min_{\alpha\in\mathbb{R}^{p}} \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
+\] 
 measure sparsity via       l0-norm       ||a||0
-
 
 Da=X
 <>
@@ -32,15 +36,47 @@ to get best solution you need to test every combination
 Solution:
 use greedy approach or 									make problem convex (e.g. use ||a||1)
 \subsubsection{matching pursuit}
+\begin{algorithmic}
+\IF {$i\geq maxval$} 
+        \STATE $i\gets 0$
+\ELSE
+        \IF {$i+k\leq maxval$}
+                \STATE $i\gets i+k$
+        \ENDIF
+\ENDIF 
+\end{algorithmic}
+
 \subsubsection{orthogonal matching pursuit}
 \label{sec:omp}
-\subsubsection{LARS-Lasso}
+\begin{algorithm}
+\caption{Wurst}
+\begin{algorithmic}
+\IF {$i\geq maxval$} 
+        \STATE $i\gets 0$
+\ELSE
+        \IF {$i+k\leq maxval$}
+                \STATE $i\gets i+k$
+        \ENDIF
+\ENDIF 
+\end{algorithmic}
 
+\subsubsection{LARS-Lasso}
+\begin{algorithmic}
+\IF {$i\geq maxval$} 
+        \STATE $i\gets 0$
+\ELSE
+        \IF {$i+k\leq maxval$}
+                \STATE $i\gets i+k$
+        \ENDIF
+\ENDIF 
+\end{algorithmic}
+\end{algorithm}
 
 \section{Dictionaries/representation data}
 \subsection{analytical}
 \subsubsection{consine}
 \subsubsection{wavelets}
+
 \subsection{learned over-complete}
 recent research has shown that learnd dictionaries show better compression quality than small analytic dictionaries \cite{Aharon2006KSVD} \cite{Chen1998Atomic} 
 
