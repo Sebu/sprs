@@ -1,17 +1,35 @@
 \chapter{Overview}
 
 \section{Problem}
-Signal representation via linear combination of <> .
+Signal representation via linear combination of signal vectors from a dictionary.
+Coding the signal. Design of the dictionary.
+
 \section{signal representation}
 approximate signals via combination of limited signal samples
 Why?
 signal analysis, compression, denoise etc.
 \subsection{discrete signals}
-\subsection{basis transformation}
-\subsection{sparse codes/coding}
-Idea: interpret the basis transforms as sparse linear combination of dictionary atoms
-Benefit: decouple signal coding and dictionary design
+Rather then using continues signal we concentrate on discret signal representation.
+Continues signals would be better for .... . But the final signal (image etc.) will be discret anyway becaus of the 
+digital representation. Besides the problem of coding becomes different in the continues space??
 
+\subsection{basis transformation}
+The early approaches in the 60s used combinations of cosine transformations. Coming from a continues representation this makes 
+actually sense. The signal could be represented via ....
+
+In 80s the search for better transformation basis became a major role in signal representation. \cite{}
+
+\subsubsection{spliting the problem}
+In the last 15 years 
+
+the idea came up to interpret the basis transforms as sparse linear combination of dictionary atoms.
+see \cite{} and \cite{}
+The benefit from this approach/direction was that you could decouple signal coding and dictionary design.
+Seperating the problem into two disctinct problems made the search for task specific and .... more flexible \cite{?}.
+
+
+\subsection{sparse codes/coding }
+Sparse coding is the 
 \[
 \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
 \underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
@@ -25,7 +43,9 @@ measure sparsity via       l0-norm       ||a||0
 
 Da=X
 <>
-In the last 15 years several sparse coding algorithms have been proposed. Some that solve the initial problem <> greedyly, the (orthogonal) matching pursuit, and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
+
+In the last 15 years several sparse coding algorithms have been proposed. 
+Some that solve the initial problem <> greedyly, the (orthogonal) matching pursuit, and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
 large linear system solvers with few optimization constraints. The LARS-Lasso, basis pursuit, FOCUSS?
 
 
@@ -34,7 +54,9 @@ blaa \footnote{test 123} blub
 ||a||0 makes the problem NP-hard
 to get best solution you need to test every combination
 Solution:
-use greedy approach or 									make problem convex (e.g. use ||a||1)
+use greedy approach or make problem convex (e.g. use ||a||1)
+the most common algorithms are the following ones.
+
 \subsubsection{matching pursuit}
 \begin{algorithmic}
 \IF {$i\geq maxval$} 
@@ -88,12 +110,14 @@ MOD
 Online learning
 Mairal2010
 
+\subsubsection{k-svd}
+\subsubsection{online learning}
+Mairal .... \cite{Mairal2010}
+
 \section{Learning for the Task}
 It has been shown that learning basis specicial for certain tasks can lead to the best results\cite{}.  <>
 Based on this discovery we will concentrate on a specific class. <> Join the basis for natural images and cartoon/line images.
 We will also concentrate on real pratical data. This means typically 3-channel data of 1+ megapixel images found on image hosting services like flickr, twitpic, etc.
-
-\section{Image database}
 
 \section{Related work}
 \subsection{denoising}
@@ -111,11 +135,23 @@ fill missing parts by removing row from the dictionary
 Learning Multiple Layers of Features from Tiny Images, Alex Krizhevsky, 2009.\\
 \url{http://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf}
 
+
+\section{Image database/Training data}
+Task specific training data is a common way to solve the problem of finding the right dictionary. 
+Here learning for the task comes into account. Denoising/Inpainting dictionaries directly learned from the initial
+signal that gets denoised or restored from inpaiting.
+If the task gets bigger it sounds logical to increase the size of training data and take a bigger veriety of signals to learn from.
+
+
 \section{Goal}
 Evaluate the quality and size of learned big redundant dictionaries for 
 optimal sparse coding of large image databases.
 
-what about a universal dictionary for natural images? 
+what about a universal dictionary for combination natural images and line graphics?
+ 
 how many elements for a 'good' sparse representation?
+
 add structure for speed and model improvements
 Multi-scale, multi-channel, hirarchy
+
+Improve compression and usage of coding for as a image descriptor.

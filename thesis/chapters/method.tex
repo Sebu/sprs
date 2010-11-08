@@ -1,24 +1,31 @@
 \chapter{Method}
 
 
-\section{Signal Representation}
+\section{Signal coding/representation}
+As we use natural color images and graphics we require to use muti-channel data. Common 3-channel from a RGB color space.
+We take an approach to transform our initial signal into other color spaces like in jpeg encoding to account natural human reception of
+color data. 
+Expriment ....
 
 \section{Sparse coding stage}
 \subsection{batch-OMP}
 A modified version of the OMP\footnote{\nameref{sec:omp}} that can effectively sparse codes multiple signals in parallel.
 
 \subsection{LARS-Lasso}
+The complete regularization path
 
 \section{Training Stage}
 \subsection{Mairal2010}
+A more indepth look at the mairal online training algorithm. 
+Why use this algorithm? Robust, convergent, fast, online
 
 \subsection{adaptive}
 
 \subsection{quality messure}
+PSNR, mean square error MSE, adaptive training 
 
-\section{Encoding}
+\section{Encoding/Compression}
 see JPEG: quantization, RLE or entropy
-
 
 \section{Implementation}
 \lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
@@ -26,7 +33,7 @@ see JPEG: quantization, RLE or entropy
 Coder
 Trainer
 Samples
-OpenMP
+Use of OpenMP to 
 etc.
 
 
