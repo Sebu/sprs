@@ -16,8 +16,8 @@ CoderOMP::CoderOMP()
 
 Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
 {
-    int i, j, signum, pos;
-    double eps2, resnorm, delta, deltaprev;
+    int signum;
+
 
     int T = 10;
     double eps = 0.0;
@@ -26,56 +26,61 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
     int n = X.rows();
     int L = X.cols();
 
+    MatrixXf DtX, XtX, G;
     /* precalculate for speed */
-    MatrixXf DtX = D.getData().transpose()*X;
-    MatrixXf XtX = X.transpose()*X;
-    MatrixXf G = D.getData().transpose()*D.getData();
 
-    /*** allocate output matrix ***/
-    Eigen::SparseMatrix<float> Gamma(m,L); // = MatrixXf::Zero(m,L);
+    #pragma omp parallel sections
+    {
+        #pragma omp section
+        DtX = D.getData().transpose()*X;
+//        #pragma omp section
+//        XtX = X.transpose()*X;
+        #pragma omp section
+        G = D.getData().transpose()*D.getData();
+    }
 
-    /*** helper arrays ***/
-    VectorXf alpha;             /* contains D'*residual */
-    VectorXi ind(n);            /* indices of selected atoms */
-    VectorXi selected_atoms(m); /* binary array with 1's for selected atoms */
+    Eigen::SparseMatrix<float> GammaVector[L];
 
     /* current number of columns in Dsub / Gsub / Lchol */
     int allocated_cols = erroromp ? (int)(ceil(sqrt((double)n)/2.0) + 1.01) : T;
-    VectorXf c(allocated_cols);           /* orthogonal projection result */
-
-    /* Cholesky decomposition of D_I'*D_I */
-    MatrixXf Lchol(n,allocated_cols);
-
-    /* temporary vectors for various computations */
-    MatrixXf tempvec1(m,1);
-    MatrixXf tempvec2(m,1);
-
-    /* matrix containing G(:,ind) - the columns of G corresponding to the selected atoms, in order of selection */
-    MatrixXf Gsub(m,allocated_cols);
-
-    /*** initializations for error omp ***/
-    if (erroromp) {
-        eps2 = eps*eps;        /* compute eps^2 */
-        if (T<0 || T>n) {      /* unspecified max atom num - set max atoms to n */
-            T = n;
-        }
-    }
 
 //    std::cout  << "prep done" << std::endl;
     /**********************   perform omp for each signal   **********************/
-    Gamma.startFill();
+    #pragma omp parallel for
     for (signum=0; signum<L; ++signum) {
+        int i, j, pos;
+        double eps2, resnorm, delta, deltaprev;
+
+        /*** helper arrays ***/
+        VectorXf alpha;             /* contains D'*residual */
+        VectorXi ind(n);            /* indices of selected atoms */
+        VectorXi selected_atoms(m); /* binary array with 1's for selected atoms */
+        VectorXf c(allocated_cols);           /* orthogonal projection result */
+        /* Cholesky decomposition of D_I'*D_I */
+        MatrixXf Lchol(n,allocated_cols);
+        /* temporary vectors for various computations */
+        MatrixXf tempvec1(m,1);
+        MatrixXf tempvec2(m,1);
+        /* matrix containing G(:,ind) - the columns of G corresponding to the selected atoms, in order of selection */
+        MatrixXf Gsub(m,allocated_cols);
+
         tempvec1.setZero(); //init(0.0);
         tempvec2.setZero();
         c.setZero();
         Gsub.setZero();
         Lchol.setZero();
+        GammaVector[signum].resize(m,1);
 
         /* initialize residual norm and deltaprev for error-omp */
 
         if (erroromp) {
-            resnorm = XtX(signum,0);
+//            resnorm = XtX(signum,0);
             deltaprev = 0;     /* delta tracks the value of gamma'*G*gamma */
+            /*** initializations for error omp ***/
+            eps2 = eps*eps;        /* compute eps^2 */
+            if (T<0 || T>n) {      /* unspecified max atom num - set max atoms to n */
+                T = n;
+            }
         }
         else {
             /* ignore residual norm stopping criterion */
@@ -161,22 +166,16 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
             c.block(0,0,i,1) = Lchol.block(0,0, i,i).part<Eigen::LowerTriangular>().solveTriangular(tempvec1.block(0,0, i,1));
             Lchol.block(0,0, i,i).transpose().part<Eigen::UpperTriangular>().solveTriangularInPlace(c.block(0,0,i,1));
             /* Solve L^T * x = y */
-//            choleskySolveC(Lchol.block(0,0, i+1,i+1),
-//                           tempvec1.block(0,0, i+1,i+1),
-//                           c);
 
 
-
-//            std::cout << "c: " << c << std::endl;
             /* update alpha = D'*residual */
 
             tempvec1 = Gsub.block(0,0, m,i)*c.block(0,0, i,1);    /* compute tempvec1 := Gsub*c */
 
 
             alpha = DtX.col(signum);                              /* set alpha = D'*x */
-//            std::cout << "a: \n" << alpha << std::endl;
             alpha = alpha - tempvec1;                             /* compute alpha := alpha - tempvec1 */
-//            std::cout << "tempvec1 \n" << alpha << std::endl;
+
             /* update residual norm */
             if (erroromp) {
                 vec_assign(tempvec2, tempvec1, ind, i, 0);   /* assign tempvec2 := tempvec1(ind) */
@@ -190,15 +189,26 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
 
         /*** generate output vector gamma ***/
 
+        GammaVector[signum].startFill();
         for (j=0; j<i; ++j) {
-            Gamma.fillrand(ind(j,0),signum) = c(j,0);
+            GammaVector[signum].fillrand(ind(j,0),0) = c(j,0);
         }
+        GammaVector[signum].endFill();
 
+    }
+
+    /*** allocate output matrix ***/
+    Eigen::SparseMatrix<float> Gamma(m,L);
+    Gamma.startFill();
+    for (signum=0; signum<L; ++signum) {
+      for (int k=0; k<GammaVector[signum].outerSize(); ++k)
+        for (Eigen::SparseMatrix<float>::InnerIterator it(GammaVector[signum],k); it; ++it)
+        {
+          Gamma.fillrand(it.row(),signum) = it.value();
+        }
     }
     Gamma.endFill();
 
     /* end omp */
-
-//    std::cout << "wurst" << std::endl;
     return Gamma;
 }
