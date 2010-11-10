@@ -9,7 +9,6 @@
 #include <iostream>
 #include <fstream>
 
-typedef vigra::MultiArray<2, double>::difference_type Shape;
 
 TrainerMairal::TrainerMairal() : A_(0), B_(0)
 {
@@ -98,9 +97,9 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         MatrixXf sample = samples.getData().block(0,start,D.getSignalSize(),end-start);
         Eigen::SparseMatrix<float> a = coder.encode(sample, D);
 
-//        std::cout << "a*a.transpose();" << std::endl;
+        std::cout << "a*a.transpose();" << std::endl;
         Eigen::SparseMatrix<float> tmp = a*a.transpose();
-//        std::cout << "(*A_) += tmp;" << std::endl;
+        std::cout << "(*A_) += tmp;" << std::endl;
         for (int k=0; k<tmp.outerSize(); ++k)
           for (Eigen::SparseMatrix<float>::InnerIterator it(tmp,k); it; ++it) {
               (*A_)(it.row(),it.col()) += it.value();
@@ -108,7 +107,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         (*B_) += sample*a.transpose();
         // update step (algo. 2)
-//        std::cout << "update((*A_), (*B_), D);" << std::endl;
+        std::cout << "update((*A_), (*B_), D);" << std::endl;
         update((*A_), (*B_), D);
         std::ostringstream o;
         o << "tmp/dict_tmp" << t << ".png";

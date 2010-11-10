@@ -20,7 +20,7 @@ unix:INCLUDEPATH += /homes/wheel/seb/playground/include
 unix:LIBS += -L/homes/wheel/seb/playground/lib
 
 # Maces
-macx:INCLUDEPATH += /Users/sebastian/uni/diplom/vigra-1.7.0-src/include \
+macx:INCLUDEPATH += /Users/sebastian/uni/include \
                     /Users/sebastian/uni/OpenCV-2.1.0/include
 macx:LIBS += -L/Users/sebastian/uni/OpenCV-2.1.0/lib
 

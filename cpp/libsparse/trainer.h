@@ -1,8 +1,6 @@
 #ifndef TRAINER_H
 #define TRAINER_H
 
-#include "vigra/matrix.hxx"
-
 class Dictionary;
 class Samples;
 

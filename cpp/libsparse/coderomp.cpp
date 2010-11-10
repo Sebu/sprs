@@ -4,11 +4,6 @@
 #include <math.h>
 #include <string.h>
 
-//#include <vigra/matrix.hxx>
-//#include <vigra/linear_algebra.hxx>
-//#include <vigra/multi_array.hxx>
-//typedef vigra::MultiArray<2, double>::difference_type Shape;
-
 CoderOMP::CoderOMP()
 {
 }

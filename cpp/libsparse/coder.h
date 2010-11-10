@@ -1,10 +1,9 @@
 #ifndef CODER_H
 #define CODER_H
 
-//#include <vigra/matrix.hxx>
-
 #include <eigen2/Eigen/Core>
 #include <eigen2/Eigen/Sparse>
+
 USING_PART_OF_NAMESPACE_EIGEN
 
 class Dictionary;

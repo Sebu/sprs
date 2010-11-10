@@ -2,7 +2,6 @@
 #define CODEROMP_H
 
 #include "coder.h"
-#include <vigra/matrix.hxx>
 
 class CoderOMP : public Coder
 {

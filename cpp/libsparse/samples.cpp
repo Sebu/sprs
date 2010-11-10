@@ -2,7 +2,6 @@
 #include "coderlasso.h"
 #include "coderomp.h"
 #include "dictionary.h"
-#include "vigra/matrix.hxx"
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <iostream>

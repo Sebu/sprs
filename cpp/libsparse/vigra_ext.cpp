@@ -25,40 +25,40 @@ void vec_assign(MatrixXf& y, MatrixXf& x, VectorXi& ind, int k, int start)
 }
 
 
-vigra::Matrix<double> dense_vector(vigra::ArrayVector<int>  active_set, vigra::Matrix<double>  sparse_vector, int size) {
+//vigra::Matrix<double> dense_vector(vigra::ArrayVector<int>  active_set, vigra::Matrix<double>  sparse_vector, int size) {
 
-    vigra::Matrix<double> dense_vector(size,1);
-    dense_vector.init(0.0);
-    for (unsigned int i = 0; i < active_set.size(); i++)
-        dense_vector(active_set[i],0) = sparse_vector(i,0);
+//    vigra::Matrix<double> dense_vector(size,1);
+//    dense_vector.init(0.0);
+//    for (unsigned int i = 0; i < active_set.size(); i++)
+//        dense_vector(active_set[i],0) = sparse_vector(i,0);
 
-    return dense_vector;
-}
+//    return dense_vector;
+//}
 
-vigra::Matrix<double> lasso(vigra::Matrix<double>& x, vigra::Matrix<double>& D) {
+//vigra::Matrix<double> lasso(vigra::Matrix<double>& x, vigra::Matrix<double>& D) {
 
-    int bestIndex = 0;
-    vigra::ArrayVector<vigra::ArrayVector<int> > active_sets;
-    vigra::ArrayVector<vigra::Matrix<double> > solutions;
-
-
-    vigra::linalg::LeastAngleRegressionOptions opts;
-    opts.lasso();
-    opts.maxSolutionCount(10);
-    // run leastAngleRegression() in  LASSO mode
-    int numSolutions = vigra::linalg::leastAngleRegression(D, x, active_sets, solutions, opts);
+//    int bestIndex = 0;
+//    vigra::ArrayVector<vigra::ArrayVector<int> > active_sets;
+//    vigra::ArrayVector<vigra::Matrix<double> > solutions;
 
 
-    //std::cout << bestIndex << std::endl;
+//    vigra::linalg::LeastAngleRegressionOptions opts;
+//    opts.lasso();
+//    opts.maxSolutionCount(10);
+//    // run leastAngleRegression() in  LASSO mode
+//    int numSolutions = vigra::linalg::leastAngleRegression(D, x, active_sets, solutions, opts);
 
-//    for (MultiArrayIndex k = 0; k < numSolutions; ++k) {
-//        Matrix<double> dense_solution = dense_vector(active_sets[k], solutions[k], D.columnCount());
-//        double lsq = (mmul(D,dense_solution)-x).squaredNorm();
-//        //        std::cout <<  k << " " << sum(solutions[k]) <<  " " << solutions[k].size() << std::endl;
-//        double error = 0.5*lsq + sum(solutions[k]);
-//        if(error<bestError) { bestError=error; bestIndex=k; }
-//    }
 
-    bestIndex = numSolutions - 1;
-    return dense_vector(active_sets[bestIndex], solutions[bestIndex], D.columnCount());
-}
+//    //std::cout << bestIndex << std::endl;
+
+////    for (MultiArrayIndex k = 0; k < numSolutions; ++k) {
+////        Matrix<double> dense_solution = dense_vector(active_sets[k], solutions[k], D.columnCount());
+////        double lsq = (mmul(D,dense_solution)-x).squaredNorm();
+////        //        std::cout <<  k << " " << sum(solutions[k]) <<  " " << solutions[k].size() << std::endl;
+////        double error = 0.5*lsq + sum(solutions[k]);
+////        if(error<bestError) { bestError=error; bestIndex=k; }
+////    }
+
+//    bestIndex = numSolutions - 1;
+//    return dense_vector(active_sets[bestIndex], solutions[bestIndex], D.columnCount());
+//}
