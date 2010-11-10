@@ -13,7 +13,7 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -O3 -msse2 -msse3
+# QMAKE_CXXFLAGS += -O3 -msse2 -msse3
 
 # linux
 unix:INCLUDEPATH += /homes/wheel/seb/playground/include

@@ -3,12 +3,11 @@
 #include "dictionary.h"
 #include <math.h>
 #include <string.h>
+
 //#include <vigra/matrix.hxx>
 //#include <vigra/linear_algebra.hxx>
 //#include <vigra/multi_array.hxx>
-
-
-typedef vigra::MultiArray<2, double>::difference_type Shape;
+//typedef vigra::MultiArray<2, double>::difference_type Shape;
 
 CoderOMP::CoderOMP()
 {
@@ -38,6 +37,8 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
         #pragma omp section
         G = D.getData().transpose()*D.getData();
     }
+
+    std::cout << "precalc done" << std::endl;
 
     Eigen::SparseMatrix<float> GammaVector[L];
 
@@ -123,13 +124,10 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
             selected_atoms(pos) = 1;
 
 
-             /* append column to Gsub or Dsub */
+             /* append column to Gsub */
             Gsub.col(i) = G.col(pos);
-//            for (j=0; j<m; ++j)
-//                Gsub(j, i) = G(j, pos);
 
             /*** Cholesky update ***/
-
             if (i==0) {
                 Lchol(0,0) = 1.0;
             }
@@ -144,9 +142,7 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
                 tempvec2.block(0,0,i,1) = Lchol.block(0,0, i,i).part<Eigen::LowerTriangular>().solveTriangular(tempvec1.block(0,0, i,1));
 
                 Lchol.block(i,0,1,i) = tempvec2.transpose().block(0,0,1,i);
-//                for (j=0; j<i; ++j) {                              /* write tempvec2 to end of Lchol */
-//                    Lchol(i,j) = tempvec2(j,0);
-//                }
+
                 /* compute Lchol(i,i) */
                 double sum = 1.0-(tempvec2.block(0,0,i,1).transpose()*tempvec2.block(0,0,i,1))(0,0);
                 if ( sum <= 1e-14 ) {     /* Lchol(i,i) is zero => selected atoms are dependent */

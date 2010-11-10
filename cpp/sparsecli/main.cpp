@@ -45,10 +45,19 @@ int main(int argc, char *argv[])
     std::string inputFile = "";
     std::string testFile = "";
 
-    while ((opt = getopt(argc, argv, "i:t:v")) != -1) {
+    int sampleCount = 10000;
+    int dictSize = 4096;
+
+    while ((opt = getopt(argc, argv, "d:i:s:t:v")) != -1) {
         switch(opt) {
+        case 'd':
+            dictSize = atoi(optarg);
+            break;
         case 'i':
             inputFile = optarg;
+            break;
+        case 's':
+            sampleCount = atoi(optarg);
             break;
         case 't':
             testFile = optarg;
@@ -64,10 +73,10 @@ int main(int argc, char *argv[])
     }
 
 
-    int winSize = 12;
+    int winSize = 8;
     int channels = 3;
     Samples samples;
-    Dictionary dict(winSize, channels, 4096);
+    Dictionary dict(winSize, channels, dictSize);
     TrainerMairal trainer;
 
 //    dict.initRandom();
@@ -81,17 +90,18 @@ int main(int argc, char *argv[])
     int counter = 0;
 //    foreach( Qtring name, dir.entryList(QStringList("*.png")) ) {
     std::string nameStr;  // = (epiPath + name).toStdString();
+    ifs >> nameStr;
     while( !ifs.eof() ) {
         if(!running) break;
-        ifs >> nameStr;
         std::cout << nameStr << std::endl;
         samples.loadImage(nameStr, winSize, channels);
         if(!counter) dict.initRandom();
 //        if(!counter) dict.initFromData(samples);
         std::cout << "train set fill complete " << std::endl;
         if(!running) break;
-        trainer.train(samples, dict,  0, 10000);
+        trainer.train(samples, dict,  0, sampleCount);
         counter++;
+        ifs >> nameStr;
     }
     ifs.close();
 

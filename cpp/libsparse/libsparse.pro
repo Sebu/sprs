@@ -9,7 +9,7 @@ TARGET = libsparse
 TEMPLATE = lib
 DEFINES += LIBSPARSE_LIBRARY
 
-QMAKE_CXXFLAGS += -O3 -msse2 -msse3 -fopenmp
+QMAKE_CXXFLAGS += -fopenmp
 
 # linux
 unix:INCLUDEPATH += /homes/wheel/seb/playground/include
