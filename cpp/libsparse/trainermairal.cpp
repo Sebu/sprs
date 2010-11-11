@@ -29,7 +29,7 @@ void TrainerMairal::save(const char* fileName) {
 
 void TrainerMairal::load(const char* fileName) {
     std::ifstream ifs( fileName );
-    int rows=0, cols=0;
+//    int rows=0, cols=0;
 //    if (ifs) {
 //        ifs >> rows >> cols;
 //        if(A_) delete A_;
@@ -52,9 +52,9 @@ void TrainerMairal::load(const char* fileName) {
 }
 
 void TrainerMairal::update(MatrixXf& A, MatrixXf& B, Dictionary& D) {
+    //        #pragma omp parallel for
 
     for(int i=0; i < 1; i++) {
-        #pragma omp parallel for
         for(int j=0; j < D.getElementCount(); j++) {
             MatrixXf a = A.col(j);
             MatrixXf b = B.col(j);
@@ -69,7 +69,7 @@ void TrainerMairal::update(MatrixXf& A, MatrixXf& B, Dictionary& D) {
 
 void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int batch) {
 
-    CoderOMP coder;
+    CoderLasso coder;
 
     std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
@@ -111,7 +111,9 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         update((*A_), (*B_), D);
         std::ostringstream o;
         o << "tmp/dict_tmp" << t << ".png";
-        D.debugSaveImage( o.str().c_str() );
+        if (!(t%1000)) {
+            D.debugSaveImage( o.str().c_str() );
+        }
 
     }
 

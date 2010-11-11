@@ -5,19 +5,13 @@
 #include <libsparse/coderlasso.h>
 #include <libsparse/coderomp.h>
 #include <libsparse/samples.h>
-//#include <libsparse/regression.hxx>
-//#include <vigra/random.hxx>
 
-//#include <libsparse/vigra_ext.h>
-//#include <opencv/cv.h>
-//#include <opencv/highgui.h>
+
 #include <iostream>
 #include <fstream>
 #include <QDir>
 #include <signal.h>
 
-using namespace vigra;
-using namespace vigra::linalg;
 
 bool running = true;
 
@@ -73,8 +67,8 @@ int main(int argc, char *argv[])
     }
 
 
-    int winSize = 8;
-    int channels = 3;
+    int winSize = 4; //8
+    int channels = 1; //3
     Samples samples;
     Dictionary dict(winSize, channels, dictSize);
     TrainerMairal trainer;
@@ -95,7 +89,7 @@ int main(int argc, char *argv[])
         if(!running) break;
         std::cout << nameStr << std::endl;
         samples.loadImage(nameStr, winSize, channels);
-        if(!counter) dict.initRandom();
+        if(!counter) dict.initFromData(samples); //initRandom();
 //        if(!counter) dict.initFromData(samples);
         std::cout << "train set fill complete " << std::endl;
         if(!running) break;

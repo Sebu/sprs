@@ -112,8 +112,8 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
                 for(int ii=0; ii<rows_/channels_; ii++) {
                     (*data_)(jj*(rows_/channels_)+ii,index) = tmp.at<uchar>(0,ii);
                 }
-
             }
+//            (*data_).col(index).normalize();
             index++;
         }
     }
