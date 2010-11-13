@@ -42,7 +42,7 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
     int maxk = 8*nvars; // Maximum number of iterations
 
     MatrixXf beta;
-    int stop = -2;
+    float stop = -2;
     if (stop == 0)
       beta = MatrixXf::Zero(2*nvars, p);
     else if (stop < 0)
