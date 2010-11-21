@@ -10,7 +10,7 @@ CoderLasso::CoderLasso()
 {
 }
 
-Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
+Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& yM, Dictionary& D) // s D
 {
 //    return lasso(s, D.getData());
 
@@ -30,7 +30,7 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
     // Input checking
     // Set default values.
 
-    //y.normalize();
+
 
     MatrixXf X = D.getData();
     // LARS variable setup
@@ -38,19 +38,33 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
     int n = X.rows();
     int p = X.cols();
 
+    int L = yM.cols();
+
     // nvars = min(n-1,p);
     int nvars = std::min(n-1,p);
 
     int maxk = 8*nvars; // Maximum number of iterations
 
-    MatrixXf beta;
+    MatrixXf Gram = X.transpose()*X;
+
+    MatrixXf beta[L];
+    int k[L];
     float stop = -10;
+
+#pragma omp parallel for
+for (int signum=0; signum<L; ++signum) {
+
+    MatrixXf y = yM.col(signum);
+
+    //y.normalize();
+
+
     if (stop == 0)
-      beta = MatrixXf::Zero(2*nvars, p);
+      beta[signum] = MatrixXf::Zero(2*nvars, p);
     else if (stop < 0)
-      beta = MatrixXf::Zero(2*round(-stop), p);
+      beta[signum] = MatrixXf::Zero(2*round(-stop), p);
     else
-      beta = MatrixXf::Zero(100, p);
+      beta[signum] = MatrixXf::Zero(100, p);
 
     MatrixXf mu = MatrixXf::Zero(n, 1); // current "position" as LARS travels towards lsq solution
     // I = 1:p; % inactive set
@@ -58,18 +72,15 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
     // A = [] ; % active set
     VectorXf A = VectorXf::Zero(p);
 
-
-    MatrixXf Gram = X.transpose()*X;
-
     bool lassocond = false; // LASSO condition boolean
     bool stopcond = false; // Early stopping condition boolean
-    int k = 0;  // Iteration count
     int vars = 0; // Current number of variables
+    k[signum] = 0;  // Iteration count
 
     // LARS main loop
     // omp it :)
-    while ((vars < nvars) && (!stopcond) && (k < maxk)) {
-      k++;
+    while ((vars < nvars) && (!stopcond) && (k[signum] < maxk)) {
+      k[signum]++;
 
       VectorXf c = X.transpose()*(y - mu);
 
@@ -100,8 +111,6 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
        }
 
 
-
-//      MatrixXf S = s*MatrixXf::Ones(1, c.rows()); //vars);
       MatrixXf Gsub(vars,vars);
 
       ii=0;
@@ -121,9 +130,9 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
       }
 
       VectorXf GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXf::Ones(vars);
-      float AA = 1.0/(float)sqrt((float)GA1.sum());
+      float AA = 1.0/(float)(float)GA1.sum(); //sqrt
       MatrixXf w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
-      std::cout << "AA  " << AA << std::endl; //(tmp2.cwise()*(S*S.transpose())) << std::endl;
+//      std::cout << "AA  " << AA << std::endl; //(tmp2.cwise()*(S*S.transpose())) << std::endl;
 
       MatrixXf Xsub(n,vars);
       ii=0;
@@ -147,9 +156,9 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
 
       VectorXf betasub(vars);
       ii=0;
-      for(int i=0; i<beta.cols(); i++) {
+      for(int i=0; i<beta[signum].cols(); i++) {
           if(A(i)==1.0) {
-            betasub(ii) = beta(k,i);
+            betasub(ii) = beta[signum](k[signum],i);
             ii++;
           }
       }
@@ -174,9 +183,9 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
 //      }
 
       ii=0;
-      for(int i=0; i<beta.cols(); i++) {
+      for(int i=0; i<beta[signum].cols(); i++) {
           if(A(i)==1.0) {
-            beta(k+1,i) = beta(k,i) + gamma*w(ii);
+            beta[signum](k[signum]+1,i) = beta[signum](k[signum],i) + gamma*w(ii);
             ii++;
           }
       }
@@ -209,18 +218,21 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
 ////    if size(beta,1) > k+1
 ////      beta(k+2:end, :) = [];
 ////    end
-    Eigen::SparseMatrix<float> Gamma(X.cols(),1);
+
+}
+    Eigen::SparseMatrix<float> Gamma(X.cols(),L);
     Gamma.startFill();
-    for (int i=0; i<beta.cols(); i++) {
-        if(beta(k,i)!=0.0) {
-//            std::cout << beta(k,i) << std::endl;
-            Gamma.fillrand(i,0) = beta(k,i);
+    for(int signum=0; signum<L; ++signum){
+        for (int i=0; i<beta[signum].cols(); i++) {
+            if(beta[signum](k[signum],i)!=0.0) {
+                Gamma.fillrand(i,signum) = beta[signum](k[signum],i);
+            }
         }
     }
     Gamma.endFill();
 
-    if (k == maxk)
-      std::cout << "LARS warning: Forced exit. Maximum number of iteration reached." << std::endl;
+//    if (k == maxk)
+//      std::cout << "LARS warning: Forced exit. Maximum number of iteration reached." << std::endl;
 
     return Gamma;
 }

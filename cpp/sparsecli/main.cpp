@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
 
     int winSize = 8;
-    int channels = 1;
+    int channels = 3;
     Samples samples;
     Dictionary dict(winSize, channels, dictSize);
     TrainerMairal trainer;

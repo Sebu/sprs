@@ -18,7 +18,7 @@ MatrixXf & Samples::getData() {
 void Samples::saveImage(std::string& fileName, Dictionary& dict) {
 
     float quant = 1.0;
-    CoderOMP coder;
+    CoderLasso coder;
     std::cout << "restore image" << std::endl;
     Eigen::SparseMatrix<float> A = coder.encode((*data_), dict);
 
