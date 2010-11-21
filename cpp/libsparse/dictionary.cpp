@@ -40,13 +40,15 @@ void Dictionary::load(const char* fileName) {
 
 
 
+void Dictionary::normalize() {
+    for(int i=0; i<elementCount_; i++) {
+        (*data_).col(i).normalize();
+    }
+}
 
 void Dictionary::initRandom() {
-    (*data_).setRandom();
-//    init_random((*data_));
-    for(int i=0; i<elementCount_; i++)
-        (*data_).col(i).normalize();
-    //prepareColumns((*data_), (*data_), vigra::linalg::DataPreparationGoals(vigra::linalg::UnitNorm));
+    (*data_).setRandom();   
+    normalize();
 }
 
 void Dictionary::initFromData(Samples& data) {

@@ -30,6 +30,8 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
     // Input checking
     // Set default values.
 
+    //y.normalize();
+
     MatrixXf X = D.getData();
     // LARS variable setup
     // [n p] = size(X);
@@ -42,7 +44,7 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
     int maxk = 8*nvars; // Maximum number of iterations
 
     MatrixXf beta;
-    float stop = -2;
+    float stop = -10;
     if (stop == 0)
       beta = MatrixXf::Zero(2*nvars, p);
     else if (stop < 0)
@@ -76,52 +78,85 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
       (c.cwise()*I).cwise().abs().maxCoeff(&j);
       float C = abs(c(j));
 
-      //j = I[j]; // j = I(j);
 
       if (!lassocond) { // if a variable has been dropped, do one iteration with this configuration (don't add new one right away)
-        //  A = [A j];
         A(j) = 1.0;
-
-        // I(I == j) = [];
         I(j) = 0.0;
-
         vars++;
       }
 
        // s = sign(c(A)); // get the signs of the correlations
-       VectorXf s = VectorXf::Zero(c.rows());
+       VectorXf s = VectorXf::Zero(vars);
        VectorXf tmp = c.cwise()*A;
+
+       int ii=0;
        for(int i=0; i<tmp.rows(); i++) {
-           if(tmp(i)>0.0) s(i) = 1;
-           else if (tmp(i)<0.0) s(i) = -1;
-           else s(i) = 0;
+           if(A(i)==1.0) {
+               if(tmp(i)>0.0) s(ii) = 1.0;
+               else if (tmp(i)<0.0) s(ii) = -1.0;
+               else s(ii) = 0.0;
+               ii++;
+           }
        }
 
 
 
-      MatrixXf S = s*MatrixXf::Ones(1, c.rows()); //vars);
-      MatrixXf tmp2 = Gram.cwise()*(A*A.transpose());
-      VectorXf GA1 = ((tmp2.cwise()*S.transpose()).cwise()*S).inverse()*MatrixXf::Ones(c.rows(),1);
-      float AA = 1.0/(float)sqrt((double)GA1.sum());
-      MatrixXf w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
-      std::cout << (tmp2.cwise()*S.transpose()).cwise()*S << std::endl;
+//      MatrixXf S = s*MatrixXf::Ones(1, c.rows()); //vars);
+      MatrixXf Gsub(vars,vars);
 
-      // u = X(:,A)*w; // equiangular direction (unit vector)
-//      std::cout << w.rows() << " " << w.cols() << " " << GA1.cols() << " " <<  GA1.cols() << std::endl;
-      MatrixXf u = X.cwise()*(VectorXf::Ones(X.rows())*A.transpose())*w; // equiangular direction (unit vector)
-//      std::cout << "U:" << u << std::endl;
-      float gamma = 1.0;
+      ii=0;
+      int jj;
+      for(int i=0; i<A.size(); i++) {
+          if(A(i)==1.0) {
+              jj=0;
+              for(int k=0; k<A.size(); k++) {
+                  if(A(k)==1.0) {
+//                    std::cout << "schreib" << ii << " " << jj << "\n" << Gsub << std::endl;
+                    Gsub(ii,jj) = Gram(i,k);
+                    jj++;
+                  }
+              }
+              ii++;
+          }
+      }
+
+      VectorXf GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXf::Ones(vars);
+      float AA = 1.0/(float)sqrt((float)GA1.sum());
+      MatrixXf w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
+      std::cout << "AA  " << AA << std::endl; //(tmp2.cwise()*(S*S.transpose())) << std::endl;
+
+      MatrixXf Xsub(n,vars);
+      ii=0;
+      for(int i=0; i<A.size(); i++) {
+          if(A(i)==1.0) {
+            Xsub.col(ii) = X.col(i);
+            ii++;
+          }
+      }
+
+      MatrixXf u = Xsub*w; // equiangular direction (unit vector)
+
+      float gamma = 0.2;
       if (vars == nvars) { // if all variables active, go all the way to the lsq solution
         gamma = C/AA;
       } else {
-//        a = X.transpose()*u; // correlation between each variable and eqiangular vector
+        MatrixXf a = Xsub.transpose()*u; // correlation between each variable and eqiangular vector
 ////        temp = [(C - c(I))./(AA - a(I)); (C + c(I))./(AA + a(I))];
 ////        gamma = min([temp(temp > 0); C/AA]);
       }
 
-//      // LASSO modification
+      VectorXf betasub(vars);
+      ii=0;
+      for(int i=0; i<beta.cols(); i++) {
+          if(A(i)==1.0) {
+            betasub(ii) = beta(k,i);
+            ii++;
+          }
+      }
+
+      // LASSO modification
       lassocond = false;
-      VectorXf temp = ( -1.0*(beta.row(k).cwise()*A.transpose()) ).cwise()/w.transpose();
+      VectorXf temp = -1.0*(betasub.cwise()/w);
       float gamma_tilde = gamma;
 ////      [gamma_tilde] = min([temp(temp > 0) gamma]);
 ////      j = find(temp == gamma_tilde);
@@ -132,30 +167,36 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
 
 
       mu += gamma*u;
+
+// TODO: RESIZE
 //      if (beta.cols() < k+1) {
 //        beta = [beta; zeros(size(beta,1), p)];
 //      }
-      beta.row(k+1) = beta.row(k) + (gamma*w.transpose());
-//      std::cout << w.transpose() << std::endl;
+
+      ii=0;
+      for(int i=0; i<beta.cols(); i++) {
+          if(A(i)==1.0) {
+            beta(k+1,i) = beta(k,i) + gamma*w(ii);
+            ii++;
+          }
+      }
 
 //      // Early stopping at specified bound on L1 norm of beta
-      if (stop > 0) {
-        float t2 = beta.row(k+1).cwise().abs().sum();
-        if (t2 >= stop) {
-          float t1 = beta.row(k).cwise().abs().sum();
-          float s = (stop - t1)/(t2 - t1); // interpolation factor 0 < s < 1
-          beta.row(k+1) = beta.row(k) + s*(beta.row(k+1) - beta.row(k));
-          stopcond = true;
-        }
-      }
+//      if (stop > 0) {
+//        float t2 = beta.row(k+1).cwise().abs().sum();
+//        if (t2 >= stop) {
+//          float t1 = beta.row(k).cwise().abs().sum();
+//          float s = (stop - t1)/(t2 - t1); // interpolation factor 0 < s < 1
+//          beta.row(k+1) = beta.row(k) + s*(beta.row(k+1) - beta.row(k));
+//          stopcond = true;
+//        }
+//      }
 
 ////      // If LASSO condition satisfied, drop variable from active set
       if (lassocond) {
-        // I = [I A(j)];
         I(j) = 1.0;
-        // A(j) = [];
         A(j) = 0.0;
-        vars--; //= vars - 1;
+        vars--;
       }
 
       // Early stopping at specified number of variables
@@ -164,7 +205,6 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& y, Dictionary& D) // s D
 
 
     } // while
-
 ////    // trim beta
 ////    if size(beta,1) > k+1
 ////      beta(k+2:end, :) = [];

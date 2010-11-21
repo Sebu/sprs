@@ -28,6 +28,7 @@ public:
     void initRandom();
     void initFromData(Samples& data);
 
+    void normalize();
 
     void save(const char* filename);
     void load(const char* filename);
