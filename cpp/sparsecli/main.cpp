@@ -73,6 +73,8 @@ int main(int argc, char *argv[])
     Dictionary dict(winSize, channels, dictSize);
     TrainerMairal trainer;
 
+//    dict.load( (inputFile + ".dict").c_str() );
+
 //    dict.initRandom();
 //    samples.loadImage(inputFilename, winSize, channels, 2);
 //    trainer.train(samples, dict,  0, 10000);
@@ -89,7 +91,7 @@ int main(int argc, char *argv[])
         if(!running) break;
         std::cout << nameStr << std::endl;
         samples.loadImage(nameStr, winSize, channels);
-        if(!counter) dict.initRandom(); //dict.load( (inputFile + ".dict").c_str() );
+        if(!counter) { dict.initRandom(); dict.normalize(); } //dict.load( (inputFile + ".dict").c_str() );
 //        if(!counter) dict.initFromData(samples);
         std::cout << "train set fill complete " << std::endl;
         if(!running) break;
@@ -100,8 +102,8 @@ int main(int argc, char *argv[])
     ifs.close();
 
     dict.debugSaveImage( (inputFile + ".dict.png").c_str() );
-    trainer.save((inputFile + ".tmp").c_str() );
-//    dict.save( (inputFile + ".dict").c_str() );
+//    trainer.save((inputFile + ".tmp").c_str() );
+    dict.save( (inputFile + ".dict").c_str() );
 
     // sample image
     std::string outputFilename = testFile + ".recon.jpg";

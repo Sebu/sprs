@@ -1,7 +1,9 @@
 
 
 #include <algorithm>
+#include <float.h>
 #include <eigen2/Eigen/LU>
+#include <eigen2/Eigen/Array>
 #include "coderlasso.h"
 #include "dictionary.h"
 #include "vigra_ext.h"
@@ -51,7 +53,7 @@ Eigen::SparseMatrix<float> CoderLasso::encode(MatrixXf& yM, Dictionary& D) // s 
     int k[L];
     float stop = -10;
 
-#pragma omp parallel for
+//#pragma omp parallel for
 for (int signum=0; signum<L; ++signum) {
 
     MatrixXf y = yM.col(signum);
@@ -62,7 +64,7 @@ for (int signum=0; signum<L; ++signum) {
     if (stop == 0)
       beta[signum] = MatrixXf::Zero(2*nvars, p);
     else if (stop < 0)
-      beta[signum] = MatrixXf::Zero(2*round(-stop), p);
+      beta[signum] = MatrixXf::Zero(10*round(-stop), p);
     else
       beta[signum] = MatrixXf::Zero(100, p);
 
@@ -78,14 +80,13 @@ for (int signum=0; signum<L; ++signum) {
     k[signum] = 0;  // Iteration count
 
     // LARS main loop
-    // omp it :)
+    int j = 0;
     while ((vars < nvars) && (!stopcond) && (k[signum] < maxk)) {
       k[signum]++;
 
       VectorXf c = X.transpose()*(y - mu);
 
       //  [C j] = max(c(I).cwise().abs());
-      int j = 0;
       (c.cwise()*I).cwise().abs().maxCoeff(&j);
       float C = abs(c(j));
 
@@ -120,7 +121,6 @@ for (int signum=0; signum<L; ++signum) {
               jj=0;
               for(int k=0; k<A.size(); k++) {
                   if(A(k)==1.0) {
-//                    std::cout << "schreib" << ii << " " << jj << "\n" << Gsub << std::endl;
                     Gsub(ii,jj) = Gram(i,k);
                     jj++;
                   }
@@ -134,26 +134,34 @@ for (int signum=0; signum<L; ++signum) {
       MatrixXf w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
 //      std::cout << "AA  " << AA << std::endl; //(tmp2.cwise()*(S*S.transpose())) << std::endl;
 
-      MatrixXf Xsub(n,vars);
-      ii=0;
-      for(int i=0; i<A.size(); i++) {
-          if(A(i)==1.0) {
-            Xsub.col(ii) = X.col(i);
-            ii++;
-          }
-      }
+      MatrixXf Xsub = subselect(X,A,vars);
+//      ii=0;
+//      for(int i=0; i<A.size(); i++) {
+//          if(A(i)==1.0) {
+//            Xsub.col(ii) = X.col(i);
+//            ii++;
+//          }
+//      }
+
 
       MatrixXf u = Xsub*w; // equiangular direction (unit vector)
 
-      float gamma = 0.2;
-      if (vars == nvars) { // if all variables active, go all the way to the lsq solution
-        gamma = C/AA;
-      } else {
-        MatrixXf a = Xsub.transpose()*u; // correlation between each variable and eqiangular vector
-////        temp = [(C - c(I))./(AA - a(I)); (C + c(I))./(AA + a(I))];
-////        gamma = min([temp(temp > 0); C/AA]);
-      }
+      float gamma = C/AA; // if all variables active, go all the way to the lsq solution
+      if (vars != nvars) {
+        VectorXf a = X.transpose()*u;
+        float erg3 = FLT_MAX;
+        for(int i=0; i<I.size(); i++) {
+            if(I(i)==1.0) {
+                float erg1 = (C-c(i))/(AA-a(i));
+                float erg2 = (C+c(i))/(AA+a(i));
+                if(erg1>0.0f) erg3=std::min(erg1,erg3);
+                if(erg2>0.0f) erg3=std::min(erg2,erg3);
+            }
+        }
+        gamma = std::min(erg3,gamma);
 
+      }
+        //std::cout << "wurst" << std::endl;
       VectorXf betasub(vars);
       ii=0;
       for(int i=0; i<beta[signum].cols(); i++) {
@@ -166,14 +174,24 @@ for (int signum=0; signum<L; ++signum) {
       // LASSO modification
       lassocond = false;
       VectorXf temp = -1.0*(betasub.cwise()/w);
-      float gamma_tilde = gamma;
-////      [gamma_tilde] = min([temp(temp > 0) gamma]);
-////      j = find(temp == gamma_tilde);
-      if (gamma_tilde < gamma) {
-        gamma = gamma_tilde;
+      float erg = FLT_MAX;
+      for(int i=0; i<temp.size(); i++) {
+          if(temp(i)>0.0) {
+              if(temp(i)<erg) erg=temp(i);
+          }
+      }
+      if (erg < gamma) {
+        gamma = erg;
+        ii=0;
+        for(int i=0; i<A.size(); i++)  {
+            if(A(i)==1.0) {
+              if(temp(ii)==gamma) j=i;
+              ii++;
+            }
+        }
         lassocond = true;
       }
-
+        //std::cout << "wurst2" << std::endl;
 
       mu += gamma*u;
 
@@ -203,6 +221,7 @@ for (int signum=0; signum<L; ++signum) {
 
 ////      // If LASSO condition satisfied, drop variable from active set
       if (lassocond) {
+
         I(j) = 1.0;
         A(j) = 0.0;
         vars--;

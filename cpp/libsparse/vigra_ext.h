@@ -89,6 +89,19 @@ USING_PART_OF_NAMESPACE_EIGEN
 //            m(i,j) = rand();
 //}
 
+template<typename T1,typename T2>
+MatrixXf subselect(MatrixBase<T1>& M, MatrixBase<T2>& select, int vars) {
+    MatrixXf sub(M.rows(),vars);
+    int ii=0;
+    for(int i=0; i<select.size(); i++) {
+        if(select(i)==1.0) {
+          sub.col(ii) = M.col(i);
+          ii++;
+        }
+    }
+    return sub;
+}
+
 int maxabs(VectorXf& c);
 void vec_assign(MatrixXf& y, MatrixXf& x, VectorXi& ind, int k, int start);
 ////void vec_assign(vigra::Matrix<double>& y, vigra::Matrix<double>& x, vigra::Matrix<int>& ind, int k, int start);

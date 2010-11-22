@@ -69,7 +69,7 @@ void TrainerMairal::update(MatrixXf& A, MatrixXf& B, Dictionary& D) {
 
 void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int batch) {
 
-    CoderLasso coder;
+    CoderOMP coder;
 
     std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
@@ -95,7 +95,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         // sparse code sample
         MatrixXf sample = samples.getData().block(0,start,D.getSignalSize(),end-start);
-        D.normalize();
+
         Eigen::SparseMatrix<float> a = coder.encode(sample, D);
 
         std::cout << "a*a.transpose();" << std::endl;
