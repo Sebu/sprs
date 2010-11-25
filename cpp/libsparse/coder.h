@@ -14,7 +14,7 @@ private:
 
 public:
     Coder();
-    virtual Eigen::SparseMatrix<float> encode(MatrixXf&, Dictionary&) = 0;
+    virtual Eigen::SparseMatrix<double> encode(MatrixXd&, Dictionary&) = 0;
 //    virtual vigra::Matrix<double> decode(vigra::Matrix<double>&, Dictionary&) = 0;
 };
 

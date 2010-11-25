@@ -8,7 +8,7 @@ CoderOMP::CoderOMP()
 {
 }
 
-Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
+Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
 {
     int signum;
 
@@ -20,7 +20,7 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
     int n = X.rows();
     int L = X.cols();
 
-    MatrixXf DtX, XtX, G;
+    MatrixXd DtX, XtX, G;
     /* precalculate for speed */
 
     #pragma omp parallel sections
@@ -35,7 +35,7 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
 
     std::cout << "precalc done" << std::endl;
 
-    Eigen::SparseMatrix<float> GammaVector[L];
+    Eigen::SparseMatrix<double> GammaVector[L];
 
     /* current number of columns in Dsub / Gsub / Lchol */
     int allocated_cols = erroromp ? (int)(ceil(sqrt((double)n)/2.0) + 1.01) : T;
@@ -48,17 +48,17 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
         double eps2, resnorm, delta, deltaprev;
 
         /*** helper arrays ***/
-        VectorXf alpha;             /* contains D'*residual */
+        VectorXd alpha;             /* contains D'*residual */
         VectorXi ind(n);            /* indices of selected atoms */
         VectorXi selected_atoms(m); /* binary array with 1's for selected atoms */
-        VectorXf c(allocated_cols);           /* orthogonal projection result */
+        VectorXd c(allocated_cols);           /* orthogonal projection result */
         /* Cholesky decomposition of D_I'*D_I */
-        MatrixXf Lchol(n,allocated_cols);
+        MatrixXd Lchol(n,allocated_cols);
         /* temporary vectors for various computations */
-        MatrixXf tempvec1(m,1);
-        MatrixXf tempvec2(m,1);
+        MatrixXd tempvec1(m,1);
+        MatrixXd tempvec2(m,1);
         /* matrix containing G(:,ind) - the columns of G corresponding to the selected atoms, in order of selection */
-        MatrixXf Gsub(m,allocated_cols);
+        MatrixXd Gsub(m,allocated_cols);
 
         tempvec1.setZero(); //init(0.0);
         tempvec2.setZero();
@@ -189,11 +189,11 @@ Eigen::SparseMatrix<float> CoderOMP::encode(MatrixXf& X, Dictionary& D)
     }
 
     /*** allocate output matrix ***/
-    Eigen::SparseMatrix<float> Gamma(m,L);
+    Eigen::SparseMatrix<double> Gamma(m,L);
     Gamma.startFill();
     for (signum=0; signum<L; ++signum) {
       for (int k=0; k<GammaVector[signum].outerSize(); ++k)
-        for (Eigen::SparseMatrix<float>::InnerIterator it(GammaVector[signum],k); it; ++it)
+        for (Eigen::SparseMatrix<double>::InnerIterator it(GammaVector[signum],k); it; ++it)
         {
           Gamma.fillrand(it.row(),signum) = it.value();
         }

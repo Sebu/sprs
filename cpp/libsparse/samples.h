@@ -13,14 +13,14 @@ class Dictionary;
 class LIBSPARSESHARED_EXPORT Samples
 {
 private:
-   MatrixXf* data_;
+   MatrixXd* data_;
 public:
 //   vigra::Matrix<double>* scaling_;
    int imageRows_, imageCols_;
    int rows_, cols_;
    int winSize_, channels_;
    Samples();
-   MatrixXf & getData();
+   MatrixXd & getData();
    bool loadImage(std::string& fileName, int winSize, int channels, int step=1);
    void saveImage(std::string& fileName, Dictionary& dict);
 };

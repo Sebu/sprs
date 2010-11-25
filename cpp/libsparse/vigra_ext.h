@@ -4,6 +4,7 @@
 #include "regression.hxx"
 // #include <vigra/random.hxx>
 #include <iostream>
+#include <vector>
 
 #include <eigen2/Eigen/Core>
 USING_PART_OF_NAMESPACE_EIGEN
@@ -89,21 +90,24 @@ USING_PART_OF_NAMESPACE_EIGEN
 //            m(i,j) = rand();
 //}
 
-template<typename T1,typename T2>
-MatrixXf subselect(MatrixBase<T1>& M, MatrixBase<T2>& select, int vars) {
-    MatrixXf sub(M.rows(),vars);
-    int ii=0;
+template<typename T1>
+MatrixXd subselect(MatrixBase<T1>& M, std::vector<int>& select) {
+    MatrixXd sub(M.rows(),select.size());
     for(int i=0; i<select.size(); i++) {
-        if(select(i)==1.0) {
-          sub.col(ii) = M.col(i);
-          ii++;
-        }
+       sub.col(i) = M.col(select[i]);
     }
     return sub;
 }
 
-int maxabs(VectorXf& c);
-void vec_assign(MatrixXf& y, MatrixXf& x, VectorXi& ind, int k, int start);
+template<typename T1>
+void center(MatrixBase<T1>& M) {
+    for(int i=0; i<M.cols();i++)
+        M.col(i).cwise() -=M.col(i).sum()/M.rows();
+}
+
+
+int maxabs(VectorXd& c);
+void vec_assign(MatrixXd& y, MatrixXd& x, VectorXi& ind, int k, int start);
 ////void vec_assign(vigra::Matrix<double>& y, vigra::Matrix<double>& x, vigra::Matrix<int>& ind, int k, int start);
 //vigra::Matrix<double> dense_vector(vigra::ArrayVector<int>  active_set, vigra::Matrix<double>  sparse_vector, int size);
 //vigra::Matrix<double> lasso(vigra::Matrix<double>& x, vigra::Matrix<double>& D);

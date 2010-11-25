@@ -6,26 +6,28 @@
 #include <opencv/highgui.h>
 #include <iostream>
 #include <fstream>
+#include "vigra_ext.h"
 
 Samples::Samples() : data_(0) //, scaling_(0)
 {
 }
 
-MatrixXf & Samples::getData() {
+MatrixXd & Samples::getData() {
     return *data_;
 }
 
 void Samples::saveImage(std::string& fileName, Dictionary& dict) {
 
-    float quant = 1.0;
+    double quant = 1.0;
     CoderLasso coder;
     std::cout << "restore image" << std::endl;
-    Eigen::SparseMatrix<float> A = coder.encode((*data_), dict);
+    //center((*data_));
+    Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
 
     int count=0;
     std::ofstream ofs( (fileName + ".sp").c_str(), std::ios::out | std::ios::binary );
     for (int k=0; k<A.outerSize(); ++k)
-      for (Eigen::SparseMatrix<float>::InnerIterator it(A,k); it; ++it) {
+      for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
           short data=0;
           data = (short)round(it.row());
           ofs.write((char*)&data,sizeof(data));
@@ -37,7 +39,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict) {
     ofs.close();
 
     std::cout << count << std::endl;
-    MatrixXf recon_vigra = dict.getData()*A;
+    MatrixXd recon_vigra = dict.getData()*A;
 
 
     std::cout << "reorder image" << std::endl;
@@ -91,7 +93,7 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     cols_ = ceil((float)imageRows_/(float)step) * ceil((float)imageCols_/(float)step);
     std::cout << cols_ << " " << imageRows_ <<  " " << step <<std::endl;
     if(data_) delete data_;
-    data_ = new MatrixXf(rows_, cols_);
+    data_ = new MatrixXd(rows_, cols_);
 
     std::vector<cv::Mat> planes;
     split(inputImage, planes);

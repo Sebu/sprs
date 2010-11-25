@@ -11,7 +11,7 @@
 Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size*channels),
     elementCount_(elementCount), channels_(channels), size_(size)
 {
-    data_ = new MatrixXf(signalSize_, elementCount_);
+    data_ = new MatrixXd(signalSize_, elementCount_);
 }
 
 
@@ -42,7 +42,10 @@ void Dictionary::load(const char* fileName) {
 
 void Dictionary::normalize() {
     for(int i=0; i<elementCount_; i++) {
-        (*data_).col(i).normalize();
+        MatrixXd c = (*data_).col(i);
+        c.normalize();
+        center(c);
+        (*data_).col(i) = c;
     }
 }
 
@@ -67,7 +70,7 @@ void Dictionary::initFromData(Samples& data) {
 
 
 
-MatrixXf & Dictionary::getData() {
+MatrixXd & Dictionary::getData() {
     return *data_;
 }
 
@@ -76,7 +79,7 @@ void Dictionary::debugSaveImage(const char* filename) {
 
     int tmp = ceil(sqrt(elementCount_));
 
-    MatrixXf D = (*data_); //(signalSize_, elementCount_);
+    MatrixXd D = (*data_); //(signalSize_, elementCount_);
 //    vigra::linalg::prepareColumns((*data_), D, vigra::linalg::DataPreparationGoals(vigra::linalg::UnitNorm));
 
     cv::Mat outputImage(size_*tmp, size_*tmp, CV_8UC(channels_));
@@ -84,10 +87,10 @@ void Dictionary::debugSaveImage(const char* filename) {
         for(int i=0; i<size_*tmp; i+=size_) {
             int index = ceil(j/size_)*tmp + ceil(i/size_);
             if(index>=D.cols()) break;
-            MatrixXf d = D.col(index);
+            MatrixXd d = D.col(index);
             cv::Mat recon_cv(1, signalSize_, CV_8U);
 
-            double min=FLT_MAX, max=FLT_MIN;
+            double min=DBL_MAX, max=DBL_MIN;
             for(int ii=0; ii<signalSize_; ii++) {
                 double val = d(ii,0);
                  if(val<min) min = val;

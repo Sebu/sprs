@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         if(!running) break;
         std::cout << nameStr << std::endl;
         samples.loadImage(nameStr, winSize, channels);
-        if(!counter) { dict.initRandom(); dict.normalize(); } //dict.load( (inputFile + ".dict").c_str() );
+        if(!counter) { dict.initRandom(); } //dict.load( (inputFile + ".dict").c_str() );
 //        if(!counter) dict.initFromData(samples);
         std::cout << "train set fill complete " << std::endl;
         if(!running) break;
@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
     // sample image
     std::string outputFilename = testFile + ".recon.jpg";
     Samples samples2;
+//    dict.normalize();
     samples2.loadImage(testFile, winSize, channels, winSize);
     samples2.saveImage(outputFilename, dict );
 

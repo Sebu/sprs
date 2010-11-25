@@ -1,6 +1,6 @@
 #include "vigra_ext.h"
 
-int maxabs(VectorXf& c)
+int maxabs(VectorXd& c)
 {
   int maxid=1, k;
   int m = c.rows();
@@ -17,7 +17,7 @@ int maxabs(VectorXf& c)
 }
 
 
-void vec_assign(MatrixXf& y, MatrixXf& x, VectorXi& ind, int k, int start)
+void vec_assign(MatrixXd& y, MatrixXd& x, VectorXi& ind, int k, int start)
 {
   int i;
   for (i=0; i<k; ++i)

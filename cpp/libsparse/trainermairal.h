@@ -13,12 +13,12 @@ USING_PART_OF_NAMESPACE_EIGEN
 class LIBSPARSESHARED_EXPORT TrainerMairal : public Trainer
 {
 private:
-    MatrixXf* A_;
-    MatrixXf* B_;
+    MatrixXd* A_;
+    MatrixXd* B_;
 public:
     TrainerMairal();
     void train(Samples& samples, Dictionary& D, int iterations, int batch=1000);
-    void update(MatrixXf& A, MatrixXf& B, Dictionary& D);
+    void update(MatrixXd& A, MatrixXd& B, Dictionary& D);
     void hibernate(); // save A,B matrix
     void save(const char* filename);
     void load(const char* filename);

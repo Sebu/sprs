@@ -13,14 +13,14 @@ USING_PART_OF_NAMESPACE_EIGEN
 
 class LIBSPARSESHARED_EXPORT Dictionary {
 private:
-    MatrixXf* data_;
+    MatrixXd* data_;
     int signalSize_;
     int elementCount_;
     int channels_;
     int size_;
 public:
     Dictionary(int, int, int);
-    MatrixXf & getData();
+    MatrixXd & getData();
     int getSignalSize() {return signalSize_; }
     int getElementCount() {return elementCount_; }
     int getChannels() {return channels_; }

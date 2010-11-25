@@ -8,7 +8,7 @@ class LIBSPARSESHARED_EXPORT CoderLasso : public Coder
 {
 public:
     CoderLasso();
-    Eigen::SparseMatrix<float> encode(MatrixXf&, Dictionary&);
+    Eigen::SparseMatrix<double> encode(MatrixXd&, Dictionary&);
 };
 
 #endif // CODERLASSO_H
