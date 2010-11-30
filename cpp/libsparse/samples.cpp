@@ -119,9 +119,5 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
             index++;
         }
     }
-    // normalize the input
-//    vigra::Matrix<double> offset(1,cols_);
-//    scaling_ = new vigra::Matrix<double>(1,cols_);
-//    prepareColumns((*data_), (*data_), offset, (*scaling_), vigra::linalg::DataPreparationGoals(vigra::linalg::UnitNorm));
     return true;
 }

@@ -1,0 +1,47 @@
+%23.06.98
+%
+%Generelles zu den aux-Files und contents:
+%ein addcontentsline-Befehl schreibt eine Zeile in das aux-File,
+%welches am Ende des Latex-Laufes abgearbeitet wird und dann die
+%einzelnen Files, welche als 1.Argument fuer addcontentsline gegeben
+%wurden, erzeugt. Allerdings wird es nur ausgef"uhrt, wenn der
+%starttoc-Befehl gegeben wurde (aber am Ende des Laufes).
+%Der starttoc-Befehl wertet ausserdem das entsprechende File (toc, lof,..)
+%aus und benutzt dazu ein definiertes Makro, welches die Form
+%'l@<zweites Argument des addcontentsline-Befehls>' hat.
+
+\newcounter{todocounter}
+
+%Hier erfolgt die Definition des Standard-Todo-Listen-names.
+\newcommand{\listoftodoname}{Todo's}
+
+\newcommand{\Todo}[1]{%
+  \def\@tempc{\arabic{todocounter}}%
+  (\textbf{Todo:} \marginpar{Todo}\emph{#1})%
+  \addcontentsline{lod}
+                  {todo}
+                  {\protect \numberline{\ref{todo_label_\@tempc}}#1}%
+  \label{todo_label_\@tempc}%
+  \stepcounter{todocounter}%
+}
+
+%zunaechst wird getestet, ob chapters verfuegbar sind, dann wird ein solches
+%eingef"uhrt, sonst eine section
+%
+%mittels @namedef wird fuer starttoc eine Bezeichner definiert, der fuer
+%das Auslesen des Aux-files verwendet wird. Wird der Bezeichner hinter dem
+% '@' angetroffen (bei \addcontentsline das zweite Argument), so wird das
+%dahinter definierte genutzt. das zweite Argument bei \@dottedtocline
+%scheint den Abstand vor, das dritte den nach einer Kapitelzahl/Numerierung
+%anzugeben. Da die Todos nicht numeriert werden, ist es 0.
+\newcommand{\listoftodos}{%
+  \@ifundefined{chapter}{\def\@tempa{\section*}}%
+                        {\def\@tempa{\chapter*}}%
+  \@tempa{\listoftodoname}%
+  \@namedef{l@todo}{\@dottedtocline{1}{0em}{3.5em}}%
+  \@starttoc{lod}%
+}
+
+\newcommand{\asd}{%
+  \@ifstar{Sogar ein Stern ist vorhanden.}%
+          {Nein, es gibt keinen Stern}}

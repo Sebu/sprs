@@ -1,6 +1,8 @@
 \chapter{Overview}
 
+
 \section{Problem}
+\subsection{dictionaries and application}
 Signal representation via linear combination of signal vectors from a dictionary.
 Coding the signal. Design of the dictionary.
 
@@ -8,6 +10,7 @@ Coding the signal. Design of the dictionary.
 approximate signals via combination of limited signal samples
 Why?
 signal analysis, compression, denoise etc.
+
 \subsection{discrete signals}
 Rather then using continues signal we concentrate on discret signal representation.
 Continues signals would be better for .... . But the final signal (image etc.) will be discret anyway becaus of the 
@@ -23,12 +26,12 @@ In 80s the search for better transformation basis became a major role in signal 
 In the last 15 years 
 
 the idea came up to interpret the basis transforms as sparse linear combination of dictionary atoms.
-see \cite{} and \cite{}
+see \cite{Olshausen Field 1997} and \cite{}
 The benefit from this approach/direction was that you could decouple signal coding and dictionary design.
 Seperating the problem into two disctinct problems made the search for task specific and .... more flexible \cite{?}.
 
 
-\subsection{sparse codes/coding }
+\subsection{sparse codes/coding}
 Sparse coding is the 
 \[
 \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
@@ -100,7 +103,7 @@ the most common algorithms are the following ones.
 \subsubsection{wavelets}
 
 \subsection{learned over-complete}
-recent research has shown that learnd dictionaries show better compression quality than small analytic dictionaries \cite{Aharon2006KSVD} \cite{Chen1998Atomic} 
+recent research has shown that learnd dictionaries show better compression quality than small analytic dictionaries \cite{Aharon2006} \cite{Chen1998} 
 
 
 In the last decade several learning algorithms have been proposed which try to a universal basis that 
@@ -119,21 +122,23 @@ It has been shown that learning basis specicial for certain tasks can lead to th
 Based on this discovery we will concentrate on a specific class. <> Join the basis for natural images and cartoon/line images.
 We will also concentrate on real pratical data. This means typically 3-channel data of 1+ megapixel images found on image hosting services like flickr, twitpic, etc.
 
+Current research is primary concentrating on other tasks. 
+Like ... related work :)
+
 \section{Related work}
 \subsection{denoising}
 Remove noisy signal from image
-
 \subsection{in-paiting}
 fill missing parts by removing row from the dictionary
-
 \subsection{better structure}
-
 \subsubsection{multi-scale}
 \subsubsection{multi-channel}
-\subsubsection{hirarchy}
+\subsubsection{double sparsity}
+\subsubsection{hirarchy/structure}
+Adding hirarchy/structure to dictionaries can lead to faster coding or use in structure analysis ( text documents )
+\cite{Jenatton2010}
 \subsubsection{training with a neural network}
-Learning Multiple Layers of Features from Tiny Images, Alex Krizhevsky, 2009.\\
-\url{http://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf}
+Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
 
 
 \section{Image database/Training data}
@@ -143,9 +148,11 @@ signal that gets denoised or restored from inpaiting.
 If the task gets bigger it sounds logical to increase the size of training data and take a bigger veriety of signals to learn from.
 
 
-\section{Goal}
+\section{Goal (of this thesis)}
 Evaluate the quality and size of learned big redundant dictionaries for 
-optimal sparse coding of large image databases.
+optimal sparse coding of large image databases.!!!!!
+
+Obeservation of problems (encoding time, quality benefit, etc.)
 
 what about a universal dictionary for combination natural images and line graphics?
  
