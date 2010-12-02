@@ -1,20 +1,9 @@
 \chapter{Overview}
 
-
-\section{Problem}
+\section{Problem/Idea}
 \subsection{dictionaries and application}
-Signal representation via linear combination of signal vectors from a dictionary.
-Coding the signal. Design of the dictionary.
-
-\section{signal representation}
-approximate signals via combination of limited signal samples
-Why?
-signal analysis, compression, denoise etc.
-
-\subsection{discrete signals}
-Rather then using continues signal we concentrate on discret signal representation.
-Continues signals would be better for .... . But the final signal (image etc.) will be discret anyway becaus of the 
-digital representation. Besides the problem of coding becomes different in the continues space??
+Signal representation via linear combination of few signal vectors from a dictionary.
+Benefits of dictionaries
 
 \subsection{basis transformation}
 The early approaches in the 60s used combinations of cosine transformations. Coming from a continues representation this makes 
@@ -22,16 +11,33 @@ actually sense. The signal could be represented via ....
 
 In 80s the search for better transformation basis became a major role in signal representation. \cite{}
 
-\subsubsection{spliting the problem}
+\subsection{splitting the problem}
 In the last 15 years 
 
 the idea came up to interpret the basis transforms as sparse linear combination of dictionary atoms.
 see \cite{Olshausen Field 1997} and \cite{}
 The benefit from this approach/direction was that you could decouple signal coding and dictionary design.
-Seperating the problem into two disctinct problems made the search for task specific and .... more flexible \cite{?}.
+Separating the problem into two distinct problems made the search for task specific and .... more flexible \cite{?}.
+
+Two separate tasks.
+Coding the signal. Design of the dictionary.
 
 
-\subsection{sparse codes/coding}
+\section{signal representation}
+approximate signals via combination of limited signal samples
+Why?
+signal analysis, compression, de-noise etc.
+
+\subsection{discrete signals}
+Rather then using continues signal we concentrate on discrete signal representation.
+Continues signals would be better for .... . But the final signal (image etc.) will be discrete anyway becaus of the digital representation. Besides the problem of coding becomes different in the continues space??
+
+
+\section{sparse codes/coding}
+a linear combination of a “few” non orthonormal atoms from
+D that is “close” to the signal X
+try to keep coefficient vector sparse
+usage: reduction, classification, in-painting,  super-resolution
 Sparse coding is the 
 \[
 \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
@@ -60,7 +66,7 @@ Solution:
 use greedy approach or make problem convex (e.g. use ||a||1)
 the most common algorithms are the following ones.
 
-\subsubsection{matching pursuit}
+\subsection{matching pursuit}
 \begin{algorithmic}
 \IF {$i\geq maxval$} 
         \STATE $i\gets 0$
@@ -71,7 +77,7 @@ the most common algorithms are the following ones.
 \ENDIF 
 \end{algorithmic}
 
-\subsubsection{orthogonal matching pursuit}
+\subsection{orthogonal matching pursuit}
 \label{sec:omp}
 \begin{algorithm}
 \caption{Wurst}
@@ -85,7 +91,14 @@ the most common algorithms are the following ones.
 \ENDIF 
 \end{algorithmic}
 
-\subsubsection{LARS-Lasso}
+\subsection{LARS-Lasso}
+The LASSO (least absolute shrinkage and selection operator) is a algorithm to find a regularized version of a least squares solution.
+The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small.
+
+The LARS algorithm ... \cite{least angle regression}
+The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression
+as described in \cite{Least Angle Regression}. It is a modified version of the LARS where ....
+
 \begin{algorithmic}
 \IF {$i\geq maxval$} 
         \STATE $i\gets 0$
@@ -99,7 +112,7 @@ the most common algorithms are the following ones.
 
 \section{Dictionaries/representation data}
 \subsection{analytical}
-\subsubsection{consine}
+\subsubsection{cosine}
 \subsubsection{wavelets}
 
 \subsection{learned over-complete}
@@ -118,22 +131,35 @@ Mairal2010
 Mairal .... \cite{Mairal2010}
 
 \section{Learning for the Task}
-It has been shown that learning basis specicial for certain tasks can lead to the best results\cite{}.  <>
+It has been shown that learning basis specialy for certain tasks can lead to the best results\cite{}.  <>
 Based on this discovery we will concentrate on a specific class. <> Join the basis for natural images and cartoon/line images.
-We will also concentrate on real pratical data. This means typically 3-channel data of 1+ megapixel images found on image hosting services like flickr, twitpic, etc.
+We will also concentrate on real practical data. This means typically 3-channel data of 1+ megapixels images found on image hosting services like flickr, twitpic, etc.
 
 Current research is primary concentrating on other tasks. 
 Like ... related work :)
 
 \section{Related work}
-\subsection{denoising}
+\subsection{application}
+\subsubsection{de-noising}
 Remove noisy signal from image
-\subsection{in-paiting}
-fill missing parts by removing row from the dictionary
-\subsection{better structure}
-\subsubsection{multi-scale}
-\subsubsection{multi-channel}
-\subsubsection{double sparsity}
+\subsubsection{in-painting}
+fill missing parts by removing rows from the dictionary
+Train with the original image
+
+\subsection{multi-scale}
+\cite{saprio}
+\subsection{multi-channel}
+coding every channel separate or combine them
+into single signal. can lead to color bleeding \cite{mairal08sparse}
+fortunately this problem vanishes with big dictionaries and large training sets. \cite{mairal08sparse}
+
+\subsection{double sparsity}
+Sparse code dictionaries. 
+
+\subsection{group sparsity}
+similar patches should admit similar patterns
+  
+\cite{double sparsity}
 \subsubsection{hirarchy/structure}
 Adding hirarchy/structure to dictionaries can lead to faster coding or use in structure analysis ( text documents )
 \cite{Jenatton2010}
@@ -141,24 +167,25 @@ Adding hirarchy/structure to dictionaries can lead to faster coding or use in st
 Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
 
 
-\section{Image database/Training data}
+\section{Image database/Training set}
 Task specific training data is a common way to solve the problem of finding the right dictionary. 
-Here learning for the task comes into account. Denoising/Inpainting dictionaries directly learned from the initial
-signal that gets denoised or restored from inpaiting.
+Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
+signal that gets de-noised or restored from in-painting.
 If the task gets bigger it sounds logical to increase the size of training data and take a bigger veriety of signals to learn from.
 
 
-\section{Goal (of this thesis)}
+\section{object/aim/intention of this thesis}
 Evaluate the quality and size of learned big redundant dictionaries for 
 optimal sparse coding of large image databases.!!!!!
 
-Obeservation of problems (encoding time, quality benefit, etc.)
+Observation of problems (encoding time, quality benefit, etc.)
 
-what about a universal dictionary for combination natural images and line graphics?
+Search for a universal dictionary for combination natural and artificial images
  
+Size of 
 how many elements for a 'good' sparse representation?
 
 add structure for speed and model improvements
-Multi-scale, multi-channel, hirarchy
+Multi-scale, multi-channel, hierarchy
 
-Improve compression and usage of coding for as a image descriptor.
+Improve compression and usage as a image descriptor.

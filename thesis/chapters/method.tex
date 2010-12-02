@@ -8,14 +8,14 @@ color data.
 Expriment ....
 \subsection{color/signal representation}
 
-\section{Sparse coding stage}
+\section{coding step}
 \subsection{batch-OMP}
 A modified version of the OMP\footnote{\nameref{sec:omp}} that can effectively sparse codes multiple signals in parallel.
 
 \subsection{LARS-Lasso}
-The complete regularization path
+The complete regularization path based on This \cite{lars.m}
 
-\section{Training Stage}
+\section{training step}
 \subsection{Mairal2010}
 A more indepth look at the mairal online training algorithm. 
 Why use this algorithm? Robust, convergent, fast, online
@@ -33,11 +33,17 @@ see JPEG: quantization, RLE or entropy
 
 \section{Implementation}
 \lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
+The whole test suit is written in C++.
+Eigen lib for vector and matrix operations and some linear algebra algorithms.
+OpenCV for image read/write and color space conversion.
+In situtations where ist is applicable we use OpenMP to make use of muti-core CPUs. 
 
 Coder
+The OMP implementation is based on the OMP implementation from \cite{OMPBox}
+The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{lars.m}
+
 Trainer
-Samples
-Use of OpenMP to 
-etc.
+The Mairal2010 trainer is a straight forward implementation of the basic version of the algorithm presented in \cite{Mairal2010}.
+With the batch optimization.
 
 
