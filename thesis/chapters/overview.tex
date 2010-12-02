@@ -1,15 +1,34 @@
 \chapter{Overview}
 
-\section{Problem/Idea}
-\subsection{dictionaries and application}
-Signal representation via linear combination of few signal vectors from a dictionary.
-Benefits of dictionaries
+\section{Problem}
+In order to find 
+1. coding signals 
+2. find a good ditionarie
 
-\subsection{basis transformation}
+\subsection{dictionaries for signal representation}
+Dictionarie is a collection of ordered elements with an index.
+Atom is am small unit of something big.
+The Cambridge Advanced Learner defines a code as ``..a system of numbers, letters or signals which is used to represent something in a shorter or more convenient form''
+A sparse code is a sparse vector of coefficents that is used to linear combie a small selection of atoms from a dictionarie.
+As a matter of fact a good dictionary is essential for a good signal approximation. \cite{} Finding this dictionarie has become a major task/problem in the last 15 years.
+
+\section{signal representation/analysis}
+Signal transforms \cite{sparse intro} that far back in the early 60s.
+FFT in 65s
+
+approximate signals via combination of limited signal samples
+Why?
+signal analysis, compression, de-noise etc.
+
 The early approaches in the 60s used combinations of cosine transformations. Coming from a continues representation this makes 
 actually sense. The signal could be represented via ....
 
 In 80s the search for better transformation basis became a major role in signal representation. \cite{}
+
+\subsection{discrete signals}
+Rather then using continues signal we concentrate on discrete signal representation.
+Continues signals would be better for .... . But our signal (image etc.) will be discrete anyway becaus of their initial digital representation. 
+Besides the problem of coding becomes different in the continues space \cite{} Because of ...
 
 \subsection{splitting the problem}
 In the last 15 years 
@@ -22,20 +41,14 @@ Separating the problem into two distinct problems made the search for task speci
 Two separate tasks.
 Coding the signal. Design of the dictionary.
 
-
-\section{signal representation}
-approximate signals via combination of limited signal samples
-Why?
-signal analysis, compression, de-noise etc.
-
-\subsection{discrete signals}
-Rather then using continues signal we concentrate on discrete signal representation.
-Continues signals would be better for .... . But the final signal (image etc.) will be discrete anyway becaus of the digital representation. Besides the problem of coding becomes different in the continues space??
+\subsection{dictionaries and application}
+Signal representation via linear combination of few signal vectors from a dictionary.
+Benefits of dictionaries
 
 
 \section{sparse codes/coding}
-a linear combination of a “few” non orthonormal atoms from
-D that is “close” to the signal X
+a linear combination of a few non orthonormal atoms from
+D that is close to the signal X
 try to keep coefficient vector sparse
 usage: reduction, classification, in-painting,  super-resolution
 Sparse coding is the 
@@ -110,6 +123,7 @@ as described in \cite{Least Angle Regression}. It is a modified version of the L
 \end{algorithmic}
 \end{algorithm}
 
+
 \section{Dictionaries/representation data}
 \subsection{analytical}
 \subsubsection{cosine}
@@ -140,13 +154,19 @@ Like ... related work :)
 
 \section{Related work}
 \subsection{application}
-\subsubsection{de-noising}
-Remove noisy signal from image
+\subsubsection{noise reduction}
+Remove noise from a signal. Using the fact that sparse coding 
+is an approximation of signal that looses .... in its encoding process. 
+
 \subsubsection{in-painting}
 fill missing parts by removing rows from the dictionary
 Train with the original image
 
 \subsection{multi-scale}
+Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
+segments (multiple times of the default segment). The idea is that aligned smooth regions with low variance can be 
+can be combined an encoded as one signal rather than e.g. 4. 
+
 \cite{saprio}
 \subsection{multi-channel}
 coding every channel separate or combine them
@@ -154,7 +174,8 @@ into single signal. can lead to color bleeding \cite{mairal08sparse}
 fortunately this problem vanishes with big dictionaries and large training sets. \cite{mairal08sparse}
 
 \subsection{double sparsity}
-Sparse code dictionaries. 
+Rather then directly using a collection of basis/atom signals as a dictionary. This approach uses sparse coding
+to encode the signals of a bigger dictionary with the help of a smaller on. \cite{double sparsity}
 
 \subsection{group sparsity}
 similar patches should admit similar patterns
