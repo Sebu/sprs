@@ -90,8 +90,8 @@ for (int signum=0; signum<L; ++signum) {
     while ((vars < nvars) && (!stopcond) && (k[signum] < maxk)) {
       k[signum]++;
 
+      // find highest corelation
       VectorXd c = X.transpose()*(y - mu);
-
       VectorXd csub(p-vars);
       for(int i=0; i<I.size(); i++)
           csub(i) = c( I[i] );
@@ -132,8 +132,6 @@ for (int signum=0; signum<L; ++signum) {
       VectorXd GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXd::Ones(vars);
       double GA1sum = sqrt(GA1.sum());
       double AA = 1.0/GA1sum;
-      //if(GA1sum != 0.0)
-//         AA /= GA1sum;
       if(isinf(GA1sum) || GA1sum!=GA1sum || GA1sum == 0.0) {
           std::cout << Gsub << "\n" << GA1sum << "\n" << y << "\n" << mu << std::endl;
           ei_assert(0 && "wurst");
@@ -141,6 +139,7 @@ for (int signum=0; signum<L; ++signum) {
       MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
 
       MatrixXd Xsub = subselect(X,A);
+
 
       MatrixXd u = Xsub*w; // equiangular direction (unit vector)
 
@@ -180,9 +179,11 @@ for (int signum=0; signum<L; ++signum) {
         lassocond = true;
       }
 
+      //
       mu += gamma*u;
 
       MatrixXd beta_next = MatrixXd::Zero(1, p);
+
       for(int i=0; i<A.size(); i++) {
             beta_next(0,A[i]) = beta[signum](0,A[i]) + gamma*w(i);
       }
