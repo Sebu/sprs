@@ -7,6 +7,8 @@
 #include <vector>
 
 #include <eigen2/Eigen/Core>
+#include <eigen2/Eigen/Array>
+
 USING_PART_OF_NAMESPACE_EIGEN
 
 //template <class T, class C1, class C2, class C3>
@@ -99,10 +101,22 @@ MatrixXd subselect(MatrixBase<T1>& M, std::vector<int>& select) {
     return sub;
 }
 
+template<typename T1, typename T2>
+MatrixXd unshift(MatrixBase<T1>& M, MatrixBase<T2>& shift) {
+  for(int i=0; i<M.cols();i++) {
+    std::cout << i << std::endl;
+    M.col(i).cwise() += shift(i);
+  }
+}
+
 template<typename T1>
-void center(MatrixBase<T1>& M) {
-    for(int i=0; i<M.cols();i++)
-        M.col(i).cwise() -=M.col(i).sum()/M.rows();
+MatrixXd center(MatrixBase<T1>& M) {
+    VectorXd shift(M.cols());
+    for(int i=0; i<M.cols();i++) {
+        shift(i) = M.col(i).sum()/M.rows();
+        M.col(i).cwise() -= shift(i);
+    }
+    return shift;
 }
 
 

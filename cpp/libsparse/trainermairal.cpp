@@ -88,7 +88,11 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
     std::cout << "train start" << std::endl;
 
     int maximum = samples.cols_;
+
     if (iterations) maximum = batch*iterations;
+
+//    D.normalize();
+
     for(int t=0; t<maximum; t+=batch) {
 
         // draw sample from trainig set
@@ -100,7 +104,6 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         // sparse code sample
         MatrixXd sample = samples.getData().block(0,start,D.getSignalSize(),end-start);
         center(sample);
-        D.normalize();
         Eigen::SparseMatrix<double> a = coder.encode(sample, D);
 
         std::cout << "a*a.transpose();" << std::endl;

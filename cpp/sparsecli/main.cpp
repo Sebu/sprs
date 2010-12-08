@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 //        if(!counter) dict.initFromData(samples);
         std::cout << "train set fill complete " << std::endl;
         if(!running) break;
-        trainer.train(samples, dict,  0, sampleCount);
+        trainer.train(samples, dict,  3, sampleCount);
         counter++;
         ifs >> nameStr;
     }

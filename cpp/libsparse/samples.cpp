@@ -19,9 +19,9 @@ MatrixXd & Samples::getData() {
 void Samples::saveImage(std::string& fileName, Dictionary& dict) {
 
     double quant = 1.0;
-    CoderLasso coder;
+    CoderLasso   coder;
     std::cout << "restore image" << std::endl;
-    //center((*data_));
+    VectorXd shift = center((*data_));
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
 
     int count=0;
@@ -32,15 +32,16 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict) {
           data = (short)round(it.row());
           ofs.write((char*)&data,sizeof(data));
           data = (short)round(it.value()/quant);
-          A.coeffRef(it.row(),it.col()) = it.value(); //data;
+          //A.coeffRef(it.row(),it.col()) = it.value(); //data;
           ofs.write((char*)&data,sizeof(char));
           if (data>count) count = data;
       }
     ofs.close();
 
-    std::cout << count << std::endl;
+    std::cout << A.cols() << " " << shift.cols() << std::endl;
     MatrixXd recon_vigra = dict.getData()*A;
 
+    unshift(recon_vigra,shift);
 
     std::cout << "reorder image" << std::endl;
 
