@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.1 beta2
-lastDocument=chapters/overview.tex
+lastDocument=header.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -46,34 +46,34 @@ order=-1
 [item:chapters/conclusion.tex]
 archive=true
 column=0
-encoding=
-highlight=
+encoding=UTF-8
+highlight=LaTeX
 line=0
-open=false
-order=-1
+open=true
+order=3
 
 [item:chapters/introduction.tex]
 archive=true
 column=105
-encoding=ISO-8859-1
+encoding=UTF-8
 highlight=LaTeX
 line=23
-open=true
+open=false
 order=3
 
 [item:chapters/method.tex]
 archive=true
-column=23
-encoding=ISO-8859-1
+column=66
+encoding=UTF-8
 highlight=LaTeX
-line=18
+line=20
 open=true
 order=2
 
 [item:chapters/overview.tex]
 archive=true
 column=25
-encoding=ISO-8859-1
+encoding=UTF-8
 highlight=LaTeX
 line=116
 open=true
@@ -109,17 +109,17 @@ order=-1
 [item:header.tex]
 archive=true
 column=0
-encoding=ISO-8859-1
+encoding=UTF-8
 highlight=LaTeX
-line=15
-open=false
-order=-1
+line=0
+open=true
+order=4
 
 [item:thesis.tex]
 archive=true
-column=9
-encoding=ISO-8859-1
+column=0
+encoding=UTF-8
 highlight=LaTeX
-line=14
+line=1
 open=true
 order=0

@@ -19,7 +19,7 @@ MatrixXd & Samples::getData() {
 void Samples::saveImage(std::string& fileName, Dictionary& dict) {
 
     double quant = 1.0;
-    CoderLasso   coder;
+    CoderLasso  coder;
     std::cout << "restore image" << std::endl;
     VectorXd shift = center((*data_));
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
@@ -50,14 +50,12 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict) {
     int index = 0;//  ceil((float)j)*ceil((float)imageCols_) + ceil((float)i);
     for(int j=0; j<imageRows_; j+=winSize_) {
         for(int i=0; i<imageCols_; i+=winSize_) {
-//            std::cout << index << " " << i <<  " " << j <<  std::endl;
             for(int jj=0; jj<channels_; jj++){
                 for(int ii=0; ii<rows_/channels_; ii++) {
                     recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(jj*(rows_/channels_)+ii, index)*quant);
-//                    recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>(recon_vigra(ii,index)*quant); // /(*(scaling_))(0,index));
                 }
             }
-//            for(int ii=0; ii<rows_; ii++)
+
             cv::Mat tmp = recon_cv.reshape(channels_, winSize_);
             cv::Mat region( outputImage,  cv::Rect(i,j,winSize_, winSize_) );
             tmp.copyTo(region);

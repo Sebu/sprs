@@ -52,7 +52,9 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
     MatrixXd beta[L];
     int k[L];
-    double stop = -10;
+    double stop = -20;
+
+    std::cout << "precalc done" << std::endl;
 
 #pragma omp parallel for
 for (int signum=0; signum<L; ++signum) {
@@ -219,6 +221,7 @@ for (int signum=0; signum<L; ++signum) {
 
     } // while
 }
+    std::cout << "sparse code done" << std::endl;
 
     Eigen::SparseMatrix<double> Gamma(X.cols(),L);
     Gamma.startFill();
@@ -230,6 +233,8 @@ for (int signum=0; signum<L; ++signum) {
         }
     }
     Gamma.endFill();
+
+    std::cout << "copy done" << std::endl;
 
 //    if (k == maxk)
 //      std::cout << "LARS warning: Forced exit. Maximum number of iteration reached." << std::endl;

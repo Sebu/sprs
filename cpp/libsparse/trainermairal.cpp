@@ -52,9 +52,8 @@ void TrainerMairal::load(const char* fileName) {
 }
 
 void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
-    //        #pragma omp parallel for
-
-    for(int i=0; i < 1; i++) {
+//    for(int i=0; i < 1; i++) {
+        #pragma omp parallel for
         for(int j=0; j < D.getElementCount(); j++) {
             MatrixXd a = A.col(j);
             MatrixXd b = B.col(j);
@@ -67,13 +66,13 @@ void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
             MatrixXd u = ( (1.0/pivot) * (b-(D.getData()*a)) ) + d;
             D.getData().col(j) = (1.0/std::max(u.norm(),1.0)) * u;
         }
-    }
+    //}
 
 }
 
 void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int batch) {
 
-    CoderOMP coder;
+    CoderLasso coder;
 
     std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
@@ -91,7 +90,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
     if (iterations) maximum = batch*iterations;
 
-//    D.normalize();
+    D.normalize();
 
     for(int t=0; t<maximum; t+=batch) {
 

@@ -16,6 +16,10 @@ A modified version of the OMP\footnote{\nameref{sec:omp}} that can effectively s
 The complete regularization path based on This \cite{lars.m}
 
 \section{training step}
+Keeping the training sparse vectors to sparse can lead to dictionaries with only low frequency elements.
+Using LARS-Lasso for training genrates a good dictionay for LARS and OMP. Training with OMP leads to 
+a dictionary more specialized for use with OMP. -> is LARS better?
+
 \subsection{Mairal2010}
 A more indepth look at the mairal online training algorithm. 
 Why use this algorithm? Robust, convergent, fast, online
