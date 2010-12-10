@@ -72,8 +72,6 @@ void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
 
 void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int batch) {
 
-    CoderLasso coder;
-
     std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
         A_ = new MatrixXd(D.getElementCount(), D.getElementCount());
@@ -103,7 +101,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         // sparse code sample
         MatrixXd sample = samples.getData().block(0,start,D.getSignalSize(),end-start);
         center(sample);
-        Eigen::SparseMatrix<double> a = coder.encode(sample, D);
+        Eigen::SparseMatrix<double> a = coder->encode(sample, D);
 
         std::cout << "a*a.transpose();" << std::endl;
 

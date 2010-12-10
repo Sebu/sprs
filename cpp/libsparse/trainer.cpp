@@ -1,5 +1,5 @@
 #include "trainer.h"
 
-Trainer::Trainer()
+Trainer::Trainer() : coder(0)
 {
 }

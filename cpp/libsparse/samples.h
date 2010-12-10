@@ -9,6 +9,7 @@ USING_PART_OF_NAMESPACE_EIGEN
 #include "libsparse_global.h"
 
 class Dictionary;
+class Coder;
 
 class LIBSPARSESHARED_EXPORT Samples
 {
@@ -22,7 +23,7 @@ public:
    Samples();
    MatrixXd & getData();
    bool loadImage(std::string& fileName, int winSize, int channels, int step=1);
-   void saveImage(std::string& fileName, Dictionary& dict);
+   void saveImage(std::string& fileName, Dictionary& dict, Coder& coder);
 };
 
 #endif // SAMPLES_H

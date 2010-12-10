@@ -43,24 +43,24 @@ int main(int argc, char *argv[])
     double eps = 0.0;
     int  coeffs = 20;
 
-    while ((opt = getopt(argc, argv, "d:i:s:e:c:t:v")) != -1) {
+    while ((opt = getopt(argc, argv, "c:d:e:i:s:t:v")) != -1) {
         switch(opt) {
         case 'd':
             dictSize = atoi(optarg);
             break;
-        case 't':
+        case 'c':
             coeffs = atoi(optarg);
             break;
         case 'e':
             eps = (double)atof(optarg);
             break;
-        case 'i':
+        case 't':
             inputFile = optarg;
             break;
         case 's':
             sampleCount = atoi(optarg);
             break;
-        case 'c':
+        case 'i':
             testFile = optarg;
             break;
         case 'v':
@@ -77,12 +77,15 @@ int main(int argc, char *argv[])
     int winSize = 8;
     int channels = 3;
     Dictionary dict(winSize, channels, dictSize);
+    CoderOMP coder;
+
 
 
     if(inputFile != "")
     {
         Samples samples;
         TrainerMairal trainer;
+        trainer.coder = &coder;
         std::ifstream ifs( (inputFile).c_str() );
         int counter = 0;
         std::string nameStr;
@@ -113,7 +116,8 @@ int main(int argc, char *argv[])
         //dict.load( (inputFile + ".dict").c_str() );
         dict.initRandom();
         samples2.loadImage(testFile, winSize, channels, winSize);
-        samples2.saveImage(outputFilename, dict );
+        samples2.saveImage(outputFilename, dict,coder);
+
     }
 
 }

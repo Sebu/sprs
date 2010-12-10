@@ -3,10 +3,12 @@
 
 class Dictionary;
 class Samples;
-
+class Coder;
+\
 class Trainer
 {
 public:
+    Coder *coder;
     Trainer();
     virtual void train(Samples&, Dictionary& D, int iterations, int batch) = 0;
 };
