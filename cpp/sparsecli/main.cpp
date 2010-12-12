@@ -106,37 +106,41 @@ int main(int argc, char *argv[])
         Samples samples;
         TrainerMairal trainer;
         trainer.coder = coder;
+
+        if(resume) {
+            dict.load(dictFile.c_str());
+            trainer.load((dictFile + ".tmp").c_str() );
+        } else {
+            dict.initRandom();
+        }
+
         std::ifstream ifs( (trainFile).c_str() );
-        int counter = 0;
         std::string nameStr;
         ifs >> nameStr;
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << std::endl;
             samples.loadImage(nameStr, winSize, channels);
-            if(!counter) { dict.initRandom(); }
-    //        if(!counter) dict.initFromData(samples);
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             trainer.train(samples, dict,  0, sampleCount);
-            counter++;
             ifs >> nameStr;
         }
         ifs.close();
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
-        //trainer.save((dictFile + ".tmp").c_str() );
+        trainer.save((dictFile + ".tmp").c_str() );
     }
 
 
     if(imageFile!="")
     {
-        Samples samples2;
+        Samples samples;
         std::string outputFilename = imageFile + ".recon.jpg";
         dict.load( dictFile.c_str() );
         //dict.initRandom();
-        samples2.loadImage(imageFile, winSize, channels, winSize);
-        samples2.saveImage(outputFilename, dict, *coder);
+        samples.loadImage(imageFile, winSize, channels, winSize);
+        samples.saveImage(outputFilename, dict, *coder);
 
     }
 

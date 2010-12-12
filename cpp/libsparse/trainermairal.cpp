@@ -16,56 +16,56 @@ TrainerMairal::TrainerMairal() : A_(0), B_(0)
 void TrainerMairal::save(const char* fileName) {
     std::ofstream ofs( fileName );
 
-    //    ofs << A_->rows() << " " <<  A_->cols() << " ";
-    //    for(unsigned int i=0; i<A_->cols(); i++)
-    //        for(unsigned int j=0; j<A_->rows(); j++)
-    //            ofs << (*A_)(j,i) << " ";
-    //    ofs << B_->rows() << " " <<  B_->cols() << " ";
-    //    for(unsigned int i=0; i<B_->cols(); i++)
-    //        for(unsigned int j=0; j<B_->rows(); j++)
-    //            ofs << (*B_)(j,i) << " ";
+    ofs << A_->rows() << " " <<  A_->cols() << " ";
+    for(unsigned int i=0; i<A_->cols(); i++)
+        for(unsigned int j=0; j<A_->rows(); j++)
+            ofs << (*A_)(j,i) << " ";
+    ofs << B_->rows() << " " <<  B_->cols() << " ";
+    for(unsigned int i=0; i<B_->cols(); i++)
+        for(unsigned int j=0; j<B_->rows(); j++)
+            ofs << (*B_)(j,i) << " ";
     ofs.close();
 }
 
 void TrainerMairal::load(const char* fileName) {
     std::ifstream ifs( fileName );
-    //    int rows=0, cols=0;
-    //    if (ifs) {
-    //        ifs >> rows >> cols;
-    //        if(A_) delete A_;
-    //        A_ = new MatrixXd(rows, cols);
-    ////        std::cout << rows << " " << cols << std::endl;
-    //        for(unsigned int i=0; i<cols; i++)
-    //            for(unsigned int j=0; j<rows; j++)
-    //                ifs >> (*A_)(j,i);
-    //        ifs >> rows >> cols;
-    //        if(B_) delete B_;
-    //        B_ = new MatrixXd(rows, cols);
-    ////        std::cout << rows << " " << cols << std::endl;
-    //        for(unsigned int i=0; i<cols; i++)
-    //            for(unsigned int j=0; j<rows; j++)
-    //                ifs >> (*B_)(j,i);
+    int rows=0, cols=0;
+    if (ifs) {
+        ifs >> rows >> cols;
+        if(A_) delete A_;
+        A_ = new MatrixXd(rows, cols);
+        //        std::cout << rows << " " << cols << std::endl;
+        for(unsigned int i=0; i<cols; i++)
+            for(unsigned int j=0; j<rows; j++)
+                ifs >> (*A_)(j,i);
+        ifs >> rows >> cols;
+        if(B_) delete B_;
+        B_ = new MatrixXd(rows, cols);
+        //        std::cout << rows << " " << cols << std::endl;
+        for(unsigned int i=0; i<cols; i++)
+            for(unsigned int j=0; j<rows; j++)
+                ifs >> (*B_)(j,i);
 
-    //    }
+    }
 
     ifs.close();
 }
 
 void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
-//    for(int i=0; i < 1; i++) {
-        #pragma omp parallel for
-        for(int j=0; j < D.getElementCount(); j++) {
-            MatrixXd a = A.col(j);
-            MatrixXd b = B.col(j);
-            MatrixXd d = D.getData().col(j);
-            double pivot = A.coeff(j,j);
-            if(pivot==0.0) continue;
-            if(isinf(pivot))
-                std::cout << "Sdsd" << std::endl;
+    //    for(int i=0; i < 1; i++) {
+#pragma omp parallel for
+    for(int j=0; j < D.getElementCount(); j++) {
+        MatrixXd a = A.col(j);
+        MatrixXd b = B.col(j);
+        MatrixXd d = D.getData().col(j);
+        double pivot = A.coeff(j,j);
+        if(pivot==0.0) continue;
+        if(isinf(pivot))
+            std::cout << "Sdsd" << std::endl;
 
-            MatrixXd u = ( (1.0/pivot) * (b-(D.getData()*a)) ) + d;
-            D.getData().col(j) = (1.0/std::max(u.norm(),1.0)) * u;
-        }
+        MatrixXd u = ( (1.0/pivot) * (b-(D.getData()*a)) ) + d;
+        D.getData().col(j) = (1.0/std::max(u.norm(),1.0)) * u;
+    }
     //}
 
 }
