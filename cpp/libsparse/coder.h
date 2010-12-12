@@ -13,6 +13,9 @@ class Coder
 private:
 
 public:
+    int coeffs;
+    double eps;
+
     Coder();
     virtual Eigen::SparseMatrix<double> encode(MatrixXd&, Dictionary&) = 0;
 //    virtual vigra::Matrix<double> decode(vigra::Matrix<double>&, Dictionary&) = 0;

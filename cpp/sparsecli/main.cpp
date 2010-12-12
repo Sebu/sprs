@@ -32,61 +32,81 @@ int main(int argc, char *argv[])
     prev_fn = signal (SIGTERM,terminate);
     if (prev_fn==SIG_IGN) signal(SIGKILL,SIG_IGN);
 
-    int verbose = 0;
     int opt = 0;
 
-    std::string inputFile = "";
-    std::string testFile = "";
-
+    bool verbose = false;
+    bool resume = false;
+    std::string dictFile = "";
+    std::string trainFile = "";
+    std::string imageFile = "";
     int sampleCount = 10000;
     int dictSize = 4096;
     double eps = 0.0;
     int  coeffs = 20;
+    int winSize = 8;
+    int channels = 3;
+    int mode = 1;
 
-    while ((opt = getopt(argc, argv, "c:d:e:i:s:t:v")) != -1) {
+    while ((opt = getopt(argc, argv, "c:d:e:f:i:m:rs:t:v")) != -1) {
         switch(opt) {
-        case 'd':
-            dictSize = atoi(optarg);
-            break;
         case 'c':
             coeffs = atoi(optarg);
+            break;
+        case 'd':
+            dictSize = atoi(optarg);
             break;
         case 'e':
             eps = (double)atof(optarg);
             break;
-        case 't':
-            inputFile = optarg;
+        case 'f':
+            dictFile = optarg;
+            break;
+        case 'i':
+            imageFile = optarg;
+            break;
+        case 'm':
+            mode = atoi(optarg);
+            break;
+        case 'r':
+            resume = true;
             break;
         case 's':
             sampleCount = atoi(optarg);
             break;
-        case 'i':
-            testFile = optarg;
+        case 't':
+            trainFile = optarg;
             break;
         case 'v':
             verbose = true;
             break;
         case '?':
         default: /* '?' */
-            std::cerr << "Usage: " << argv[0] << " [-i input_file]" << std::endl;
+            std::cerr << "Usage: " << argv[0] << " [-i image_file] [-t train_file] [-d dict_size] [-s sample_count] [-c coefficents] [-e epsilon]"  << std::endl;
             exit(EXIT_FAILURE);
         }
     }
 
 
-    int winSize = 8;
-    int channels = 3;
+
     Dictionary dict(winSize, channels, dictSize);
-    CoderOMP coder;
+
+    Coder* coder = 0;
+    switch(mode) {
+    case 1: coder = new CoderOMP(); break;
+    case 2: coder = new CoderLasso(); break;
+    }
+
+    coder->eps = eps;
+    coder->coeffs = coeffs;
 
 
 
-    if(inputFile != "")
+    if(trainFile != "")
     {
         Samples samples;
         TrainerMairal trainer;
-        trainer.coder = &coder;
-        std::ifstream ifs( (inputFile).c_str() );
+        trainer.coder = coder;
+        std::ifstream ifs( (trainFile).c_str() );
         int counter = 0;
         std::string nameStr;
         ifs >> nameStr;
@@ -103,20 +123,20 @@ int main(int argc, char *argv[])
             ifs >> nameStr;
         }
         ifs.close();
-        dict.debugSaveImage( (inputFile + ".dict.png").c_str() );
-        dict.save( (inputFile + ".dict").c_str() );
+        dict.debugSaveImage( (dictFile + ".png").c_str() );
+        dict.save( dictFile.c_str() );
+        //trainer.save((dictFile + ".tmp").c_str() );
     }
-    //    trainer.save((inputFile + ".tmp").c_str() );
 
 
-    if(testFile!="")
+    if(imageFile!="")
     {
         Samples samples2;
-        std::string outputFilename = testFile + ".recon.jpg";
-        //dict.load( (inputFile + ".dict").c_str() );
-        dict.initRandom();
-        samples2.loadImage(testFile, winSize, channels, winSize);
-        samples2.saveImage(outputFilename, dict,coder);
+        std::string outputFilename = imageFile + ".recon.jpg";
+        dict.load( dictFile.c_str() );
+        //dict.initRandom();
+        samples2.loadImage(imageFile, winSize, channels, winSize);
+        samples2.saveImage(outputFilename, dict, *coder);
 
     }
 

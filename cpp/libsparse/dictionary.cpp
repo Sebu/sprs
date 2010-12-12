@@ -27,6 +27,7 @@ void Dictionary::save(const char* fileName) {
 
 void Dictionary::load(const char* fileName) {
     std::ifstream ifs( fileName );
+    std::cout << "loading: " << fileName << std::endl;
 
     if (ifs) {
         ifs >> signalSize_ >>  elementCount_ >> channels_ >> size_;

@@ -13,8 +13,8 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
     int signum;
 
 
-    int T = 10;
-    double eps = 0.0;
+    int T = this->coeffs;
+    double eps = this->eps;
     int erroromp = 0;
     int m = D.getData().cols();
     int n = X.rows();
