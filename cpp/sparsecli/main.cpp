@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << std::endl;
-            samples.loadImage(nameStr, winSize, channels);
+            samples.loadImage(nameStr, winSize, channels, winSize);
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             trainer.train(samples, dict,  0, sampleCount);
