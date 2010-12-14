@@ -132,9 +132,9 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         update((*A_), (*B_), D);
         std::ostringstream o;
         o << "tmp/dict_tmp" << t << ".png";
-        if (!(t%1)) {
-            D.debugSaveImage( o.str().c_str() );
-        }
+//        if (!(t%1)) {
+//            D.debugSaveImage( o.str().c_str() );
+//        }
 
     }
 

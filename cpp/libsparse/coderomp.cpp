@@ -11,24 +11,29 @@ CoderOMP::CoderOMP()
 Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
 {
     int signum;
+    MatrixXd DtX, XNorm, G;
 
 
     int T = this->coeffs;
     double eps = this->eps;
-    int erroromp = 0;
+    bool erroromp = false;
+    if(eps>0.0) {
+        erroromp = true;
+    }
+
     int m = D.getData().cols();
     int n = X.rows();
     int L = X.cols();
 
-    MatrixXd DtX, XtX, G;
     /* precalculate for speed */
 
     #pragma omp parallel sections
     {
         #pragma omp section
         DtX = D.getData().transpose()*X;
-//        #pragma omp section
-//        XtX = X.transpose()*X;
+        #pragma omp section
+        if(erroromp)
+            XNorm = (X.cwise()*X).colwise().sum();
         #pragma omp section
         G = D.getData().transpose()*D.getData();
     }
@@ -38,7 +43,7 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
     Eigen::SparseMatrix<double> GammaVector[L];
 
     /* current number of columns in Dsub / Gsub / Lchol */
-    int allocated_cols = erroromp ? (int)(ceil(sqrt((double)n)/2.0) + 1.01) : T;
+    int allocated_cols = T; //erroromp ? (int)(ceil(sqrt((double)n)/2.0) + 1.01) : T;
 
 //    std::cout  << "prep done" << std::endl;
     /**********************   perform omp for each signal   **********************/
@@ -70,7 +75,7 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
         /* initialize residual norm and deltaprev for error-omp */
 
         if (erroromp) {
-//            resnorm = XtX(signum,0);
+            resnorm = XNorm(0,signum);
             deltaprev = 0;     /* delta tracks the value of gamma'*G*gamma */
             /*** initializations for error omp ***/
             eps2 = eps*eps;        /* compute eps^2 */
@@ -84,9 +89,6 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
             resnorm = 1;
         }
 
-
-        if (resnorm>eps2 && T>0) {
-
             /* initialize alpha := DtX */
             alpha = DtX.col(signum);
 
@@ -95,19 +97,15 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
                 selected_atoms(i) = 0;
             }
 
-        }
 
         /* main loop */
         i=0;
         while (resnorm>eps2 && i<T) {
 
-            /* TODO: index of next atom */
             pos = maxabs(alpha);
-//            std::cout << "bla " << pos << " " << alpha(pos,0) <<  std::endl;
 
             /* stop criterion: selected same atom twice, or inner product too small */
 
-//            std::cout << pos << std::endl;
             if (selected_atoms(pos,0) || alpha(pos,0)*alpha(pos,0)<1e-14) {
                 break;
             }
@@ -168,12 +166,15 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
             alpha = alpha - tempvec1;                             /* compute alpha := alpha - tempvec1 */
 
             /* update residual norm */
+
             if (erroromp) {
                 vec_assign(tempvec2, tempvec1, ind, i, 0);   /* assign tempvec2 := tempvec1(ind) */
-                delta = (c.transpose()*tempvec2)(0,0);       /* compute c'*tempvec2 */
+                delta = (c.block(0,0,i,1).transpose()*tempvec2.block(0,0,i,1))(0,0);       /* compute c'*tempvec2 */
                 resnorm = resnorm - delta + deltaprev;       /* residual norm update */
                 deltaprev = delta;
+                //std::cout << delta << " " << resnorm << std::endl;
             }
+
 
         }
 

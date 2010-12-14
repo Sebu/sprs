@@ -4,6 +4,7 @@
 #include <float.h>
 #include <eigen2/Eigen/LU>
 #include <eigen2/Eigen/Array>
+#include <eigen2/Eigen/Cholesky>
 #include <list>
 #include <algorithm>
 #include "coderlasso.h"
@@ -131,7 +132,9 @@ for (int signum=0; signum<L; ++signum) {
           }
       }
 
-      VectorXd GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXd::Ones(vars);
+      VectorXd GA1 = VectorXd::Ones(vars);
+      ( Gsub.cwise()*(s*s.transpose()) ).llt().solveInPlace(GA1);
+      //VectorXd GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXd::Ones(vars);
       double GA1sum = sqrt(GA1.sum());
       double AA = 1.0/GA1sum;
       if(isinf(GA1sum) || GA1sum!=GA1sum || GA1sum == 0.0) {

@@ -38,16 +38,15 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
       }
     ofs.close();
 
-    std::cout << A.cols() << " " << shift.cols() << std::endl;
     MatrixXd recon_vigra = dict.getData()*A;
 
     unshift(recon_vigra,shift);
 
-    std::cout << "reorder image" << std::endl;
+    std::cout << "reorder  image" << std::endl;
 
     cv::Mat outputImage(imageRows_+8, imageCols_+8, CV_8UC(channels_));
     cv::Mat recon_cv(1,rows_,CV_8U);
-    int index = 0;//  ceil((float)j)*ceil((float)imageCols_) + ceil((float)i);
+    int index = 0;
     for(int j=0; j<imageRows_; j+=winSize_) {
         for(int i=0; i<imageCols_; i+=winSize_) {
             for(int jj=0; jj<channels_; jj++){
@@ -62,8 +61,8 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
             index++;
         }
     }
-
-    cv::imwrite(fileName , outputImage);
+    cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
+    cv::imwrite(fileName, im);
 }
 
 bool Samples::loadImage(std::string& fileName, int winSize, int channels, int step) {
@@ -72,9 +71,9 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     channels_ = channels;
     winSize_ = winSize;
     switch(channels_) {
-//    case 1:
-//       inputImage = cv::imread(fileName, 0);
-//       break;
+    case 1:
+       inputImage = cv::imread(fileName, 0);
+       break;
     default:
        inputImage = cv::imread(fileName);
        break;
@@ -90,7 +89,7 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     imageCols_ = inputImage.cols;
     rows_ = winSize_*winSize_*channels_;
     cols_ = ceil((float)imageRows_/(float)step) * ceil((float)imageCols_/(float)step);
-    std::cout << cols_ << " " << imageRows_ <<  " " << step <<std::endl;
+    //std::cout << cols_ << " " << imageRows_ <<  " " << step <<std::endl;
     if(data_) delete data_;
     data_ = new MatrixXd(rows_, cols_);
 
@@ -114,7 +113,6 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
                     (*data_)(jj*(rows_/channels_)+ii,index) = tmp.at<uchar>(0,ii);
                 }
             }
-//            (*data_).col(index).normalize();
             index++;
         }
     }

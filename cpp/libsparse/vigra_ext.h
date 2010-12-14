@@ -104,7 +104,7 @@ MatrixXd subselect(MatrixBase<T1>& M, std::vector<int>& select) {
 template<typename T1, typename T2>
 void unshift(MatrixBase<T1>& M, MatrixBase<T2>& shift) {
   for(int i=0; i<M.cols();i++) {
-    std::cout << i << std::endl;
+//    std::cout << i << std::endl;
     M.col(i).cwise() += shift(i);
   }
 }

@@ -86,7 +86,9 @@ int main(int argc, char *argv[])
         }
     }
 
-
+    for(int i=0; i<argc; i++)
+        std::cout << argv[i];
+    std::cout << std::endl;
 
     Dictionary dict(winSize, channels, dictSize);
 
@@ -97,6 +99,7 @@ int main(int argc, char *argv[])
     }
 
     coder->eps = eps;
+    std::cout << coder->eps << std::endl;
     coder->coeffs = coeffs;
 
 
@@ -117,13 +120,14 @@ int main(int argc, char *argv[])
         std::ifstream ifs( (trainFile).c_str() );
         std::string nameStr;
         ifs >> nameStr;
+        int counter=0;
         while( !ifs.eof() ) {
             if(!running) break;
-            std::cout << nameStr << std::endl;
-            samples.loadImage(nameStr, winSize, channels, winSize);
+            std::cout << nameStr << " " << counter++ << std::endl;
+            samples.loadImage(nameStr, winSize, channels, 4);
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
-            trainer.train(samples, dict,  0, sampleCount);
+            trainer.train(samples, dict,  2, sampleCount);
             ifs >> nameStr;
         }
         ifs.close();

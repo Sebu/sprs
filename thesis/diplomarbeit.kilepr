@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.1 beta2
-lastDocument=header.tex
+lastDocument=chapters/results.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -81,12 +81,12 @@ order=1
 
 [item:chapters/results.tex]
 archive=true
-column=120
-encoding=
-highlight=
-line=0
-open=false
-order=-1
+column=0
+encoding=UTF-8
+highlight=LaTeX
+line=5
+open=true
+order=5
 
 [item:chapters/title.tex]
 archive=true
