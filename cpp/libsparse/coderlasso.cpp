@@ -53,7 +53,9 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
     MatrixXd beta[L];
     int k[L];
-    double stop = -20;
+    // A = [] ; % active set
+    std::vector<int> A[L];
+    double stop = -this->coeffs;
 
     std::cout << "precalc done" << std::endl;
 
@@ -62,8 +64,6 @@ for (int signum=0; signum<L; ++signum) {
 
     MatrixXd y = yM.col(signum);
 
-    //y.normalize();
-    //center(y);
 
     beta[signum] = MatrixXd::Zero(1, p);
 
@@ -74,7 +74,7 @@ for (int signum=0; signum<L; ++signum) {
     k[signum] = 0;  // Iteration count
 
     if(y.isZero()) {
-        std::cout << "lucky trivial bastard" << std::endl;
+       // std::cout << "lucky trivial bastard" << std::endl;
         continue;
     }
 
@@ -84,8 +84,7 @@ for (int signum=0; signum<L; ++signum) {
     std::vector<int> I;
     for(int i=0; i<p; i++)
         I.push_back(i);
-    // A = [] ; % active set
-    std::vector<int> A;
+
 
     // LARS main loop
     int j = 0;
@@ -104,7 +103,7 @@ for (int signum=0; signum<L; ++signum) {
 
 
       if (!lassocond) { // if a variable has been dropped, do one iteration with this configuration (don't add new one right away)
-        A.push_back(j);
+        A[signum].push_back(j);
         std::vector<int>::iterator it;
         it = std::find(I.begin(),I.end(),j);
         I.erase(it);
@@ -112,11 +111,11 @@ for (int signum=0; signum<L; ++signum) {
       }
 
        // s = sign(c(A)); // get the signs of the correlations
-       VectorXd s = VectorXd::Zero(A.size());
+       VectorXd s = VectorXd::Zero(A[signum].size());
 
-       VectorXd csub2(A.size());
-       for(int i=0; i<A.size(); i++)
-           csub2(i) = c( A[i] );
+       VectorXd csub2(A[signum].size());
+       for(int i=0; i<A[signum].size(); i++)
+           csub2(i) = c( A[signum][i] );
 
        for(int i=0; i<csub2.rows(); i++) {
          if(csub2(i)>0.0) s(i) = 1.0;
@@ -126,9 +125,9 @@ for (int signum=0; signum<L; ++signum) {
 
 
       MatrixXd Gsub(vars,vars);
-      for(int i=0; i<A.size(); i++) {
-         for(int m=0; m<A.size(); m++) {
-             Gsub(i,m) = Gram(A[i],A[m]);
+      for(int i=0; i<A[signum].size(); i++) {
+         for(int m=0; m<A[signum].size(); m++) {
+             Gsub(i,m) = Gram(A[signum][i],A[signum][m]);
           }
       }
 
@@ -143,7 +142,7 @@ for (int signum=0; signum<L; ++signum) {
       }
       MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
 
-      MatrixXd Xsub = subselect(X,A);
+      MatrixXd Xsub = subselect(X,A[signum]);
 
 
       MatrixXd u = Xsub*w; // equiangular direction (unit vector)
@@ -163,8 +162,8 @@ for (int signum=0; signum<L; ++signum) {
 
       }
       VectorXd betasub(vars);
-      for(int i=0; i<A.size(); i++) {
-        betasub(i) = beta[signum](0,A[i]);
+      for(int i=0; i<A[signum].size(); i++) {
+        betasub(i) = beta[signum](0,A[signum][i]);
       }
 
       // LASSO modification
@@ -189,12 +188,12 @@ for (int signum=0; signum<L; ++signum) {
 
       MatrixXd beta_next = MatrixXd::Zero(1, p);
 
-      for(int i=0; i<A.size(); i++) {
-            beta_next(0,A[i]) = beta[signum](0,A[i]) + gamma*w(i);
+      for(int i=0; i<A[signum].size(); i++) {
+            beta_next(0,A[signum][i]) = beta[signum](0,A[signum][i]) + gamma*w(i);
       }
-//      std::cout << "BLA" << std::endl;
+
       beta[signum]=beta_next;
-//      std::cout << "BLUB" << std::endl;
+
 
 //      // Early stopping at specified bound on L1 norm of beta
 //      if (stop > 0) {
@@ -209,11 +208,11 @@ for (int signum=0; signum<L; ++signum) {
 
       // If LASSO condition satisfied, drop variable from active set
       if (lassocond) {
-        I.push_back(A[j]);
+        I.push_back(A[signum][j]);
         std::vector<int>::iterator it;
-        it = A.begin();
+        it = A[signum].begin();
         std::advance(it,j);
-        A.erase(it);
+        A[signum].erase(it);
         vars--;
       }
 
@@ -229,10 +228,8 @@ for (int signum=0; signum<L; ++signum) {
     Eigen::SparseMatrix<double> Gamma(X.cols(),L);
     Gamma.startFill();
     for(int signum=0; signum<L; ++signum){
-        for (int i=0; i<beta[signum].cols(); i++) {
-            if(beta[signum](0,i)!=0.0f) {
-                Gamma.fillrand(i,signum) = beta[signum](0,i);
-            }
+        for(int i=0; i<A[signum].size(); i++) {
+            Gamma.fillrand(A[signum][i],signum) = beta[signum](0,A[signum][i]);
         }
     }
     Gamma.endFill();

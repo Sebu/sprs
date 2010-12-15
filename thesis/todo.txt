@@ -9,11 +9,16 @@ Overview
  related work
 
 Method
+ signals 
+    - different color coding
+    - pixel order (linear, zigzag )
  coding
  training
  compression
  implementation 
 
 
+
 Results
+
 Conclusion

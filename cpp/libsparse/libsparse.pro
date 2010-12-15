@@ -9,8 +9,10 @@ TARGET = libsparse
 TEMPLATE = lib
 DEFINES += LIBSPARSE_LIBRARY
 
-QMAKE_CXXFLAGS += -pg
-QMAKE_LFLAGS+= -pg
+QMAKE_CXXFLAGS += -fopenmp
+
+#QMAKE_CXXFLAGS += -pg
+#QMAKE_LFLAGS+= -pg
 
 # linux
 unix:INCLUDEPATH += /homes/wheel/seb/playground/include
@@ -21,7 +23,7 @@ macx:INCLUDEPATH += /Users/sebastian/uni/include \
                     /Users/sebastian/uni/OpenCV-2.1.0/include
 macx:LIBS += -L/Users/sebastian/uni/OpenCV-2.1.0/lib
 # universal
-LIBS += -lcxcore -lcv -lhighgui #-lgomp
+LIBS += -lcxcore -lcv -lhighgui -lgomp
 
 SOURCES += libsparse.cpp \
     dictionary.cpp \

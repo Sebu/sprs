@@ -24,9 +24,9 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     VectorXd shift = center((*data_));
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
 
-    int count=0;
     std::ofstream ofs( (fileName + ".sp").c_str(), std::ios::out | std::ios::binary );
-    for (int k=0; k<A.outerSize(); ++k)
+    for (int k=0; k<A.outerSize(); ++k) {
+      int count=0;
       for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
           short data=0;
           data = (short)round(it.row());
@@ -34,8 +34,10 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
           data = (short)round(it.value()/quant);
           //A.coeffRef(it.row(),it.col()) = it.value(); //data;
           ofs.write((char*)&data,sizeof(char));
-          if (data>count) count = data;
+          count++;
       }
+      std::cout << count << std::endl;
+    }
     ofs.close();
 
     MatrixXd recon_vigra = dict.getData()*A;
@@ -44,7 +46,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
     std::cout << "reorder  image" << std::endl;
 
-    cv::Mat outputImage(imageRows_+8, imageCols_+8, CV_8UC(channels_));
+    cv::Mat outputImage(imageRows_+winSize_, imageCols_+winSize_, CV_8UC(channels_));
     cv::Mat recon_cv(1,rows_,CV_8U);
     int index = 0;
     for(int j=0; j<imageRows_; j+=winSize_) {

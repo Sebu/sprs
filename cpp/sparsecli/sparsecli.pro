@@ -13,9 +13,9 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-#QMAKE_CXXFLAGS += -fopenmp -pg
-QMAKE_CXXFLAGS += -pg
-QMAKE_LFLAGS+= -pg
+QMAKE_CXXFLAGS += -fopenmp
+#QMAKE_CXXFLAGS += -pg
+#QMAKE_LFLAGS+= -pg
 
 # QMAKE_CXXFLAGS += -O3 -msse2 -msse3
 
@@ -30,7 +30,7 @@ macx:LIBS += -L/Users/sebastian/uni/OpenCV-2.1.0/lib
 
 # universal
 INCLUDEPATH += ../
-LIBS += -L../libsparse -llibsparse -lcxcore -lcv -lhighgui #-lgomp
+LIBS += -L../libsparse -llibsparse -lcxcore -lcv -lhighgui -lgomp
 
 SOURCES += main.cpp
 
