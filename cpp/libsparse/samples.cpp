@@ -28,16 +28,22 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     for (int k=0; k<A.outerSize(); ++k) {
       int count=0;
       for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
+
           short data=0;
-          data = (short)round(it.row());
-          ofs.write((char*)&data,sizeof(data));
           data = (short)round(it.value()/quant);
-          //A.coeffRef(it.row(),it.col()) = it.value(); //data;
-          ofs.write((char*)&data,sizeof(char));
-          count++;
+          unsigned short pos=0;
+          pos = (short)round(it.row());
+          A.coeffRef(it.row(),it.col()) = data*quant;
+          if(data) {
+              ofs.write((char*)&pos,sizeof(pos));
+              ofs.write((char*)&data,sizeof(data));
+              count++;
+              std::cout << data << " ";
+          }
       }
-      std::cout << count << std::endl;
+//      std::cout << count << " ";
     }
+    std::cout << std::endl;
     ofs.close();
 
     MatrixXd recon_vigra = dict.getData()*A;
@@ -53,7 +59,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
         for(int i=0; i<imageCols_; i+=winSize_) {
             for(int jj=0; jj<channels_; jj++){
                 for(int ii=0; ii<rows_/channels_; ii++) {
-                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(jj*(rows_/channels_)+ii, index)*quant);
+                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(jj*(rows_/channels_)+ii, index));
                 }
             }
 

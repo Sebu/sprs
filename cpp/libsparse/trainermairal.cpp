@@ -60,8 +60,8 @@ void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
         MatrixXd d = D.getData().col(j);
         double pivot = A.coeff(j,j);
         if(pivot==0.0) continue;
-        if(isinf(pivot))
-            std::cout << "Sdsd" << std::endl;
+        //        if(isinf(pivot))
+        //            std::cout << "Sdsd" << std::endl;
 
         MatrixXd u = ( (1.0/pivot) * (b-(D.getData()*a)) ) + d;
         D.getData().col(j) = (1.0/std::max(u.norm(),1.0)) * u;
@@ -111,8 +111,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
             for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
                 double value = it.value();
                 aa(it.row(),it.col()) = value;
-                if((value!=value) || isinf(value))
-                    std::cout << value << std::endl;
+                //                if((value!=value) || isinf(value))
+                //                    std::cout << value << std::endl;
             }
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
@@ -122,8 +122,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
             for (Eigen::SparseMatrix<double>::InnerIterator it(tmp,k); it; ++it) {
                 double value = it.value();
                 (*A_)(it.row(),it.col()) += value;
-                if((value!=value) || isinf(value))
-                    std::cout << value << std::endl;
+                //                if((value!=value) || isinf(value))
+                //                    std::cout << value << std::endl;
             }
 
         (*B_) += sample*a.transpose();
@@ -132,9 +132,9 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         update((*A_), (*B_), D);
         std::ostringstream o;
         o << "tmp/dict_tmp" << t << ".png";
-//        if (!(t%1)) {
-//            D.debugSaveImage( o.str().c_str() );
-//        }
+        //        if (!(t%1)) {
+        D.debugSaveImage( o.str().c_str() );
+        //        }
 
     }
 

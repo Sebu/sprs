@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     int channels = 3;
     int mode = 1;
 
-    while ((opt = getopt(argc, argv, "c:d:e:f:i:m:rs:t:v")) != -1) {
+    while ((opt = getopt(argc, argv, "c:d:e:f:i:m:rs:t:vw:")) != -1) {
         switch(opt) {
         case 'c':
             coeffs = atoi(optarg);
@@ -78,6 +78,9 @@ int main(int argc, char *argv[])
             break;
         case 'v':
             verbose = true;
+            break;
+        case 'w':
+            winSize = atoi(optarg);
             break;
         case '?':
         default: /* '?' */

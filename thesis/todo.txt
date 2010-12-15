@@ -1,3 +1,9 @@
+dict names?
+
+size_blocksize_coeffs_samples_mode
+
+
+
 Introduction
   large image databases
   Thema Wozu brauchen wir dictionaries?

@@ -136,10 +136,10 @@ for (int signum=0; signum<L; ++signum) {
       //VectorXd GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXd::Ones(vars);
       double GA1sum = sqrt(GA1.sum());
       double AA = 1.0/GA1sum;
-      if(isinf(GA1sum) || GA1sum!=GA1sum || GA1sum == 0.0) {
-          std::cout << Gsub << "\n" << GA1sum << "\n" << y << "\n" << mu << std::endl;
-          ei_assert(0 && "wurst");
-      }
+//      if(isinf(GA1sum) || GA1sum!=GA1sum || GA1sum == 0.0) {
+//          std::cout << Gsub << "\n" << GA1sum << "\n" << y << "\n" << mu << std::endl;
+//          ei_assert(0 && "wurst");
+//      }
       MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
 
       MatrixXd Xsub = subselect(X,A[signum]);
