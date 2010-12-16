@@ -50,7 +50,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=0
 open=true
-order=3
+order=2
 
 [item:chapters/introduction.tex]
 archive=true
@@ -68,7 +68,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=20
 open=true
-order=2
+order=1
 
 [item:chapters/overview.tex]
 archive=true
@@ -77,16 +77,16 @@ encoding=UTF-8
 highlight=LaTeX
 line=116
 open=true
-order=1
+order=0
 
 [item:chapters/results.tex]
 archive=true
-column=0
+column=2
 encoding=UTF-8
 highlight=LaTeX
-line=5
+line=14
 open=true
-order=5
+order=4
 
 [item:chapters/title.tex]
 archive=true
@@ -113,7 +113,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=0
 open=true
-order=4
+order=3
 
 [item:thesis.tex]
 archive=true
@@ -121,5 +121,14 @@ column=0
 encoding=UTF-8
 highlight=LaTeX
 line=1
-open=true
+open=false
 order=0
+
+[item:todo.txt]
+archive=true
+column=35
+encoding=UTF-8
+highlight=None
+line=13
+open=true
+order=5
