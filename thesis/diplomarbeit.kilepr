@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.1 beta2
-lastDocument=chapters/results.tex
+lastDocument=chapters/overview.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -18,18 +18,18 @@ QuickBuild=
 
 [item:chapters/absichtserklaerung.tex]
 archive=true
-column=120
-encoding=
-highlight=
-line=0
+column=0
+encoding=UTF-8
+highlight=LaTeX
+line=5
 open=false
 order=-1
 
 [item:chapters/abstract.tex]
 archive=true
-column=2228256
-encoding=
-highlight=
+column=18
+encoding=UTF-8
+highlight=LaTeX
 line=0
 open=false
 order=-1
@@ -37,9 +37,9 @@ order=-1
 [item:chapters/appendix.tex]
 archive=true
 column=0
-encoding=
-highlight=
-line=0
+encoding=UTF-8
+highlight=LaTeX
+line=11
 open=false
 order=-1
 
@@ -48,51 +48,51 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=0
-open=true
+line=10
+open=false
 order=2
 
 [item:chapters/introduction.tex]
 archive=true
-column=105
+column=110
 encoding=UTF-8
 highlight=LaTeX
-line=23
+line=24
 open=false
 order=3
 
 [item:chapters/method.tex]
 archive=true
-column=66
+column=12
 encoding=UTF-8
 highlight=LaTeX
-line=20
+line=69
 open=true
 order=1
 
 [item:chapters/overview.tex]
 archive=true
-column=25
+column=38
 encoding=UTF-8
 highlight=LaTeX
-line=116
+line=13
 open=true
 order=0
 
 [item:chapters/results.tex]
 archive=true
-column=2
+column=30
 encoding=UTF-8
 highlight=LaTeX
-line=14
-open=true
+line=24
+open=false
 order=4
 
 [item:chapters/title.tex]
 archive=true
-column=170354776
-encoding=
-highlight=
+column=33
+encoding=UTF-8
+highlight=LaTeX
 line=0
 open=false
 order=-1
@@ -108,11 +108,11 @@ order=-1
 
 [item:header.tex]
 archive=true
-column=0
+column=21
 encoding=UTF-8
 highlight=LaTeX
-line=0
-open=true
+line=15
+open=false
 order=3
 
 [item:thesis.tex]
@@ -120,15 +120,15 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=1
+line=26
 open=false
 order=0
 
 [item:todo.txt]
 archive=true
-column=35
+column=0
 encoding=UTF-8
 highlight=None
-line=13
-open=true
+line=4
+open=false
 order=5

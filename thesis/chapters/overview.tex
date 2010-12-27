@@ -1,9 +1,18 @@
 \chapter{Overview}
 
-\section{Problem}
+\section{Problem statement}
+Size of database/dictionary
+Quality
+
 In order to find 
 1. coding signals 
 2. find a good ditionarie
+
+analog problem video compression but with less corelation between images and still image 
+
+\subsection{criteria}
+Convergence of the dictionary learning
+Quality increase with size increase 
 
 \subsection{dictionaries for signal representation}
 Dictionarie is a collection of ordered elements with an index.
@@ -47,10 +56,10 @@ Benefits of dictionaries
 
 
 \section{sparse codes/coding}
-a linear combination of a few non orthonormal atoms from
+Notation
+A linear combination of a few non orthonormal atoms from
 D that is close to the signal X
 try to keep coefficient vector sparse
-usage: reduction, classification, in-painting,  super-resolution
 Sparse coding is the 
 \[
 \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
@@ -63,8 +72,12 @@ we want the sparsest solution
 \] 
 measure sparsity via       l0-norm       ||a||0
 
-Da=X
-<>
+\begin{figure}
+\includegraphics[width = 0.33\textwidth]{images/Da_x.pdf} % Or .pdf
+\caption{Sparse Coding}
+\label{fig:da_x}
+\end{figure}
+
 
 In the last 15 years several sparse coding algorithms have been proposed. 
 Some that solve the initial problem <> greedyly, the (orthogonal) matching pursuit, and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
@@ -79,47 +92,45 @@ Solution:
 use greedy approach or make problem convex (e.g. use ||a||1)
 the most common algorithms are the following ones.
 
+
+\subsection{usage/application}
+\subsubsection{noise reduction}
+Remove noise from a signal. Using the fact that sparse coding 
+is an approximation of signal that looses .... in its encoding process. 
+
+\subsubsection{in-painting}
+fill missing parts by removing rows from the dictionary
+Train with the original image
+
+\subsubsection{compression}
+\subsubsection{classification}
+
 \subsection{matching pursuit}
+\begin{algorithm}
 \begin{algorithmic}
-\IF {$i\geq maxval$} 
-        \STATE $i\gets 0$
-\ELSE
-        \IF {$i+k\leq maxval$}
-                \STATE $i\gets i+k$
-        \ENDIF
-\ENDIF 
+\STATE i=0
 \end{algorithmic}
+\end{algorithm}
 
 \subsection{orthogonal matching pursuit}
 \label{sec:omp}
 \begin{algorithm}
-\caption{Wurst}
 \begin{algorithmic}
-\IF {$i\geq maxval$} 
-        \STATE $i\gets 0$
-\ELSE
-        \IF {$i+k\leq maxval$}
-                \STATE $i\gets i+k$
-        \ENDIF
-\ENDIF 
+\STATE i=0
 \end{algorithmic}
+\end{algorithm}
 
 \subsection{LARS-Lasso}
 The LASSO (least absolute shrinkage and selection operator) is a algorithm to find a regularized version of a least squares solution.
 The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small.
 
-The LARS algorithm ... \cite{least angle regression}
+The LARS algorithm ... \cite{LARS}
 The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression
-as described in \cite{Least Angle Regression}. It is a modified version of the LARS where ....
+as described in \cite{LARS}. It is a modified version of the LARS where ....
 
+\begin{algorithm}
 \begin{algorithmic}
-\IF {$i\geq maxval$} 
-        \STATE $i\gets 0$
-\ELSE
-        \IF {$i+k\leq maxval$}
-                \STATE $i\gets i+k$
-        \ENDIF
-\ENDIF 
+\STATE i=0
 \end{algorithmic}
 \end{algorithm}
 
@@ -152,16 +163,7 @@ We will also concentrate on real practical data. This means typically 3-channel 
 Current research is primary concentrating on other tasks. 
 Like ... related work :)
 
-\section{Related work}
-\subsection{application}
-\subsubsection{noise reduction}
-Remove noise from a signal. Using the fact that sparse coding 
-is an approximation of signal that looses .... in its encoding process. 
-
-\subsubsection{in-painting}
-fill missing parts by removing rows from the dictionary
-Train with the original image
-
+\subsection{improvements}
 \subsection{multi-scale}
 Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
 segments (multiple times of the default segment). The idea is that aligned smooth regions with low variance can be 
@@ -184,29 +186,28 @@ similar patches should admit similar patterns
 \subsubsection{hirarchy/structure}
 Adding hirarchy/structure to dictionaries can lead to faster coding or use in structure analysis ( text documents )
 \cite{Jenatton2010}
-\subsubsection{training with a neural network}
+
+
+
+\section{Related work}
+
+\subsection{compression of face images}
+
+\subsection{training with a neural network}
 Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
 
-
-\section{Image database/Training set}
-Task specific training data is a common way to solve the problem of finding the right dictionary. 
-Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
-signal that gets de-noised or restored from in-painting.
-If the task gets bigger it sounds logical to increase the size of training data and take a bigger veriety of signals to learn from.
-
-
-\section{object/aim/intention of this thesis}
+\section{goal of this thesis}
 Evaluate the quality and size of learned big redundant dictionaries for 
-optimal sparse coding of large image databases.!!!!!
+optimal sparse coding of large image databases.
 
 Observation of problems (encoding time, quality benefit, etc.)
 
 Search for a universal dictionary for combination natural and artificial images
  
-Size of 
+Convergence of different sizes and configurations of learned dictionaries.
 how many elements for a 'good' sparse representation?
 
-add structure for speed and model improvements
-Multi-scale, multi-channel, hierarchy
+\Todo{OPTIONAL add structure for speed and model improvements Multi-scale, multi-channel, hierarchy}
 
-Improve compression and usage as a image descriptor.
+
+Improve compression vs. jpeg/jepg2000 and possible usage as an image descriptor.

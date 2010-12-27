@@ -119,6 +119,20 @@ MatrixXd center(MatrixBase<T1>& M) {
     return shift;
 }
 
+template<typename T1>
+double mse(MatrixBase<T1>& I, MatrixBase<T1>& K) {
+    double sum = (I - K).cwise().pow(2.0).sum();
+    return sum/(I.cols()*I.rows());
+
+}
+
+template<typename T1>
+double psnr(MatrixBase<T1>& I, MatrixBase<T1>& K) {
+    double mseVal = mse(I,K);
+    return 10 * std::log10( (255*255)/ mseVal );
+
+}
+
 
 int maxabs(VectorXd& c);
 void vec_assign(MatrixXd& y, MatrixXd& x, VectorXi& ind, int k, int start);

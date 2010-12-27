@@ -18,7 +18,7 @@ MatrixXd & Samples::getData() {
 
 void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
-    double quant = 1.0;
+    double quant = 10.0;
 
     std::cout << "restore image" << std::endl;
     VectorXd shift = center((*data_));
@@ -49,6 +49,9 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     MatrixXd recon_vigra = dict.getData()*A;
 
     unshift(recon_vigra,shift);
+    unshift((*data_),shift);
+
+    std::cout << "psnr: " << psnr((*data_),recon_vigra) << std::endl;
 
     std::cout << "reorder  image" << std::endl;
 

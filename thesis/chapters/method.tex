@@ -2,10 +2,10 @@
 
 
 \section{Signal coding/representation}
-As we use natural color images and graphics we require to use muti-channel data. Common 3-channel from a RGB color space.
+As we use natural color images and graphics we require to use multi-channel data. Common 3-channel from a RGB color space.
 We take an approach to transform our initial signal into other color spaces like in jpeg encoding to account natural human reception of
 color data. 
-Expriment ....
+Experiment ....
 \subsection{color/signal representation}
 
 \section{coding step}
@@ -17,22 +17,33 @@ The complete regularization path based on This \cite{lars.m}
 
 \section{training step}
 Keeping the training sparse vectors to sparse can lead to dictionaries with only low frequency elements.
-Using LARS-Lasso for training genrates a good dictionay for LARS and OMP. Training with OMP leads to 
+Using LARS-Lasso for training generates a good dictionary for LARS and OMP. Training with OMP leads to 
 a dictionary more specialized for use with OMP. -> is LARS better?
 
 \subsection{Mairal2010}
-A more indepth look at the mairal online training algorithm. 
-Why use this algorithm? Robust, convergent, fast, online
+A more in-depth look at the mairal on-line training algorithm. 
+Why use this algorithm? Robust, convergent, fast, on-line
+
+\subsection{Image database/Training set}
+Task specific training data is a common way to solve the problem of finding the right dictionary. 
+Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
+signal that gets de-noised or restored from in-painting.
+If the task gets bigger it sounds logical to increase the size of training data and take a bigger variety of signals to learn from.
 
 \subsection{adaptive}
+Thanks to the on-line approach of the training step an adaptive approach can be used. 
 
-\subsection{quality messure}
+\subsection{quality measure/criteria}
 PSNR, mean square error MSE, adaptive training 
 
-\section{Encoding/Compression}
-see JPEG: quantization, RLE or entropy
 
 \subsection{Quantization}
+fixed factor or analysis of dictionary
+
+\section{Encoding}
+index 8-16bit 
+coefficient 8bit, Huffman
+
 
 
 \section{Implementation}
@@ -40,14 +51,22 @@ see JPEG: quantization, RLE or entropy
 The whole test suit is written in C++.
 Eigen lib for vector and matrix operations and some linear algebra algorithms.
 OpenCV for image read/write and color space conversion.
-In situtations where ist is applicable we use OpenMP to make use of muti-core CPUs. 
+In situations where it is applicable we use OpenMP to make use of multi-core CPUs. OpenMP \url{http://openmp.org/wp/}
+is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
+the user to distribute code block and loops to multiple CPU cores. 
 
 Coder
 The OMP implementation is based on the OMP implementation from \cite{OMPBox}
-The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{lars.m}
+The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{lars.m} and the original paper \cite{LARS}
 
 Trainer
 The Mairal2010 trainer is a straight forward implementation of the basic version of the algorithm presented in \cite{Mairal2010}.
-With the batch optimization.
+With the batch optimization. Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
 
+Samples 
+The 
+
+Problems
+Big matrices
+Speed 
 
