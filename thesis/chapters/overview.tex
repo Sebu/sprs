@@ -1,5 +1,7 @@
 \chapter{Overview}
 
+\numberwithin{equation}{chapter}
+
 \section{Problem statement}
 Size of database/dictionary
 Quality
@@ -40,10 +42,11 @@ Continues signals would be better for .... . But our signal (image etc.) will be
 Besides the problem of coding becomes different in the continues space \cite{} Because of ...
 
 \subsection{splitting the problem}
+\cite{Rubinstein2010}
 In the last 15 years 
 
 the idea came up to interpret the basis transforms as sparse linear combination of dictionary atoms.
-see \cite{Olshausen Field 1997} and \cite{}
+see \cite{Olshausen1997} and \cite{}
 The benefit from this approach/direction was that you could decouple signal coding and dictionary design.
 Separating the problem into two distinct problems made the search for task specific and .... more flexible \cite{?}.
 
@@ -56,24 +59,25 @@ Benefits of dictionaries
 
 
 \section{sparse codes/coding}
-Notation
-A linear combination of a few non orthonormal atoms from
-D that is close to the signal X
+Consider $X$ as matrix with $n$ columns each column $x_{i}$ representing a signal described by a single vector of signal length $m$.
+The dictionary $D$ is another matrix with $p$ columns where each column reprensents an atom signal with the same dimension and size as a single signal $x_{i}$ from $X$.
+The sparse vector $\alpha$ is linear combination of a few non orthonormal atoms from D that is close to the signal X.
 try to keep coefficient vector sparse
 Sparse coding is the 
 \[
-\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary}}
+\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary atoms}}
 \underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
 \]
 solve under-determined linear system
 we want the sparsest solution
-\[
-\min_{\alpha\in\mathbb{R}^{p}} \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
-\] 
-measure sparsity via       l0-norm       ||a||0
+\begin{align}
+\min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
+\end{align}
+measure sparsity via       l0-norm       $\lVert\alpha\rVert_{0}$
 
 \begin{figure}
-\includegraphics[width = 0.33\textwidth]{images/Da_x.pdf} % Or .pdf
+\centering
+\includegraphics[width = 0.66\textwidth]{images/Da_x.pdf} % Or .pdf
 \caption{Sparse Coding}
 \label{fig:da_x}
 \end{figure}
@@ -84,28 +88,23 @@ Some that solve the initial problem <> greedyly, the (orthogonal) matching pursu
 large linear system solvers with few optimization constraints. The LARS-Lasso, basis pursuit, FOCUSS?
 
 
-blaa \footnote{test 123} blub
-
-||a||0 makes the problem NP-hard
+$\lVert\alpha\rVert_{0}$ makes the problem NP-hard
 to get best solution you need to test every combination
 Solution:
-use greedy approach or make problem convex (e.g. use ||a||1)
+use greedy approach or make problem convex (e.g. use $\lVert\alpha\rVert_{1}$)
 the most common algorithms are the following ones.
 
 
-\subsection{usage/application}
-\subsubsection{noise reduction}
-Remove noise from a signal. Using the fact that sparse coding 
-is an approximation of signal that looses .... in its encoding process. 
-
-\subsubsection{in-painting}
-fill missing parts by removing rows from the dictionary
-Train with the original image
-
-\subsubsection{compression}
-\subsubsection{classification}
-
 \subsection{matching pursuit}
+The algorithm calculates a coefficient vector $\alpha$ which is an approximate solution of the following NP-hard problem
+\begin{align}
+\min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{0} \leq L
+\end{align}
+or
+\begin{align}
+\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{0}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
+\end{align}
+\cite{Mallat1993}
 \begin{algorithm}
 \begin{algorithmic}
 \STATE i=0
@@ -113,6 +112,7 @@ Train with the original image
 \end{algorithm}
 
 \subsection{orthogonal matching pursuit}
+\cite{Pati1993}
 \label{sec:omp}
 \begin{algorithm}
 \begin{algorithmic}
@@ -124,9 +124,17 @@ Train with the original image
 The LASSO (least absolute shrinkage and selection operator) is a algorithm to find a regularized version of a least squares solution.
 The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small.
 
-The LARS algorithm ... \cite{LARS}
+The LARS algorithm ... \cite{Efron2004}
 The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression
-as described in \cite{LARS}. It is a modified version of the LARS where ....
+as described in \cite{Efron2004}. It is a modified version of the LARS where ....
+
+\begin{align}
+\min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{1} \leq L
+\end{align}
+or
+\begin{align}
+\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{1}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
+\end{align}
 
 \begin{algorithm}
 \begin{algorithmic}
@@ -134,11 +142,31 @@ as described in \cite{LARS}. It is a modified version of the LARS where ....
 \end{algorithmic}
 \end{algorithm}
 
+\subsection{usage/application}
+\begin{description}
+\item[noise reduction]
+Remove noise from a signal. Using the fact that sparse coding 
+is an approximation of signal that looses .... in its encoding process. 
+\cite{Elad2006}
+
+\item[inpainting]
+fill missing parts by removing rows from the dictionary
+Train with the original image
+\cite{mairal08sparse}
+
+\item[compression] An example for this is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
+\item[classification] Examples for this can be found in \cite{Mairal2008b} and \cite{Bar2009}.
+\end{description}
+
+
 
 \section{Dictionaries/representation data}
 \subsection{analytical}
-\subsubsection{cosine}
-\subsubsection{wavelets}
+\begin{description}
+ \item[cosine]
+ \item[wavelets]
+ \item[curvelets/contourlets/bandelets]
+\end{description}
 
 \subsection{learned over-complete}
 recent research has shown that learnd dictionaries show better compression quality than small analytic dictionaries \cite{Aharon2006} \cite{Chen1998} 
@@ -164,37 +192,45 @@ Current research is primary concentrating on other tasks.
 Like ... related work :)
 
 \subsection{improvements}
-\subsection{multi-scale}
+
+\begin{description}
+\item[multi-scale]
 Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
 segments (multiple times of the default segment). The idea is that aligned smooth regions with low variance can be 
-can be combined an encoded as one signal rather than e.g. 4. 
+can be combined an encoded as one signal rather than e.g. 4. \cite{saprio}
 
-\cite{saprio}
-\subsection{multi-channel}
+\item[multi-channel]
 coding every channel separate or combine them
 into single signal. can lead to color bleeding \cite{mairal08sparse}
 fortunately this problem vanishes with big dictionaries and large training sets. \cite{mairal08sparse}
 
-\subsection{double sparsity}
+\item[double sparsity]
 Rather then directly using a collection of basis/atom signals as a dictionary. This approach uses sparse coding
 to encode the signals of a bigger dictionary with the help of a smaller on. \cite{double sparsity}
 
-\subsection{group sparsity}
+\item[group sparsity]
 similar patches should admit similar patterns
-  
 \cite{double sparsity}
-\subsubsection{hirarchy/structure}
+
+\item[hirarchy/structure]
 Adding hirarchy/structure to dictionaries can lead to faster coding or use in structure analysis ( text documents )
 \cite{Jenatton2010}
+
+\end{description}
+
 
 
 
 \section{Related work}
-
-\subsection{compression of face images}
-
-\subsection{training with a neural network}
+\begin{description}
+\item[compression of facial images] In 2008 Bryt and Elad \cite{Bryt2008} 
+\item[training with a neural network]
 Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
+\item[noise reduction]
+\item[in-painting]
+\end{description}
+
+
 
 \section{goal of this thesis}
 Evaluate the quality and size of learned big redundant dictionaries for 

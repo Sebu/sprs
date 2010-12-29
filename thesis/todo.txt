@@ -1,6 +1,6 @@
 dict names?
 
-size_blocksize_coeffs_samples_mode
+blocksize_size_samples_coeffs_mode
 
 
 Introduction

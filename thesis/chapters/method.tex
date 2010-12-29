@@ -8,12 +8,13 @@ color data.
 Experiment ....
 \subsection{color/signal representation}
 
-\section{coding step}
+\section{sparse coding step}
 \subsection{batch-OMP}
 A modified version of the OMP\footnote{\nameref{sec:omp}} that can effectively sparse codes multiple signals in parallel.
+\cite{Rubinstein2008}
 
 \subsection{LARS-Lasso}
-The complete regularization path based on This \cite{lars.m}
+The complete regularization path based on \cite{Efron2004}
 
 \section{training step}
 Keeping the training sparse vectors to sparse can lead to dictionaries with only low frequency elements.
@@ -36,36 +37,36 @@ Thanks to the on-line approach of the training step an adaptive approach can be 
 \subsection{quality measure/criteria}
 PSNR, mean square error MSE, adaptive training 
 
-
-\subsection{Quantization}
+\section{compression step}
+\subsection{quantization}
+The random distribution of the atoms in the dictionary 
 fixed factor or analysis of dictionary
 
-\section{Encoding}
-index 8-16bit 
+\section{precission}
+The sparse vector for every are encoded in an index with 8-32bit precission
 coefficient 8bit, Huffman
 
 
 
 \section{Implementation}
 \lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
-The whole test suit is written in C++.
-Eigen lib for vector and matrix operations and some linear algebra algorithms.
-OpenCV for image read/write and color space conversion.
-In situations where it is applicable we use OpenMP to make use of multi-core CPUs. OpenMP \url{http://openmp.org/wp/}
+The whole test suit is written in C++ with the use of OpenCV, LibEigen and OpenMP.
+Eigen \cite{Eigen} is a template library for fast vector and matrix operations and includes some linear algebra algorithms.
+It was mainly used for operations on dense and sparse matrices and solving of linear equation systems.
+OpenCV \cite{OpenCV} as in Open Computer Vision Library is it was mainly used for image read and write operations and color space conversion.
+In situations where it is applicable we use OpenMP to make use of multi-core CPUs. OpenMP \cite{OpenMP}
 is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
 the user to distribute code block and loops to multiple CPU cores. 
 
-Coder
-The OMP implementation is based on the OMP implementation from \cite{OMPBox}
-The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{lars.m} and the original paper \cite{LARS}
+The OMP implementation is based on the OMP implementation from \cite{Rubinstein}
+The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{Strand2005} and the original paper \cite{Efron2004}
 
 Trainer
-The Mairal2010 trainer is a straight forward implementation of the basic version of the algorithm presented in \cite{Mairal2010}.
-With the batch optimization. Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
+The Mairal2010 trainer is a straight forward implementation of the algorithm presented in \cite{Mairal2010}.
+It is a implementation of basic version of the algorithm with the batch optimization. 
+Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
 
-Samples 
-The 
-
+\Todo{Hardware}
 Problems
 Big matrices
 Speed 

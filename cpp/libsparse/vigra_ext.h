@@ -2,7 +2,7 @@
 #define VIGRA_EXT_H
 
 #include "regression.hxx"
-// #include <vigra/random.hxx>
+#include <opencv/cv.h>
 #include <iostream>
 #include <vector>
 
@@ -135,6 +135,8 @@ double psnr(MatrixBase<T1>& I, MatrixBase<T1>& K) {
 
 
 int maxabs(VectorXd& c);
+cv::Mat unshape(cv::Mat& in, int dim, int channels);
+cv::Mat inshape(cv::Mat& M, int dim, int channels);
 void vec_assign(MatrixXd& y, MatrixXd& x, VectorXi& ind, int k, int start);
 ////void vec_assign(vigra::Matrix<double>& y, vigra::Matrix<double>& x, vigra::Matrix<int>& ind, int k, int start);
 //vigra::Matrix<double> dense_vector(vigra::ArrayVector<int>  active_set, vigra::Matrix<double>  sparse_vector, int size);

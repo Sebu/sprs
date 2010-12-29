@@ -80,8 +80,7 @@ void Dictionary::debugSaveImage(const char* filename) {
 
     int tmp = ceil(sqrt(elementCount_));
 
-    MatrixXd D = (*data_); //(signalSize_, elementCount_);
-//    vigra::linalg::prepareColumns((*data_), D, vigra::linalg::DataPreparationGoals(vigra::linalg::UnitNorm));
+    MatrixXd D = (*data_);
 
     cv::Mat outputImage(size_*tmp, size_*tmp, CV_8UC(channels_));
     for(int j=0; j<size_*tmp; j+=size_) {
@@ -104,7 +103,8 @@ void Dictionary::debugSaveImage(const char* filename) {
                     recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>((d(jj*(signalSize_/channels_)+ii,0)-min)*scale);
                 }
             }
-            cv::Mat tmp = recon_cv.reshape(channels_, size_);
+//            cv::Mat tmp = recon_cv.reshape(channels_, size_);
+            cv::Mat tmp = inshape(recon_cv, size_,  channels_);
             cv::Mat region( outputImage,  cv::Rect(i,j,size_,size_) );
             tmp.copyTo(region);
         }

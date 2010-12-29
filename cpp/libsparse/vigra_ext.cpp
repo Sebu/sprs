@@ -24,6 +24,81 @@ void vec_assign(MatrixXd& y, MatrixXd& x, VectorXi& ind, int k, int start)
     y(i,0) = x(ind(i), start);
 }
 
+cv::Mat inshape(cv::Mat& M, int dim, int channels) {
+    ///cv::Mat M = in.reshape(1);
+    cv::Mat result(dim, dim*channels, CV_8U);
+
+    int i = 0, j = 0;
+    int d = -1; // -1 for top-right move, +1 for bottom-left move
+    int start = 0, end = dim * dim - 1;
+    do
+    {
+        result.at<uchar>(i, j*channels) =   M.at<uchar>(0,start*channels);
+        result.at<uchar>(i, j*channels+1) = M.at<uchar>(0,start*channels+1);
+        result.at<uchar>(i, j*channels+2) = M.at<uchar>(0,start*channels+2);
+        start++;
+//        result[i, j] = start++;
+
+        result.at<uchar>(dim-i-1, (dim-j-1)*channels) =   M.at<uchar>(0,end*channels);
+        result.at<uchar>(dim-i-1, (dim-j-1)*channels+1) = M.at<uchar>(0,end*channels+1);
+        result.at<uchar>(dim-i-1, (dim-j-1)*channels+2) = M.at<uchar>(0,end*channels+2);
+        end--;
+//        result[n - i - 1, n - j - 1] = end--;
+
+        i += d; j -= d;
+        if (i < 0)
+        {
+            i++; d = -d; // top reached, reverse
+        }
+        else if (j < 0)
+        {
+            j++; d = -d; // left reached, reverse
+        }
+    } while (start < end);
+    if (start == end) {
+        result.at<uchar>(i, j*channels) =   M.at<uchar>(0,start*channels);
+        result.at<uchar>(i, j*channels+1) = M.at<uchar>(0,start*channels+1);
+        result.at<uchar>(i, j*channels+2) = M.at<uchar>(0,start*channels+2);
+//        result[i, j] = start;
+    }
+    return result.reshape(channels);
+}
+
+cv::Mat unshape(cv::Mat& in, int dim, int channels) {
+    cv::Mat M = in.reshape(1);
+    cv::Mat result(1, dim*dim*channels, CV_8U);
+
+    int i = 0, j = 0;
+    int d = -1; // -1 for top-right move, +1 for bottom-left move
+    int start = 0, end = dim * dim - 1;
+    do
+    {
+        result.at<uchar>(0,start*channels) =   M.at<uchar>(i, j*channels);
+        start++;
+//        result[i, j] = start++;
+
+        result.at<uchar>(0,end*channels) =   M.at<uchar>(dim-i-1, (dim-j-1)*channels);
+        end--;
+//        result[n - i - 1, n - j - 1] = end--;
+
+        i += d; j -= d;
+        if (i < 0)
+        {
+            i++; d = -d; // top reached, reverse
+        }
+        else if (j < 0)
+        {
+            j++; d = -d; // left reached, reverse
+        }
+    } while (start < end);
+    if (start == end) {
+        result.at<uchar>(0,start*channels) =   M.at<uchar>(i, j*channels);
+//        result[i, j] = start;
+    }
+    return result;
+}
+
+
 
 //vigra::Matrix<double> dense_vector(vigra::ArrayVector<int>  active_set, vigra::Matrix<double>  sparse_vector, int size) {
 
