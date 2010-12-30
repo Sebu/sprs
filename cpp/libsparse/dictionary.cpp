@@ -45,26 +45,24 @@ void Dictionary::normalize() {
     for(int i=0; i<elementCount_; i++) {
         MatrixXd c = (*data_).col(i);
         c.normalize();
-        center(c);
+//        center(c);
         (*data_).col(i) = c;
     }
 }
 
 void Dictionary::initRandom() {
     (*data_).setRandom();   
-    normalize();
+//    normalize();
 }
 
 void Dictionary::initFromData(Samples& data) {
     srand ( time(NULL) );
-
-
     for(int j=0; j<this->elementCount_; j++) {
         int pos  = rand() % data.getData().cols();
-//        std::cout << j  << std::endl;
-        for(int i=0; i<data.getData().rows(); i++) {
-            (*data_)(i,j) = data.getData()(i,pos);
-        }
+        (*data_).col(j) = data.getData().col(pos);
+//        for(int i=0; i<data.getData().rows(); i++) {
+//            (*data_)(i,j) = data.getData()(i,pos);
+//        }
     }
 }
 
@@ -103,8 +101,8 @@ void Dictionary::debugSaveImage(const char* filename) {
                     recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>((d(jj*(signalSize_/channels_)+ii,0)-min)*scale);
                 }
             }
-//            cv::Mat tmp = recon_cv.reshape(channels_, size_);
-            cv::Mat tmp = inshape(recon_cv, size_,  channels_);
+            cv::Mat tmp = recon_cv.reshape(channels_, size_);
+//            cv::Mat tmp = inshape(recon_cv, size_,  channels_);
             cv::Mat region( outputImage,  cv::Rect(i,j,size_,size_) );
             tmp.copyTo(region);
         }

@@ -1,29 +1,8 @@
-dict names?
-
-blocksize_size_samples_coeffs_mode
-
-
-Introduction
-  large image databases
-  Thema Wozu brauchen wir dictionaries?
-  compression/image processing/signal analysis
-
-Overview
- Was sind dictionaries genau?
- Wie benutzt man sie?
- related work
-
-Method
- signals 
-    - different color coding
-    - pixel order (linear, zigzag )
- coding
- training
- compression
- implementation 
+-atoms
+-gen quantization matrix
+-entropy encoding of sparse code
+-small more specivic dicts (classification)
+-auto dict names
+ blocksize_size_samples_coeffs_mode
 
 
-
-Results
-
-Conclusion

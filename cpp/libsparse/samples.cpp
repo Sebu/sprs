@@ -68,8 +68,8 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
                 }
             }
 
-//            cv::Mat tmp = recon_cv.reshape(channels_, winSize_);
-            cv::Mat tmp = inshape(recon_cv, winSize_,  channels_);
+            cv::Mat tmp = recon_cv.reshape(channels_, winSize_);
+//            cv::Mat tmp = inshape(recon_cv, winSize_,  channels_);
 
             cv::Mat region( outputImage,  cv::Rect(i,j,winSize_, winSize_) );
             tmp.copyTo(region);
@@ -123,8 +123,8 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
             std::vector<cv::Mat> planes;
             split(warped, planes);
             for (int jj=0; jj<channels; jj++) {
-//                cv::Mat tmp = planes[jj].reshape(1,1);
-                cv::Mat tmp = unshape(planes[jj],winSize_,1);
+                cv::Mat tmp = planes[jj].reshape(1,1);
+//                cv::Mat tmp = unshape(planes[jj],winSize_,1);
                 for(int ii=0; ii<rows_/channels_; ii++) {
                     (*data_)(jj*(rows_/channels_)+ii,index) = tmp.at<uchar>(0,ii);
                 }

@@ -89,6 +89,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
     if (iterations) maximum = batch*iterations;
 
     D.normalize();
+    center(D.getData());
 
     for(int t=0; t<maximum; t+=batch) {
 
@@ -105,15 +106,15 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         std::cout << "a*a.transpose();" << std::endl;
 
-        MatrixXd aa = MatrixXd::Zero(a.rows(),a.cols());
+//        MatrixXd aa = MatrixXd::Zero(a.rows(),a.cols());
 
-        for (int k=0; k<a.outerSize(); ++k)
-            for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
-                double value = it.value();
-                aa(it.row(),it.col()) = value;
-                //                if((value!=value) || isinf(value))
-                //                    std::cout << value << std::endl;
-            }
+//        for (int k=0; k<a.outerSize(); ++k)
+//            for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
+//                double value = it.value();
+//                aa(it.row(),it.col()) = value;
+//                //                if((value!=value) || isinf(value))
+//                //                    std::cout << value << std::endl;
+//            }
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
         std::cout << "(*A_) += tmp;" << std::endl;
