@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     double eps = 0.0;
     int  coeffs = 20;
     int winSize = 8;
-    int channels = 3;
+    int channels = 1;
     int mode = 1;
 
     while ((opt = getopt(argc, argv, "c:d:e:f:i:m:rs:t:vw:")) != -1) {
@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            samples.loadImage(nameStr, winSize, channels, winSize);
-            if(!resume && counter==1) dict.initFromData(samples);
+            samples.loadImage(nameStr, winSize, channels, 2);
+//            if(!resume && counter==1) dict.initFromData(samples);
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             trainer.train(samples, dict,  0, sampleCount);
