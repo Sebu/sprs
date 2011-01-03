@@ -52,7 +52,8 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
     unshift(recon_vigra,shift);
 
-    std::cout << "psnr: " << psnr((*data_),recon_vigra) << std::endl;
+    std::cout << "PSNR: " << psnr((*data_),recon_vigra) << std::endl;
+    std::cout << "RMSE: " << std::sqrt(mse((*data_),recon_vigra)) << std::endl;
 
     std::cout << "reorder  image" << std::endl;
 

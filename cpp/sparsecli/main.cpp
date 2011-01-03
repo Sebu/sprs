@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
             samples.loadImage(nameStr, winSize, channels, 2);
-//            if(!resume && counter==1) dict.initFromData(samples);
+//            if(!resume && counter==1) dict.initFromData(samples);r
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             trainer.train(samples, dict,  0, sampleCount);
