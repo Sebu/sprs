@@ -100,10 +100,10 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
         std::cout << "can't read image" << std::endl;
         return false;
     }
-    cv::Mat blub;
-    cv::resize(inputImage, blub, cv::Size(256,256));
-    inputImage = blub;
-    cv::imwrite("/Users/sebastian/Bilder/bla.png",inputImage);
+//    cv::Mat blub;
+//    cv::resize(inputImage, blub, cv::Size(256,256));
+//    inputImage = blub;
+//    cv::imwrite("/Users/sebastian/Bilder/bla.png",inputImage);
     imageRows_ = inputImage.rows;
     imageCols_ = inputImage.cols;
     rows_ = winSize_*winSize_*channels_;
