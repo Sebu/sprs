@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
             ifs >> nameStr;
         }
         ifs.close();
-        dict.debugSaveImage( (dictFile + ".png").c_str() );
+        //dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
         trainer.save((dictFile + ".tmp").c_str() );
     }
@@ -147,6 +147,7 @@ int main(int argc, char *argv[])
         dict.load( dictFile.c_str() );
         //dict.initRandom();
         samples.loadImage(imageFile, winSize, channels, winSize);
+        std::cout << "worked" << std::endl;
         samples.saveImage(outputFilename, dict, *coder);
 
     }

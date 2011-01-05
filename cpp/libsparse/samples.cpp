@@ -43,7 +43,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
       }
 //      std::cout << count << " ";
     }
-    std::cout << std::endl;
+    //std::cout << std::endl;
     ofs.close();
     unshift((*data_),shift);
 
@@ -52,20 +52,22 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
     unshift(recon_vigra,shift);
 
-    std::cout << "PSNR: " << psnr((*data_),recon_vigra) << std::endl;
-    std::cout << "RMSE: " << std::sqrt(mse((*data_),recon_vigra)) << std::endl;
+    double mseVal = mse((*data_),recon_vigra);
+    std::cout << "PSNR: " << psnr(mseVal) << " dB" << std::endl;
+    std::cout << "RMSE: " << std::sqrt(mseVal) << std::endl;
 
     std::cout << "reorder  image" << std::endl;
 
     cv::Mat outputImage(imageRows_+winSize_, imageCols_+winSize_, CV_8UC(channels_));
-    cv::Mat recon_cv(1,rows_,CV_8U);
+    cv::Mat recon_cv(1,rows_*channels_,CV_8U);
     int index = 0;
     for(int j=0; j<imageRows_; j+=winSize_) {
         for(int i=0; i<imageCols_; i+=winSize_) {
 
             for(int jj=0; jj<channels_; jj++){
-                for(int ii=0; ii<rows_/channels_; ii++) {
-                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(jj*(rows_/channels_)+ii, index));
+                for(int ii=0; ii<rows_; ii++) {
+//                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(jj*(rows_/channels_)+ii, index));
+                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(ii,index*channels_+jj));
                 }
             }
 
@@ -87,10 +89,15 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     channels_ = channels;
     winSize_ = winSize;
     switch(channels_) {
+    case 0:
+        inputImage = cv::imread(fileName,-1);
+        std::cout << inputImage.channels() << std::endl;
+        channels_ = inputImage.channels();
+        break;
     case 1:
        inputImage = cv::imread(fileName, 0);
        break;
-    default:
+    case 3:
        inputImage = cv::imread(fileName);
        break;
 
@@ -100,14 +107,15 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
         std::cout << "can't read image" << std::endl;
         return false;
     }
-//    cv::Mat blub;
-//    cv::resize(inputImage, blub, cv::Size(256,256));
-//    inputImage = blub;
-//    cv::imwrite("/Users/sebastian/Bilder/bla.png",inputImage);
+    cv::Mat tmpMat;
+    cv::resize(inputImage, tmpMat, cv::Size(256,256));
+    inputImage = tmpMat;
+    cv::imwrite("/Users/sebastian/Bilder/bla.png",inputImage);
     imageRows_ = inputImage.rows;
     imageCols_ = inputImage.cols;
-    rows_ = winSize_*winSize_*channels_;
+    rows_ = winSize_*winSize_; //*channels_;
     cols_ = ceil((float)imageRows_/(float)step) * ceil((float)imageCols_/(float)step);
+    cols_*=channels_;
     //std::cout << cols_ << " " << imageRows_ <<  " " << step <<std::endl;
     if(data_) delete data_;
     data_ = new MatrixXd(rows_, cols_);
@@ -129,8 +137,9 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
             for (int jj=0; jj<channels; jj++) {
                 cv::Mat tmp = planes[jj].reshape(1,1);
 //                cv::Mat tmp = unshape(planes[jj],winSize_,1);
-                for(int ii=0; ii<rows_/channels_; ii++) {
-                    (*data_)(jj*(rows_/channels_)+ii,index) = tmp.at<uchar>(0,ii);
+                for(int ii=0; ii<rows_; ii++) {
+                   // (*data_)(jj*(rows_/channels_)+ii,index) = tmp.at<uchar>(0,ii);
+                   (*data_)(ii,index*channels_+jj) = tmp.at<uchar>(0,ii);
                 }
             }
             index++;

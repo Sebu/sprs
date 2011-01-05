@@ -8,7 +8,7 @@
 
 #include <eigen2/Eigen/Array>
 
-Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size*channels),
+Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size),
     elementCount_(elementCount), channels_(channels), size_(size)
 {
     data_ = new MatrixXd(signalSize_, elementCount_);
@@ -31,6 +31,8 @@ void Dictionary::load(const char* fileName) {
 
     if (ifs) {
         ifs >> signalSize_ >>  elementCount_ >> channels_ >> size_;
+        if(data_) delete data_;
+        data_ = new MatrixXd(signalSize_, elementCount_);
         for(unsigned int i=0; i<elementCount_; i++)
             for(unsigned int j=0; j<signalSize_; j++)
                 ifs >> (*data_)(j,i);
@@ -40,6 +42,9 @@ void Dictionary::load(const char* fileName) {
 }
 
 
+void Dictionary::centeR() {
+        center((*data_));
+}
 
 void Dictionary::normalize() {
     for(int i=0; i<elementCount_; i++) {
@@ -80,7 +85,8 @@ void Dictionary::debugSaveImage(const char* filename) {
 
     MatrixXd D = (*data_);
 
-    cv::Mat outputImage(size_*tmp, size_*tmp, CV_8UC(channels_));
+//    cv::Mat outputImage(size_*tmp, size_*tmp, CV_8UC(channels_));
+    cv::Mat outputImage(size_*tmp, size_*tmp, CV_8U);
     for(int j=0; j<size_*tmp; j+=size_) {
         for(int i=0; i<size_*tmp; i+=size_) {
             int index = ceil(j/size_)*tmp + ceil(i/size_);
@@ -96,12 +102,15 @@ void Dictionary::debugSaveImage(const char* filename) {
             }
             double scale = 255.0/(max - min);
 
-            for(int jj=0; jj<channels_; jj++){
-                for(int ii=0; ii<signalSize_/channels_; ii++) {
-                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>((d(jj*(signalSize_/channels_)+ii,0)-min)*scale);
+                for(int ii=0; ii<signalSize_; ii++) {
+                    recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>((d(ii,0)-min)*scale);
                 }
-            }
-            cv::Mat tmp = recon_cv.reshape(channels_, size_);
+//            for(int jj=0; jj<channels_; jj++){
+//                for(int ii=0; ii<signalSize_/channels_; ii++) {
+//                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>((d(jj*(signalSize_/channels_)+ii,0)-min)*scale);
+//                }
+//            }
+            cv::Mat tmp = recon_cv.reshape(1, size_);
 //            cv::Mat tmp = inshape(recon_cv, size_,  channels_);
             cv::Mat region( outputImage,  cv::Rect(i,j,size_,size_) );
             tmp.copyTo(region);

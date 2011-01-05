@@ -123,15 +123,19 @@ template<typename T1>
 double mse(MatrixBase<T1>& I, MatrixBase<T1>& K) {
     double sum = (I - K).cwise().pow(2.0).sum();
     return sum/(I.cols()*I.rows());
+}
 
+inline double psnr(double mseVal) {
+    return 10 * std::log10( (255*255)/ mseVal );
 }
 
 template<typename T1>
 double psnr(MatrixBase<T1>& I, MatrixBase<T1>& K) {
     double mseVal = mse(I,K);
-    return 10 * std::log10( (255*255)/ mseVal );
+    return psnr(mseVal);
 
 }
+
 
 
 int maxabs(VectorXd& c);

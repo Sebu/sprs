@@ -29,6 +29,7 @@ public:
     void initFromData(Samples& data);
 
     void normalize();
+    void centeR();
 
     void save(const char* filename);
     void load(const char* filename);
