@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            samples.loadImage(nameStr, winSize, channels, winSize);
-//            if(!resume && counter==1) dict.initFromData(samples);r
+            samples.loadImage(nameStr, winSize, channels, 1);
+//            if(!resume && counter==1) dict.initFromData(samples);
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             trainer.train(samples, dict,  0, sampleCount);
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
     if(imageFile!="")
     {
         Samples samples;
-        std::string outputFilename = imageFile + ".recon.jpg";
+        std::string outputFilename = imageFile + ".recon2.jpg";
         dict.load( dictFile.c_str() );
         //dict.initRandom();
         samples.loadImage(imageFile, winSize, channels, winSize);

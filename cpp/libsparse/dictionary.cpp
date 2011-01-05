@@ -8,8 +8,8 @@
 
 #include <eigen2/Eigen/Array>
 
-Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size),
-    elementCount_(elementCount), channels_(channels), size_(size)
+Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size*channels),
+    elementCount_(elementCount), channels_(channels), blockSize_(size)
 {
     data_ = new MatrixXd(signalSize_, elementCount_);
 }
@@ -18,7 +18,7 @@ Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), sign
 void Dictionary::save(const char* fileName) {
     std::ofstream ofs( fileName );
 
-    ofs << signalSize_ << " " << elementCount_ << " " << channels_ << " " << size_ << " ";
+    ofs << signalSize_ << " " << elementCount_ << " " << channels_ << " " << blockSize_ << " ";
     for(unsigned int i=0; i<elementCount_; i++)
         for(unsigned int j=0; j<signalSize_; j++)
             ofs << (*data_)(j,i);
@@ -30,8 +30,9 @@ void Dictionary::load(const char* fileName) {
     std::cout << "loading: " << fileName << std::endl;
 
     if (ifs) {
-        ifs >> signalSize_ >>  elementCount_ >> channels_ >> size_;
+        ifs >> signalSize_ >>  elementCount_ >> channels_ >> blockSize_;
         if(data_) delete data_;
+//        signalSize_ /= channels_;
         data_ = new MatrixXd(signalSize_, elementCount_);
         for(unsigned int i=0; i<elementCount_; i++)
             for(unsigned int j=0; j<signalSize_; j++)
@@ -64,6 +65,7 @@ void Dictionary::initFromData(Samples& data) {
     srand ( time(NULL) );
     for(int j=0; j<this->elementCount_; j++) {
         int pos  = rand() % data.getData().cols();
+//        std::cout << (*data_).rows() << " " << data.getData().rows() << std::endl;
         (*data_).col(j) = data.getData().col(pos);
 //        for(int i=0; i<data.getData().rows(); i++) {
 //            (*data_)(i,j) = data.getData()(i,pos);
@@ -85,11 +87,11 @@ void Dictionary::debugSaveImage(const char* filename) {
 
     MatrixXd D = (*data_);
 
-//    cv::Mat outputImage(size_*tmp, size_*tmp, CV_8UC(channels_));
-    cv::Mat outputImage(size_*tmp, size_*tmp, CV_8U);
-    for(int j=0; j<size_*tmp; j+=size_) {
-        for(int i=0; i<size_*tmp; i+=size_) {
-            int index = ceil(j/size_)*tmp + ceil(i/size_);
+    cv::Mat outputImage(blockSize_*tmp, blockSize_*tmp, CV_8UC(channels_));
+//    cv::Mat outputImage(blockSize_*tmp, blockSize_*tmp, CV_8U);
+    for(int j=0; j<blockSize_*tmp; j+=blockSize_) {
+        for(int i=0; i<blockSize_*tmp; i+=blockSize_) {
+            int index = ceil(j/blockSize_)*tmp + ceil(i/blockSize_);
             if(index>=D.cols()) break;
             MatrixXd d = D.col(index);
             cv::Mat recon_cv(1, signalSize_, CV_8U);
@@ -102,17 +104,17 @@ void Dictionary::debugSaveImage(const char* filename) {
             }
             double scale = 255.0/(max - min);
 
-                for(int ii=0; ii<signalSize_; ii++) {
-                    recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>((d(ii,0)-min)*scale);
-                }
-//            for(int jj=0; jj<channels_; jj++){
-//                for(int ii=0; ii<signalSize_/channels_; ii++) {
-//                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>((d(jj*(signalSize_/channels_)+ii,0)-min)*scale);
+//                for(int ii=0; ii<signalSize_; ii++) {
+//                    recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>((d(ii,0)-min)*scale);
 //                }
-//            }
-            cv::Mat tmp = recon_cv.reshape(1, size_);
+            for(int jj=0; jj<channels_; jj++){
+                for(int ii=0; ii<signalSize_/channels_; ii++) {
+                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>((d(jj*(signalSize_/channels_)+ii,0)-min)*scale);
+                }
+            }
+            cv::Mat tmp = recon_cv.reshape(channels_, blockSize_);
 //            cv::Mat tmp = inshape(recon_cv, size_,  channels_);
-            cv::Mat region( outputImage,  cv::Rect(i,j,size_,size_) );
+            cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_,blockSize_) );
             tmp.copyTo(region);
         }
     }

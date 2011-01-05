@@ -17,14 +17,14 @@ private:
     int signalSize_;
     int elementCount_;
     int channels_;
-    int size_;
+    int blockSize_;
 public:
     Dictionary(int, int, int);
     MatrixXd & getData();
     int getSignalSize() {return signalSize_; }
     int getElementCount() {return elementCount_; }
     int getChannels() {return channels_; }
-    int getSize() {return size_; }
+    int getSize() {return blockSize_; }
     void initRandom();
     void initFromData(Samples& data);
 

@@ -30,7 +30,7 @@ macx:LIBS += -L/Users/sebastian/uni/OpenCV-2.1.0/lib
 
 # universal
 INCLUDEPATH += ../
-LIBS += -L../libsparse -llibsparse -lcxcore -lcv -lhighgui -lgomp
+LIBS += -L../libsparse -llibsparse -lgomp
 
 SOURCES += main.cpp
 

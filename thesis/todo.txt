@@ -6,3 +6,7 @@
  blocksize_size_samples_coeffs_mode
 
 
+
+input_data / images
+output_data / dict/images  
+

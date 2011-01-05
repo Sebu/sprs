@@ -20,10 +20,14 @@ unix:LIBS += -L/homes/wheel/seb/playground/lib
 
 # Maces
 macx:INCLUDEPATH += /Users/sebastian/uni/include \
-                    /Users/sebastian/uni/OpenCV-2.1.0/include
-macx:LIBS += -L/Users/sebastian/uni/OpenCV-2.1.0/lib
+#                    /Users/sebastian/uni/OpenCV-2.1.0/include
+                    /opt/local/include
+macx:LIBS += -L/opt/local/lib
+#-L/Users/sebastian/uni/OpenCV-2.1.0/lib #\
+#            -L/opt/local/lib
 # universal
-LIBS += -lcxcore -lcv -lhighgui -lgomp
+# LIBS += -lcxcore -lcv -lhighgui -lgomp
+LIBS += -lopencv_core -lopencv_highgui -lopencv_imgproc -lgomp
 
 SOURCES += libsparse.cpp \
     dictionary.cpp \
@@ -33,7 +37,8 @@ SOURCES += libsparse.cpp \
     trainermairal.cpp \
     vigra_ext.cpp \
     samples.cpp \
-    coderomp.cpp
+    coderomp.cpp \
+    huffman.c
 
 HEADERS += libsparse.h\
         libsparse_global.h \
@@ -45,4 +50,5 @@ HEADERS += libsparse.h\
     trainer.h \
     trainermairal.h \
     samples.h \
-    coderomp.h
+    coderomp.h \
+    huffman.h

@@ -18,8 +18,13 @@ private:
 public:
 //   vigra::Matrix<double>* scaling_;
    int imageRows_, imageCols_;
-   int rows_, cols_;
-   int winSize_, channels_;
+   int rows_, cols_, channels_;
+
+   // compression settings
+   int coeffs_;
+   int quant_;
+   int blockSize_;
+
    Samples();
    MatrixXd & getData();
    bool loadImage(std::string& fileName, int winSize, int channels, int step=1);
