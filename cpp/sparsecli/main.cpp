@@ -49,22 +49,23 @@ int main(int argc, char *argv[])
 
 
     static struct option long_options[] =
-                 {
-                   /* These options set a flag. */
-                   {"verbose", no_argument,       &verbose, 1},
-                   {"resume",  no_argument,       &resume, 1},
-                   {"mode",  required_argument, 0, 'm'},
-                   {"dictSize",  required_argument, 0, 'd'},
-                   {"epsilon",    required_argument, 0, 'e'},
-                   {"coeffs",    required_argument, 0, 'c'},
-        {"input",    required_argument, 0, 'i'},
-        {"train",    required_argument, 0, 't'},
-        {"samples",    required_argument, 0, 's'},
+    {
+        /* These options set a flag. */
+        {"coeffs",    required_argument, 0, 'c'},
+        {"dictSize",  required_argument, 0, 'd'},
+        {"epsilon",    required_argument, 0, 'e'},
         {"dict",    required_argument, 0, 'f'},
+        {"input",    required_argument, 0, 'i'},
+        {"mode",  required_argument, 0, 'm'},
+        {"train",    required_argument, 0, 't'},
+        {"resume",  no_argument,       &resume, 1},
+        {"samples",    required_argument, 0, 's'},
+        {"verbose", no_argument,       &verbose, 1},
+        {"blockSize",    required_argument, 0, 'w'},
 
 
         {0, 0, 0, 0}
-                 };
+    };
 
     int option_index = 0;
 
@@ -160,6 +161,9 @@ int main(int argc, char *argv[])
         trainer.save((dictFile + ".tmp").c_str() );
     }
 
+    for(int i=0; i<dict.meta_.size(); i++)
+        std::cout << dict.meta_[i].usage_ << " ";
+    std::cout << std::endl;
 
     if(imageFile!="")
     {

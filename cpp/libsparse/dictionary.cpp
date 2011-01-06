@@ -20,22 +20,25 @@ void Dictionary::init(int signalSize, int elements) {
     elements_ = elements;
     signalSize_ = signalSize;
     data_ = new MatrixXd(signalSize_, elements_);
-    meta_ = new MetaDict[elements_];
+    meta_ = std::vector<MetaDict>(elements_);
 }
 
 
 void Dictionary::clear() {
    if(data_) { delete data_; data_=0;}
-   if(meta_) { delete[] meta_; meta_=0; }
+   meta_.clear();
+//   if(meta_) { delete[] meta_; meta_=0; }
 }
 
 void Dictionary::save(const char* fileName) {
     std::ofstream ofs( fileName );
 
-    ofs << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
-    for(unsigned int i=0; i<elements_; i++)
+    ofs << DICT_VERSION << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
+    for(unsigned int i=0; i<elements_; i++) {
+        ofs << meta_[i].usage_;
         for(unsigned int j=0; j<signalSize_; j++)
             ofs << (*data_)(j,i);
+    }
 
     ofs.close();
 }
@@ -45,14 +48,20 @@ void Dictionary::load(const char* fileName) {
     std::cout << "loading: " << fileName << std::endl;
 
     if (ifs) {
-        ifs >> signalSize_ >>  elements_ >> channels_ >> blockSize_;
+        ifs >> signalSize_;
+
+        // VERSION CLASH :)
+        if(signalSize_ == DICT_VERSION) { ifs >> signalSize_; std::cout << signalSize_ << std::endl; }
+        ifs >>  elements_ >> channels_ >> blockSize_;
         clear();//        signalSize_ /= channels_;
         init(signalSize_, elements_);
 
-        for(unsigned int i=0; i<elements_; i++)
+        for(unsigned int i=0; i<elements_; i++) {
+            ifs >> meta_[i].usage_;
             for(unsigned int j=0; j<signalSize_; j++)
                 ifs >> (*data_)(j,i);
-    }
+        }
+    } else { std::cout << "dict not found" << std::endl; }
 
     ifs.close();
 }
