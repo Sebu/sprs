@@ -108,13 +108,10 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
 //        MatrixXd aa = MatrixXd::Zero(a.rows(),a.cols());
 
-//        for (int k=0; k<a.outerSize(); ++k)
-//            for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
-//                double value = it.value();
-//                aa(it.row(),it.col()) = value;
-//                //                if((value!=value) || isinf(value))
-//                //                    std::cout << value << std::endl;
-//            }
+        for (int k=0; k<a.outerSize(); ++k)
+            for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
+              D.meta_[it.row()].usage_++;
+            }
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
         std::cout << "(*A_) += tmp;" << std::endl;
@@ -132,10 +129,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         std::cout << "update((*A_), (*B_), D);" << std::endl;
         update((*A_), (*B_), D);
         std::ostringstream o;
-        o << "tmp/dict_tmp" << t << ".png";
-        //        if (!(t%1)) {
+        o << "../../output/tmp/dict_tmp" << t << ".png";
         D.debugSaveImage( o.str().c_str() );
-        //        }
 
     }
 

@@ -11,7 +11,7 @@
 #include <fstream>
 #include <QDir>
 #include <signal.h>
-
+#include <getopt.h>
 
 bool running = true;
 
@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
 
     int opt = 0;
 
-    bool verbose = false;
-    bool resume = false;
+    int verbose = 0;
+    int resume = 0;
     std::string dictFile = "";
     std::string trainFile = "";
     std::string imageFile = "";
@@ -43,11 +43,32 @@ int main(int argc, char *argv[])
     int dictSize = 4096;
     double eps = 0.0;
     int  coeffs = 20;
-    int winSize = 8;
+    int blockSize = 8;
     int channels = 3;
     int mode = 1;
 
-    while ((opt = getopt(argc, argv, "c:d:e:f:i:m:rs:t:vw:")) != -1) {
+
+    static struct option long_options[] =
+                 {
+                   /* These options set a flag. */
+                   {"verbose", no_argument,       &verbose, 1},
+                   {"resume",  no_argument,       &resume, 1},
+                   {"mode",  required_argument, 0, 'm'},
+                   {"dictSize",  required_argument, 0, 'd'},
+                   {"epsilon",    required_argument, 0, 'e'},
+                   {"coeffs",    required_argument, 0, 'c'},
+        {"input",    required_argument, 0, 'i'},
+        {"train",    required_argument, 0, 't'},
+        {"samples",    required_argument, 0, 's'},
+        {"dict",    required_argument, 0, 'f'},
+
+
+        {0, 0, 0, 0}
+                 };
+
+    int option_index = 0;
+
+    while ((opt = getopt_long(argc, argv, "c:d:e:f:i:m:rs:t:vw:", long_options, &option_index)) != -1) {
         switch(opt) {
         case 'c':
             coeffs = atoi(optarg);
@@ -80,7 +101,7 @@ int main(int argc, char *argv[])
             verbose = true;
             break;
         case 'w':
-            winSize = atoi(optarg);
+            blockSize = atoi(optarg);
             break;
         case '?':
         default: /* '?' */
@@ -89,11 +110,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    for(int i=1; i<argc; i++)
-        std::cout << argv[i] << " ";
-    std::cout << std::endl;
+    std::cout << coeffs << " " << blockSize << "  " << dictSize << " "  << trainFile << std::endl;
 
-    Dictionary dict(winSize, channels, dictSize);
+    Dictionary dict(blockSize, channels, dictSize);
 
     Coder* coder = 0;
     switch(mode) {
@@ -126,15 +145,17 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            samples.loadImage(nameStr, winSize, channels, 1);
-//            if(!resume && counter==1) dict.initFromData(samples);
+            samples.loadImage(nameStr, blockSize, channels, blockSize);
+
+            //            if(!resume && counter==1) dict.initFromData(samples);
+
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             trainer.train(samples, dict,  0, sampleCount);
             ifs >> nameStr;
         }
         ifs.close();
-        //dict.debugSaveImage( (dictFile + ".png").c_str() );
+        dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
         trainer.save((dictFile + ".tmp").c_str() );
     }
@@ -143,10 +164,10 @@ int main(int argc, char *argv[])
     if(imageFile!="")
     {
         Samples samples;
-        std::string outputFilename = imageFile + ".recon2.jpg";
+        std::string outputFilename = imageFile + ".recon.jpg";
         dict.load( dictFile.c_str() );
         //dict.initRandom();
-        samples.loadImage(imageFile, winSize, channels, winSize);
+        samples.loadImage(imageFile, blockSize, channels, blockSize);
         std::cout << "worked" << std::endl;
         samples.saveImage(outputFilename, dict, *coder);
 

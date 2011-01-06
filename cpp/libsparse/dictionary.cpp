@@ -9,19 +9,34 @@
 #include <eigen2/Eigen/Array>
 
 Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size*channels),
-    elementCount_(elementCount), channels_(channels), blockSize_(size)
+    elements_(elementCount), channels_(channels), blockSize_(size), meta_(0)
 {
-    data_ = new MatrixXd(signalSize_, elementCount_);
+    clear();
+    init(signalSize_, elements_);
 }
 
+
+void Dictionary::init(int signalSize, int elements) {
+    elements_ = elements;
+    signalSize_ = signalSize;
+    data_ = new MatrixXd(signalSize_, elements_);
+    meta_ = new MetaDict[elements_];
+}
+
+
+void Dictionary::clear() {
+   if(data_) { delete data_; data_=0;}
+   if(meta_) { delete[] meta_; meta_=0; }
+}
 
 void Dictionary::save(const char* fileName) {
     std::ofstream ofs( fileName );
 
-    ofs << signalSize_ << " " << elementCount_ << " " << channels_ << " " << blockSize_ << " ";
-    for(unsigned int i=0; i<elementCount_; i++)
+    ofs << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
+    for(unsigned int i=0; i<elements_; i++)
         for(unsigned int j=0; j<signalSize_; j++)
             ofs << (*data_)(j,i);
+
     ofs.close();
 }
 
@@ -30,11 +45,11 @@ void Dictionary::load(const char* fileName) {
     std::cout << "loading: " << fileName << std::endl;
 
     if (ifs) {
-        ifs >> signalSize_ >>  elementCount_ >> channels_ >> blockSize_;
-        if(data_) delete data_;
-//        signalSize_ /= channels_;
-        data_ = new MatrixXd(signalSize_, elementCount_);
-        for(unsigned int i=0; i<elementCount_; i++)
+        ifs >> signalSize_ >>  elements_ >> channels_ >> blockSize_;
+        clear();//        signalSize_ /= channels_;
+        init(signalSize_, elements_);
+
+        for(unsigned int i=0; i<elements_; i++)
             for(unsigned int j=0; j<signalSize_; j++)
                 ifs >> (*data_)(j,i);
     }
@@ -48,32 +63,24 @@ void Dictionary::centeR() {
 }
 
 void Dictionary::normalize() {
-    for(int i=0; i<elementCount_; i++) {
+    for(int i=0; i<elements_; i++) {
         MatrixXd c = (*data_).col(i);
         c.normalize();
-//        center(c);
         (*data_).col(i) = c;
     }
 }
 
 void Dictionary::initRandom() {
     (*data_).setRandom();   
-//    normalize();
 }
 
 void Dictionary::initFromData(Samples& data) {
     srand ( time(NULL) );
-    for(int j=0; j<this->elementCount_; j++) {
+    for(int j=0; j<this->elements_; j++) {
         int pos  = rand() % data.getData().cols();
-//        std::cout << (*data_).rows() << " " << data.getData().rows() << std::endl;
         (*data_).col(j) = data.getData().col(pos);
-//        for(int i=0; i<data.getData().rows(); i++) {
-//            (*data_)(i,j) = data.getData()(i,pos);
-//        }
     }
 }
-
-
 
 
 MatrixXd & Dictionary::getData() {
@@ -83,7 +90,7 @@ MatrixXd & Dictionary::getData() {
 
 void Dictionary::debugSaveImage(const char* filename) {
 
-    int tmp = ceil(sqrt(elementCount_));
+    int tmp = ceil(sqrt(elements_));
 
     MatrixXd D = (*data_);
 
