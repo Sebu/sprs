@@ -10,12 +10,14 @@
 #include <eigen2/Eigen/Core>
 USING_PART_OF_NAMESPACE_EIGEN
 
-#define DICT_VERSION 2
+#define DICT_VERSION 3
 
 class LIBSPARSESHARED_EXPORT MetaDict {
 public:
-  int usage_;
-
+  std::vector<int> usage_;
+  bool rewrite_;
+  long samples_;
+  MetaDict():rewrite_(0), samples_(0) {};
 };
 
 class LIBSPARSESHARED_EXPORT Dictionary {
@@ -27,7 +29,7 @@ private:
     int channels_;
 
 public:
-    std::vector<MetaDict> meta_;
+    MetaDict* meta_;
 
     Dictionary(int, int, int);
     MatrixXd & getData();

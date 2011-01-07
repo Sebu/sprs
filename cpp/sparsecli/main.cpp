@@ -161,18 +161,18 @@ int main(int argc, char *argv[])
         trainer.save((dictFile + ".tmp").c_str() );
     }
 
-    for(int i=0; i<dict.meta_.size(); i++)
-        std::cout << dict.meta_[i].usage_ << " ";
-    std::cout << std::endl;
 
     if(imageFile!="")
     {
         Samples samples;
         std::string outputFilename = imageFile + ".recon.jpg";
         dict.load( dictFile.c_str() );
+        dict.debugSaveImage( (dictFile + ".png").c_str() );
+        for(int i=0; i<dict.meta_->usage_.size(); i++)
+            std::cout << dict.meta_->usage_[i] << " ";
+        std::cout << std::endl;
         //dict.initRandom();
         samples.loadImage(imageFile, blockSize, channels, blockSize);
-        std::cout << "worked" << std::endl;
         samples.saveImage(outputFilename, dict, *coder);
 
     }
