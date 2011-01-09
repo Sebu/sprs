@@ -1,7 +1,7 @@
 #ifndef TRAINERMAIRAL_H
 #define TRAINERMAIRAL_H
 
-#include "libsparse_global.h"
+#include "sprscode_global.h"
 #include "trainer.h"
 //#include "vigra/matrix.hxx"
 

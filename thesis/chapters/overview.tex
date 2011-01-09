@@ -123,10 +123,12 @@ or
 \subsection{LARS-Lasso}
 The LASSO (least absolute shrinkage and selection operator) is a algorithm to find a regularized version of a least squares solution.
 The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small.
-
+There are several ways to compute the LASSO. .. ...... \cite{} 
 The LARS algorithm ... \cite{Efron2004}
 The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression
 as described in \cite{Efron2004}. It is a modified version of the LARS where ....
+
+
 
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{1} \leq L
@@ -141,6 +143,12 @@ or
 \STATE i=0
 \end{algorithmic}
 \end{algorithm}
+
+Some limitations of the LARS-Lasso
+\begin{description}
+ \item[todo] \Todo 1/2/3 see online
+\end{description}
+
 
 \subsection{usage/application}
 \begin{description}

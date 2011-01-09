@@ -1,10 +1,10 @@
 //#include <QtCore/QCoreApplication>
 
-#include <libsparse/dictionary.h>
-#include <libsparse/trainermairal.h>
-#include <libsparse/coderlasso.h>
-#include <libsparse/coderomp.h>
-#include <libsparse/samples.h>
+#include <sprscode/dictionary.h>
+#include <sprscode/trainermairal.h>
+#include <sprscode/coderlasso.h>
+#include <sprscode/coderomp.h>
+#include <sprscode/samples.h>
 
 
 #include <iostream>
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            samples.loadImage(nameStr, blockSize, channels, blockSize);
+            samples.loadImage(nameStr, blockSize, channels, 2);
 
             //            if(!resume && counter==1) dict.initFromData(samples);
 
@@ -167,10 +167,12 @@ int main(int argc, char *argv[])
         Samples samples;
         std::string outputFilename = imageFile + ".recon.jpg";
         dict.load( dictFile.c_str() );
+        dict.sort();
         dict.debugSaveImage( (dictFile + ".png").c_str() );
-        for(int i=0; i<dict.meta_->usage_.size(); i++)
-            std::cout << dict.meta_->usage_[i] << " ";
-        std::cout << std::endl;
+//        for(int i=0; i<dict.meta_->col_.size(); i++)
+//            std::cout << dict.meta_->col_[i].usage_ << " ";
+//        std::cout << std::endl;
+        std::cout << dict.meta_->samples_ << std::endl;
         //dict.initRandom();
         samples.loadImage(imageFile, blockSize, channels, blockSize);
         samples.saveImage(outputFilename, dict, *coder);

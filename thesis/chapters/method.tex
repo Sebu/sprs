@@ -25,11 +25,13 @@ a dictionary more specialized for use with OMP. -> is LARS better?
 A more in-depth look at the mairal on-line training algorithm. 
 Why use this algorithm? Robust, convergent, fast, on-line
 
-\subsection{Image database/Training set}
+\subsection{training sets}
 Task specific training data is a common way to solve the problem of finding the right dictionary. 
 Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
 signal that gets de-noised or restored from in-painting.
 If the task gets bigger it sounds logical to increase the size of training data and take a bigger variety of signals to learn from.
+
+\subsection{clustering}
 
 \subsection{adaptive}
 Thanks to the on-line approach of the training step an adaptive approach can be used. 
@@ -39,12 +41,13 @@ PSNR, mean square error MSE, adaptive training
 
 \section{compression step}
 \subsection{quantization}
+Fixed quantization or learned from dictionary
 The random distribution of the atoms in the dictionary 
 fixed factor or analysis of dictionary
 
 \section{precission}
-The sparse vector for every are encoded in an index with 8-32bit precission
-coefficient 8bit, Huffman
+The sparse vector for every are encoded in an 2byte index and a single byte quantizied coefficent. Additional zero coefficents from the quantization step are removed.
+
 
 
 
@@ -66,6 +69,9 @@ The Mairal2010 trainer is a straight forward implementation of the algorithm pre
 It is a implementation of basic version of the algorithm with the batch optimization. 
 Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
 
+
+Compression
+The 
 \Todo{Hardware}
 Problems
 Big matrices

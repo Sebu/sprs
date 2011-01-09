@@ -1,7 +1,7 @@
 #ifndef CODERLASSO_H
 #define CODERLASSO_H
 
-#include "libsparse_global.h"
+#include "sprscode_global.h"
 #include "coder.h"
 
 class LIBSPARSESHARED_EXPORT CoderLasso : public Coder

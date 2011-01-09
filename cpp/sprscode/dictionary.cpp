@@ -21,14 +21,16 @@ void Dictionary::init(int signalSize, int elements) {
     signalSize_ = signalSize;
     data_ = new MatrixXd(signalSize_, elements_);
     meta_ = new MetaDict();
-    meta_->usage_ = std::vector<int>(elements_);
+    for(int i=0; i<elements_; ++i)
+        meta_->col_.push_back(MetaUsage(i));
+
 }
 
 
 void Dictionary::clear() {
    if(data_) { delete data_; data_=0;}
    if (meta_) {
-       meta_->usage_.clear();
+       meta_->col_.clear();
        delete meta_;
        meta_=0;
    }
@@ -51,7 +53,7 @@ void Dictionary::save(const char* fileName) {
     std::ofstream ofsM( metaFile.c_str() );
     ofsM << DICT_VERSION << " " << meta_->samples_ << " ";
     for(unsigned int i=0; i<elements_; i++)
-        ofsM << meta_->usage_[i] << " ";
+        ofsM << meta_->col_[i].usage_ << " ";
     ofsM.close();
 }
 
@@ -60,20 +62,14 @@ void Dictionary::load(const char* fileName) {
     std::cout << "loading: " << fileName << std::endl;
 
     if (ifs) {
-        ifs >> signalSize_;
-        int version = signalSize_;
-        std::cout << version << std::endl;
-        // VERSION CLASH :)
-        if(version >=2 ) { ifs >> signalSize_; std::cout << signalSize_ << std::endl; }
-        //meta_->rewrite_=true;
-        ifs >>  elements_ >> channels_ >> blockSize_;
-        clear();//        signalSize_ /= channels_;
+        int version;
+        ifs >> version;
+        ifs >> signalSize_ >> elements_ >> channels_ >> blockSize_;
+        clear();
         std::cout << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
         init(signalSize_, elements_);
-        if(version != DICT_VERSION)  { meta_->rewrite_=true; std::cout << "old version dict. flag for rewrite" << std::endl; }
 
         for(unsigned int i=0; i<elements_; i++) {
-            //if(version == 2) ifs >> meta_->usage_[i];
             for(unsigned int j=0; j<signalSize_; j++) {
                 ifs >> (*data_)(j,i);
             }
@@ -88,12 +84,21 @@ void Dictionary::load(const char* fileName) {
         int version;
         ifsM >> version >> meta_->samples_;
         for(unsigned int i=0; i<elements_; i++)
-          ifsM >> meta_->usage_[i];
+          ifsM >> meta_->col_[i].usage_;
     } else { meta_->rewrite_=true; std::cout << "no meta data :/" << std::endl; }
     ifsM.close();
-    //if (meta_->rewrite_) save(fileName);
+    // if (meta_->rewrite_) save(fileName);
 }
 
+bool colSorterBigFirst(const MetaUsage& i, const MetaUsage& j) { return ( i.usage_ > j.usage_ ); }
+
+void Dictionary::sort() {
+     std::sort(meta_->col_.begin(), meta_->col_.end(), colSorterBigFirst);
+     MatrixXd tmp = (*data_);
+     for(int i=0; i<tmp.cols(); ++i) {
+         (*data_).col(i) = tmp.col(meta_->col_[i].id_);
+     }
+}
 
 void Dictionary::centeR() {
         center((*data_));

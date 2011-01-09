@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       -= core
-TARGET = libsparse
+TARGET = sprscode
 TEMPLATE = lib
 DEFINES += LIBSPARSE_LIBRARY
 
@@ -29,7 +29,7 @@ unix:LIBS += -L/homes/wheel/seb/playground/lib
 #LIBS += -lcxcore -lcv -lhighgui -lgomp
 LIBS += -lopencv_core -lopencv_highgui -lopencv_imgproc -lgomp
 
-SOURCES += libsparse.cpp \
+SOURCES += sprscode.cpp \
     dictionary.cpp \
     coder.cpp \
     coderlasso.cpp \
@@ -38,10 +38,12 @@ SOURCES += libsparse.cpp \
     vigra_ext.cpp \
     samples.cpp \
     coderomp.cpp \
-    huffman.c
+    huffman.c \
+    rle.c \
+    lz.c
 
-HEADERS += libsparse.h\
-        libsparse_global.h \
+HEADERS += sprscode.h \
+        sprscode_global.h \
     dictionary.h \
     vigra_ext.h \
     regression.hxx \
@@ -51,4 +53,6 @@ HEADERS += libsparse.h\
     trainermairal.h \
     samples.h \
     coderomp.h \
-    huffman.h
+    huffman.h \
+    rle.h \
+    lz.h

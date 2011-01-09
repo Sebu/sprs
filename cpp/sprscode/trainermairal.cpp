@@ -103,14 +103,14 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         MatrixXd sample = samples.getData().block(0,start,D.getSignalSize(),end-start);
         center(sample);
         Eigen::SparseMatrix<double> a = coder->encode(sample, D);
-
+        D.meta_->samples_+=sample.cols();
         std::cout << "a*a.transpose();" << std::endl;
 
 //        MatrixXd aa = MatrixXd::Zero(a.rows(),a.cols());
 
         for (int k=0; k<a.outerSize(); ++k)
             for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
-              D.meta_->usage_[it.row()]++;
+              D.meta_->col_[it.row()].usage_++;
             }
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();

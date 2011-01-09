@@ -6,7 +6,7 @@
 #include <eigen2/Eigen/Core>
 USING_PART_OF_NAMESPACE_EIGEN
 
-#include "libsparse_global.h"
+#include "sprscode_global.h"
 
 class Dictionary;
 class Coder;

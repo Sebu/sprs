@@ -136,10 +136,7 @@ for (int signum=0; signum<L; ++signum) {
       //VectorXd GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXd::Ones(vars);
       double GA1sum = sqrt(GA1.sum());
       double AA = 1.0/GA1sum;
-//      if(isinf(GA1sum) || GA1sum!=GA1sum || GA1sum == 0.0) {
-//          std::cout << Gsub << "\n" << GA1sum << "\n" << y << "\n" << mu << std::endl;
-//          ei_assert(0 && "wurst");
-//      }
+
       MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
 
       MatrixXd Xsub = subselect(X,A[signum]);
@@ -148,6 +145,8 @@ for (int signum=0; signum<L; ++signum) {
       MatrixXd u = Xsub*w; // equiangular direction (unit vector)
 
       double gamma = C/AA; // if all variables active, go all the way to the lsq solution
+
+
 
       double erg3 = DBL_MAX;
       if (vars != nvars) {
@@ -192,19 +191,19 @@ for (int signum=0; signum<L; ++signum) {
             beta_next(0,A[signum][i]) = beta[signum](0,A[signum][i]) + gamma*w(i);
       }
 
+
+//std::cout << beta_next << std::endl;
+      // Early stopping at specified bound on L1 norm of beta
+      if (stop > 0) {
+        double t2 = beta_next.cwise().abs().sum();
+        if (t2 >= stop) {
+          double t1 = beta[signum].cwise().abs().sum();
+          double s = (stop - t1)/(t2 - t1); // interpolation factor 0 < s < 1
+          beta_next = beta[signum] + s*(beta_next - beta[signum]);
+          stopcond = true;
+        }
+      }
       beta[signum]=beta_next;
-
-
-//      // Early stopping at specified bound on L1 norm of beta
-//      if (stop > 0) {
-//        double t2 = beta.row(k+1).cwise().abs().sum();
-//        if (t2 >= stop) {
-//          double t1 = beta.row(k).cwise().abs().sum();
-//          double s = (stop - t1)/(t2 - t1); // interpolation factor 0 < s < 1
-//          beta.row(k+1) = beta.row(k) + s*(beta.row(k+1) - beta.row(k));
-//          stopcond = true;
-//        }
-//      }
 
       // If LASSO condition satisfied, drop variable from active set
       if (lassocond) {
