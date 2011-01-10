@@ -54,6 +54,7 @@ public:
     void clear();
 
     void sort();
+    void merge(Dictionary& input);
     void save(const char* filename);
     void load(const char* filename);
 

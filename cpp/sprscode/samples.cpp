@@ -20,10 +20,11 @@ MatrixXd & Samples::getData() {
 
 void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
-    quant_ = 20.0;
+    quant_ = 40.0;
 
 
     std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
+
     VectorXd shift = center((*data_));
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
     unshift((*data_),shift);

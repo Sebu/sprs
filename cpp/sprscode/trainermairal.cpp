@@ -93,6 +93,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
     for(int t=0; t<maximum; t+=batch) {
 
+
         // draw sample from trainig set
         int start = t;
         int end = std::min(t+batch,samples.cols_);

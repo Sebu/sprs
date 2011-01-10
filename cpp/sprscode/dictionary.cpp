@@ -36,6 +36,20 @@ void Dictionary::clear() {
    }
 }
 
+
+void Dictionary::merge(Dictionary& input) {
+    static int bla = 0;
+
+    if(bla+300>=(*data_).cols()) return;
+
+    for(int i=0; i<300; ++i) {
+        std::cout << i << std::endl;
+        (*data_).col(i+bla) = input.getData().col(i);
+    }
+    bla+=300;
+
+}
+
 void Dictionary::save(const char* fileName) {
     std::ofstream ofs( fileName );
 

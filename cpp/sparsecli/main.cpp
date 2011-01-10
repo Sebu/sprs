@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     int resume = 0;
     std::string dictFile = "";
     std::string trainFile = "";
+    std::string mergeFile = "";
     std::string imageFile = "";
     int sampleCount = 10000;
     int dictSize = 4096;
@@ -57,6 +58,7 @@ int main(int argc, char *argv[])
         {"dict",    required_argument, 0, 'f'},
         {"input",    required_argument, 0, 'i'},
         {"mode",  required_argument, 0, 'm'},
+        {"merge",  required_argument, 0, 'g'},
         {"train",    required_argument, 0, 't'},
         {"resume",  no_argument,       &resume, 1},
         {"samples",    required_argument, 0, 's'},
@@ -82,6 +84,9 @@ int main(int argc, char *argv[])
             break;
         case 'f':
             dictFile = optarg;
+            break;
+        case 'g':
+            mergeFile = optarg;
             break;
         case 'i':
             imageFile = optarg;
@@ -126,8 +131,7 @@ int main(int argc, char *argv[])
 
 
 
-    if(trainFile != "")
-    {
+    if(trainFile != "") {
         Samples samples;
         TrainerMairal trainer;
         trainer.coder = coder;
@@ -146,7 +150,7 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            samples.loadImage(nameStr, blockSize, channels, 2);
+            samples.loadImage(nameStr, blockSize, channels, blockSize);
 
             //            if(!resume && counter==1) dict.initFromData(samples);
 
@@ -162,18 +166,35 @@ int main(int argc, char *argv[])
     }
 
 
-    if(imageFile!="")
-    {
+    if(mergeFile!="") {
+        std::cout << "merging" << std::endl;
+        std::ifstream ifs( (mergeFile).c_str() );
+        std::string nameStr;
+        ifs >> nameStr;
+        int counter=0;
+        Dictionary dictIn(1,channels,1);
+        while( !ifs.eof() ) {
+            if(!running) break;
+            std::cout << nameStr << " " << counter++ << std::endl;
+            dictIn.load(nameStr.c_str() );
+            dictIn.sort();
+            dict.merge(dictIn);
+
+
+            ifs >> nameStr;
+        }
+        ifs.close();
+        dict.debugSaveImage( (dictFile + ".png").c_str() );
+        dict.save( dictFile.c_str() );
+    }
+
+    if(imageFile!="") {
         Samples samples;
         std::string outputFilename = imageFile + ".recon.jpg";
         dict.load( dictFile.c_str() );
         dict.sort();
         dict.debugSaveImage( (dictFile + ".png").c_str() );
-//        for(int i=0; i<dict.meta_->col_.size(); i++)
-//            std::cout << dict.meta_->col_[i].usage_ << " ";
-//        std::cout << std::endl;
         std::cout << dict.meta_->samples_ << std::endl;
-        //dict.initRandom();
         samples.loadImage(imageFile, blockSize, channels, blockSize);
         samples.saveImage(outputFilename, dict, *coder);
 

@@ -1,0 +1,1 @@
+for N in {1..10}0; do ssh c$(($N+1)) -f -- "cd ~/git/diplom/cpp/sparsecli;  LD_LIBRARY_PATH=~/git/diplom/cpp/sprscode/:~/playground/lib ~/git/diplom/cpp/sparsecli/sparsecli --dict ../../output/dicts/8_300_10000_10_omp_chunk_$N.dict  --samples 10000 --dictSize 300 --coeffs 10 --mode 2 --train ../../input/imagedb_10_chunk_$N.txt"; done
