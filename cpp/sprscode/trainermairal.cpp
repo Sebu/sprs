@@ -88,8 +88,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
     if (iterations) maximum = batch*iterations;
 
-    D.normalize();
-    //center(D.getData());
+
 
     for(int t=0; t<maximum; t+=batch) {
 
@@ -101,10 +100,24 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         std::cout << "samples: " <<  end << std::endl;
 
         // sparse code sample
-        MatrixXd sample = samples.getData().block(0,start,D.getSignalSize(),end-start);
-        center(sample);
-        Eigen::SparseMatrix<double> a = coder->encode(sample, D);
-        D.meta_->samples_+=sample.cols();
+        MatrixXd samplesChunk = samples.getData().block(0,start,D.getSignalSize(),end-start);
+        center(samplesChunk);
+
+        for(int i=0; i<samplesChunk.cols(); i++) {
+            if(samplesChunk.col(i).norm()!=0.0)
+                samplesChunk.col(i).normalize();
+//                divVariance(samplesChunk);
+        }
+
+//        std::cout << samplesChunk << std::endl;
+//        divVariance(samplesChunk);
+
+        center(D.getData());
+    //    divVariance(D.getData());
+        D.normalize();
+
+        Eigen::SparseMatrix<double> a = coder->encode(samplesChunk, D);
+        D.meta_->samples_+=samplesChunk.cols();
         std::cout << "a*a.transpose();" << std::endl;
 
 //        MatrixXd aa = MatrixXd::Zero(a.rows(),a.cols());
@@ -112,6 +125,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         for (int k=0; k<a.outerSize(); ++k)
             for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
               D.meta_->col_[it.row()].usage_++;
+//              std::cout << it.value() << std::endl;
+
             }
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
@@ -121,17 +136,25 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
             for (Eigen::SparseMatrix<double>::InnerIterator it(tmp,k); it; ++it) {
                 double value = it.value();
                 (*A_)(it.row(),it.col()) += value;
-                //                if((value!=value) || isinf(value))
-                //                    std::cout << value << std::endl;
+                               if((value!=value) || isinf(value)) {
+                                  std::cout << value << std::endl;
+                                  std::cout << a << std::endl;
+                                  std::cout << samplesChunk << std::endl;
+                               return;
+                               }
             }
 
-        (*B_) += sample*a.transpose();
+        (*B_) += samplesChunk*a.transpose();
         // update step (algo. 2)
         std::cout << "update((*A_), (*B_), D);" << std::endl;
         update((*A_), (*B_), D);
         std::ostringstream o;
-        o << "../../output/tmp/dict_tmp" << t << ".png";
+//        o << "../../output/tmp/dict_tmp" << t << ".png";
+        o << "../../output/tmp/dict_tmp.png";
+
         D.debugSaveImage( o.str().c_str() );
+
+//        std::cout << D.getData() << std::endl;
 
     }
 

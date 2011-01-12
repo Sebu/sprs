@@ -107,8 +107,10 @@ void Sprscode::save(std::string& fileName) {
 }
 
 void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
+
     for (int k=0; k<shift.size(); ++k) {
         shift(k) = shift_[k];
+//        shift(k) = prev = shift_[k]-prev;
     }
 
     for(int col=0; col<A.cols(); ++col) {
@@ -123,10 +125,11 @@ void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 }
 
 void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
+    short prev = 0;
     for (int k=0; k<shift.size(); ++k) {
         unsigned char shiftVal = (unsigned char)round(shift(k));
-        shift_[k] =  shiftVal;
-        shift(k) = shiftVal;
+        shift_[k] = prev = shiftVal-prev;
+        //shift(k) = shiftVal;
     }
 
     int count=0;

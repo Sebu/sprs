@@ -19,6 +19,13 @@ MatrixXd & Samples::getData() {
     return *data_;
 }
 
+
+void Samples::normalize() {
+    for(int i=0; i<(*data_).cols(); i++) {
+        (*data_).col(i).normalize();
+    }
+}
+
 void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
     quant_ = 40.0;
@@ -26,23 +33,48 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
     spc.header_.quant_ = (int)round(quant_);
 
-    std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
+//    std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
 
     VectorXd shift = center((*data_));
+    VectorXd scale((*data_).cols());
+    for(int i=0; i<(*data_).cols(); i++) {
+        scale(i) = 1.0;
+        if((*data_).col(i).squaredNorm()!=0.0) {
+            scale(i) = (*data_).col(i).squaredNorm();
+//            (*data_).col(i).normalize();
+        }
+    }
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
-    unshift((*data_),shift);
+
+
 
 
     spc.compress(shift,A);
     spc.save(fileName);
 
-    //reconstruct :) TODO: fill A
-    spc.load(fileName);
-    spc.uncompress(shift,A);
+    //reconstruct :)
+    //TODO: fill a new A
+    //spc.load(fileName);
+//    spc.uncompress(shift,A);
 
 
     MatrixXd recon_vigra = dict.getData()*A;
 
+//    std::cout << A << std::endl;
+
+    for(int i=0; i<recon_vigra.cols(); i++) {
+//        recon_vigra.col(i) *= scale(i);
+//        (*data_).col(i)*= scale(i);
+    }
+
+
+//    for (int k=0; k<A.outerSize(); ++k) {
+//        for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
+//            A.coeffRef(it.row(),it.col()) = it.value()*scale(it.row());
+//        }
+//    }
+
+    unshift((*data_),shift);
     unshift(recon_vigra,shift);
 
     double mseVal = mse((*data_),recon_vigra);
@@ -73,9 +105,10 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
         }
     }
     cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
-    cv::cvtColor(im, im, CV_YCrCb2RGB);
-//    cv::imshow("sprscode", im);
-//    cv::waitKey();
+//    cv::cvtColor(im, im, CV_YCrCb2RGB);
+
+    cv::imshow("sprscode", im);
+    cv::waitKey();
     cv::imwrite(fileName, im);
 }
 
@@ -106,11 +139,14 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     //    cv::resize(inputImage, tmpMat, cv::Size(256,256));
     //    inputImage = tmpMat;
     //    cv::imwrite("/tmp/debug.png",inputImage);
-    cv::cvtColor(inputImage, inputImage, CV_RGB2YCrCb);
+//    cv::cvtColor(inputImage, inputImage, CV_RGB2YCrCb);
+
+
     imageRows_ = inputImage.rows;
     imageCols_ = inputImage.cols;
     rows_ = blockSize_*blockSize_*channels_;
     cols_ = ceil((float)imageRows_/(float)step) * ceil((float)imageCols_/(float)step);
+
     //    cols_*=channels_;
     //std::cout << cols_ << " " << imageRows_ <<  " " << step <<std::endl;
     if(data_) delete data_;

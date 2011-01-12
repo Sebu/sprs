@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     double eps = 0.0;
     int  coeffs = 20;
     int blockSize = 8;
-    int channels = 3;
+    int channels = 1;
     int mode = 1;
 
 
@@ -178,12 +178,13 @@ int main(int argc, char *argv[])
             std::cout << nameStr << " " << counter++ << std::endl;
             dictIn.load(nameStr.c_str() );
             dictIn.sort();
-            dict.merge(dictIn);
-
-
+            dict.merge(dictIn, eps);
             ifs >> nameStr;
         }
         ifs.close();
+        dict.sort();
+        for (int i=0; i<dict.meta_->col_.size(); i++)
+            std::cout << dict.meta_->col_[i].var_ << std::endl;
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
     }
@@ -192,9 +193,6 @@ int main(int argc, char *argv[])
         Samples samples;
         std::string outputFilename = imageFile + ".recon.png";
         dict.load( dictFile.c_str() );
-//        dict.sort();
-        dict.debugSaveImage( (dictFile + ".png").c_str() );
-        std::cout << dict.meta_->samples_ << std::endl;
         samples.loadImage(imageFile, blockSize, channels, blockSize);
         samples.saveImage(outputFilename, dict, *coder);
 

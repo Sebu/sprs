@@ -16,7 +16,8 @@ class LIBSPARSESHARED_EXPORT MetaUsage {
 public:
     int usage_;
     int id_;
-    MetaUsage(int col): usage_(0), id_(col) {};
+    double var_;
+    MetaUsage(int col): usage_(0), id_(col), var_(0.0) {};
 };
 
 class LIBSPARSESHARED_EXPORT MetaDict {
@@ -54,7 +55,7 @@ public:
     void clear();
 
     void sort();
-    void merge(Dictionary& input);
+    void merge(Dictionary& input, double);
     void save(const char* filename);
     void load(const char* filename);
 

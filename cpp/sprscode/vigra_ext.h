@@ -120,8 +120,19 @@ MatrixXd center(MatrixBase<T1>& M) {
 }
 
 template<typename T1>
+void divVariance(MatrixBase<T1>& M) {
+    for(int i=0; i<M.cols();i++) {
+        double var = M.col(i).squaredNorm(); ///M.rows();
+        if (var==0.0) continue;
+        for(int j=0; j<M.rows();j++)
+          M(j,i) /= var;
+    }
+}
+
+
+template<typename T1>
 double mse(MatrixBase<T1>& I, MatrixBase<T1>& K) {
-    double sum = (I - K).cwise().pow(2.0).sum();
+    double sum = (I - K).squaredNorm();
     return sum/(I.cols()*I.rows());
 }
 

@@ -37,17 +37,24 @@ void Dictionary::clear() {
 }
 
 
-void Dictionary::merge(Dictionary& input) {
-    static int bla = 0;
+void Dictionary::merge(Dictionary& input, double eps) {
+    static int index = 0;
 
-    if(bla+300>=(*data_).cols()) return;
+    for(int i=0; i<input.elements_; ++i) {
+        bool addCol = true;
 
-    for(int i=0; i<300; ++i) {
-        std::cout << i << std::endl;
-        (*data_).col(i+bla) = input.getData().col(i);
+        if(index>=elements_) return;
+
+        //compare
+        for(int j=0; j<=index; ++j)
+           if( (input.getData().col(i)-(*data_).col(j)).squaredNorm() < eps )
+             addCol = false;
+
+        if(addCol) {
+            meta_->col_[index].usage_ = input.meta_->col_[i].usage_;
+            (*data_).col(index++) = input.getData().col(i);
+        }
     }
-    bla+=300;
-
 }
 
 void Dictionary::save(const char* fileName) {
@@ -55,7 +62,7 @@ void Dictionary::save(const char* fileName) {
 
 
     ofs << DICT_VERSION << " " <<  signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
-    std::cout << DICT_VERSION << " " << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
+//    std::cout << DICT_VERSION << " " << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
     for(unsigned int i=0; i<elements_; i++) {
         for(unsigned int j=0; j<signalSize_; j++) {
             ofs << (*data_)(j,i) << " ";
@@ -80,7 +87,7 @@ void Dictionary::load(const char* fileName) {
         ifs >> version;
         ifs >> signalSize_ >> elements_ >> channels_ >> blockSize_;
         clear();
-        std::cout << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
+//        std::cout << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
         init(signalSize_, elements_);
 
         for(unsigned int i=0; i<elements_; i++) {
@@ -104,10 +111,15 @@ void Dictionary::load(const char* fileName) {
     // if (meta_->rewrite_) save(fileName);
 }
 
-bool colSorterBigFirst(const MetaUsage& i, const MetaUsage& j) { return ( i.usage_ > j.usage_ ); }
+bool colUsageBigFirst(const MetaUsage& i, const MetaUsage& j) { return ( i.usage_ > j.usage_ ); }
+bool colVarSmallFirst(const MetaUsage& i, const MetaUsage& j) { return ( i.var_ < j.var_ ); }
 
 void Dictionary::sort() {
-     std::sort(meta_->col_.begin(), meta_->col_.end(), colSorterBigFirst);
+    for(int i=0; i<meta_->col_.size(); ++i) {
+        meta_->col_[i].var_ = (*data_).col(i).squaredNorm();
+    }
+     std::sort(meta_->col_.begin(), meta_->col_.end(), colVarSmallFirst);
+//     std::sort(meta_->col_.begin(), meta_->col_.end(), colUsageBigFirst);
      MatrixXd tmp = (*data_);
      for(int i=0; i<tmp.cols(); ++i) {
          (*data_).col(i) = tmp.col(meta_->col_[i].id_);
@@ -120,9 +132,7 @@ void Dictionary::centeR() {
 
 void Dictionary::normalize() {
     for(int i=0; i<elements_; i++) {
-        MatrixXd c = (*data_).col(i);
-        c.normalize();
-        (*data_).col(i) = c;
+        (*data_).col(i).normalize();
     }
 }
 
@@ -181,7 +191,7 @@ void Dictionary::debugSaveImage(const char* filename) {
             tmp.copyTo(region);
         }
     }
-    cv::cvtColor(outputImage, outputImage, CV_YCrCb2RGB);
+//    cv::cvtColor(outputImage, outputImage, CV_YCrCb2RGB);
     cv::imwrite(filename, outputImage);
 
 }

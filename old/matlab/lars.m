@@ -75,6 +75,7 @@ while vars < nvars && ~stopcond && k < maxk
 
   S = s*ones(1,vars);
   GA1 = inv(Gram(A,A).*S'.*S)*ones(vars,1);
+
   AA = 1/sqrt(sum(GA1));
   w = AA*GA1.*s; % weights applied to each active variable to get equiangular direction
 
