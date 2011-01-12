@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            samples.loadImage(nameStr, blockSize, channels, 2);
+            samples.loadImage(nameStr, blockSize, channels, blockSize/2);
 
             //            if(!resume && counter==1) dict.initFromData(samples);
 
