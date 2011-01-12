@@ -89,7 +89,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
     if (iterations) maximum = batch*iterations;
 
     D.normalize();
-    center(D.getData());
+    //center(D.getData());
 
     for(int t=0; t<maximum; t+=batch) {
 

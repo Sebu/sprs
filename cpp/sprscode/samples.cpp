@@ -9,6 +9,7 @@
 #include "vigra_ext.h"
 #include "huffman.h"
 #include "rle.h"
+#include "sprscode.h"
 
 Samples::Samples() : data_(0) //, scaling_(0)
 {
@@ -21,7 +22,9 @@ MatrixXd & Samples::getData() {
 void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
     quant_ = 40.0;
-
+    coeffs_ = coder.coeffs;
+    Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
+    spc.header_.quant_ = (int)round(quant_);
 
     std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
 
@@ -29,63 +32,15 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
     unshift((*data_),shift);
 
-    // std::ofstream ofs( (fileName + ".sp").c_str(), std::ios::out | std::ios::binary );
 
-    FILE * pFile;
-    pFile = fopen((fileName + ".sp").c_str(),"w");
+    spc.compress(shift,A);
+    spc.save(fileName);
 
-    std::cout << A.cols() << std::endl;
-
-    int sizeMax = sizeof(short)*(2*A.nonZeros()+shift.size());
-//    int sizeMax = sizeof(short)*((A.rows()*A.cols())+shift.size());
-    unsigned short* inBuf = (unsigned short*)malloc(sizeMax);
-    unsigned short* outBuf = (unsigned short*)malloc(sizeMax);
+    //reconstruct :) TODO: fill A
+    spc.load(fileName);
+    spc.uncompress(shift,A);
 
 
-    long count=0;
-    for (int k=0; k<shift.size(); ++k) {
-        short shiftVal = (short)round(shift(k));
-        inBuf[count++] =  shiftVal;
-        shift(k) = shiftVal;
-    }
-        double max=FLT_MIN;
-//    for (long k=0; k<A.cols(); ++k) {
-//        for (long j=0; j<A.rows(); ++j)  {
-                for (int k=0; k<A.outerSize(); ++k) {
-                    for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
-
-            short data=0;
-//            data =(short)round(A.coeff(j,k)/quant_);
-            data = (short)round(it.value()/quant_);
-            unsigned short pos=0;
-            pos = (unsigned short)it.row();
-            A.coeffRef(it.row(),it.col()) = data*quant_;
-            //if(data) {
-            if(!data) pos = 0;
-             inBuf[count] = pos;
-            inBuf[count+A.nonZeros()] = data;
-            if(data>max)max=data;
-//            inBuf[count]=data;
-            count++;
-//            std::cout << count << " " << sizeMax << std::endl;
-
-            //}
-        }
-
-    }
-                std::cout << "max: " << max << std::endl;
-    std::cout << (sizeof(short)*(count+A.nonZeros()))-sizeMax << std::endl;
-    int inSize = sizeMax; //sizeof(short)*count;
-    int outSize = Huffman_Compress((unsigned char*)inBuf,(unsigned char*)outBuf,inSize);
-//    outSize = Huffman_Compress((unsigned char*)outBuf,(unsigned char*)inBuf,outSize);
-    std::cout << "Index compression " << (float)inSize/(float)outSize << std::endl;
-
-    fwrite ((char*)inBuf , outSize, sizeof(char), pFile );
-    fclose(pFile);
-
-
-
-    //    MatrixXd recon_vigra = (*data_);
     MatrixXd recon_vigra = dict.getData()*A;
 
     unshift(recon_vigra,shift);
@@ -93,8 +48,6 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     double mseVal = mse((*data_),recon_vigra);
     std::cout << "PSNR: " << psnr(mseVal) << " dB" << std::endl;
     std::cout << "RMSE: " << std::sqrt(mseVal) << std::endl;
-    std::cout << "BPP: " <<  ((float)outSize*8.0)/(float)(imageRows_*imageCols_) << std::endl;
-    std::cout << "compression: " <<  (float)(imageRows_*imageCols_*3)/((float)outSize) << ":1" << std::endl;
 
     std::cout << "reorder  image" << std::endl;
 
@@ -120,6 +73,9 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
         }
     }
     cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
+    cv::cvtColor(im, im, CV_YCrCb2RGB);
+//    cv::imshow("sprscode", im);
+//    cv::waitKey();
     cv::imwrite(fileName, im);
 }
 
@@ -131,7 +87,6 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     switch(channels_) {
     case 0:
         inputImage = cv::imread(fileName,-1);
-        std::cout << inputImage.channels() << std::endl;
         channels_ = inputImage.channels();
         break;
     case 1:
@@ -151,6 +106,7 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     //    cv::resize(inputImage, tmpMat, cv::Size(256,256));
     //    inputImage = tmpMat;
     //    cv::imwrite("/tmp/debug.png",inputImage);
+    cv::cvtColor(inputImage, inputImage, CV_RGB2YCrCb);
     imageRows_ = inputImage.rows;
     imageCols_ = inputImage.cols;
     rows_ = blockSize_*blockSize_*channels_;

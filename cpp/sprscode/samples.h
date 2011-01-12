@@ -16,7 +16,6 @@ class LIBSPARSESHARED_EXPORT Samples
 private:
    MatrixXd* data_;
 public:
-//   vigra::Matrix<double>* scaling_;
    int imageRows_, imageCols_;
    int rows_, cols_, channels_;
 

@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            samples.loadImage(nameStr, blockSize, channels, blockSize);
+            samples.loadImage(nameStr, blockSize, channels, 2);
 
             //            if(!resume && counter==1) dict.initFromData(samples);
 
@@ -190,9 +190,9 @@ int main(int argc, char *argv[])
 
     if(imageFile!="") {
         Samples samples;
-        std::string outputFilename = imageFile + ".recon.jpg";
+        std::string outputFilename = imageFile + ".recon.png";
         dict.load( dictFile.c_str() );
-        dict.sort();
+//        dict.sort();
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         std::cout << dict.meta_->samples_ << std::endl;
         samples.loadImage(imageFile, blockSize, channels, blockSize);
