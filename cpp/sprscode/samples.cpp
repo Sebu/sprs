@@ -105,7 +105,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
         }
     }
     cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
-//    cv::cvtColor(im, im, CV_YCrCb2RGB);
+    cv::cvtColor(im, im, CV_YCrCb2RGB);
 
     cv::imshow("sprscode", im);
     cv::waitKey();
@@ -139,7 +139,7 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     //    cv::resize(inputImage, tmpMat, cv::Size(256,256));
     //    inputImage = tmpMat;
     //    cv::imwrite("/tmp/debug.png",inputImage);
-//    cv::cvtColor(inputImage, inputImage, CV_RGB2YCrCb);
+    cv::cvtColor(inputImage, inputImage, CV_RGB2YCrCb);
 
 
     imageRows_ = inputImage.rows;
