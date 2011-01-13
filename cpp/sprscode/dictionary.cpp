@@ -28,12 +28,12 @@ void Dictionary::init(int signalSize, int elements) {
 
 
 void Dictionary::clear() {
-   if(data_) { delete data_; data_=0;}
-   if (meta_) {
-       meta_->col_.clear();
-       delete meta_;
-       meta_=0;
-   }
+    if(data_) { delete data_; data_=0;}
+    if (meta_) {
+        meta_->col_.clear();
+        delete meta_;
+        meta_=0;
+    }
 }
 
 
@@ -47,8 +47,8 @@ void Dictionary::merge(Dictionary& input, double eps) {
 
         //compare
         for(int j=0; j<=index; ++j)
-           if( (input.getData().col(i)-(*data_).col(j)).squaredNorm() < eps )
-             addCol = false;
+            if( (input.getData().col(i)-(*data_).col(j)).squaredNorm() < eps )
+                addCol = false;
 
         if(addCol) {
             meta_->col_[index].usage_ = input.meta_->col_[i].usage_;
@@ -62,7 +62,7 @@ void Dictionary::save(const char* fileName) {
 
 
     ofs << DICT_VERSION << " " <<  signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
-//    std::cout << DICT_VERSION << " " << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
+    //    std::cout << DICT_VERSION << " " << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
     for(unsigned int i=0; i<elements_; i++) {
         for(unsigned int j=0; j<signalSize_; j++) {
             ofs << (*data_)(j,i) << " ";
@@ -87,7 +87,7 @@ void Dictionary::load(const char* fileName) {
         ifs >> version;
         ifs >> signalSize_ >> elements_ >> channels_ >> blockSize_;
         clear();
-//        std::cout << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
+        //        std::cout << signalSize_ << " " << elements_ << " " << channels_ << " " << blockSize_ << " ";
         init(signalSize_, elements_);
 
         for(unsigned int i=0; i<elements_; i++) {
@@ -105,7 +105,7 @@ void Dictionary::load(const char* fileName) {
         int version;
         ifsM >> version >> meta_->samples_;
         for(unsigned int i=0; i<elements_; i++)
-          ifsM >> meta_->col_[i].usage_;
+            ifsM >> meta_->col_[i].usage_;
     } else { meta_->rewrite_=true; std::cout << "no meta data :/" << std::endl; }
     ifsM.close();
     // if (meta_->rewrite_) save(fileName);
@@ -116,18 +116,28 @@ bool colVarSmallFirst(const MetaUsage& i, const MetaUsage& j) { return ( i.var_ 
 
 void Dictionary::sort() {
     for(int i=0; i<meta_->col_.size(); ++i) {
-        meta_->col_[i].var_ = (*data_).col(i).squaredNorm();
+
+        cv::Mat tmp((*data_).rows(),1,CV_64F);
+        for(int j=0; j<(*data_).rows(); ++j)
+            tmp.at<double>(j,0) = (*data_)(j,i);
+
+        cv::dct(tmp,tmp);
+        cv::normalize(tmp,tmp);
+        for(int j=1; j<(*data_).rows(); ++j)
+            meta_->col_[i].var_ += std::pow(j*10,std::abs(tmp.at<double>(j,0)));
+                std::cout << meta_->col_[i].var_ << std::endl;
+        //                .squaredNorm();
     }
-     std::sort(meta_->col_.begin(), meta_->col_.end(), colVarSmallFirst);
-//     std::sort(meta_->col_.begin(), meta_->col_.end(), colUsageBigFirst);
-     MatrixXd tmp = (*data_);
-     for(int i=0; i<tmp.cols(); ++i) {
-         (*data_).col(i) = tmp.col(meta_->col_[i].id_);
-     }
+    std::sort(meta_->col_.begin(), meta_->col_.end(), colVarSmallFirst);
+    //    std::sort(meta_->col_.begin(), meta_->col_.end(), colUsageBigFirst);
+    MatrixXd tmp = (*data_);
+    for(int i=0; i<tmp.cols(); ++i) {
+        (*data_).col(i) = tmp.col(meta_->col_[i].id_);
+    }
 }
 
 void Dictionary::centeR() {
-        center((*data_));
+    center((*data_));
 }
 
 void Dictionary::normalize() {
@@ -161,7 +171,7 @@ void Dictionary::debugSaveImage(const char* filename) {
     MatrixXd D = (*data_);
 
     cv::Mat outputImage(blockSize_*tmp, blockSize_*tmp, CV_8UC(channels_));
-//    cv::Mat outputImage(blockSize_*tmp, blockSize_*tmp, CV_8U);
+    //    cv::Mat outputImage(blockSize_*tmp, blockSize_*tmp, CV_8U);
     for(int j=0; j<blockSize_*tmp; j+=blockSize_) {
         for(int i=0; i<blockSize_*tmp; i+=blockSize_) {
             int index = ceil(j/blockSize_)*tmp + ceil(i/blockSize_);
@@ -172,26 +182,26 @@ void Dictionary::debugSaveImage(const char* filename) {
             double min=DBL_MAX, max=DBL_MIN;
             for(int ii=0; ii<signalSize_; ii++) {
                 double val = d(ii,0);
-                 if(val<min) min = val;
-                 if(val>max) max = val;
+                if(val<min) min = val;
+                if(val>max) max = val;
             }
             double scale = 255.0/(max - min);
 
-//                for(int ii=0; ii<signalSize_; ii++) {
-//                    recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>((d(ii,0)-min)*scale);
-//                }
+            //                for(int ii=0; ii<signalSize_; ii++) {
+            //                    recon_cv.at<uchar>(0,ii) = cv::saturate_cast<uchar>((d(ii,0)-min)*scale);
+            //                }
             for(int jj=0; jj<channels_; jj++){
                 for(int ii=0; ii<signalSize_/channels_; ii++) {
                     recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>((d(jj*(signalSize_/channels_)+ii,0)-min)*scale);
                 }
             }
             cv::Mat tmp = recon_cv.reshape(channels_, blockSize_);
-//            cv::Mat tmp = inshape(recon_cv, size_,  channels_);
+            //            cv::Mat tmp = inshape(recon_cv, size_,  channels_);
             cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_,blockSize_) );
             tmp.copyTo(region);
         }
     }
-//    cv::cvtColor(outputImage, outputImage, CV_YCrCb2RGB);
+    //    cv::cvtColor(outputImage, outputImage, CV_YCrCb2RGB);
     cv::imwrite(filename, outputImage);
 
 }

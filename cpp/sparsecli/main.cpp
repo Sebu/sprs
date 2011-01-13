@@ -177,14 +177,14 @@ int main(int argc, char *argv[])
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
             dictIn.load(nameStr.c_str() );
-            dictIn.sort();
+//            dictIn.sort();
             dict.merge(dictIn, eps);
             ifs >> nameStr;
         }
         ifs.close();
         dict.sort();
-        for (int i=0; i<dict.meta_->col_.size(); i++)
-            std::cout << dict.meta_->col_[i].var_ << std::endl;
+//        for (int i=0; i<dict.meta_->col_.size(); i++)
+//            std::cout << dict.meta_->col_[i].var_ << std::endl;
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
     }

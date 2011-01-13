@@ -66,59 +66,59 @@ void Sprscode::load(std::string& fileName) {
 }
 
 void Sprscode::save(std::string& fileName) {
-        FILE * pFile;
-        pFile = fopen((fileName + ".sprs").c_str(),"w");
-        fwrite(&header_,sizeof(SprsHeader), 1, pFile);
+    FILE * pFile;
+    pFile = fopen((fileName + ".sprs").c_str(),"w");
+    fwrite(&header_,sizeof(SprsHeader), 1, pFile);
 
-        unsigned char* outBuf = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
-        unsigned char* outBuf2 = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
-        int fullSize = 0;
-        int outSize = 0;
-        int inSize = 0;
+    unsigned char* outBuf = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
+    unsigned char* outBuf2 = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
+    int fullSize = 0;
+    int outSize = 0;
+    int inSize = 0;
 
-        inSize = shiftNum_*sizeof(char);
-        outSize = Huffman_Compress((unsigned char*)shift_,(unsigned char*)outBuf, inSize);
-        fullSize += outSize;
-        std::cout << outSize << std::endl;
-        fwrite(&outSize, sizeof(int),1, pFile );
-        fwrite((char*)outBuf, sizeof(char),outSize, pFile );
+    inSize = shiftNum_*sizeof(char);
+    outSize = Huffman_Compress((unsigned char*)shift_,(unsigned char*)outBuf, inSize);
+    fullSize += outSize;
+    std::cout << outSize << std::endl;
+    fwrite(&outSize, sizeof(int),1, pFile );
+    fwrite((char*)outBuf, sizeof(char),outSize, pFile );
 
-        inSize = indicesNum_*sizeof(unsigned short);
-        outSize = RLE_Compress((unsigned char*)indices_,(unsigned char*)outBuf, inSize);
-        fullSize += outSize;
-        std::cout << outSize << std::endl;
-        fwrite(&outSize, sizeof(int),1, pFile );
-        fwrite((char*)outBuf, sizeof(char),outSize, pFile );
+    inSize = indicesNum_*sizeof(unsigned short);
+    outSize = RLE_Compress((unsigned char*)indices_,(unsigned char*)outBuf, inSize);
+    fullSize += outSize;
+    std::cout << outSize << std::endl;
+    fwrite(&outSize, sizeof(int),1, pFile );
+    fwrite((char*)outBuf, sizeof(char),outSize, pFile );
 
-        inSize = coeffsNum_*sizeof(char);
-        outSize = RLE_Compress((unsigned char*)coeffs_,(unsigned char*)outBuf2, inSize);
-        fwrite(&outSize, sizeof(int),1, pFile );
-        outSize = Huffman_Compress((unsigned char*)outBuf2,(unsigned char*)outBuf, inSize);
-        fullSize += outSize;
-        std::cout << outSize <<   std::endl;
-        fwrite(&outSize, sizeof(int),1, pFile );
-        fwrite((char*)outBuf, sizeof(char),outSize, pFile );
+    inSize = coeffsNum_*sizeof(char);
+    outSize = RLE_Compress((unsigned char*)coeffs_,(unsigned char*)outBuf2, inSize);
+    fwrite(&outSize, sizeof(int),1, pFile );
+    outSize = Huffman_Compress((unsigned char*)outBuf2,(unsigned char*)outBuf, inSize);
+    fullSize += outSize;
+    std::cout << outSize <<   std::endl;
+    fwrite(&outSize, sizeof(int),1, pFile );
+    fwrite((char*)outBuf, sizeof(char),outSize, pFile );
 
 
-        std::cout << "BPP: " <<  ((float)fullSize*8.0)/(float)(header_.height_*header_.width_) << std::endl;
-        std::cout << "compression: " <<  (float)(header_.height_*header_.width_*3)/((float)fullSize) << ":1" << std::endl;
+    std::cout << "BPP: " <<  ((float)fullSize*8.0)/(float)(header_.height_*header_.width_) << std::endl;
+    std::cout << "compression: " <<  (float)(header_.height_*header_.width_*3)/((float)fullSize) << ":1" << std::endl;
 
-        fclose(pFile);
+    fclose(pFile);
 }
 
 void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 
     for (int k=0; k<shift.size(); ++k) {
         shift(k) = shift_[k];
-//        shift(k) = prev = shift_[k]-prev;
+        //        shift(k) = prev = shift_[k]-prev;
     }
 
     for(int col=0; col<A.cols(); ++col) {
         for(int j=0; j<header_.coeffs_; ++j) {
             int pos = col*header_.coeffs_+j;
             int index = indices_[pos];
-//            std::cout << index << " " << col << std::endl;
-          if(coeffs_[pos])
+            //            std::cout << index << " " << col << std::endl;
+            if(coeffs_[pos])
                 A.coeffRef(index,col) = coeffs_[pos]*header_.quant_;
         }
     }
@@ -132,26 +132,32 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
         //shift(k) = shiftVal;
     }
 
+
     int count=0;
-//    for(int k=0; k<A.cols(); ++k) {
-//        for(int j=0; j<A.rows(); ++j) {
+    //    for(int k=0; k<A.cols(); ++k) {
+    //        for(int j=0; j<A.rows(); ++j) {
     for (int k=0; k<A.outerSize(); ++k) {
-//        std::cout << k << std::endl;
+        //        std::cout << k << std::endl;
         bool write = false;
         for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
 
-            char data=0;
-
-//          data =(char)round(A.coeff(j,k)/quant_);
-            data = (char)round(it.value()/header_.quant_);
             unsigned short pos=0;
             pos = (unsigned short)it.row();
-//            std::cout << it.row() << " " << it.col() << std::endl;
-//            A.coeffRef(it.row(),it.col()) = data*header_.quant_;
-//            if(!data) pos = -1;
-            indices_[count] = pos;
-            coeffs_[count] = data;
-            count++;
+            double quant = (double)pos/10.0;
+            std::cout << quant << std::endl;
+            char data=0;
+            //          data =(char)round(A.coeff(j,k)/quant_);
+            data = (char)round(it.value()/quant);
+            //            std::cout << it.row() << " " << it.col() << std::endl;
+            A.coeffRef(it.row(),it.col()) = (double)data*quant;
+            //            if(!data) pos = -1;
+            if(data) {
+                indices_[count] = pos;
+                coeffs_[count] = data;
+//                std::cout<< (int)data << std::endl;
+                count++;
+
+            }
             write =true;
         }
         // fill up

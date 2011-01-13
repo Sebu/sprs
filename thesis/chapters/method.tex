@@ -40,10 +40,16 @@ Thanks to the on-line approach of the training step an adaptive approach can be 
 PSNR, mean square error MSE, adaptive training 
 
 \section{compression step}
+\subsection{conversion}
+color space, 
+\subsection{coding}
+block size, nr. of coefficents
 \subsection{quantization}
 Fixed quantization or learned from dictionary
 The random distribution of the atoms in the dictionary 
 fixed factor or analysis of dictionary
+\subsection{coding}
+RLE, huffman
 
 \section{precission}
 The sparse vector for every are encoded in an 2byte index and a single byte quantizied coefficent. Additional zero coefficents from the quantization step are removed.

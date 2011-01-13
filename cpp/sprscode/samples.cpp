@@ -28,7 +28,7 @@ void Samples::normalize() {
 
 void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
-    quant_ = 40.0;
+    quant_ = 20.0;
     coeffs_ = coder.coeffs;
     Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
     spc.header_.quant_ = (int)round(quant_);
