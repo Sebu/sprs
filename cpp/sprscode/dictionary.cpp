@@ -201,7 +201,7 @@ void Dictionary::debugSaveImage(const char* filename) {
             tmp.copyTo(region);
         }
     }
-    cv::cvtColor(outputImage, outputImage, CV_YCrCb2RGB);
+//    cv::cvtColor(outputImage, outputImage, CV_YCrCb2RGB);
     cv::imwrite(filename, outputImage);
 
 }

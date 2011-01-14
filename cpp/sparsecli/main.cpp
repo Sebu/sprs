@@ -52,7 +52,9 @@ int main(int argc, char *argv[])
     static struct option long_options[] =
     {
         /* These options set a flag. */
+        {"blockSize",    required_argument, 0, 'w'},
         {"coeffs",    required_argument, 0, 'c'},
+        {"channels", required_argument, 0, 'l'},
         {"dictSize",  required_argument, 0, 'd'},
         {"epsilon",    required_argument, 0, 'e'},
         {"dict",    required_argument, 0, 'f'},
@@ -63,7 +65,6 @@ int main(int argc, char *argv[])
         {"resume",  no_argument,       &resume, 1},
         {"samples",    required_argument, 0, 's'},
         {"verbose", no_argument,       &verbose, 1},
-        {"blockSize",    required_argument, 0, 'w'},
 
 
         {0, 0, 0, 0}
@@ -73,6 +74,9 @@ int main(int argc, char *argv[])
 
     while ((opt = getopt_long(argc, argv, "c:d:e:f:i:m:rs:t:vw:", long_options, &option_index)) != -1) {
         switch(opt) {
+        case 'l':
+            channels = atoi(optarg);
+            break;
         case 'c':
             coeffs = atoi(optarg);
             break;

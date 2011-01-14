@@ -55,9 +55,14 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
     int k[L];
     // A = [] ; % active set
     std::vector<int> A[L];
-    double stop = -this->coeffs;
+    double stop = 0;
+    if(this->eps)
+        stop = this->eps;
+    else
+        stop = -this->coeffs;
 
-    std::cout << "precalc done" << std::endl;
+
+    std::cout << "precalc done " << stop << std::endl;
 
 #pragma omp parallel for
     for (int signum=0; signum<L; ++signum) {

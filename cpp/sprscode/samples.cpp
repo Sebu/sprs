@@ -40,13 +40,13 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     for(int i=0; i<(*data_).cols(); i++) {
         scale(i) = 1.0;
         if((*data_).col(i).squaredNorm()!=0.0) {
-            scale(i) = (*data_).col(i).squaredNorm();
+            scale(i) = (*data_).col(i).norm();
 //            (*data_).col(i).normalize();
         }
     }
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
 
-
+    std::cout << A.nonZeros()/A.outerSize() << std::endl;
 
 
     spc.compress(shift,A);

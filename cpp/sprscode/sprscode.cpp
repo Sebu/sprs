@@ -143,8 +143,7 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 
             unsigned short pos=0;
             pos = (unsigned short)it.row();
-            double quant = 30.0; //(double)pos/10.0;
-            std::cout << quant << std::endl;
+            double quant = 10.0+(double)pos/20.0;
             char data=0;
             //          data =(char)round(A.coeff(j,k)/quant_);
             data = (char)round(it.value()/quant);
@@ -152,9 +151,11 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
             A.coeffRef(it.row(),it.col()) = (double)data*quant;
             //            if(!data) pos = -1;
             if(data) {
+//                std::cout << it.value() << std::endl;
+
                 indices_[count] = pos;
                 coeffs_[count] = data;
-//                std::cout<< (int)data << std::endl;
+                //                std::cout<< (int)data << std::endl;
                 count++;
 
             }
@@ -169,4 +170,5 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
             }
         }
     }
+    std::cout << "avgCoeffs: " << (double)count/A.outerSize() << std::endl;
 }
