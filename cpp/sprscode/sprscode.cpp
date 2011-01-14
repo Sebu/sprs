@@ -143,7 +143,7 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 
             unsigned short pos=0;
             pos = (unsigned short)it.row();
-            double quant = (double)pos/10.0;
+            double quant = 30.0; //(double)pos/10.0;
             std::cout << quant << std::endl;
             char data=0;
             //          data =(char)round(A.coeff(j,k)/quant_);
