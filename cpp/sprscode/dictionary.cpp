@@ -118,6 +118,7 @@ void Dictionary::sort() {
     for(int i=0; i<meta_->col_.size(); ++i) {
 
         cv::Mat tmp((*data_).rows(),1,CV_64F);
+
         for(int j=0; j<(*data_).rows(); ++j)
             tmp.at<double>(j,0) = (*data_)(j,i);
 
@@ -125,7 +126,7 @@ void Dictionary::sort() {
         cv::normalize(tmp,tmp);
         for(int j=1; j<(*data_).rows(); ++j)
             meta_->col_[i].var_ += std::pow(j*10,std::abs(tmp.at<double>(j,0)));
-                std::cout << meta_->col_[i].var_ << std::endl;
+//                std::cout << meta_->col_[i].var_ << std::endl;
         //                .squaredNorm();
     }
     std::sort(meta_->col_.begin(), meta_->col_.end(), colVarSmallFirst);

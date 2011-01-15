@@ -1,5 +1,6 @@
 *.a
 *.aux
+*.backup
 *.bbl
 *.blg
 *.dict
@@ -11,6 +12,7 @@
 *.meta
 *.nav
 *.o
+*.out
 *.pdf
 *.png
 *.so*

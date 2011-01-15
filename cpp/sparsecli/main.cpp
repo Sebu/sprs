@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     double eps = 0.0;
     int  coeffs = 20;
     int blockSize = 8;
+    int winSize = 8;
     int channels = 3;
     int mode = 1;
 
@@ -52,7 +53,8 @@ int main(int argc, char *argv[])
     static struct option long_options[] =
     {
         /* These options set a flag. */
-        {"blockSize",    required_argument, 0, 'w'},
+        {"blockSize",    required_argument, 0, 'b'},
+        {"winSize",    required_argument, 0, 'w'},
         {"coeffs",    required_argument, 0, 'c'},
         {"channels", required_argument, 0, 'l'},
         {"dictSize",  required_argument, 0, 'd'},
@@ -72,7 +74,7 @@ int main(int argc, char *argv[])
 
     int option_index = 0;
 
-    while ((opt = getopt_long(argc, argv, "c:d:e:f:i:m:rs:t:vw:", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "b:c:d:e:f:i:m:rs:t:vw:", long_options, &option_index)) != -1) {
         switch(opt) {
         case 'l':
             channels = atoi(optarg);
@@ -110,8 +112,11 @@ int main(int argc, char *argv[])
         case 'v':
             verbose = true;
             break;
-        case 'w':
+        case 'b':
             blockSize = atoi(optarg);
+            break;
+        case 'w':
+            winSize = atoi(optarg);
             break;
         case '?':
         default: /* '?' */
@@ -154,7 +159,7 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            samples.loadImage(nameStr, blockSize, channels, 2);
+            samples.loadImage(nameStr, blockSize, channels, winSize);
 
             //            if(!resume && counter==1) dict.initFromData(samples);
 
@@ -164,6 +169,7 @@ int main(int argc, char *argv[])
             ifs >> nameStr;
         }
         ifs.close();
+        dict.sort();
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
 //        trainer.save((dictFile + ".tmp").c_str() );

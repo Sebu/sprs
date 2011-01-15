@@ -50,7 +50,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
 
     spc.compress(shift,A);
-    spc.save(fileName);
+//    spc.save(fileName);
 
     //reconstruct :)
     //TODO: fill a new A
