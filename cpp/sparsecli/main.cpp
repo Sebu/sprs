@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
             std::cout << nameStr << " " << counter++ << std::endl;
             samples.loadImage(nameStr, blockSize, channels, winSize);
 
-            //            if(!resume && counter==1) dict.initFromData(samples);
+            if(!resume && counter==1){ dict.initFromData(samples); std::cout << "size" << dict.getData().rows() << std::endl; dict.debugSaveImage( (dictFile + ".png").c_str() );}
 
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
