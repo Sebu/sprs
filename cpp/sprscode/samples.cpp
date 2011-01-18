@@ -139,8 +139,8 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     //    inputImage = tmpMat;
     cv::Mat tmpMat =  inputImage.clone();
     cv::Mat tmp2Mat =  inputImage.clone();
-    cv::blur(tmpMat,tmpMat,cv::Size(8,8));
-    inputImage= tmp2Mat - tmpMat;
+    cv::blur(tmpMat,tmpMat,cv::Size(2,2));
+    inputImage= tmpMat - tmp2Mat;
     cv::imwrite("/tmp/debug1.png",inputImage);
     cv::imwrite("/tmp/debug2.png",tmpMat);
 

@@ -92,20 +92,27 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
 
         // LARS main loop
-        int jpos = 0;
 
+        int jpos = 0;
         while ((vars < nvars) && (!stopcond) && (k[signum] < maxk)) {
             k[signum]++;
 
             // find highest corelation
             VectorXd c = X.transpose()*(y - mu);
-            VectorXd csub(p-vars);
-            for(int i=0; i<I.size(); i++)
-                csub(i) = c( I[i] );
 
-            VectorXd absV = csub.cwise().abs();
-            absV.maxCoeff(&jpos);
-            double C = absV(jpos);
+            VectorXd absV(p-vars);
+            double C = DBL_MIN;
+            for(int i=0; i<I.size(); i++) {
+                double val = std::abs(c( I[i] ));
+                absV(i) = val;
+                if(val>C) {
+                    C=val;
+                    jpos = i;
+                }
+            }
+//            absV.maxCoeff(&jpos);
+//            double C = absV(jpos);
+
             std::vector<int> jvec;
             for(int i=0; i<absV.size(); i++)
                 if(absV(i)>C-1e-6) jvec.push_back(I[i]);

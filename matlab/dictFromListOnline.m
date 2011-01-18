@@ -7,8 +7,8 @@ param.K=1024;  % learns a dictionary
 param.lambda=0.15;
 param.L=10;
 param.mode=0;
-param.batchsize=10000;
-param.iter=1;  % let us see what happens after 100 iterations.
+param.batchsize=1000;
+param.iter=200200  % let us see what happens after 100 iterations.
 model = [];
 tic
 for n=1:width
