@@ -117,16 +117,35 @@ bool colVarSmallFirst(const MetaUsage& i, const MetaUsage& j) { return ( i.var_ 
 void Dictionary::sort() {
     for(int i=0; i<meta_->col_.size(); ++i) {
 
-        cv::Mat tmp((*data_).rows(),1,CV_64F);
+        //        cv::Mat tmp((*data_).rows(),1,CV_64F);
+        cv::Mat tmp(blockSize_*blockSize_,1,CV_64F);
+        cv::Mat tmp2(blockSize_*blockSize_,1,CV_64F);
 
-        for(int j=0; j<(*data_).rows(); ++j)
-            tmp.at<double>(j,0) = (*data_)(j,i);
+        for(int j=0; j<blockSize_; ++j)
+            for(int k=0; k<blockSize_; ++k) {
+                tmp.at<double>(j*blockSize_+k,0) = 0.0;
+
+                tmp.at<double>(j*blockSize_+k,0) += (*data_)((j*blockSize_+k)+blockSize_*blockSize_*0,i);
+                tmp.at<double>(j*blockSize_+k,0) += (*data_)((j*blockSize_+k)+blockSize_*blockSize_*1,i);
+                tmp.at<double>(j*blockSize_+k,0) += (*data_)((j*blockSize_+k)+blockSize_*blockSize_*2,i);
+
+                tmp2.at<double>(j*blockSize_+k,0) = 0.0;
+
+                tmp2.at<double>(j*blockSize_+k,0) += (*data_)((k*blockSize_+j)+blockSize_*blockSize_*0,i);
+                tmp2.at<double>(j*blockSize_+k,0) += (*data_)((k*blockSize_+j)+blockSize_*blockSize_*1,i);
+                tmp2.at<double>(j*blockSize_+k,0) += (*data_)((k*blockSize_+j)+blockSize_*blockSize_*2,i);
+
+
+            }
 
         cv::dct(tmp,tmp);
+        cv::dct(tmp2,tmp2);
         cv::normalize(tmp,tmp);
-        for(int j=1; j<(*data_).rows(); ++j)
+        for(int j=1; j<blockSize_*blockSize_; ++j) {
             meta_->col_[i].var_ += std::pow(j*10,std::abs(tmp.at<double>(j,0)));
-//                std::cout << meta_->col_[i].var_ << std::endl;
+            meta_->col_[i].var_ += std::pow(j*10,std::abs(tmp2.at<double>(j,0)));
+        }
+        //                std::cout << meta_->col_[i].var_ << std::endl;
         //                .squaredNorm();
     }
     std::sort(meta_->col_.begin(), meta_->col_.end(), colVarSmallFirst);
@@ -205,7 +224,7 @@ void Dictionary::debugSaveImage(const char* filename) {
             tmp.copyTo(region);
         }
     }
-//    cv::cvtColor(outputImage, outputImage, CV_YCrCb2RGB);
+    //    cv::cvtColor(outputImage, outputImage, CV_YCrCb2RGB);
     cv::imwrite(filename, outputImage);
 
 }

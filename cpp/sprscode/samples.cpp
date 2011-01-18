@@ -135,10 +135,15 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
         std::cout << "can't read image" << std::endl;
         return false;
     }
-    //    cv::Mat tmpMat;
     //    cv::resize(inputImage, tmpMat, cv::Size(256,256));
     //    inputImage = tmpMat;
-    //    cv::imwrite("/tmp/debug.png",inputImage);
+    cv::Mat tmpMat =  inputImage.clone();
+    cv::Mat tmp2Mat =  inputImage.clone();
+    cv::blur(tmpMat,tmpMat,cv::Size(8,8));
+    inputImage= tmp2Mat - tmpMat;
+    cv::imwrite("/tmp/debug1.png",inputImage);
+    cv::imwrite("/tmp/debug2.png",tmpMat);
+
 //    cv::cvtColor(inputImage, inputImage, CV_RGB2YCrCb);
 
 
