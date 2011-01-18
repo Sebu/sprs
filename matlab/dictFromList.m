@@ -3,7 +3,7 @@ function D = dictFromList(filename,s)
 F = textread(filename,'%s');
 [width] = size(F, 1);
 
-param.K=16384;  % learns a dictionary
+param.K=1000;  % learns a dictionary
 param.lambda=0.15;
 param.mode=0;
 param.batchsize=1000;

@@ -123,28 +123,37 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
             }
 
             // s = sign(c(A)); // get the signs of the correlations
-            VectorXd s = VectorXd::Zero(A[signum].size());
+            VectorXd s(A[signum].size());
 
-            VectorXd csub2(A[signum].size());
-            for(int i=0; i<A[signum].size(); i++)
-                csub2(i) = c( A[signum][i] );
-
-            for(int i=0; i<csub2.rows(); i++) {
-                if(csub2(i)>0.0) s(i) = 1.0;
-                else if (csub2(i)<0.0) s(i) = -1.0;
+            for(int i=0; i<A[signum].size(); i++) {
+                double val = c( A[signum][i] );
+                if(val>0.0) s(i) = 1.0;
+                else if (val<0.0) s(i) = -1.0;
                 else s(i) = 0.0;
+
             }
+            //            VectorXd csub2(A[signum].size());
+            //            for(int i=0; i<A[signum].size(); i++)
+            //                csub2(i) = c( A[signum][i] );
+
+            //            for(int i=0; i<csub2.rows(); i++) {
+            //                if(csub2(i)>0.0) s(i) = 1.0;
+            //                else if (csub2(i)<0.0) s(i) = -1.0;
+            //                else s(i) = 0.0;
+            //            }
 
 
-            MatrixXd Gsub(vars,vars);
+            //            MatrixXd Gsub(vars,vars);
+            MatrixXd Gsub = s*s.transpose();
             for(int i=0; i<A[signum].size(); i++) {
                 for(int m=0; m<A[signum].size(); m++) {
-                    Gsub(i,m) = Gram(A[signum][i],A[signum][m]);
+                    Gsub(i,m) *= Gram(A[signum][i],A[signum][m]);
                 }
             }
 
             VectorXd GA1 = VectorXd::Ones(vars);
-            ( Gsub.cwise()*(s*s.transpose()) ).llt().solveInPlace(GA1);
+            Gsub.llt().solveInPlace(GA1);
+            //            ( Gsub.cwise()*(s*s.transpose()) ).llt().solveInPlace(GA1);
 
             //      VectorXd GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXd::Ones(vars);
             double GA1sum = sqrt(GA1.sum());
@@ -152,8 +161,16 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
             MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
 
-            MatrixXd Xsub = subselect(X,A[signum]);
-            MatrixXd u = Xsub*w; // equiangular direction (unit vector)
+            //MatrixXd Xsub = subselect(X,A[signum]);
+            MatrixXd Xsub(X.rows(),vars);
+            VectorXd betasub(vars);
+            for(int i=0; i<A[signum].size(); i++) {
+                Xsub.col(i) = X.col(A[signum][i]);
+                betasub(i) = beta[signum](0,A[signum][i]);
+            }
+
+
+            VectorXd u = Xsub*w; // equiangular direction (unit vector)
 
             double gamma = DBL_MAX; // if all variables active, go all the way to the lsq solution
 
@@ -171,10 +188,10 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
                 gamma = C/AA;
             }
 
-            VectorXd betasub(vars);
-            for(int i=0; i<A[signum].size(); i++) {
-                betasub(i) = beta[signum](0,A[signum][i]);
-            }
+            //VectorXd betasub(vars);
+            //for(int i=0; i<A[signum].size(); i++) {
+            //  betasub(i) = beta[signum](0,A[signum][i]);
+            //}
 
             // LASSO modification
             lassocond = false;
@@ -204,7 +221,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
             //std::cout << beta_next << std::endl;
             // Early stopping at specified bound on L1 norm of beta
-            if (stop > 0) {
+            if (stop > 0.0) {
                 double t2 = beta_next.cwise().abs().sum();
                 if (t2 >= stop) {
                     double t1 = beta[signum].cwise().abs().sum();
