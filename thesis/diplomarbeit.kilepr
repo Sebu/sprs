@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.1 beta2
-lastDocument=chapters/overview.tex
+lastDocument=chapters/method.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -90,7 +90,7 @@ highlight=LaTeX
 line=27
 mode=
 open=true
-order=2
+order=1
 
 [item:chapters/overview.tex]
 archive=true
@@ -149,7 +149,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=23
 mode=
-open=true
+open=false
 order=1
 
 [item:todo.txt]
