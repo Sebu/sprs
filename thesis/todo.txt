@@ -1,3 +1,5 @@
+-merge via reconstruction/coefficents
+-high + low pass filterting -> split image
 -atoms
 -gen quantization matrix
 -entropy encoding of sparse code
