@@ -22,7 +22,7 @@ Using LARS-Lasso for training generates a good dictionary for LARS and OMP. Trai
 a dictionary more specialized for use with OMP. -> is LARS better?
 
 \subsection{Mairal2010}
-A more in-depth look at the mairal on-line training algorithm. 
+A more in-depth look at the mairal on-line training algorithm \ref{sec:mairal}. 
 Why use this algorithm? Robust, convergent, fast, on-line
 
 \subsection{training sets}
@@ -58,7 +58,8 @@ The sparse vector for every are encoded in an 2byte index and a single byte quan
 
 
 \section{Implementation}
-\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
+%\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
+
 The whole test suit is written in C++ with the use of OpenCV, LibEigen and OpenMP.
 Eigen \cite{Eigen} is a template library for fast vector and matrix operations and includes some linear algebra algorithms.
 It was mainly used for operations on dense and sparse matrices and solving of linear equation systems.

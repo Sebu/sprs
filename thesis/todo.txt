@@ -1,3 +1,9 @@
+TEXT
+- algos
+- overfitting
+- l1/l2 etc. 3d pic
+
+CODE
 -merge via reconstruction/coefficents
 -high + low pass filterting -> split image
 -atoms

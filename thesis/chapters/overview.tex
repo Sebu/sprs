@@ -59,6 +59,10 @@ Benefits of dictionaries
 
 
 \section{sparse codes/coding}
+
+%copy
+%In sparse modeling representation, a signal x ∈ Rn is represented as a linear combination of basis column vectors dj ∈ Rn (atoms) which form a dictionary D ∈ Rn×K, such that x = Dα.
+
 Consider $X$ as matrix with $n$ columns each column $x_{i}$ representing a signal described by a single vector of signal length $m$.
 The dictionary $D$ is another matrix with $p$ columns where each column reprensents an atom signal with the same dimension and size as a single signal $x_{i}$ from $X$.
 The sparse vector $\alpha$ is linear combination of a few non orthonormal atoms from D that is close to the signal X.
@@ -91,12 +95,19 @@ large linear system solvers with few optimization constraints. The LARS-Lasso, b
 $\lVert\alpha\rVert_{0}$ makes the problem NP-hard
 to get best solution you need to test every combination
 Solution:
-use greedy approach or make problem convex (e.g. use $\lVert\alpha\rVert_{1}$)
+use greedy approach 
+
+or make problem convex (e.g. use $\lVert\alpha\rVert_{1}$)
 the most common algorithms are the following ones.
+BP/MP/OMP ...
+Lasso/Ridge etc.
+
+
+
 
 
 \subsection{matching pursuit}
-The algorithm calculates a coefficient vector $\alpha$ which is an approximate solution of the following NP-hard problem
+The algorithm calculates a coefficient vector $\alpha$ which is an gready/approximate solution of the following NP-hard problem
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{0} \leq L
 \end{align}
@@ -114,28 +125,42 @@ or
 \subsection{orthogonal matching pursuit}
 \cite{Pati1993}
 \label{sec:omp}
+
+%copy
+%OMP to address the NP-hard sparse coding problem
+
 \begin{algorithm}
-\begin{algorithmic}
-\STATE i=0
+\caption{Orthogonal-Matching-Pursuit}
+\begin{algorithmic}[1]
+\REQUIRE $x \in \mathbb{R}^m y \in \mathbb{R}^m  D \in \mathbb{R}^{mxk} \epsilon$
+\STATE $\alpha_o \gets 0, r_0 \gets x $ (residual) $, S_0=\emptyset$
+\FOR {$i = 1$ to $L$}
+\STATE Select atom with maximum correlation with residual: 
+\begin{equation*}
+i \gets \arg\max_{i=1,...,p} \lvert d_i^Tr \rvert
+\end{equation*}
+\STATE update active set: $S \gets S \cup \{i\} $
+\STATE update residual: $r \gets \left(I-D_S\left( D_S^T D_S \right)^{-1} D_S^T \right)x$
+\STATE update coefficents: $a_S \gets \left( D_S^T D_S \right)^{-1} D_S^T x $
+
+\ENDFOR
+\RETURN $\alpha$
 \end{algorithmic}
 \end{algorithm}
 
+\subsection {$L_1$ regularized}
 \subsection{LARS-Lasso}
+\label{sec:lars}
+
 The LASSO (least absolute shrinkage and selection operator) is a regularized version of a least squares solution.
-The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small.
+The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small. \cite{Tibshirani1998}
 There are several ways to compute the LASSO. .. ...... \cite{} 
-The LARS algorithm ... \cite{Efron2004}
 The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression
-as described in \cite{Efron2004}. It is a modified version of the LARS where ....
-
+as described in \cite{Efron2004}. It is a modified version of the LAR where .... variables are removed when they cross zero ...
 
 
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{1} \leq L
-\end{align}
-or
-\begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{1}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
+\min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \lambda \lVert \alpha \rVert_{1}
 \end{align}
 
 \begin{algorithm}
@@ -146,7 +171,13 @@ or
 
 Some limitations of the LARS-Lasso
 \begin{description}
- \item[todo] \Todo 1/2/3 see online
+ \item[Dimension] to high dimension of signal 
+Es liegen deutlich mehr Parameter im Modell vor als Beobachtungen  p ( ) > n . Hier 
+können durch die Lasso-Methode maximal  n Variablen ausgewählt werden
+
+\item[correlation] When the columns of dictionary D a highly correlated the algori
+Einige der Kovariablen weisen eine hohe  paarweise Korrelation auf. In diesem Fall 
+wählt die Lasso-Methode lediglich eine der Kovariablen aus.
 \end{description}
 
 
@@ -168,7 +199,7 @@ Train with the original image
 
 
 
-\section{Dictionaries/representation data}
+\section{Dictionaries}
 \subsection{analytical}
 \begin{description}
  \item[cosine]
@@ -187,9 +218,53 @@ MOD
 Online learning
 Mairal2010
 
-\subsubsection{k-svd}
-\subsubsection{online learning}
+%\subsubsection{k-svd}
+\subsection{online learning}
+\label{sec:mairal}
 Mairal .... \cite{Mairal2010}
+
+\begin{algorithm}
+\caption{Online dictionary learning \cite{Mairal2010}}
+\begin{algorithmic}[1]
+\REQUIRE $x \in \mathbb{R}^m  p \left( x \right) \lambda \in \mathbb{R} D_0 \in \mathbb{R}^{mxk} T$
+\STATE $A_0 \in \mathbb{R}^{kxk} \gets  0, B_0 \in \mathbb{R}^{mxk}\gets 0$
+\FOR {$t = 1$ to $T$}
+\STATE Draw $x$ from p(x).
+\STATE Sparse code:
+\begin{align} 
+\alpha_t \equiv \arg \min_{\alpha\in\mathbb{R}^{p}}  \lVert x_t - D_t\alpha \rVert^{2}_{2}  +  \lambda \lVert \alpha \rVert_{1}
+\end{align}
+
+\STATE $A_t \gets A_{t-1} + \alpha_t\alpha_t^T$
+\STATE $B_t \gets B_{t-1} + x_t\alpha_t^T$
+\STATE Compute $D_t$ using Algorithm \ref{lst:update}, with $D_{t-1}$ as warm restart 
+\begin{align} 
+D_t \equiv \arg\min_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t \left( \lVert x_i - D\alpha_i \rVert^{2}_{2}  +  \lambda \lVert \alpha_i \rVert_{1} \right) \label{eq:update}
+\end{align}
+\ENDFOR
+\RETURN $D_T$
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{Dictionary Update}
+\label{lst:update}
+\begin{algorithmic}[1]
+\REQUIRE $D=[d_1,...,d_k] \in \mathbb{R}^{mxk}, A=[a_1,...,a_k] \in \mathbb{R}^{kxk}, B=[b_1,...,b_k] \in \mathbb{R}^{mxk}$
+\REPEAT
+\FOR {$j = 1$ to $k$}
+\STATE update j-th column to optimze for \ref{eq:update}:
+\begin{align}
+u_j \gets \frac{1}{A[j,j]}\left(b_j-Da_j\right)+d_j \\
+d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
+\end{align}
+
+\ENDFOR
+\UNTIL convergence 
+\RETURN $D$
+\end{algorithmic}
+\end{algorithm}
 
 \section{Learning for the Task}
 It has been shown that learning basis specialy for certain tasks can lead to the best results\cite{}.  <>

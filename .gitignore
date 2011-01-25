@@ -15,6 +15,7 @@
 *.out
 *.pdf
 *.png
+*.pro.*pre*
 *.so*
 *.toc
 *.user
