@@ -5,6 +5,8 @@
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}            % use lmodern fonts
+%\usepackage{times}
+%\usepackage{dsfont}
 \usepackage[T1]{fontenc}
 \setcounter{secnumdepth}{3}     % limit enumeration depth
 \setcounter{tocdepth}{3}        % limit TOC depth
@@ -21,6 +23,25 @@
 
 %\usepackage[clearempty]{titlesec}
 %\usepackage{tikz}
+
+\usepackage{prettyref}
+\newrefformat{eq}{Eqn.~\textup{(\ref{#1})}}
+\newrefformat{tab}{Table~\ref{#1}}
+\newrefformat{alg}{Algorithm~\ref{#1}}
+\newrefformat{fig}{Figure~\ref{#1}}
+\newrefformat{chp}{Chapter~\ref{#1}}
+
+
+% Olga's matrix and vector definitions
+\renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
+\newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
+\let\set=\mathcal
+\let\func=\mathrm
+
+% Create a nice looking argmin operator with a
+% small space between arg and min
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 % ALGORITHMS
 \usepackage[chapter]{algorithm}
@@ -50,6 +71,7 @@
 % use nice footnote indentation
 \deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark}\,}
 
+\usepackage[Lenny]{fncychap}
 % page header & footer
 \usepackage{fancyhdr}
 \pagestyle{fancy}

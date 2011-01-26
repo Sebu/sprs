@@ -12,11 +12,12 @@ In order to find
 
 analog problem video compression but with less corelation between images and still image 
 
-\subsection{criteria}
+\section{criteria}
 Convergence of the dictionary learning
 Quality increase with size increase 
+Comparission with jpeg,jpeg2000 via RMSE
 
-\subsection{dictionaries for signal representation}
+\section{dictionaries for signal representation}
 Dictionaries is a collection of ordered elements with an index.
 Atom is am small unit of something big.
 The Cambridge Advanced Learner defines a code as ``..a system of numbers, letters or signals which is used to represent something in a shorter or more convenient form''
@@ -41,7 +42,7 @@ Rather then using continues signal we concentrate on discrete signal representat
 Continues signals would be better for .... . But our signal (image etc.) will be discrete anyway becaus of their initial digital representation. 
 Besides the problem of coding becomes different in the continues space \cite{} Because of ...
 
-\subsection{splitting the problem}
+\section{splitting the problem}
 \cite{Rubinstein2010}
 In the last 15 years 
 
@@ -53,7 +54,7 @@ Separating the problem into two distinct problems made the search for task speci
 Two separate tasks.
 Coding the signal. Design of the dictionary.
 
-\subsection{dictionaries and application}
+\section{dictionaries and application}
 Signal representation via linear combination of few signal vectors from a dictionary.
 Benefits of dictionaries
 
@@ -63,20 +64,25 @@ Benefits of dictionaries
 %copy
 %In sparse modeling representation, a signal x ∈ Rn is represented as a linear combination of basis column vectors dj ∈ Rn (atoms) which form a dictionary D ∈ Rn×K, such that x = Dα.
 
-Consider $X$ as matrix with $n$ columns each column $x_{i}$ representing a signal described by a single vector of signal length $m$.
-The dictionary $D$ is another matrix with $p$ columns where each column reprensents an atom signal with the same dimension and size as a single signal $x_{i}$ from $X$.
-The sparse vector $\alpha$ is linear combination of a few non orthonormal atoms from D that is close to the signal X.
-try to keep coefficient vector sparse
-Sparse coding is the 
+Consider $X \in \mathbb{R}^{mxn}$  as a matrix with $n$ columns each column $x_{i}$ representing a signal described by a single vector of signal length $m$.
+The dictionary $D\in\mathbb{R}^{mxp}$ is another matrix with $p$ columns where each column reprensents an atom signal with the same dimension and size as a single signal $x_{i}$ from $X$.
+The vector $\alpha$ is linear combination of a few non orthonormal atoms from $D$ that is close to the signal $X$.
+
+We try to keep coefficient vector $\alpha$ sparse. 
+%Sparse coding is the 
 \[
 \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary atoms}}
 \underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
 \]
-solve under-determined linear system
-we want the sparsest solution
+The solution to this problem is a least-squares solve under-determined linear system we want the sparsest solution.
+
+To achive the spare solution we add a constraint to the problem. 
+
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
+\min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
 \end{align}
+
+
 measure sparsity via       l0-norm       $\lVert\alpha\rVert_{0}$
 
 \begin{figure}
@@ -104,7 +110,7 @@ Lasso/Ridge etc.
 
 
 
-
+\subsection {$\ell_0$ regularized}
 
 \subsection{matching pursuit}
 The algorithm calculates a coefficient vector $\alpha$ which is an gready/approximate solution of the following NP-hard problem
@@ -132,12 +138,12 @@ or
 \begin{algorithm}
 \caption{Orthogonal-Matching-Pursuit}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m y \in \mathbb{R}^m  D \in \mathbb{R}^{mxk} \epsilon$
+\REQUIRE $x \in \mathbb{R}^m, y \in \mathbb{R}^m, D \in \mathbb{R}^{m\times k}, \epsilon \in \mathbb{R}$
 \STATE $\alpha_o \gets 0, r_0 \gets x $ (residual) $, S_0=\emptyset$
 \FOR {$i = 1$ to $L$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
-i \gets \arg\max_{i=1,...,p} \lvert d_i^Tr \rvert
+i \gets \argmax_{i=1,...,p} \lvert d_i^Tr \rvert
 \end{equation*}
 \STATE update active set: $S \gets S \cup \{i\} $
 \STATE update residual: $r \gets \left(I-D_S\left( D_S^T D_S \right)^{-1} D_S^T \right)x$
@@ -148,8 +154,8 @@ i \gets \arg\max_{i=1,...,p} \lvert d_i^Tr \rvert
 \end{algorithmic}
 \end{algorithm}
 
-\subsection {$L_1$ regularized}
-\subsection{LARS-Lasso}
+\subsection {$\ell_1$ regularized}
+\subsection* {LARS-Lasso}
 \label{sec:lars}
 
 The LASSO (least absolute shrinkage and selection operator) is a regularized version of a least squares solution.
@@ -164,21 +170,39 @@ as described in \cite{Efron2004}. It is a modified version of the LAR where ....
 \end{align}
 
 \begin{algorithm}
-\begin{algorithmic}
-\STATE i=0
+\caption{LARS-lasso}
+\begin{algorithmic}[1]
+\REQUIRE $x \in \mathbb{R}^m  p \left( x \right) \lambda \in \mathbb{R} D_0 \in \mathbb{R}^{mxk} T$
+\STATE $A_0 \in \mathbb{R}^{kxk} \gets  0, B_0 \in \mathbb{R}^{mxk}\gets 0$
+\FOR {$t = 1$ to $T$}
+\STATE Draw $x$ from p(x).
+\STATE Sparse code:
+\begin{align} 
+\alpha_t \equiv \argmin_{\alpha\in\mathbb{R}^{p}}  \lVert x_t - D_t\alpha \rVert^{2}_{2}  +  \lambda \lVert \alpha \rVert_{1}
+\end{align}
+
+\STATE $A_t \gets A_{t-1} + \alpha_t\alpha_t^T$
+\STATE $B_t \gets B_{t-1} + x_t\alpha_t^T$
+\STATE Compute $D_t$ using \prettyref{alg:update}, with $D_{t-1}$ as warm restart 
+\begin{align} 
+D_t \equiv \argmin_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t \left( \lVert x_i - D\alpha_i \rVert^{2}_{2}  +  \lambda \lVert \alpha_i \rVert_{1} \right) \label{eq:update}
+\end{align}
+\ENDFOR
+\RETURN $D_T$
 \end{algorithmic}
 \end{algorithm}
 
 Some limitations of the LARS-Lasso
 \begin{description}
- \item[Dimension] to high dimension of signal 
-Es liegen deutlich mehr Parameter im Modell vor als Beobachtungen  p ( ) > n . Hier 
-können durch die Lasso-Methode maximal  n Variablen ausgewählt werden
+ \item[Dimension] to high dimension of signal When the dimension $p$ of the signal $X$ is 
+much higher than the the dimension $m$ of the dictionary $D$ the algorithm can only select $m$ columns.
 
-\item[correlation] When the columns of dictionary D a highly correlated the algori
-Einige der Kovariablen weisen eine hohe  paarweise Korrelation auf. In diesem Fall 
-wählt die Lasso-Methode lediglich eine der Kovariablen aus.
+\item[correlation] When the columns of the dictionary are highly correlated the algorithm
+selects only one column.
 \end{description}
+
+Limitation one is irrelevant for our experiments as the dictionaries are over-complete 
+, with respect to the dimension $m$ of signal $X$, and thus satisfy $p\leq n$.
 
 
 \subsection{usage/application}
@@ -232,14 +256,14 @@ Mairal .... \cite{Mairal2010}
 \STATE Draw $x$ from p(x).
 \STATE Sparse code:
 \begin{align} 
-\alpha_t \equiv \arg \min_{\alpha\in\mathbb{R}^{p}}  \lVert x_t - D_t\alpha \rVert^{2}_{2}  +  \lambda \lVert \alpha \rVert_{1}
+\alpha_t \equiv \argmin_{\alpha\in\mathbb{R}^{p}}  \lVert x_t - D_t\alpha \rVert^{2}_{2}  +  \lambda \lVert \alpha \rVert_{1}
 \end{align}
 
 \STATE $A_t \gets A_{t-1} + \alpha_t\alpha_t^T$
 \STATE $B_t \gets B_{t-1} + x_t\alpha_t^T$
-\STATE Compute $D_t$ using Algorithm \ref{lst:update}, with $D_{t-1}$ as warm restart 
+\STATE Compute $D_t$ using \prettyref{alg:update}, with $D_{t-1}$ as warm restart 
 \begin{align} 
-D_t \equiv \arg\min_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t \left( \lVert x_i - D\alpha_i \rVert^{2}_{2}  +  \lambda \lVert \alpha_i \rVert_{1} \right) \label{eq:update}
+D_t \equiv \argmin_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t \left( \lVert x_i - D\alpha_i \rVert^{2}_{2}  +  \lambda \lVert \alpha_i \rVert_{1} \right) \label{eq:update}
 \end{align}
 \ENDFOR
 \RETURN $D_T$
@@ -249,12 +273,12 @@ D_t \equiv \arg\min_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t \left( 
 
 \begin{algorithm}
 \caption{Dictionary Update}
-\label{lst:update}
+\label{alg:update}
 \begin{algorithmic}[1]
 \REQUIRE $D=[d_1,...,d_k] \in \mathbb{R}^{mxk}, A=[a_1,...,a_k] \in \mathbb{R}^{kxk}, B=[b_1,...,b_k] \in \mathbb{R}^{mxk}$
 \REPEAT
 \FOR {$j = 1$ to $k$}
-\STATE update j-th column to optimze for \ref{eq:update}:
+\STATE update j-th column to optimze for \prettyref{eq:update}:
 \begin{align}
 u_j \gets \frac{1}{A[j,j]}\left(b_j-Da_j\right)+d_j \\
 d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
@@ -279,24 +303,27 @@ Like ... related work :)
 \begin{description}
 \item[multi-scale]
 Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
-segments (multiple times of the default segment). The idea is that aligned smooth regions with low variance can be 
+blocks (multiple times of the default block size). The idea is that aligned smooth regions with low variance can be 
 can be combined an encoded as one signal rather than e.g. 4. \cite{saprio}
 
 \item[multi-channel]
-coding every channel separate or combine them
-into single signal. can lead to color bleeding \cite{mairal08sparse}
-fortunately this problem vanishes with big dictionaries and large training sets. \cite{mairal08sparse}
+When dealing with multi-channel data (e.g. RGB images) 
+each channel can be coded separate or as a concatination of each signal into a single one.
+These approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add pic}
+Fortunately this problem vanishes with big dictionaries and large training sets. \cite{mairal08sparse}
+Nevertheless a solution would be to add a constraint to the sparse coding that pays attention the correlation of the channls.
+\Todo{add formula from paper}
 
 \item[double sparsity]
-Rather then directly using a collection of basis/atom signals as a dictionary. This approach uses sparse coding
-to encode the signals of a bigger dictionary with the help of a smaller on. \cite{double sparsity}
+Rather then directly using a collection of trained atoms as dictionary elements. This approach uses sparse coding
+to encode the signals of a bigger dictionary with the help of a smaller on. \cite{double sparsity} 
 
 \item[group sparsity]
 similar patches should admit similar patterns
 \cite{double sparsity}
 
-\item[hirarchy/structure]
-Adding hirarchy/structure to dictionaries can lead to faster coding or use in structure analysis ( text documents )
+\item[hirarchy]
+Adding hirarchy to dictionaries can lead to faster coding or use in structure analysis ( text documents )
 \cite{Jenatton2010}
 
 \end{description}
@@ -311,6 +338,7 @@ Adding hirarchy/structure to dictionaries can lead to faster coding or use in st
 Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
 \item[noise reduction]
 \item[in-painting]
+\item[classification] \Todo{usage:classification}
 \end{description}
 
 
