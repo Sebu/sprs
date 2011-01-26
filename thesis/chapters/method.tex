@@ -1,72 +1,85 @@
 \chapter{Method}
+\thispagestyle{empty}
 
-
-\section{Signal coding/representation}
+\section{Signal representation}
 As we use natural color images and graphics we require to use multi-channel data. Common 3-channel from a RGB color space.
 We take an approach to transform our initial signal into other color spaces like in jpeg encoding to account natural human reception of
 color data. 
 Experiment ....
-\subsection{color/signal representation}
+%\subsection{color/signal representation}
 
-\section{sparse coding step}
-\subsection{batch-OMP}
+\section{Sparse coding step}
+\subsection{Batch-OMP}
 A modified version of the OMP\footnote{\nameref{sec:omp}} that can effectively sparse codes multiple signals in parallel.
 \cite{Rubinstein2008}
+\subsubsection*{Optimizations}
 
 \subsection{LARS-Lasso}
 The complete regularization path based on \cite{Efron2004}
+\subsubsection*{Optimizations}
 
-\section{training step}
+
+\section{Training step}
 Keeping the training sparse vectors to sparse can lead to dictionaries with only low frequency elements.
 Using LARS-Lasso for training generates a good dictionary for LARS and OMP. Training with OMP leads to 
 a dictionary more specialized for use with OMP. -> is LARS better?
 
 \subsection{Mairal2010}
-A more in-depth look at the mairal on-line training algorithm \ref{sec:mairal}. 
+A more in-depth look at the Mairal on-line training algorithm \ref{sec:mairal}. 
 Why use this algorithm? Robust, convergent, fast, on-line
 
-\subsection{training sets}
+
+\subsection{Clustering}
+\subsubsection*{Optimizations}
+%\subsection{Adaptive}
+%Thanks to the on-line approach of the training step an adaptive approach can be used. 
+
+
+
+\section{Training sets}
 Task specific training data is a common way to solve the problem of finding the right dictionary. 
 Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
 signal that gets de-noised or restored from in-painting.
 If the task gets bigger it sounds logical to increase the size of training data and take a bigger variety of signals to learn from.
 
-\subsection{clustering}
 
-\subsection{adaptive}
-Thanks to the on-line approach of the training step an adaptive approach can be used. 
 
-\subsection{quality measure/criteria}
-PSNR, mean square error MSE, adaptive training 
+\section{Experiments}
+\subsection{Quality comparison}
+PSNR, mean square error MSE, 
 
-\section{compression step}
-\subsection{conversion}
+
+%\subsection{}
+
+\subsection{Compression}
+\subsubsection*{Image conversion}
 color space, 
-\subsection{coding}
-block size, nr. of coefficents
-\subsection{quantization}
+\subsubsection*{Signal coding}
+block size, nr. of coefficients
+\subsubsection*{Quantization}
 Fixed quantization or learned from dictionary
 The random distribution of the atoms in the dictionary 
 fixed factor or analysis of dictionary
-\subsection{coding}
+\subsubsection*{Entropy coding}
 RLE, huffman
+\subsubsection*{Precission}
+The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 
-\section{precission}
-The sparse vector for every are encoded in an 2byte index and a single byte quantizied coefficent. Additional zero coefficents from the quantization step are removed.
 
 
 
 
 \section{Implementation}
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
+\Todo{add diagram}
 
 The whole test suit is written in C++ with the use of OpenCV, LibEigen and OpenMP.
 Eigen \cite{Eigen} is a template library for fast vector and matrix operations and includes some linear algebra algorithms.
-It was mainly used for operations on dense and sparse matrices and solving of linear equation systems.
-OpenCV \cite{OpenCV} as in Open Computer Vision Library is it was mainly used for image read and write operations and color space conversion.
-In situations where it is applicable we use OpenMP to make use of multi-core CPUs. OpenMP \cite{OpenMP}
-is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
+It is mainly used for operations on dense and sparse matrices and solving of linear equation systems.
+OpenCV \cite{OpenCV} as in Open Computer Vision Library is mainly used for image read and write operations and color space conversion.
+OpenMP \cite{OpenMP} is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
 the user to distribute code block and loops to multiple CPU cores. 
+In situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
 
 The OMP implementation is based on the OMP implementation from \cite{Rubinstein}
 The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{Strand2005} and the original paper \cite{Efron2004}

@@ -1,29 +1,31 @@
-\linespread{1.5}
-% \usepackage{setspace}
-% \onehalfspacing
+%\linespread{1.5}
+\usepackage{setspace}
+\onehalfspacing
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{lmodern}            % use lmodern fonts
+%\usepackage[light,math]{iwona}
 %\usepackage{times}
 %\usepackage{dsfont}
-\usepackage[T1]{fontenc}
 \setcounter{secnumdepth}{3}     % limit enumeration depth
 \setcounter{tocdepth}{3}        % limit TOC depth
-\usepackage{varioref}           % nice refs
 \usepackage{amsmath}            % math fonts
 \usepackage{amssymb}            % math symbols
 \usepackage{units}   
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{todo}
-\usepackage[pdftex]{hyperref}
+
 \usepackage{cite}
 \usepackage{url}
 
 %\usepackage[clearempty]{titlesec}
 %\usepackage{tikz}
 
+%\usepackage{varioref}           % nice refs
+\usepackage[pdftex]{hyperref}
 \usepackage{prettyref}
 \newrefformat{eq}{Eqn.~\textup{(\ref{#1})}}
 \newrefformat{tab}{Table~\ref{#1}}
@@ -69,17 +71,23 @@
 }
 
 % use nice footnote indentation
-\deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark}\,}
+%\deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark}\,}
 
 \usepackage[Lenny]{fncychap}
+%\ChNumVar{\Huge} 
+\ChTitleVar{\Huge\sf}
+\ChRuleWidth{0.2pt} \ChNameUpperCase
+
+
 % page header & footer
 \usepackage{fancyhdr}
+
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[EL]{\thepage}% gerade Seiten, links
-\fancyhead[ER]{\leftmark}% gerade Seiten, rechts
-\fancyhead[OL]{\rightmark}% ungerade Seiten, links
-\fancyhead[OR]{\thepage}% ungerade Seiten, rechts
+%\fancyhead[EL]{\thepage}% gerade Seiten, links
+%\fancyhead[ER]{\leftmark}% gerade Seiten, rechts
+%\fancyhead[OL]{\rightmark}% ungerade Seiten, links
+%\fancyhead[OR]{\thepage}% ungerade Seiten, rechts
 
 \fancypagestyle{plain}{%
 \fancyhf{}
