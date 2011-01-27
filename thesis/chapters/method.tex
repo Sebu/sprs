@@ -11,7 +11,33 @@ Experiment ....
 \section{Sparse coding step}
 \subsection{Batch-OMP}
 A modified version of the OMP\footnote{\nameref{sec:omp}} that can effectively sparse codes multiple signals in parallel.
+Pre-computation of gram matrix $G=D^TD$
 \cite{Rubinstein2008}
+
+\begin{algorithm}
+\caption{Batch-OMP}
+\begin{algorithmic}[1]
+\REQUIRE $X =[d_1,...,d_k]  \in \mathbb{R}^{m \times k}, D \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
+\STATE precompute gram matrix: $G=D^TD$
+\FOR[all signals in parallel] {$j = 1$ to $k$ }
+\STATE $\alpha_j \gets 0, r_j \gets x $ (residual) $, S_j=\emptyset$
+\FOR {$i = 1$ to $L$}
+\STATE Select atom with maximum correlation with residual: 
+\begin{equation*}
+i \gets \argmax_{i \in S_j^C} \lvert d_i^Tr_j \rvert
+\end{equation*}
+\STATE solve with cholesky: $G_{inv} \gets G_S^{-1}$
+\STATE update active set: $S_j \gets S_j \cup \{i\} $
+\STATE update residual: $r_j \gets \left(I-D_SG_{inv}D_S^T \right)x_j$
+\STATE update coefficients: $a_{j_S} \gets G_{inv} D_S^T x_j $
+
+\ENDFOR 
+\ENDFOR 
+
+\RETURN $\alpha$
+\end{algorithmic}
+\end{algorithm}
+
 \subsubsection*{Optimizations}
 
 \subsection{LARS-Lasso}
@@ -62,7 +88,7 @@ The random distribution of the atoms in the dictionary
 fixed factor or analysis of dictionary
 \subsubsection*{Entropy coding}
 RLE, huffman
-\subsubsection*{Precission}
+\subsubsection*{Bits per pixel}
 The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 
 

@@ -1,0 +1,156 @@
+\chapter{Dictionaries}
+\thispagestyle{empty}
+
+\section{Structure}
+\subsection{Designed}
+\begin{description}
+ \item[cosine]
+ \item[wavelets]
+ \item[curvelets/contourlets/bandelets]
+\end{description}
+
+\subsection{Learned}
+Recent research has shown that learned dictionaries show better compression quality than small analytic dictionaries \cite{Aharon2006} \cite{Chen1998} 
+Rather than selecting an appropriate mathematical construct that can reconstruct a certain group of signals close enough the data, a subset or similar data
+is used as a training set to generate the dictionary itself.
+
+
+%\subsubsection{k-svd}
+\section{Learning}
+In the last decade several learning algorithms have been proposed.
+The basic concept of following algorithms for learning redundant dictionaries is to alter a initial start dictionary
+in this way that it can sparsely reconstruct a set of training data with minimal error. 
+
+\subsection{Batch}
+MOD \cite{Engan1999}
+Generalized PCA \cite{}
+ILS-DLA \cite{}
+K-SVD \cite{Aharon2006}
+
+
+\subsection{Online}
+In 2010 new training algorithms were presented that enabled on-line learning of dictionaries. 
+In contrast to batch learning algorithms with a fixed training set the new approaches enabled
+This is good for very large training sets or training data that is unknown at the start of the training process.
+
+... RLS-DLA \cite{Engan2010} ...
+
+\Todo{find the Japanese one}
+
+In 2010 Mairal et. al. \cite{Mairal2010} proposed an on-line approach which from now on will be called TrainDL
+
+\subsection{TrainDL}
+\label{sec:mairal}
+The algorithm presented by Mairal et al. \cite{Mairal2010} is ...
+
+\begin{algorithm}
+\caption{Online dictionary learning \cite{Mairal2010}}
+\begin{algorithmic}[1]
+\REQUIRE $x \in \mathbb{R}^m,  p \left( x \right), \lambda \in \mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T$
+\STATE $A_0 \in \mathbb{R}^{p \times p} \gets  0, B_0 \in \mathbb{R}^{m \times p}\gets 0$
+\FOR {$t = 1$ to $T$}
+\STATE Draw $x$ from p(x).
+\STATE Sparse code:
+\begin{align} 
+\alpha_t \equiv \argmin_{\alpha\in\mathbb{R}^{p}}  \lVert x_t - D_t\alpha \rVert^{2}_{2}  +  \lambda \lVert \alpha \rVert_{1}
+\end{align}
+
+\STATE $A_t \gets A_{t-1} + \alpha_t\alpha_t^T$
+\STATE $B_t \gets B_{t-1} + x_t\alpha_t^T$
+\STATE Compute $D_t$ using \prettyref{alg:update}, with $D_{t-1}$ as warm restart 
+\begin{align} 
+D_t \equiv \argmin_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t \left( \lVert x_i - D\alpha_i \rVert^{2}_{2}  +  \lambda \lVert \alpha_i \rVert_{1} \right) \label{eq:update}
+\end{align}
+\ENDFOR
+\RETURN $D_T$
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{Dictionary Update}
+\label{alg:update}
+\begin{algorithmic}[1]
+\REQUIRE $D=[d_1,...,d_p] \in \mathbb{R}^{m \times p}, A=[a_1,...,a_p] \in \mathbb{R}^{p \times p}, B=[b_1,...,b_p] \in \mathbb{R}^{m \times p}$
+\REPEAT
+\FOR {$j = 1$ to $p$}
+\STATE update j-th column to optimze for \prettyref{eq:update}:
+\begin{align}
+u_j \gets \frac{1}{A[j,j]}\left(b_j-Da_j\right)+d_j \\
+d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
+\end{align}
+
+\ENDFOR
+\UNTIL convergence 
+\RETURN $D$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Application}
+
+\begin{description}
+\item[noise reduction]
+Remove noise from a signal. Using the fact that sparse coding 
+is an approximation of signal that looses .... in its encoding process. 
+\cite{Elad2006}
+
+\item[in-painting]
+fill missing parts by removing rows from the dictionary
+Train with the original image
+\cite{mairal08sparse}
+
+\item[compression] An example for this is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
+\item[classification] Examples for this can be found in \cite{Mairal2008b} and \cite{Bar2009}.
+\end{description}
+
+
+\section{Learning for the Task}
+It has been shown that learning basis specific for certain tasks can lead to the best results\cite{}.  <>
+Based on this discovery we will concentrate on a specific class. 
+%<> Join the basis for natural images and cartoon/line images.
+We will also concentrate on real practical data. This means typically 3-channel data of 1+ mega-pixels images found on image hosting services like flickr, twitpic, imgurl, picasa etc.
+
+
+\section{Related work}
+%Current research is primary concentrating on other tasks. 
+%Like ... related work :)
+
+\begin{description}
+\item[multi-scale]
+Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
+blocks (multiple times of the default block size). The idea is that aligned smooth regions with low variance can be 
+can be combined an encoded as one signal rather than e.g. 4. \cite{saprio}
+
+\item[multi-channel]
+When dealing with multi-channel data (e.g. RGB images) 
+each channel can be coded separate or as a concatenation of each signal into a single one.
+These approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add pic}
+Fortunately this problem vanishes with big dictionaries and large training sets. \cite{mairal08sparse}
+Nevertheless a solution would be to add a constraint to the sparse coding that pays attention the correlation of the channels.
+\Todo{add formula from paper}
+
+\item[double sparsity]
+Rather then directly using a collection of trained atoms as dictionary elements. This approach uses sparse coding
+to encode the signals of a bigger dictionary with the help of a smaller on. \cite{double sparsity} 
+
+\item[group sparsity]
+similar patches should admit similar patterns
+\cite{double sparsity}
+
+\item[hierarchy]
+Adding hierarchy to dictionaries can lead to faster coding or use in structure analysis ( text documents )
+\cite{Jenatton2010}
+
+\end{description}
+
+
+
+\begin{description}
+\item[compression of facial images] In 2008 Bryt and Elad \cite{Bryt2008} 
+\item[training with a neural network]
+Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
+\item[noise reduction]
+\item[in-painting]
+\item[classification] \Todo{usage:classification}
+\end{description}
+
