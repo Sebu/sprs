@@ -2,17 +2,16 @@
 \thispagestyle{empty}
 \numberwithin{equation}{chapter}
 
-\section{Problem statement}
+\section{Dictionaries for signal representation}
+\subsection{Problem statement}
 
-
-\subsection{Dictionaries for signal representation}
+Simplification of signals in signal processing.
+Those basis signal can be intepreted as atoms in a dictionary...
 
 %We define an atom is am small unit of something big.
 %We define a dictionary is a collection of ordered atoms.
 
-Simplification of signals in signal processing.
-
-As a matter of fact a good dictionary is essential for such a good signal approximation. \cite{} 
+As a matter of fact a good basis/dictionary is essential for such a good signal approximation. \cite{} 
 Finding good dictionaries has become a major task in the last decades.
 There are essential two major distinct ways to construct the desired dictionaries. First the construction of them based on mathematica model and second
 via a training process/algorithm from a set of training data.
@@ -31,7 +30,7 @@ via a training process/algorithm from a set of training data.
 \subsection{History}
 
 %Compressed sensing
-The process of signal transformation that far back in the early 60s.\cite{sparse intro}
+The process of signal transformation that far back in the early 60s.\cite{Rubinstein2010}
 FFT in 65s
 
 approximate signals via combination of limited signal samples
@@ -52,12 +51,12 @@ Besides the problem of coding becomes different in the continues space \cite{} B
 \cite{Rubinstein2010}
 In the last 15 years the concept emerged to interpret basis transforms as a set of signal atoms in a dictionary and the signals 
 that they reconstruct as sparse linear combination of these atoms.
-see \cite{Olshausen1997} and \cite{}
+see \cite{Olshausen1996} and \cite{}
 The benefit of this approach is that you can decouple signal coding and dictionary design.
 and split the whole process of signal analysis into two tasks. Coding the signal and design of the dictionary.
 Separating the problem into two distinct problems made the search for efficient coding of signals and construction of task specific dictionaries more flexible \cite{?}.
 
-\subsection{Criteria}
+
 
 Size of database/dictionary
 Quality
@@ -71,6 +70,7 @@ Quality
 %Convergence of the dictionary learning
 %Quality increase with size increase 
 %Comparison with jpeg,jpeg2000 via RMSE
+
 
 \section{Goal of this thesis}
 Evaluate the quality and size of learned big redundant dictionaries for 

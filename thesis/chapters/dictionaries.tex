@@ -86,26 +86,9 @@ d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
 \end{algorithmic}
 \end{algorithm}
 
-\section{Application}
-
-\begin{description}
-\item[noise reduction]
-Remove noise from a signal. Using the fact that sparse coding 
-is an approximation of signal that looses .... in its encoding process. 
-\cite{Elad2006}
-
-\item[in-painting]
-fill missing parts by removing rows from the dictionary
-Train with the original image
-\cite{mairal08sparse}
-
-\item[compression] An example for this is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
-\item[classification] Examples for this can be found in \cite{Mairal2008b} and \cite{Bar2009}.
-\end{description}
-
 
 \section{Learning for the Task}
-It has been shown that learning basis specific for certain tasks can lead to the best results\cite{}.  <>
+It has been shown that learning basis specific for certain tasks can lead to the best results\cite{sapiro?}.  <>
 Based on this discovery we will concentrate on a specific class. 
 %<> Join the basis for natural images and cartoon/line images.
 We will also concentrate on real practical data. This means typically 3-channel data of 1+ mega-pixels images found on image hosting services like flickr, twitpic, imgurl, picasa etc.
@@ -114,12 +97,20 @@ We will also concentrate on real practical data. This means typically 3-channel 
 \section{Related work}
 %Current research is primary concentrating on other tasks. 
 %Like ... related work :)
-
 \begin{description}
+
+\item[compression of facial images] 
+In 2008 Bryt and Elad \cite{Bryt2008} 
+
+\item[training with a neural network]
+Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
+
+
 \item[multi-scale]
 Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
 blocks (multiple times of the default block size). The idea is that aligned smooth regions with low variance can be 
 can be combined an encoded as one signal rather than e.g. 4. \cite{saprio}
+\Todo{picture with different scales}
 
 \item[multi-channel]
 When dealing with multi-channel data (e.g. RGB images) 
@@ -132,25 +123,19 @@ Nevertheless a solution would be to add a constraint to the sparse coding that p
 \item[double sparsity]
 Rather then directly using a collection of trained atoms as dictionary elements. This approach uses sparse coding
 to encode the signals of a bigger dictionary with the help of a smaller on. \cite{double sparsity} 
+\Todo{formula $B$ .. basis, $A$ sparse matrix, $D=BA$ ...}
 
 \item[group sparsity]
 similar patches should admit similar patterns
-\cite{double sparsity}
+\cite{group sparsity}
+\Todo{picture with ditribution difference}
 
 \item[hierarchy]
 Adding hierarchy to dictionaries can lead to faster coding or use in structure analysis ( text documents )
 \cite{Jenatton2010}
-
-\end{description}
-
+\Todo{picture with hirarchy }
 
 
-\begin{description}
-\item[compression of facial images] In 2008 Bryt and Elad \cite{Bryt2008} 
-\item[training with a neural network]
-Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
-\item[noise reduction]
-\item[in-painting]
-\item[classification] \Todo{usage:classification}
+
 \end{description}
 
