@@ -3,9 +3,12 @@
 
 \section{Signal representation}
 As we use natural color images and graphics we require to use multi-channel data. Common 3-channel from a RGB color space.
-We take an approach to transform our initial signal into other color spaces like in jpeg encoding to account natural human reception of
+
+%The initial signal data 
+We use an approach to transform our initial signal into other color spaces like in jpeg encoding to account natural human reception of
 color data. 
 Experiment ....
+
 %\subsection{color/signal representation}
 
 \section{Sparse coding step}
@@ -40,15 +43,18 @@ i \gets \argmax_{i \in S_j^C} \lvert d_i^Tr_j \rvert
 
 \subsubsection*{Optimizations}
 
+
 \subsection{LARS-Lasso}
 The complete regularization path based on \cite{Efron2004}
 \subsubsection*{Optimizations}
 
 
 \section{Training step}
-Keeping the training sparse vectors to sparse can lead to dictionaries with only low frequency elements.
-Using LARS-Lasso for training generates a good dictionary for LARS and OMP. Training with OMP leads to 
-a dictionary more specialized for use with OMP. -> is LARS better?
+Keeping the training sparse vectors too sparse can lead to dictionaries with only low frequency elements.
+Using LARS-Lasso for training generates a good dictionary for LARS and OMP. 
+Training with OMP leads to a dictionary more with a lot of noise 
+that leads better coding results when using OMP 
+% is LARS better?
 
 \subsection{Mairal2010}
 A more in-depth look at the Mairal on-line training algorithm \ref{sec:mairal}. 
@@ -99,11 +105,12 @@ The sparse vector for every are encoded in 2 bytes index and a single byte quant
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
 \Todo{add diagram}
 
+\subsection*{Software}
 The whole test suit is written in C++ with the use of OpenCV, LibEigen and OpenMP.
 Eigen \cite{Eigen} is a template library for fast vector and matrix operations and includes some linear algebra algorithms.
 It is mainly used for operations on dense and sparse matrices and solving of linear equation systems.
 OpenCV \cite{OpenCV} as in Open Computer Vision Library is mainly used for image read and write operations and color space conversion.
-OpenMP \cite{OpenMP} is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
+OpenMP \footnote{www.openmp.org} \cite{OpenMP} is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
 the user to distribute code block and loops to multiple CPU cores. 
 In situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
 
@@ -116,10 +123,14 @@ It is a implementation of basic version of the algorithm with the batch optimiza
 Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
 
 
-Compression
-The 
-\Todo{Hardware}
-Problems
-Big matrices
-Speed 
+\subsection*{Hardware setup}
+%Problems
+%Big matrices
+%Speed 
+%Compression
+%The 
+Computer cluster with 100+ PCs with distribibuted batches of work.
+Merge of results -> it's  map/reduce approach.
+\Todo{add diagram}
+
 

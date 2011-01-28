@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.1 beta2
-lastDocument=chapters/dictionaries.tex
+lastDocument=chapters/sparse_coding.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -185,7 +185,7 @@ archive=true
 column=7
 encoding=UTF-8
 highlight=LaTeX
-line=34
+line=112
 mode=LaTeX
 open=true
 order=3
@@ -212,10 +212,10 @@ order=2
 
 [item:chapters/sparse_coding.tex]
 archive=true
-column=79
+column=0
 encoding=ISO-8859-1
 highlight=LaTeX
-line=125
+line=163
 mode=LaTeX
 open=true
 order=4
@@ -252,10 +252,10 @@ order=4
 
 [item:thesis.tex]
 archive=true
-column=14
+column=11
 encoding=UTF-8
 highlight=LaTeX
-line=40
+line=4
 mode=LaTeX
 open=true
 order=0
