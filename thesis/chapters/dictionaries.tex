@@ -2,7 +2,10 @@
 \thispagestyle{empty}
 
 \section{Structure}
+Set of orthonormal signal vectors.
 \subsection{Designed}
+
+
 \begin{description}
  \item[cosine]
  \item[wavelets]
@@ -13,6 +16,8 @@
 Recent research has shown that learned dictionaries show better compression quality than small analytic dictionaries \cite{Aharon2006} \cite{Chen1998} 
 Rather than selecting an appropriate mathematical construct that can reconstruct a certain group of signals close enough the data, a subset or similar data
 is used as a training set to generate the dictionary itself.
+
+The atoms are not orthonormal. The dictionary is overcomplete. Overcomplete ...
 
 
 %\subsubsection{k-svd}
@@ -51,9 +56,9 @@ The algorithm presented by Mairal et al. \cite{Mairal2010} is ...
 \FOR {$t = 1$ to $T$}
 \STATE Draw $x$ from p(x).
 \STATE Sparse code:
-\begin{align} 
+\begin{align*} 
 \alpha_t \equiv \argmin_{\alpha\in\mathbb{R}^{p}}  \lVert x_t - D_t\alpha \rVert^{2}_{2}  +  \lambda \lVert \alpha \rVert_{1}
-\end{align}
+\end{align*}
 
 \STATE $A_t \gets A_{t-1} + \alpha_t\alpha_t^T$
 \STATE $B_t \gets B_{t-1} + x_t\alpha_t^T$
@@ -75,10 +80,10 @@ D_t \equiv \argmin_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t \left( \
 \REPEAT
 \FOR {$j = 1$ to $p$}
 \STATE update j-th column to optimze for \prettyref{eq:update}:
-\begin{align}
+\begin{align*}
 u_j \gets \frac{1}{A[j,j]}\left(b_j-Da_j\right)+d_j \\
 d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
-\end{align}
+\end{align*}
 
 \ENDFOR
 \UNTIL convergence 
@@ -98,6 +103,8 @@ We will also concentrate on real practical data. This means typically 3-channel 
 %Current research is primary concentrating on other tasks. 
 %Like ... related work :)
 \begin{description}
+
+\item[texture synthesis]  
 
 \item[compression of facial images] 
 In 2008 Bryt and Elad \cite{Bryt2008} 

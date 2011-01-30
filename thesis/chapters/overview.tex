@@ -5,19 +5,6 @@
 \section{Dictionaries for signal representation}
 \subsection{Problem statement}
 
-Simplification of signals in signal processing.
-Those basis signal can be intepreted as atoms in a dictionary...
-
-%We define an atom is am small unit of something big.
-%We define a dictionary is a collection of ordered atoms.
-
-As a matter of fact a good basis/dictionary is essential for such a good signal approximation. \cite{} 
-Finding good dictionaries has become a major task in the last decades.
-There are essential two major distinct ways to construct the desired dictionaries. First the construction of them based on mathematica model and second
-via a training process/algorithm from a set of training data.
-
-
-
 %copy
 % When a signal is said to be sparse in an engineering sense, it really means that the signal can be expanded in either
 %a small number of terms or in a series with significantly decaying coefficients. In the former case, one talks about 
@@ -26,6 +13,27 @@ via a training process/algorithm from a set of training data.
 %the signal of interest is sparse. Depending on the case, one might be lucky and know that the signal is sparse in 
 %a basis found in harmonic analysis (2.1) or one may have to spend some work in devising what these sparse basis is through 
 %an algorithm dedicated to finding sparse dictionaries from a set of signal examples(2.2 and 2.3). 
+\begin{align*}
+s \approx b_1+b_3+b_{12}
+\end{align*}
+
+
+Simplification of signals in signal processing.
+Those basis signal can be intepreted as atoms in a dictionary...
+
+We define an atom as the smallest unit in a system/dict.
+We define a dictionary as a set of diffent atoms.
+Orthonormal (feature) vectors are othogonal and have unit length.
+
+
+As a matter of fact a good basis/dictionary is essential for such a good signal approximation. \cite{} 
+Finding good dictionaries has become a major task in the last decades.
+There are essential two major distinct ways to construct the desired dictionaries. First the construction of them based on mathematica model and second
+via a training process/algorithm from a set of training data.
+
+
+
+
 
 \subsection{History}
 
@@ -56,6 +64,9 @@ The benefit of this approach is that you can decouple signal coding and dictiona
 and split the whole process of signal analysis into two tasks. Coding the signal and design of the dictionary.
 Separating the problem into two distinct problems made the search for efficient coding of signals and construction of task specific dictionaries more flexible \cite{?}.
 
+\begin{align*}
+ x = D\alpha  x \approx D\alpha
+\end{align*}
 
 
 Size of database/dictionary

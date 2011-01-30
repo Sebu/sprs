@@ -5,7 +5,7 @@ The Cambridge Advanced Learner defines a code as ``..a system of numbers, letter
 A sparse code is a sparse vector of coefficients that is used to linear combine a small selection of atoms from a dictionary.
 
 %copy
-%In sparse modeling representation, a signal x ∈ Rn is represented as a linear combination of basis column vectors dj ∈ Rn (atoms) which form a dictionary D ∈ Rn×K, such that x = Dα.
+%In sparse modeling representation, a signal x â Rn is represented as a linear combination of basis column vectors dj â Rn (atoms) which form a dictionary D â RnÃK, such that x = DÎ±.
 
 Consider $X \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each column $x_{i}$ representing a signal described by a single vector of signal length $m$.
 The dictionary $D\in\mathbb{R}^{m \times p}$ is another matrix with $p$ columns where each column represents an atom signal with the same dimension and size as a single signal $x_{i}$ from $X$.
@@ -13,10 +13,12 @@ The vector $\alpha$ is linear combination of a few non orthonormal atoms from $D
 
 We try to keep coefficient vector $\alpha$ sparse. 
 %Sparse coding is the 
-\[
+\begin{align}
+x \approx D\alpha\notag\\
 \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary atoms}}
-\underbrace{\begin{pmatrix} \alpha_1 \\ \alpha_2 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{keep sparse}}
-\]
+\underbrace{\begin{pmatrix} \alpha_1 \\ 0 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{sparse vector}}
+\end{align}
+
 The solution to this problem is a least-squares solve under-determined linear system we want the sparsest solution.
 
 To achieve the spare solution we add a constraint to the problem. 
@@ -64,7 +66,7 @@ The algorithm calculates a coefficient vector $\alpha$ which is an greedy/approx
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{0} \leq L
 \end{align}
-or
+respectivly
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{0}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
 \end{align}
@@ -161,12 +163,23 @@ Limitation one is irrelevant for our experiments as the dictionaries are over-co
 \item[noise reduction]
 Remove noise from a signal. 
 Using the fact that sparse coding is an approximation of signal that loses ... noise? ... in its encoding process. 
+\begin{align*}
+y = x + w
+\end{align*}
+
+
 
 \cite{Elad2006}
 
 \item[in-painting]
 fill missing parts by removing rows from the dictionary
 Train with the original image
+\begin{align*}
+x \approx D\alpha\\
+x_s \approx D_s\alpha\\
+Wx \approx WD\alpha\text{select subset}\\
+\end{align*}
+
 \cite{mairal08sparse}
 
 \item[compression] An example for this is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
