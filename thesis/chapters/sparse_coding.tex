@@ -6,15 +6,10 @@ The Cambridge Advanced Learner defines a code as ``..a system of numbers, letter
 A sparse code is a sparse vector of coefficients that is used to linear combine a small selection of atoms from a dictionary.
 Sparse code have their origin in neural science and machine learning. Olshausen and Field in 1996 \cite{Olshausen1996}
 
-%copy
-%In sparse modeling representation, a signal x Ã¢ÂÂ Rn is represented as a linear combination of basis column vectors dj Ã¢ÂÂ Rn (atoms) which form a dictionary D Ã¢ÂÂ RnÃÂK, such that x = DÃÂ±.
-
 Consider $X \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each column $x_{i}$ representing a signal described by a single vector of signal length $m$.
 The dictionary $D\in\mathbb{R}^{m \times p}$ is another matrix with $p$ columns where each column represents an atom signal with the same dimension as a single signal $x_{i}$ from $X$.
 The vector $\alpha$ is linear combination of a few non orthonormal atoms from $D$ that is close to the signal $X$.
-
-We try to keep coefficient vector $\alpha$ sparse. 
-Under-determined linear system. Not well-posed because there is more than one solution. 
+The problem is not well-posed because there is more than one solution. 
 
 %Sparse coding is the 
 \begin{align}
@@ -24,34 +19,35 @@ x \approx D\alpha\notag\\
 \end{align}
 
 The solution to this problem is a least-squares solve under-determined linear system we want the sparsest solution.
-
-
+We try to keep coefficient vector $\alpha$ sparse.
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha \rVert^{2}_{2}}_{reconstruction} \label{eq:problem}
 \end{align}
-
-To achieve the spare solution we add a constraint to the problem. ... over-fitting .. Such a constraint is the regularization.
-
+To achieve the spare solution we add a constraint to the problem. 
+%.. over-fitting .. Such a constraint is the regularization.
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
 \end{align}
 
+The sparsity is measured with the $\ell_0$ pseudo-norm in the form of $\lVert\alpha\rVert_{0}$.
+The regularization with the $\ell_0$-norm makes the initial problem \ref{eq:problem} NP-hard.
+To get the ideal solution it is necessary to test every combination of atoms.
+But this does not imply that there is no way to efficiently find a solution that is good enough to
+to keep $\alpha$ sparse. There exist several greedy algorithms that can solve the problem in a not perfect but
+good enough way. Another approach would be to use $\ell_1$ or $\ell_2$ as a convex relaxation of $\ell_0$-norm.
 
-measure sparsity via        $\ell_0$ pseudo-norm       $\lVert\alpha\rVert_{0}$
+In the last 15 years several sparse coding algorithms have been proposed. 
+Some that solve the initial $\ell_0$ regularized problem greedily, like the (orthogonal)-matching-pursuit,
+and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
+large linear system solvers with few optimization constraints. The LARS-Lasso, Ridge regressio, basis pursuit, FOCUSS.
 
-
-$\lVert\alpha\rVert_{0}$ makes the problem NP-hard
-to get best solution you need to test every combination
-Solution:
-use greedy approach 
 
 %copy
 % Following Tao et al., where it was shown that the L1 norm is equivalent to the L0 norm, 
 %leads one to solve an easier problem. Finding the candidate with the smallest L1 norm can be expressed relatively
 %easily as a linear program, for which efficient solution methods already exist. These solution methods have been refined over the past few years yielding enormous gain
 
-Use $\ell_1$ or $\ell_2$ as a convex relaxation of $\ell_0$
-
+It can be demonstrated that the $\ell_1$-norm is equivalent to the $\ell_0$-norm .....
 \Todo{image/description of different regularizations}
 
 \begin{figure}
@@ -62,13 +58,6 @@ Use $\ell_1$ or $\ell_2$ as a convex relaxation of $\ell_0$
 \end{figure}
 
 
-In the last 15 years several sparse coding algorithms have been proposed. 
-Some that solve the initial problem <> greedily, the (orthogonal) matching pursuit, and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
-large linear system solvers with few optimization constraints. The LARS-Lasso, basis pursuit, FOCUSS?
-
-the most common algorithms are the following ones.
-BP/MP/OMP ...
-Lasso/Ridge regression etc.
 
 
 
