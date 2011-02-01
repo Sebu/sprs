@@ -5,19 +5,37 @@
 Set of orthonormal signal vectors.
 \subsection{Designed}
 
+\paragraph{cosine}
+\paragraph{wavelets}
+\paragraph{curvelets/contourlets/bandelets}
 
-\begin{description}
- \item[cosine]
- \item[wavelets]
- \item[curvelets/contourlets/bandelets]
-\end{description}
 
 \subsection{Learned}
-Recent research has shown that learned dictionaries show better compression quality than small analytic dictionaries \cite{Aharon2006} \cite{Chen1998} 
+
+%\paragraph{Machine Learning}
+
+Besides the construction of dictionaries from mathematical functions, machine learning .. .
+
+
+``A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E''
+
+
+\paragraph{principal component analysis}
+
+
+\paragraph{redundant}
+Unlike the former designed dictionaries and the PCA approach. Dictionaries atoms learned with machine learning methods are not necessarily othogonal.
+Infact the benefit of this new approach is to have overcomplete dictionies w
+%The atoms are not orthonormal. 
+%The dictionary is overcomplete. Overcomplete ...
+
+
+
+Recent research has shown that learned dictionaries show better compression quality than small analytic dictionaries \cite{Chen1998} \cite{Aharon2006} \cite{Mairal2010}
 Rather than selecting an appropriate mathematical construct that can reconstruct a certain group of signals close enough the data, a subset or similar data
 is used as a training set to generate the dictionary itself.
 
-The atoms are not orthonormal. The dictionary is overcomplete. Overcomplete ...
+
 
 
 %\subsubsection{k-svd}
@@ -102,24 +120,29 @@ We will also concentrate on real practical data. This means typically 3-channel 
 \section{Related work}
 %Current research is primary concentrating on other tasks. 
 %Like ... related work :)
-\begin{description}
 
-\item[texture synthesis]  
 
-\item[compression of facial images] 
+
+%\begin{description}
+
+\paragraph{texture synthesis}
+
+\paragraph{compression of facial images}
 In 2008 Bryt and Elad \cite{Bryt2008} 
 
-\item[training with a neural network]
+\paragraph{training with a neural network}
 Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
 
 
-\item[multi-scale]
+\paragraph{multi-scale}
 Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
 blocks (multiple times of the default block size). The idea is that aligned smooth regions with low variance can be 
 can be combined an encoded as one signal rather than e.g. 4. \cite{saprio}
+\cite{Mairal2007}
+
 \Todo{picture with different scales}
 
-\item[multi-channel]
+\paragraph{multi-channel}
 When dealing with multi-channel data (e.g. RGB images) 
 each channel can be coded separate or as a concatenation of each signal into a single one.
 These approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add pic}
@@ -127,22 +150,23 @@ Fortunately this problem vanishes with big dictionaries and large training sets.
 Nevertheless a solution would be to add a constraint to the sparse coding that pays attention the correlation of the channels.
 \Todo{add formula from paper}
 
-\item[double sparsity]
+\paragraph{double sparsity}
 Rather then directly using a collection of trained atoms as dictionary elements. This approach uses sparse coding
-to encode the signals of a bigger dictionary with the help of a smaller on. \cite{double sparsity} 
+to encode the signals of a bigger dictionary with the help of a smaller on. \cite{Rubinstein2009} 
 \Todo{formula $B$ .. basis, $A$ sparse matrix, $D=BA$ ...}
 
-\item[group sparsity]
-similar patches should admit similar patterns
+\paragraph{structured sparsity}
+similar patches should admit similar patterns \cite{Mairal2009}
+
 \cite{group sparsity}
 \Todo{picture with ditribution difference}
 
-\item[hierarchy]
+\paragraph{hierarchy}
 Adding hierarchy to dictionaries can lead to faster coding or use in structure analysis ( text documents )
 \cite{Jenatton2010}
 \Todo{picture with hirarchy }
 
 
 
-\end{description}
+%\end{description}
 

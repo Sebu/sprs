@@ -4,14 +4,19 @@
 The Cambridge Advanced Learner defines a code as ``..a system of numbers, letters or signals which is used to represent something in a shorter or more convenient form''
 A sparse code is a sparse vector of coefficients that is used to linear combine a small selection of atoms from a dictionary.
 
+Sparse code have their origin in neural science and machine learning. Olshausen and Field in 1996 \cite{Olshausen1996}
+
 %copy
-%In sparse modeling representation, a signal x â Rn is represented as a linear combination of basis column vectors dj â Rn (atoms) which form a dictionary D â RnÃK, such that x = DÎ±.
+%In sparse modeling representation, a signal x Ã¢ÂÂ Rn is represented as a linear combination of basis column vectors dj Ã¢ÂÂ Rn (atoms) which form a dictionary D Ã¢ÂÂ RnÃÂK, such that x = DÃÂ±.
 
 Consider $X \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each column $x_{i}$ representing a signal described by a single vector of signal length $m$.
-The dictionary $D\in\mathbb{R}^{m \times p}$ is another matrix with $p$ columns where each column represents an atom signal with the same dimension and size as a single signal $x_{i}$ from $X$.
+The dictionary $D\in\mathbb{R}^{m \times p}$ is another matrix with $p$ columns where each column represents an atom signal with the same dimension as a single signal $x_{i}$ from $X$.
 The vector $\alpha$ is linear combination of a few non orthonormal atoms from $D$ that is close to the signal $X$.
 
 We try to keep coefficient vector $\alpha$ sparse. 
+
+Under-determined linear system. Not well-posed because there is more than one solution. 
+
 %Sparse coding is the 
 \begin{align}
 x \approx D\alpha\notag\\
@@ -21,14 +26,34 @@ x \approx D\alpha\notag\\
 
 The solution to this problem is a least-squares solve under-determined linear system we want the sparsest solution.
 
-To achieve the spare solution we add a constraint to the problem. 
+
+\begin{align}
+\min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha \rVert^{2}_{2}}_{reconstruction}
+\end{align}
+
+To achieve the spare solution we add a constraint to the problem. ... over-fitting .. Such a constraint is the regularization.
 
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
 \end{align}
 
 
-measure sparsity via       l0-norm       $\lVert\alpha\rVert_{0}$
+measure sparsity via        $\ell_0$ pseudo-norm       $\lVert\alpha\rVert_{0}$
+
+
+$\lVert\alpha\rVert_{0}$ makes the problem NP-hard
+to get best solution you need to test every combination
+Solution:
+use greedy approach 
+
+%copy
+% Following Tao et al., where it was shown that the L1 norm is equivalent to the L0 norm, 
+%leads one to solve an easier problem. Finding the candidate with the smallest L1 norm can be expressed relatively
+%easily as a linear program, for which efficient solution methods already exist. These solution methods have been refined over the past few years yielding enormous gain
+
+Use $\ell_1$ or $\ell_2$ as a convex relaxation of $\ell_0$
+
+\Todo{image/description of different regularizations}
 
 \begin{figure}
 \centering
@@ -42,27 +67,16 @@ In the last 15 years several sparse coding algorithms have been proposed.
 Some that solve the initial problem <> greedily, the (orthogonal) matching pursuit, and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
 large linear system solvers with few optimization constraints. The LARS-Lasso, basis pursuit, FOCUSS?
 
-%copy
-% Following Tao et al., where it was shown that the L1 norm is equivalent to the L0 norm, 
-%leads one to solve an easier problem. Finding the candidate with the smallest L1 norm can be expressed relatively
-%easily as a linear program, for which efficient solution methods already exist. These solution methods have been refined over the past few years yielding enormous gain
-
-$\lVert\alpha\rVert_{0}$ makes the problem NP-hard
-to get best solution you need to test every combination
-Solution:
-use greedy approach 
-
-or use $\ell_1$ as convex relaxation of $\ell_0$
 the most common algorithms are the following ones.
 BP/MP/OMP ...
 Lasso/Ridge regression etc.
 
-\Todo{image/description of different regularizations}
+
 
 
 \section{$\ell_0$ regularization with greedy algorithms}
 
-The algorithm calculates a coefficient vector $\alpha$ which is an greedy/approximate solution of the following NP-hard problem
+The algorithm calculates a coefficient vector $\alpha$ which is an greedy solution of the following NP-hard problem
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{0} \leq L
 \end{align}
@@ -116,16 +130,22 @@ i \gets \argmax_{i \in S^C} \lvert d_i^Tr \rvert
 \end{algorithmic}
 \end{algorithm}
 
-\section {$\ell_1$ regularization}
+\section {$\ell_1$ regularization via Lasso}
 
 basis pursuit\cite{} 
 FOCUSS \cite{}
 
-The LASSO (least absolute shrinkage and selection operator) is a regularized version of a least squares solution.
+The Lasso (least absolute shrinkage and selection operator) is a regularized version of a least squares solution.
 The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small. \cite{Tibshirani1998}
+
+\begin{align}
+\min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2}  \text{ s.t. } \lVert \alpha \rVert_{1}
+\end{align}
+
 There are several ways to compute the LASSO. .. ...... \cite{} 
 
-\Todo{split into LAR and LARS-lass, better illustrate than use complex formulas}
+We chose the LARS method because it is the fastest in low dimension or for high correlation. Both conditions are satisfied in our experiments.
+\Todo{split into LAR and LARS-lasso, better illustrate than use complex formulas}
 \subsection {LARS-Lasso}
 \label{sec:lars}
 The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression (short LAR)
@@ -136,7 +156,7 @@ as described in \cite{Efron2004}. It is a modified version of the LAR where ....
 \min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \lambda \lVert \alpha \rVert_{1}
 \end{align}
 
-\Todo{add algo.}
+\Todo{add algorithm}
 \begin{algorithm}
 \caption{LARS-lasso}
 \begin{algorithmic}[1]
@@ -159,8 +179,8 @@ Limitation one is irrelevant for our experiments as the dictionaries are over-co
 
 \section{Application and Related Work}
 
-\begin{description}
-\item[noise reduction]
+%\begin{description}
+\paragraph{noise reduction}
 Remove noise from a signal. 
 Using the fact that sparse coding is an approximation of signal that loses ... noise? ... in its encoding process. 
 \begin{align*}
@@ -171,7 +191,7 @@ y = x + w
 
 \cite{Elad2006}
 
-\item[in-painting]
+\paragraph{in-painting}
 fill missing parts by removing rows from the dictionary
 Train with the original image
 \begin{align*}
@@ -182,14 +202,20 @@ Wx \approx WD\alpha\text{select subset}\\
 
 \cite{mairal08sparse}
 
-\item[compression] An example for this is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
-\item[classification] Examples for this can be found in \cite{Mairal2008b} and \cite{Bar2009}.
+\paragraph{compression} An example for this is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
+
+%Task driven dictionaries
+\paragraph{classification} Examples for this can be found in \cite{Mairal2008b} and \cite{Bar2009}.
+\paragraph{inverse half-toning} ongoing research by Mairal et al., 2010 \cite{Mairal2010b}
+\paragraph{super resolution} \cite{Yang2010} \cite{Wright2008}  
+Or the ongoing work by Couzinie-Devy et al., 2010 called digital zooming.
+\paragraph{background subtraction} \cite{}
 
 %\item[noise reduction]
 %\item[in-painting]
 %\item[classification] \Todo{usage:classification}
 
-\end{description}
+%\end{description}
 
 
 
