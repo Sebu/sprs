@@ -13,8 +13,6 @@
 *.nav
 *.o
 *.out
-*.pdf
-*.png
 *.pro.*pre*
 *.so*
 *.toc

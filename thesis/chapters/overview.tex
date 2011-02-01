@@ -5,133 +5,122 @@
 \section{Dictionaries for signal representation}
 %\subsection{Problem statement}
 
-%copy
-% When a signal is said to be sparse in an engineering sense, it really means that the signal can be expanded in either
-%a small number of terms or in a series with significantly decaying coefficients. In the former case, one talks about 
-%a strictly sparse signal, in the latter case, one talks about a compressible signal. 
-%In order to produce Compressed Measurements, one first need to know what is the family of functions in which 
-%the signal of interest is sparse. Depending on the case, one might be lucky and know that the signal is sparse in 
-%a basis found in harmonic analysis (2.1) or one may have to spend some work in devising what these sparse basis is through 
-%an algorithm dedicated to finding sparse dictionaries from a set of signal examples(2.2 and 2.3). 
-
-\begin{align*}
+When a signal is meant to be sparse it is either representable with a small number of combined terms or a series of many terms where the majority of coefficients is
+close to zero. 
+The signal $x$ is represent by a function $f(x)$ that approximates the signal in a sparse way.
+\begin{equation*}
 x \approx f\left(x\right)
-\end{align*}
-
-
-When a signal is meant bo be sparse it is either representable via a small number of combined terms or series of many terms where the majority of coefficients is
-close to zero.
-
-\begin{align*}
-x \approx b_{1} + b_{12} + b_{312}\\
- \text{v.s.}\\ x \approx 3b_{1} + 0.001b_{2} ... + 2b_{12} + 0.021b_{13} .. + 10b_{312}
-\end{align*}
-
-
+\end{equation*}
 
 Simplification of signals in signal processing.
-Those basis signal can be intepreted as atoms in a dictionary...
+\begin{gather*}
+x \approx b_{1} + b_{12} + b_{312}\\
+ \text{v.s.}\\ x \approx 3b_{1} + 0.001b_{2} ... + 2b_{12} + 0.021b_{13} .. + 10b_{312}
+\end{gather*}
 
-We define an atom elemtary signal or the smallest unit in a system/dict.
-We define a dictionary as a set of diffent atoms.
-Orthonormal (feature) vectors are othogonal and have unit length.
 
 
-As a matter of fact a good basis or dictionary is essential for such a good signal approximation. \cite{} 
-There are essential two major distinct ways to construct the desired dictionaries. First the construction of model based on basis functions that can represent our signal in
-a sparse way  and second via algorithms that learn a sparse dictionary via a training process from a set of training data/signal samples.
+Those basis signal can be interpreted as atoms in a codebook or dictionary.
+
+We define a dictionary as a set of different atoms. We define an atom elementary signal or the smallest unit in such a dictionary.
+
+There are essential two major distinct ways to construct the desired dictionaries. First the construction of model based on basis functions found 
+via harmonic analysis that can represent our signal in a sparse way or second via algorithms that learn a sparse dictionary via a training process 
+from a set of training data/signal samples.
 The later approach of training good dictionaries has become a major task in the last decades. \cite{Mairal2010}
 
+As a matter of fact a good basis or dictionary is essential for a good signal approximation. \cite{} 
 
-
+%Orthonormal (feature) vectors are othogonal and have unit length.
 
 
 \subsection{History}
-
+\label{sec:history}
 %Compressed sensing
 The process of signal transformation that far back in the early 60s.\cite{Rubinstein2010}
-FFT in 65s
 
+The early approaches in the 60s used combinations of cosine transformations. Coming from a continues representation this makes 
+actually sense. The signal could be represented via combinations of connected oscilloscopes with different frequency configurations. 
+
+Approximate signals via combination of limited signal samples
+Why?
+The application of such signal analysis and interpretation.
+
+
+\Todo{FFT}
+FFT in 65s
 %\begin{align*}
 %\end{align*}
 
 %\subsection{Discrete signals}
-Rather then using continuous signals we concentrate on discrete signal representation.
-Continuous signals would be better for .... . But our signal (image etc.) will be discrete anyway because of their initial digital representation. 
-Besides the problem of coding becomes different in the continues space \cite{} Because of ...
 
-\paragraph{Discrete consine transformation}
+
+\paragraph{Discrete cosine transformation}
 %\begin{align*}
 %\end{align*}
+\Todo{}
 
 \paragraph{Discrete wavelet transformation}
 %\begin{align*}
 %\end{align*}
+\Todo{}
 
-approximate signals via combination of limited signal samples
-Why?
-signal analysis, compression, de-noise etc.
-
-The early approaches in the 60s used combinations of cosine transformations. Coming from a continues representation this makes 
-actually sense. The signal could be represented via ....
-
+In computer vision such applications would be de-noising, in-paiting, compression etc.
 In 80s the search for better transformation basis became a major role in signal representation. \cite{}
 
-
+Rather then using continuous signals concentrate on discrete signal representation.
+Continuous signals would be better for .... . 
+But our signal (image etc.) will be discrete anyway because of their initial digital representation. 
+Besides the problem of coding becomes different in the continues space \cite{} Because of ...
 
 \subsection{Splitting the problem}
 \cite{Rubinstein2010}
-In the last 15 years the concept emerged to interpret basis transforms as a set of signal atoms in a dictionary and the signals 
+In the last 15 years a concept emerged to interpret basis transforms as a set of signal atoms in a dictionary and the signals 
 that they reconstruct as sparse linear combination of these atoms.
 see \cite{Olshausen1996} and \cite{Mallat1993}
 The benefit of this approach is that you can decouple signal coding and dictionary design and split the whole process of signal analysis into two tasks.
-Coding of signals and the design of dictionaries.
-Separating the problem into two distinct problems made the search for efficient coding of signals and construction of task specific dictionaries more flexible \cite{?}.
+First coding of signals and second the design of dictionaries.
+Separating the problem into two distinct problems made the search for efficient coding of signals $z$ and construction of task specific dictionaries $D$ more flexible \cite{?}.
+The initial problem becomes:
 
-\begin{align*}
- x = D\alpha  x \approx D\alpha
-\end{align*}
+\begin{equation}
+ x \approx D\alpha
+\end{equation}
 
 
-Size of database/dictionary
-Quality
-
-%In order to find 
-%1. coding signals 
-%2. find a good dictionary
+Ongoing research in this field emerged in order to:
+\begin{itemize}
+ \item Find efficient ways for coding signals in a sparse way.
+ \item Design or learn a good dictionary that can code specific signal in sparse way with low error.
+\end{itemize}
 
 %analog problem video compression but with less correlation between images and still image 
 
-%Convergence of the dictionary learning
-%Quality increase with size increase 
-%Comparison with jpeg,jpeg2000 via RMSE
-
-
 \section{Goal of this thesis}
 
-The main purpose of the thesis is to
-%The thesis concentrates on ...
-
+The main purpose of the thesis is to learn good dictionaries that can be used for specific tasks on large image databases.
+The three major steps of the following chapters are:
 \begin{itemize}
- \item Fast coding of many small signals under differnt constraints
+ \item Fast coding of many small signals under different constraints
  \item Efficient learning redundant dictionaries for large image databases from a large set of training data
  \item Evaluation of the quality and usage of the learned dictionaries
 \end{itemize}
 
-How many atoms do we need  for a ``good'' sparse representation of large image databases?
+This includes topics like ``How many atoms do we need  for a 'good' sparse representation of large image databases?'' 
+``When do dictionaries different sizes and learning configurations show convergence?'' and ``How does this affect quality and usability for different application?''. 
 
-Evaluate the quality and size of learned big redundant dictionaries for optimal sparse coding of large image databases.
+All these topics are addressed in several experiments.
+Evaluation of the quality and size of learned big redundant dictionaries for optimal sparse coding of large image databases.
 Experiments with small sets specific images like from sketches, still images of animations from disney and art styles like post-impressionistic images from Vicent van Gogh.
 Search for a universal dictionary for databases of hundredths of thousands of images.
-
-Evaluation of clustering of learning algorithm.
-Convergence of different sizes and configurations of clustered learned dictionaries. 
-
-Application of sparse coding for image compression and observation of problems (encoding time, quality benefit, etc.)
-Comparission of compression with discrete cosine transformation approaches in jpeg and discrete wavelets transformation of jepg2000 and possible usage as an image descriptor.
+Evaluation of clustering of learning algorithms. 
+Application of sparse coding for image compression and observation of problems. Like encoding time, quality benefit, etc.
+Comparison of compression with discrete cosine transformation approaches in jpeg and discrete wavelets transformation of jepg2000 and possible usage as an image descriptor.
 
 
-
+%Convergence of the dictionary learning
+%Quality increase with size increase 
+%Comparison with jpeg,jpeg2000 via RMSE
 
 
 

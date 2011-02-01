@@ -1,9 +1,9 @@
 \chapter{Sparse coding}
 \thispagestyle{empty}
 
+\Todo{better intro}
 The Cambridge Advanced Learner defines a code as ``..a system of numbers, letters or signals which is used to represent something in a shorter or more convenient form''
 A sparse code is a sparse vector of coefficients that is used to linear combine a small selection of atoms from a dictionary.
-
 Sparse code have their origin in neural science and machine learning. Olshausen and Field in 1996 \cite{Olshausen1996}
 
 %copy
@@ -14,7 +14,6 @@ The dictionary $D\in\mathbb{R}^{m \times p}$ is another matrix with $p$ columns 
 The vector $\alpha$ is linear combination of a few non orthonormal atoms from $D$ that is close to the signal $X$.
 
 We try to keep coefficient vector $\alpha$ sparse. 
-
 Under-determined linear system. Not well-posed because there is more than one solution. 
 
 %Sparse coding is the 
@@ -28,7 +27,7 @@ The solution to this problem is a least-squares solve under-determined linear sy
 
 
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha \rVert^{2}_{2}}_{reconstruction}
+\min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha \rVert^{2}_{2}}_{reconstruction} \label{eq:problem}
 \end{align}
 
 To achieve the spare solution we add a constraint to the problem. ... over-fitting .. Such a constraint is the regularization.
@@ -76,7 +75,7 @@ Lasso/Ridge regression etc.
 
 \section{$\ell_0$ regularization with greedy algorithms}
 
-The algorithm calculates a coefficient vector $\alpha$ which is an greedy solution of the following NP-hard problem
+These algorithms calculate a coefficient vector $\alpha$ which is an greedy solution of the following NP-hard problem
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{0} \leq L
 \end{align}
@@ -86,33 +85,50 @@ respectivly
 \end{align}
 \cite{Mallat1993}
 
-\subsection{Matching pursuit}
+\subsection{Matching-Pursuit}
 \label{sec:mp}
+
+The \prettyref{alg:mp} starts with the coefficent vector $\alpha$ set to zero. Then find the atom in the dictionary with the best reduction of the error.
+This is done by selecting the coefficient that has the maximum correlation with the residual. 
+Repeat this step $L$ times or until the error $\lVert x - D\alpha \rVert^{2}_{2}$ for the curernt $\alpha$ reaches $\lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon$ respectifly the residual fullfills $\lVert r \rVert_2 \leq \epsilon$.
+
+
 \begin{algorithm}
 \caption{Matching Pursuit}
+\label{alg:mp}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, y \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}$
-\STATE $\alpha \gets 0, r \gets x $ (residual) 
-\WHILE {$\lVert \alpha \rVert_{0} \leq L$}
+\REQUIRE $x \in \mathbb{R}^m, y \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
+\STATE $\alpha_0 \gets 0$ (start with zero vector)
+\STATE $r_0 \gets x-D\alpha_0 = x$ (residual) 
+\WHILE {$\lVert \alpha \rVert_{0} \leq L$ \OR $\lVert r \rVert_2 \leq \epsilon$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
 i \gets \argmax_{i=1,...,p} \lvert d_i^Tr \rvert
 \end{equation*}
-\STATE update coefficients: $a[i]  \gets a[i] + d_i^Tr$
+\STATE update coefficients: 
+\begin{align}
+a[i]  \gets a[i] + d_i^Tr \label{eq:mp_update}
+\end{align}
+
 \STATE update residual: $r \gets r - \left(d_i^Tr\right)d_i$
+
 \ENDWHILE
 \RETURN $\alpha$
 \end{algorithmic}
 \end{algorithm}
-\subsection{Orthogonal matching pursuit}
-\cite{Pati1993}
+\subsection{Orthogonal-Matching-Pursuit}
 \label{sec:omp}
 
-%copy
-%OMP to address the NP-hard sparse coding problem
+An improved version of the \prettyref{sec:mp} the the Orthogonal-Matching-Pursuit \prettyref{alg:omp} was presented by in \cite{Pati1993}.
+Rather than just updating the coefficent of $\alpha$ that is currently selected \prettyref{eq:mp_update} the algorithm re-evaluates all coefficent in the current active set $S$ 
+\prettyref{eq:omp_update} $\alpha_S$ by solving a full least-squares solution in every iteration. This improves the quality of the solution. \cite{OMP}
+The name Orthogonal-Matching-Pursuit comes from the fact that the residual $r$ is orthogonal to the previously selected atoms in $D$ which leads to the effect that every coefficent is only selected once.
+
+
 
 \begin{algorithm}
 \caption{Orthogonal Matching Pursuit}
+\label{alg:omp}
 \begin{algorithmic}[1]
 \REQUIRE $x \in \mathbb{R}^m, y \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
 \STATE $\alpha \gets 0, r \gets x $ (residual) $, S=\emptyset$
@@ -123,29 +139,50 @@ i \gets \argmax_{i \in S^C} \lvert d_i^Tr \rvert
 \end{equation*}
 \STATE update active set: $S \gets S \cup \{i\} $
 \STATE update residual: $r \gets \left(I-D_S\left( D_S^T D_S \right)^{-1} D_S^T \right)x$
-\STATE update coefficients: $a_S \gets \left( D_S^T D_S \right)^{-1} D_S^T x $
+\STATE update coefficients: 
+\begin{align}
+a_S \gets \left( D_S^T D_S \right)^{-1} D_S^T x  \label{eq:omp_update}
+\end{align}
 
 \ENDFOR
 \RETURN $\alpha$
 \end{algorithmic}
 \end{algorithm}
 
-\section {$\ell_1$ regularization via Lasso}
+%\subsection*{Limitations}
 
-basis pursuit\cite{} 
-FOCUSS \cite{}
+All these gready approaches tend to find suitable solutions but because of the non-convex problem they can get stuck in local minimas.
+As shown before an $\ell_1$ regularization version of \ref{eq:problem} also keeps the coefficent vector $\alpha$ sparse but elimantes the problem of a local minima.
+The next section presents algorithms which solve  a $\ell_1$ regularization version of \ref{eq:problem}.
+
+
+
+\section {$\ell_1$ regularization}
+
+
 
 The Lasso (least absolute shrinkage and selection operator) is a regularized version of a least squares solution.
 The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small. \cite{Tibshirani1998}
 
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2}  \text{ s.t. } \lVert \alpha \rVert_{1}
+\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{1}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon\label{eq:l1}
 \end{align}
 
-There are several ways to compute the LASSO. .. ...... \cite{} 
+The lagrange multiplier version of the regularized problem \ref{eq:l1} is:
 
-We chose the LARS method because it is the fastest in low dimension or for high correlation. Both conditions are satisfied in our experiments.
+\begin{align}
+\min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \lambda \lVert \alpha \rVert_{1}
+\end{align}
+
+There are several ways to compute the LASSO. .. ...... 
+
+%\cite{} 
+%basis pursuit\cite{} 
+%FOCUSS \cite{}
+
+We chose the LARS method as it is the fastest in low dimension or for high correlation. Both conditions are satisfied in our experiments.
 \Todo{split into LAR and LARS-lasso, better illustrate than use complex formulas}
+
 \subsection {LARS-Lasso}
 \label{sec:lars}
 The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression (short LAR)
@@ -165,9 +202,9 @@ as described in \cite{Efron2004}. It is a modified version of the LAR where ....
 \end{algorithm}
 
 \subsubsection{Limitations}
-The Lasso modified version of the LAR hat the following limitations.
+The Lasso modified version of the LAR algorithm has the following limitations.
 \begin{description}
- \item[Dimension] to high dimension of signal When the dimension $p$ of the signal $X$ is 
+ \item[Dimension] When the dimension $p$ of the signal $X$ is 
 much higher than the the dimension $m$ of the dictionary $D$ the algorithm can only select $m$ columns.
 
 \item[correlation] When the columns of the dictionary are highly correlated the algorithm

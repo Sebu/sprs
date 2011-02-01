@@ -5,6 +5,8 @@
 Set of orthonormal signal vectors.
 \subsection{Designed}
 
+First presented in \ref{sec:history}
+
 \paragraph{cosine}
 \paragraph{wavelets}
 \paragraph{curvelets/contourlets/bandelets}
@@ -151,19 +153,20 @@ Nevertheless a solution would be to add a constraint to the sparse coding that p
 \Todo{add formula from paper}
 
 \paragraph{double sparsity}
-Rather then directly using a collection of trained atoms as dictionary elements. This approach uses sparse coding
+Instead of directly using a collection of trained atoms as dictionary elements. This approach uses sparse coding
 to encode the signals of a bigger dictionary with the help of a smaller on. \cite{Rubinstein2009} 
 \Todo{formula $B$ .. basis, $A$ sparse matrix, $D=BA$ ...}
 
 \paragraph{structured sparsity}
 similar patches should admit similar patterns \cite{Mairal2009}
-
 \cite{group sparsity}
 \Todo{picture with ditribution difference}
 
 \paragraph{hierarchy}
-Adding hierarchy to dictionaries can lead to faster coding or use in structure analysis ( text documents )
-\cite{Jenatton2010}
+Adding hierarchy to dictionaries can lead to faster coding of signals and capture additional information about the learned dictionaries, .
+like in the use for structure analysis of text documents.  Examples for this approach can be found in \cite{Jenatton2010}.
+
+
 \Todo{picture with hirarchy }
 
 
