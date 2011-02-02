@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0.85
-lastDocument=chapters/sparse_coding.tex
+lastDocument=chapters/dictionaries.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -162,13 +162,13 @@ order=3
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=5
+column=182
 encoding=UTF-8
 highlight=LaTeX
-line=7
+line=118
 mode=LaTeX
-open=false
-order=4
+open=true
+order=2
 
 [item:chapters/introduction.tex]
 archive=true
@@ -192,10 +192,10 @@ order=1
 
 [item:chapters/overview.tex]
 archive=true
-column=29
+column=21
 encoding=UTF-8
 highlight=LaTeX
-line=9
+line=72
 mode=LaTeX
 open=true
 order=0
@@ -242,12 +242,12 @@ order=-1
 
 [item:header.tex]
 archive=true
-column=10
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=93
+line=12
 mode=LaTeX
-open=false
+open=true
 order=3
 
 [item:thesis.tex]
@@ -283,8 +283,8 @@ CursorColumn=11
 CursorLine=22
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=5
-CursorLine=7
+CursorColumn=182
+CursorLine=118
 
 [view-settings,view=0,item:chapters/introduction.tex]
 CursorColumn=0
@@ -295,8 +295,8 @@ CursorColumn=164
 CursorLine=97
 
 [view-settings,view=0,item:chapters/overview.tex]
-CursorColumn=29
-CursorLine=9
+CursorColumn=21
+CursorLine=72
 
 [view-settings,view=0,item:chapters/results.tex]
 CursorColumn=0
@@ -311,8 +311,8 @@ CursorColumn=15
 CursorLine=9
 
 [view-settings,view=0,item:header.tex]
-CursorColumn=10
-CursorLine=93
+CursorColumn=0
+CursorLine=12
 
 [view-settings,view=0,item:thesis.tex]
 CursorColumn=0
