@@ -89,7 +89,7 @@ Repeat this step $L$ times or until the error $\lVert x - D\alpha \rVert^{2}_{2}
 \REQUIRE $x \in \mathbb{R}^m, y \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
 \STATE $\alpha_0 \gets 0$ (start with zero vector)
 \STATE $r_0 \gets x-D\alpha_0 = x$ (residual) 
-\WHILE {$\lVert \alpha \rVert_{0} \leq L$ \OR $\lVert r \rVert_2 \leq \epsilon$}
+\WHILE {$\lVert \alpha \rVert_{0} \leq L$ $\lVert r \rVert_2 \leq \epsilon$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
 i \gets \argmax_{i=1,...,p} \lvert d_i^Tr \rvert

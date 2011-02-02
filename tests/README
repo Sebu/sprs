@@ -1,0 +1,19 @@
+
+WITH JASPER
+  japsper -f input -F output -T jp2 -o rate=0.1
+  japsper -f input -F output -T jpg -o quality=0.1
+  imgcmp -f file1 -F file2 -m metric ( rmse, psnr )
+
+WITH IMAGEMAGICK 
+  convert input.tiff -define jp2:rate=0.1  output.jpg
+  convert input.tiff -quality   5%         output.jpg
+  compare -metric PSNR rose.jpg reconstruct.jpg difference.png
+  
+test images from The USC-SIPI Image Database
+
+
+collect 
+
+ image name |   algo | rmse | psnr |  config 
+4.2.07.tiff   jp2        ...    .... rate=0.1
+
