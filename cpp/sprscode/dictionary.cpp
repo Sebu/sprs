@@ -5,6 +5,7 @@
 #include "coderlasso.h"
 #include "dictionary.h"
 #include "vigra_ext.h"
+#include "coderomp.h"
 
 #include <eigen2/Eigen/Array>
 
@@ -40,17 +41,33 @@ void Dictionary::clear() {
 void Dictionary::merge(Dictionary& input, double eps) {
     static int index = 0;
 
+    CoderOMP coder;
+    coder.eps = 0.0;
+    coder.coeffs = 2;
+
     for(int i=0; i<input.elements_; ++i) {
         bool addCol = true;
 
         if(index>=elements_) return;
 
+
+        // code with minimal settings
+        MatrixXd samplesChunk = input.getData().block(0,i,getSignalSize(),1);
+        std::cout << "submatrix" << std::endl;
+        Eigen::SparseMatrix<double> A = coder.encode(samplesChunk, (*this));
+        std::cout << "encode" << std::endl;
+        MatrixXd recon = getData()*A;
+        std::cout << "reconstruct " << std::endl;
+
         //compare
-        for(int j=0; j<=index; ++j)
-            if( (input.getData().col(i)-(*data_).col(j)).squaredNorm() < eps )
+        //for(int j=0; j<=index; ++j)
+
+        std::cout << (samplesChunk-recon).squaredNorm() << std::endl;
+        if( (samplesChunk-recon).squaredNorm() < eps )
                 addCol = false;
 
         if(addCol) {
+            std::cout << "merge " << i << std::endl;
             meta_->col_[index].usage_ = input.meta_->col_[i].usage_;
             (*data_).col(index++) = input.getData().col(i);
         }
