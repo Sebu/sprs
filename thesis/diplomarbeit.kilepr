@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.1 beta2
-lastDocument=chapters/overview.tex
+lastDocument=chapters/title.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -167,7 +167,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=118
 mode=LaTeX
-open=true
+open=false
 order=2
 
 [item:chapters/introduction.tex]
@@ -182,13 +182,13 @@ order=4
 
 [item:chapters/method.tex]
 archive=true
-column=164
+column=12
 encoding=UTF-8
 highlight=LaTeX
-line=97
+line=125
 mode=LaTeX
-open=false
-order=1
+open=true
+order=2
 
 [item:chapters/overview.tex]
 archive=true
@@ -222,13 +222,13 @@ order=1
 
 [item:chapters/title.tex]
 archive=true
-column=15
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=9
+line=41
 mode=LaTeX
-open=false
-order=2
+open=true
+order=3
 
 [item:diplomarbeit.kilepr]
 archive=true
@@ -247,7 +247,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=22
 mode=LaTeX
-open=true
+open=false
 order=3
 
 [item:thesis.tex]
@@ -257,7 +257,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=39
 mode=LaTeX
-open=true
+open=false
 order=4
 
 [item:todo.txt]
