@@ -36,6 +36,9 @@ But this does not imply that there is no way to efficiently find a solution that
 to keep $\alpha$ sparse. There exist several greedy algorithms that can solve the problem in a not perfect but
 good enough way. Another approach would be to use $\ell_1$ or $\ell_2$ as a convex relaxation of $\ell_0$-norm.
 
+It can be demonstrated that the $\ell_1$-norm is equivalent to the $\ell_0$-norm .....
+\Todo{image/description of different regularizations}
+
 In the last 15 years several sparse coding algorithms have been proposed. 
 Some that solve the initial $\ell_0$ regularized problem greedily, like the (orthogonal)-matching-pursuit,
 and others which modified the problem to become convex/linear. These primary derive from the numerical domain in the form of 
@@ -46,9 +49,6 @@ large linear system solvers with few optimization constraints. The LARS-Lasso, R
 % Following Tao et al., where it was shown that the L1 norm is equivalent to the L0 norm, 
 %leads one to solve an easier problem. Finding the candidate with the smallest L1 norm can be expressed relatively
 %easily as a linear program, for which efficient solution methods already exist. These solution methods have been refined over the past few years yielding enormous gain
-
-It can be demonstrated that the $\ell_1$-norm is equivalent to the $\ell_0$-norm .....
-\Todo{image/description of different regularizations}
 
 \begin{figure}
 \centering
@@ -190,7 +190,7 @@ as described in \cite{Efron2004}. It is a modified version of the LAR where ....
 \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Limitations}
+\subsubsection*{Limitations}
 The Lasso modified version of the LAR algorithm has the following limitations.
 \begin{description}
  \item[Dimension] When the dimension $p$ of the signal $X$ is 
