@@ -15,6 +15,7 @@
 \usepackage{amssymb}            % math symbols
 \usepackage{units}   
 \usepackage{xcolor}
+%\usepackage[automark]{scrpage2}
 \usepackage{graphicx}
 \usepackage{todo}
 
@@ -26,6 +27,7 @@
 %\usepackage{tikz}
 
 %\usepackage{varioref}           % nice refs
+%TODO: REMOVE BEFORRE PRNIT
 \usepackage[pdftex]{hyperref}
 \usepackage{prettyref}
 \newrefformat{eq}{Eqn.~\textup{(\ref{#1})}}
@@ -35,16 +37,7 @@
 \newrefformat{chp}{Chapter~\ref{#1}}
 
 
-% Olga's matrix and vector definitions
-\renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
-\newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
-\let\set=\mathcal
-\let\func=\mathrm
 
-% Create a nice looking argmin operator with a
-% small space between arg and min
-\DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\argmax}{arg\,max}
 
 % ALGORITHMS
 \usepackage[chapter]{algorithm}
@@ -72,14 +65,41 @@
 }
 
 % use nice footnote indentation
-%\deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark}\,}
+\deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark}\,}
 
-\usepackage[Lenny]{fncychap}
+%\usepackage[Lenny]{fncychap}
 %\ChNumVar{\Huge} 
-\ChTitleVar{\Huge\sf}
-\ChRuleWidth{0.2pt} \ChNameUpperCase
+%\ChTitleVar{\Huge\sf}
+%\ChRuleWidth{0.2pt} \ChNameUpperCase
+
+\colorlet{chapter}{black!75}
+\addtokomafont{chapter}{\color{chapter}}
 
 
+\addtokomafont{chapter}{\color{chapter}} 
+\makeatletter% siehe De-TeX-FAQ 
+\renewcommand*{\chapterformat}{% 
+  \begingroup% damit \unitlength-Änderung lokal bleibt 
+    \setlength{\unitlength}{1mm}% 
+    \begin{picture}(20,40)(0,5) 
+      \setlength{\fboxsep}{0pt} 
+      %\put(0,0){\framebox(20,40){}}% 
+      %\put(0,20){\makebox(20,20){\rule{20\unitlength}{20\unitlength}}}% 
+      \put(20,15){\line(1,0){\dimexpr 
+          \textwidth-20\unitlength\relax\@gobble}}% 
+      \put(0,0){\makebox(20,20)[r]{% 
+          \fontsize{28\unitlength}{28\unitlength}\selectfont\thechapter 
+          \kern-.04em% Ziffer in der Zeichenzelle nach rechts schieben 
+        }}% 
+      \put(20,15){\makebox(\dimexpr 
+          \textwidth-20\unitlength\relax\@gobble,\ht\strutbox\@gobble)[l]{% 
+            \ \normalsize\color{black}\chapapp~\thechapter\autodot 
+          }}% 
+    \end{picture} % <-- Leerzeichen ist hier beabsichtigt! 
+  \endgroup 
+} 
+
+\makeatother% siehe \makeatletter 
 % page header & footer
 \usepackage{fancyhdr}
 
@@ -105,6 +125,20 @@
 \markright{\thesubsection{} #1}
 }
 
+
+% commands
+% Olga's matrix and vector definitions
+\renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
+\newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
+\let\set=\mathcal
+\let\func=\mathrm
+
+% Create a nice looking argmin operator with a
+% small space between arg and min
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\newcommand{\trainDL}{Mairal2010}
 
 
 

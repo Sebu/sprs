@@ -54,7 +54,7 @@ The basic concept of following algorithms for learning redundant dictionaries is
 in this way that it can sparsely reconstruct a set of training data with minimal error. 
 
 \subsection{Batch}
-MOD \cite{Engan1999}
+MOD \cite{Engan1999a}
 Generalized PCA \cite{}
 ILS-DLA \cite{}
 K-SVD \cite{Aharon2006}
@@ -71,14 +71,14 @@ This is good for very large training sets or training data that is unknown at th
 
 In 2010 Mairal et. al. \cite{Mairal2010} proposed an on-line approach which from now on will be called TrainDL
 
-\subsubsection{Mairal2010}
+\subsubsection{\trainDL}
 \label{sec:mairal}
 The algorithm presented by Mairal et al. \cite{Mairal2010} is ...
 
 \begin{algorithm}
 \caption{Online dictionary learning \cite{Mairal2010}}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m,  p \left( x \right), \lambda \in \mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T$
+\REQUIRE $x \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in \mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
 \STATE $A_0 \in \mathbb{R}^{p \times p} \gets  0, B_0 \in \mathbb{R}^{m \times p}\gets 0$
 \FOR {$t = 1$ to $T$}
 \STATE Draw $x$ from p(x).
@@ -118,9 +118,14 @@ d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
 \end{algorithmic}
 \end{algorithm}
 
+In \cite{Mairal2010} Mairal et al. propose sereval modifikation to their algorith to improve convergence.
+
+
 
 \section{Learning for the Task}
-It has been shown that learning basis specific for certain tasks can lead to the best results\cite{sapiro?}.  <>
+Guillermo Sapiro mentions in his talk \cite{sapiroSlides} at the MIT CSAIL that it has been shown that learning specific for certain tasks can lead to the best results.
+``Please do not use the wrong dictionaries...''
+
 Based on this discovery we will concentrate on a specific class. 
 %<> Join the basis for natural images and cartoon/line images.
 We will also concentrate on real practical data. This means typically 3-channel data of 1+ mega-pixels images found on image hosting services such as flickr, twitpic, imgurl, picasa.
@@ -146,7 +151,7 @@ Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
 \paragraph{multi-scale}
 Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
 blocks (multiple times of the default block size). The idea is that aligned smooth regions with low variance can be 
-can be combined an encoded as one signal rather than e.g. 4. \cite{saprio}
+can be combined an encoded as one signal rather than e.g. 4. \cite{saprioSlides}
 \cite{Mairal2007}
 
 \Todo{picture with different scales}

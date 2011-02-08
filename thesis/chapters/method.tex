@@ -1,5 +1,47 @@
 \chapter{Method}
-\thispagestyle{empty}
+%\thispagestyle{empty}
+
+\section{Performance comparison}
+Before we present the experiments it is necessary to introduce some metrics to measure the performance of test results.
+
+
+
+\paragraph{Root mean squared error (RMSE)} is error measurement that ...
+
+Comparing the a signal $x$ with a reconstruction $y$ (noisy approxiamtion) of it. The root mean squared error is defined as:
+\begin{align}
+ RMSE = \left[\frac{1}{n} \sum_{i=0}^{n}{\lVert x_i - y_i\rVert^{2}} \right]^{\frac{1}{2}}
+\end{align}
+It is primarily used for ...
+
+
+\paragraph{peak signal-to-noise ration (PSNR)}
+
+\Todo{Normalized version of RMSE}
+
+\begin{align}
+ PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{RMSE}\right)
+\end{align}
+Where $MAX$ is the maximum possible value of our signal. 
+For an 8-bit image it would be 255. For a 32-bit normalized image it would be 1.
+The PSRN is expressed in a logarithmic decibel scale.
+
+Typical values lossy reconstruction are between 20dB and 50dB.
+
+
+%e.g. relevant for de-noise
+
+
+\paragraph{Bits per pixel (bpp)}
+For comparison of compression ratio of images a well known practice is to measure the bits requires for a single pixel. 
+For example an uncompressed RGB color image with 8-bit of color depth requires 24-bits per pixel, respectively 8-bit for a single channel gray scale image.
+
+Looking at other well known compression algorithms such as jpeg or jpeg2000 a common ratio is about ~1.8 bits-per-pixel for average quality compression(Q=50) of a natural image. 
+\Todo{example image?}
+
+Besides the actual pixel data there is certain amount of extra data from file headers. 
+%The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
+
 
 \section{Signal representation}
 As we use natural color images and graphics we require to use multi-channel data. Common 3-channel from a RGB color space.
@@ -13,17 +55,17 @@ Experiment ....
 
 \section{Sparse coding step}
 \subsection{Batch-OMP}
-A modified version of the OMP\footnote{\nameref{sec:omp}} that can effectively sparse codes multiple signals in parallel.
+A modified version of the OMP (\ref{sec:omp}) that can effectively sparse codes multiple signals in parallel.
 Pre-computation of gram matrix $G=D^TD$
 \cite{Rubinstein2008}
 
 \begin{algorithm}
 \caption{Batch-OMP}
 \begin{algorithmic}[1]
-\REQUIRE $X =[d_1,...,d_k]  \in \mathbb{R}^{m \times k}, D \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
+\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
 \STATE precompute gram matrix: $G=D^TD$
 \FOR[all signals in parallel] {$j = 1$ to $k$ }
-\STATE $\alpha_j \gets 0, r_j \gets x $ (residual) $, S_j=\emptyset$
+\STATE $\alpha_j \gets 0, r_j \gets x_j $ (residual) $, S_j=\emptyset$
 \FOR {$i = 1$ to $L$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
@@ -56,49 +98,67 @@ Training with OMP leads to a dictionary more with a lot of noise
 that leads better coding results when using OMP 
 % is LARS better?
 
-\subsection{Mairal2010}
+\subsection{\trainDL}
 A more in-depth look at the Mairal on-line training algorithm \ref{sec:mairal}. 
 Why use this algorithm? Robust, convergent, fast, on-line
 
+\subsection{Initialization}
+At the start of the training process it is requires to initial the dictionary with start data.
+Otherwise the sparse coding step will only find trivial solutions with all coefficient being zero. Which then will have no effect in the learning process.
 
-\subsection{Clustering}
+There are two common ways to initialize the dictionary using random data or selecting random elements from the training data. Both ways will be tested and 
+the quality will be compared.
+
+\section{Training sets}
+Task specific training data is a common way to solve the problem of finding the right dictionary. 
+Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
+signal that gets de-noised or restored from in-painting.
+If the task gets bigger it sounds logical to increase the size of training data and take a bigger variety of signals to learn from.
+\Todo{data: USC-SIPI Image Database, flickr, gogh, disney }
+
+\section{Experiments}
+
+\subsection{Dictionary initialization}
+\paragraph{Random data} 
+\paragraph{Training elements}
+
+
+\subsection{Learning specific dictionaries}
+
+
+\subsection{Clustering the learning step}
 \subsubsection*{Optimizations}
 %\subsection{Adaptive}
 %Thanks to the on-line approach of the training step an adaptive approach can be used. 
 
 
+\subsection{Image compression}
+\paragraph{Signal conversion}
+color space, high/low pass filtering
+
+\paragraph{Signal coding}
+block sizes
+Number of coefficients
 
 
-\section{Experiments}
-
-\subsection{Quality comparison}
-PSNR, mean square error MSE, 
-
-
-\subsection{Training sets}
-Task specific training data is a common way to solve the problem of finding the right dictionary. 
-Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
-signal that gets de-noised or restored from in-painting.
-If the task gets bigger it sounds logical to increase the size of training data and take a bigger variety of signals to learn from.
-
-
-%\subsection{}
-
-\subsection{Compression}
-\subsubsection*{Image conversion}
-color space, 
-\subsubsection*{Signal coding}
-block size, nr. of coefficients
-\subsubsection*{Quantization}
+\paragraph{Quantization}
 Fixed quantization or learned from dictionary
 The random distribution of the atoms in the dictionary 
-fixed factor or analysis of dictionary
-\subsubsection*{Entropy encoding}
-RLE, huffman
-\subsubsection*{Bits per pixel}
-The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
+We concentrated on two fixed quantization factor and the analysis of the dictionary elements.
+The jpeg algorithm 
+We adopt the idea of visual perception idea of jpeg to our approach and sort our element by their frequencies.
 
+\paragraph{Data encoding}
+As mentioned in in \ref{sec:headers} we are aware of the fact that besides the actual sparse matrix data we also have other files informations and meta data.
+Coefficients
+Indices
+In 1999 Lewicki et al. \cite{Lewicki1999} already made some on comparison the bpp required for encoding of the sparse matrix data.
+\cite{Murray2006}
 
+\paragraph{Run-length encoding (RLE)}
+\paragraph{Huffman coding}
+
+%The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 
 
 
@@ -111,20 +171,22 @@ The whole test suit is written in C++ with the use of OpenCV, LibEigen and OpenM
 Eigen \cite{Eigen} is a template library for fast vector and matrix operations and includes some linear algebra algorithms.
 It is mainly used for operations on dense and sparse matrices and solving of linear equation systems.
 OpenCV \cite{OpenCV} as in Open Computer Vision Library is mainly used for image read and write operations and color space conversion.
-OpenMP \footnote{www.openmp.org} \cite{OpenMP} is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
+OpenMP \footnote{www.openmp.org \cite{OpenMP}} is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
 the user to distribute code block and loops to multiple CPU cores. 
 In situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
 
+\paragraph{Coding}
 The OMP implementation is based on the OMP implementation from \cite{Rubinstein}
 The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{Strand2005} and the original paper \cite{Efron2004}
 
-Trainer
+\paragraph{Trainig}
 The Mairal2010 trainer is a straight forward implementation of the algorithm presented in \cite{Mairal2010}.
 It is a implementation of basic version of the algorithm with the batch optimization. 
 Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
 
+\paragraph{Misc}
 \Todo{Other: imagemagick for conversion of test image -> jpeg,jp2 and comparison of images}
-\Todo{data: USC-SIPI Image Database, flickr, gogh, disney }
+
 
 \subsection*{Hardware setup}
 %Problems

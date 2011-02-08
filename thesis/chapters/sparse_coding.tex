@@ -1,5 +1,5 @@
 \chapter{Sparse coding}
-\thispagestyle{empty}
+%\thispagestyle{empty}
 
 \Todo{better intro}
 The Cambridge Advanced Learner defines a code as ``..a system of numbers, letters or signals which is used to represent something in a shorter or more convenient form''
@@ -23,6 +23,9 @@ We try to keep coefficient vector $\alpha$ sparse.
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha \rVert^{2}_{2}}_{reconstruction} \label{eq:problem}
 \end{align}
+
+
+\section{Regularization}
 To achieve the spare solution we add a constraint to the problem. 
 %.. over-fitting .. Such a constraint is the regularization.
 \begin{align}
@@ -86,20 +89,20 @@ Repeat this step $L$ times or until the error $\lVert x - D\alpha \rVert^{2}_{2}
 \caption{Matching Pursuit}
 \label{alg:mp}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, y \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
+\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
 \STATE $\alpha_0 \gets 0$ (start with zero vector)
 \STATE $r_0 \gets x-D\alpha_0 = x$ (residual) 
 \WHILE {$\lVert \alpha \rVert_{0} \leq L$ $\lVert r \rVert_2 \leq \epsilon$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
-i \gets \argmax_{i=1,...,p} \lvert d_i^Tr \rvert
+i \gets \argmax_{i=1,...,p} \lvert \left<d_i,r\right> \rvert
 \end{equation*}
 \STATE update coefficients: 
 \begin{align}
-a[i]  \gets a[i] + d_i^Tr \label{eq:mp_update}
+a[i]  \gets a[i] + \left<d_i,r\right> \label{eq:mp_update}
 \end{align}
 
-\STATE update residual: $r \gets r - \left(d_i^Tr\right)d_i$
+\STATE update residual: $r \gets r - \left<d_i,r\right>d_i$
 
 \ENDWHILE
 \RETURN $\alpha$
@@ -119,12 +122,12 @@ The name Orthogonal-Matching-Pursuit comes from the fact that the residual $r$ i
 \caption{Orthogonal Matching Pursuit}
 \label{alg:omp}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, y \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
+\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
 \STATE $\alpha \gets 0, r \gets x $ (residual) $, S=\emptyset$
-\FOR {$i = 1$ to $L$}
+\FOR {$j = 0$ to $L$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
-i \gets \argmax_{i \in S^C} \lvert d_i^Tr \rvert
+i \gets \argmax_{i \in S^C} \lvert \left<d_i,r\right> \rvert
 \end{equation*}
 \STATE update active set: $S \gets S \cup \{i\} $
 \STATE update residual: $r \gets \left(I-D_S\left( D_S^T D_S \right)^{-1} D_S^T \right)x$
@@ -151,7 +154,7 @@ The next section presents algorithms which solve  a $\ell_1$ regularization vers
 
 
 The Lasso (least absolute shrinkage and selection operator) is a regularized version of a least squares solution.
-The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small. \cite{Tibshirani1998}
+The regularized version is found by adding a constraint that induces the $L_1$-norm of the solution to be small. \cite{Tibshirani1996}
 
 \begin{align}
 \min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{1}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon\label{eq:l1}
@@ -186,7 +189,20 @@ as described in \cite{Efron2004}. It is a modified version of the LAR where ....
 \begin{algorithm}
 \caption{LARS-lasso}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m$
+\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
+% xD normalized and centered
+\STATE $\alpha \gets 0, r \gets x $ (residual) $, \mu_{0} \gets 0, S=\emptyset$
+\FOR {$j = 0$ to $L$}
+\STATE Select atom with maximum correlation with residual: 
+\begin{equation*}
+i \gets \argmax_{i \in S^C} \lvert \left<d_i,x-\mu_{j}\right>  \rvert 
+\end{equation*}
+\STATE miximum correlation: $\rho \gets \left<d_i,r\right> $
+\STATE update active set: $S \gets S \cup \{i\} $
+\STATE $ \gamma $
+\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $
+\ENDFOR
+
 \end{algorithmic}
 \end{algorithm}
 
@@ -228,7 +244,7 @@ Wx \approx WD\alpha\text{select subset}\\
 
 \cite{mairal08sparse}
 
-\paragraph{compression} An example for this is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
+\paragraph{compression} \cite{Murray2006} \cite{Lewicki1999} An example for this is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
 
 %Task driven dictionaries
 \paragraph{classification} Examples for this can be found in \cite{Mairal2008b} and \cite{Bar2009}.
@@ -237,6 +253,7 @@ Wx \approx WD\alpha\text{select subset}\\
 Or the ongoing work by Couzinie-Devy et al., 2010 called digital zooming.
 \paragraph{background subtraction} \cite{}
 
+\paragraph{sense spase signals}\cite{Duarte2009}
 %\item[noise reduction]
 %\item[in-painting]
 %\item[classification] \Todo{usage:classification}
