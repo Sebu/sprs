@@ -145,6 +145,10 @@ Number of coefficients
 Fixed quantization or learned from dictionary
 The random distribution of the atoms in the dictionary 
 We concentrated on two fixed quantization factor and the analysis of the dictionary elements.
+
+%Copy
+%The human eye is good at seeing small differences in brightness over a relatively large area, but not so good at distinguishing the exact strength of a high frequency brightness variation. This allows one to greatly reduce the amount of information in the high frequency components. This is done by simply dividing each component in the frequency domain by a constant for that component, and then rounding to the nearest integer. This rounding operation is the only lossy operation in the whole process if the DCT computation is performed with sufficiently high precision. As a result of this, it is typically the case that many of the higher frequency components are rounded to zero, and many of the rest become small positive or negative numbers, which take many fewer bits to represent.
+
 The jpeg algorithm 
 We adopt the idea of visual perception idea of jpeg to our approach and sort our element by their frequencies.
 
@@ -157,6 +161,7 @@ In 1999 Lewicki et al. \cite{Lewicki1999} already made some on comparison the bp
 
 \paragraph{Run-length encoding (RLE)}
 \paragraph{Huffman coding}
+\paragraph{Arithmetic coding}
 
 %The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 

@@ -117,7 +117,6 @@ Rather than just updating the coefficent of $\alpha$ that is currently selected 
 The name Orthogonal-Matching-Pursuit comes from the fact that the residual $r$ is orthogonal to the previously selected atoms in $D$ which leads to the effect that every coefficent is only selected once.
 
 
-
 \begin{algorithm}
 \caption{Orthogonal Matching Pursuit}
 \label{alg:omp}
@@ -168,9 +167,7 @@ The lagrange multiplier version of the regularized problem \ref{eq:l1} is:
 
 There are several ways to compute the LASSO. .. ...... 
 
-%\cite{} 
-%basis pursuit\cite{} 
-%FOCUSS \cite{}
+LARS \cite{lars} basis pursuit\cite{BASIS_PURSUIT}  FOCUSS \cite{FOCUSS}
 
 We chose the LARS method as it is the fastest in low dimension or for high correlation. Both conditions are satisfied in our experiments.
 \Todo{split into LAR and LARS-lasso, better illustrate than use complex formulas}
@@ -185,7 +182,6 @@ as described in \cite{Efron2004}. It is a modified version of the LAR where ....
 \min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \lambda \lVert \alpha \rVert_{1}
 \end{align}
 
-\Todo{add algorithm}
 \begin{algorithm}
 \caption{LARS-lasso}
 \begin{algorithmic}[1]
@@ -233,9 +229,8 @@ Using the fact that sparse coding is an approximation of signal that loses ... n
 y = x + w
 \end{align*}
 
-
-
 \cite{Elad2006}
+
 
 \paragraph{in-painting}
 fill missing parts by removing rows from the dictionary
