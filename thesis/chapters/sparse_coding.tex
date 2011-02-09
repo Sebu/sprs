@@ -195,12 +195,16 @@ as described in \cite{Efron2004}. It is a modified version of the LAR where ....
 \FOR {$j = 0$ to $L$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
-i \gets \argmax_{i \in S^C} \lvert \left<d_i,x-\mu_{j}\right>  \rvert 
+a \gets \argmax_{i \in S^C} \lvert \left<d_i,x-\mu_{j}\right>  \rvert 
 \end{equation*}
-\STATE miximum correlation: $\rho \gets \left<d_i,r\right> $
-\STATE update active set: $S \gets S \cup \{i\} $
-\STATE $ \gamma $
+\STATE miximum correlation: $\rho \gets \left<d_a,r\right> $
+\STATE update active set: $S \gets S \cup \{a\} $
+\STATE 
+\begin{equation*}
+\gamma \gets \min_{i\in S^C} \left\lbrace \frac{\rho-\left< x,d_i \right> }{1-\left< d_a,d_i \right> }, \frac{\rho+\left< x,d_i \right> }{1+\left< d_a,d_i \right> } \right\rbrace
+\end{equation*}
 \STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $
+
 \ENDFOR
 
 \end{algorithmic}
