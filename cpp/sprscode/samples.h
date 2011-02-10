@@ -2,6 +2,8 @@
 #define SAMPLES_H
 
 //#include <vigra/matrix.hxx>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 #include <eigen2/Eigen/Core>
 USING_PART_OF_NAMESPACE_EIGEN
@@ -31,6 +33,8 @@ public:
 
    bool loadImage(std::string& fileName, int winSize, int channels, int step=1);
    void saveImage(std::string& fileName, Dictionary& dict, Coder& coder);
+   bool sampleImage(cv::Mat inputImage, int step);
+
 };
 
 #endif // SAMPLES_H

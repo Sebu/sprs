@@ -114,7 +114,6 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
 bool Samples::loadImage(std::string& fileName, int winSize, int channels, int step) {
     cv::Mat inputImage;
-
     channels_ = channels;
     blockSize_ = winSize;
     switch(channels_) {
@@ -137,14 +136,22 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     }
     //    cv::resize(inputImage, tmpMat, cv::Size(256,256));
     //    inputImage = tmpMat;
-    cv::Mat tmpMat =  inputImage.clone();
-    cv::Mat tmp2Mat =  inputImage.clone();
-    cv::blur(tmpMat,tmpMat,cv::Size(1,4));
-    inputImage= tmpMat - tmp2Mat;
+    cv::Mat lowPass =  inputImage.clone();
+    cv::Mat highPass =  inputImage.clone();
+    cv::blur(lowPass,lowPass,cv::Size(1,4));
+    inputImage= lowPass - highPass;
     cv::imwrite("/tmp/debug1.png",inputImage);
-    cv::imwrite("/tmp/debug2.png",tmpMat);
+    cv::imwrite("/tmp/debug2.png",lowPass);
+
+    return sampleImage(inputImage, step);
+
 
 //    cv::cvtColor(inputImage, inputImage, CV_RGB2YCrCb);
+}
+
+
+bool Samples::sampleImage(cv::Mat inputImage, int step) {
+
 
 
     imageRows_ = inputImage.rows;
