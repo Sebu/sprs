@@ -5,7 +5,6 @@
 Before we present the experiments it is necessary to introduce some metrics to measure the performance of test results.
 
 
-
 \paragraph{Root mean squared error (RMSE)} is error measurement that ...
 
 Comparing the a signal $x$ with a reconstruction $y$ (noisy approxiamtion) of it. The root mean squared error is defined as:
@@ -43,7 +42,8 @@ Besides the actual pixel data there is certain amount of extra data from file he
 %The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 
 
-\section{Signal representation}
+\section{Signal representation}o
+
 As we use natural color images and graphics we require to use multi-channel data. Common 3-channel from a RGB color space.
 
 %The initial signal data 
@@ -55,12 +55,14 @@ Experiment ....
 
 \section{Sparse coding step}
 \subsection{Batch-OMP}
-A modified version of the OMP (\ref{sec:omp}) that can effectively sparse codes multiple signals in parallel.
-Pre-computation of gram matrix $G=D^TD$
-\cite{Rubinstein2008}
+In 2008 Rubinstein et al. \cite{Rubinstein2008} presented the batch-OMP. 
+The \prettyref{alg:batchOMP} is a modified version of the orthogonal-matching-pursuit (\ref{sec:omp}) 
+that can effectively sparse codes multiple signals in parallel. 
+The key of the optimization is the pre-computation of gram matrix $G=D^TD$.
 
 \begin{algorithm}
 \caption{Batch-OMP}
+\label{alg:batchOMP}
 \begin{algorithmic}[1]
 \REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
 \STATE precompute gram matrix: $G=D^TD$
@@ -87,6 +89,9 @@ i \gets \argmax_{i \in S_j^C} \lvert d_i^Tr_j \rvert
 
 
 \subsection{LARS-Lasso}
+The same pre-computation used in the batch-OMP can be also applied in the LARS-Lasso algorithm.
+Reduction the complexity to: \Todo{lasso complexity}
+
 The complete regularization path based on \cite{Efron2004}
 \subsubsection*{Optimizations}
 
@@ -127,6 +132,7 @@ If the task gets bigger it sounds logical to increase the size of training data 
 
 
 \subsection{Clustering the learning step}
+The cluster Merge of results -> it's  map/reduce approach. 
 \subsubsection*{Optimizations}
 %\subsection{Adaptive}
 %Thanks to the on-line approach of the training step an adaptive approach can be used. 
@@ -169,29 +175,6 @@ In 1999 Lewicki et al. \cite{Lewicki1999} already made some on comparison the bp
 
 \section{Implementation}
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
-\Todo{add diagram}
-
-\subsection*{Software}
-The whole test suit is written in C++ with the use of OpenCV, LibEigen and OpenMP.
-Eigen \cite{Eigen} is a template library for fast vector and matrix operations and includes some linear algebra algorithms.
-It is mainly used for operations on dense and sparse matrices and solving of linear equation systems.
-OpenCV \cite{OpenCV} as in Open Computer Vision Library is mainly used for image read and write operations and color space conversion.
-OpenMP \footnote{www.openmp.org \cite{OpenMP}} is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
-the user to distribute code block and loops to multiple CPU cores. 
-In situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
-
-\paragraph{Coding}
-The OMP implementation is based on the OMP implementation from \cite{Rubinstein}
-The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{Strand2005} and the original paper \cite{Efron2004}
-
-\paragraph{Trainig}
-The Mairal2010 trainer is a straight forward implementation of the algorithm presented in \cite{Mairal2010}.
-It is a implementation of basic version of the algorithm with the batch optimization. 
-Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
-
-\paragraph{Misc}
-\Todo{Other: imagemagick for conversion of test image -> jpeg,jp2 and comparison of images}
-
 
 \subsection*{Hardware setup}
 %Problems
@@ -199,8 +182,47 @@ Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
 %Speed 
 %Compression
 %The 
-Computer cluster with 100+ PCs with distribibuted batches of work.
-Merge of results -> it's  map/reduce approach.
+Computations were made on Apple MacPro with ... \Todo{mac config}
+and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon config} running Debian 32-bit. 
+Each client in the cluster calculated batches of 100 till 10,000 images based on the size of the trainig sets.
+
+\subsection*{Software}
+
+\Todo{add diagram}
+Split image into sub images, convert sub image to samples from image blocks, 
+train dict with samples or just code samples - save dict/image
+
+The whole test suit is written in C++ with the help  of OpenCV, Eigen and OpenMP libs.
+
+Eigen \cite{Eigen} is a template library for fast vector and matrix operations and includes some linear algebra algorithms.
+It is mainly used for operations on dense and sparse matrices and solving of linear equation systems.
+
+OpenCV \cite{OpenCV} as in Open Computer Vision Library is mainly used for image read and write operations and color space conversion.
+OpenMP \footnote{www.openmp.org \cite{OpenMP}} is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
+the user to distribute code block and loops to multiple CPU cores. 
+In situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
+
+\paragraph{Coding}
+The OMP implementation is based on the batch-OMP implementation from \cite{Rubinstein}
+The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{Strand2005} and the original paper \cite{Efron2004}
+
+\paragraph{Trainig}
+The \trainDL trainer is a straight forward implementation of the algorithm presented in \cite{Mairal2010}.
+It is an implementation of the basic version of the algorithm with the batch optimization applied. 
+Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
+
+\paragraph{Misc}
+\Todo{Other: imagemagick for conversion of test image -> jpeg,jp2 and comparison of images}
+Besides the actual coding software some other tools for additional tasks were used.
+
+Several bash and ruby scripts for workload distribution onto the clients, aggregation and evaluation of the results.
+The imagemagick toolkit for image conversion into jpeg and jpeg200 and for some image comparison tasks.
+
+
+
+
+
+
 \Todo{add diagram}
 
 
