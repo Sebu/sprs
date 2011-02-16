@@ -122,17 +122,17 @@ The name Orthogonal-Matching-Pursuit comes from the fact that the residual $r$ i
 \label{alg:omp}
 \begin{algorithmic}[1]
 \REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
-\STATE $\alpha \gets 0, r \gets x $ (residual) $, S=\emptyset$
+\STATE $\alpha \gets 0, r \gets x $ (residual) $, A \gets \emptyset$
 \FOR {$j = 0$ to $L$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
-i \gets \argmax_{i \in S^C} \lvert \left<d_i,r\right> \rvert
+i \gets \argmax_{i \in A^C} \lvert \left<d_i,r\right> \rvert
 \end{equation*}
-\STATE update active set: $S \gets S \cup \{i\} $
-\STATE update residual: $r \gets \left(I-D_S\left( D_S^T D_S \right)^{-1} D_S^T \right)x$
+\STATE update active set: $A \gets A \cup \{i\} $
+\STATE update residual: $r \gets \left(I-D_A\left( D_A^T D_A \right)^{-1} D_A^T \right)x$
 \STATE update coefficients: 
 \begin{align}
-a_S \gets \left( D_S^T D_S \right)^{-1} D_S^T x  \label{eq:omp_update}
+a_A \gets \left( D_A^T D_A \right)^{-1} D_A^T x  \label{eq:omp_update}
 \end{align}
 
 \ENDFOR
@@ -172,10 +172,16 @@ LARS \cite{lars} basis pursuit\cite{BASIS_PURSUIT}  FOCUSS \cite{FOCUSS}
 We chose the LARS method as it is the fastest in low dimension or for high correlation. Both conditions are satisfied in our experiments.
 \Todo{split into LAR and LARS-lasso, better illustrate than use complex formulas}
 
+
 \subsection {LARS-Lasso}
 \label{sec:lars}
-The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression (short LAR)
-as described in \cite{Efron2004}. It is a modified version of the LAR where .... variables are removed when they cross zero ...
+The LARS-Lasso is a algorithm to solve the LASSO with the help of least angle regression.
+as described in \cite{Efron2004}. It is a modified version of the LAR where variables get removed from the active set when their coefficent become zero.
+
+\paragraph{Least angle regression}
+The main idea of the least angle regression is to start with all coefficent zero $\alpha = 0$.
+Find the variable $x_i$ with the maximum correlation with the residual $r$ and then move linear into the direction of the ordinary least squares solution
+until a new variable has a higher correlation with the residual. 
 
 
 \begin{align}
@@ -185,21 +191,40 @@ as described in \cite{Efron2004}. It is a modified version of the LAR where ....
 \begin{algorithm}
 \caption{LARS-lasso}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
+\REQUIRE $x \in \mathbb{R}^m, D =[d_1,...,d_p] \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
 % xD normalized and centered
-\STATE $\alpha \gets 0, r \gets x $ (residual) $, \mu_{0} \gets 0, S=\emptyset$
+\STATE $\alpha \gets 0, \mu_{0} \gets 0, A \gets \emptyset$
 \FOR {$j = 0$ to $L$}
-\STATE Select atom with maximum correlation with residual: 
+\STATE calculate correlations with residual: $c \gets D^t\left( x-\mu_j \right) $
+\STATE Select atom with maximum correlation: 
 \begin{equation*}
-a \gets \argmax_{i \in S^C} \lvert \left<d_i,x-\mu_{j}\right>  \rvert 
+i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \end{equation*}
-\STATE miximum correlation: $\rho \gets \left<d_a,r\right> $
-\STATE update active set: $S \gets S \cup \{a\} $
-\STATE 
+\STATE maximum correlation: $c_{max} \gets c_i $ %\left<d_a,r\right> $\STATE update active set: $A \gets A \cup \left{i\right} $
+\STATE calculate movement into OLS direction:
+\STATE signs of the correlations: $s_A \gets  sign\left(c_A\right)$
+\STATE $\tilde{D_A} \gets D_A\left(\ldots s_id_i \ldots\right)_{i\in A}$
+\STATE $G_A \gets \tilde{D_A}^t\tilde{D_A}$
+\STATE calculate angle: $A_A \gets \left( 1_A^{-1} G_A^{-1} 1_A \right)^{-\frac{1}{2}}$
+\STATE apply weights: $w_A \gets A_AG_A^{-1}1_A$
+\STATE equiangular direction: $u_A \gets D_Aw_A$
+\STATE correlation between direction and variables: $a \gets D_tu_A$
+\STATE minimal movement:
 \begin{equation*}
-\gamma \gets \min_{i\in S^C} \left\lbrace \frac{\rho-\left< x,d_i \right> }{1-\left< d_a,d_i \right> }, \frac{\rho+\left< x,d_i \right> }{1+\left< d_a,d_i \right> } \right\rbrace
+\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-c_i }{A_A-a_i }, \frac{c_{max}+c_i }{A_A+a_i } \right\rbrace
+%\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-\left< x,d_i \right> }{1-\left< d_a,d_i \right> }, \frac{c_{max}+\left< x,d_i \right> }{1+\left< d_a,d_i \right> } \right\rbrace
 \end{equation*}
-\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $
+\STATE drop coefficent from active that change sign: 
+\STATE $ \tilde{\gamma} \gets -\alpha/s_A^tw_A  $
+\STATE $ i \gets \min_{i\in A}^{+} \left( \tilde{\gamma}_i \right) $
+%\STATE $ i \gets \alpha_{i} = 0, i \in A $
+\IF {$\tilde{\gamma}_i>0$ and $\tilde{\gamma}_i<\gamma$}
+\STATE remove from active set: $ A \gets A \backslash \{i\} $
+\STATE update movement: $ \gamma \gets \tilde{\gamma} $  
+\ENDIF
+%\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $
+\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma u_a $
+\STATE $ \alpha \gets \alpha - \gamma s_A^tw_A $
 
 \ENDFOR
 

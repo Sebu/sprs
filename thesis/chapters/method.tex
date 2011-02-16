@@ -33,19 +33,23 @@ Typical values lossy reconstruction are between 20dB and 50dB.
 
 \paragraph{Bits per pixel (bpp)}
 For comparison of compression ratio of images a well known practice is to measure the bits requires for a single pixel. 
-For example an uncompressed RGB color image with 8-bit of color depth requires 24-bits per pixel, respectively 8-bit for a single channel gray scale image.
+For example an uncompressed RGB color image with 8-bit of color depth requires 24-bits per pixel, 
+respectively 8-bit for a single channel gray scale image.
 
-Looking at other well known compression algorithms such as jpeg or jpeg2000 a common ratio is about ~1.8 bits-per-pixel for average quality compression(Q=50) of a natural image. 
+Looking at other well known compression algorithms such as jpeg or jpeg2000 a common ratio 
+is about ~1.8 bits-per-pixel for average quality compression(Q=50) of a natural image. 
 \Todo{example image?}
 
 Besides the actual pixel data there is certain amount of extra data from file headers. 
 %The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 
+\paragraph{Test data}
+In addition to the metrics it is common practice to use some image sets to compare test results of the different algorihms and parameter condfigurations.
+For comparison of the reconstruction quality and compression quality we use a well kwonw set of images from the 
+USC-SIPI Image Database. Such as Lena, Mandril ....
 
-\section{Signal representation}o
-
+\section{Signal representation}
 As we use natural color images and graphics we require to use multi-channel data. Common 3-channel from a RGB color space.
-
 %The initial signal data 
 We use an approach to transform our initial signal into other color spaces like in jpeg encoding to account natural human reception of
 color data. 
@@ -67,16 +71,16 @@ The key of the optimization is the pre-computation of gram matrix $G=D^TD$.
 \REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
 \STATE precompute gram matrix: $G=D^TD$
 \FOR[all signals in parallel] {$j = 1$ to $k$ }
-\STATE $\alpha_j \gets 0, r_j \gets x_j $ (residual) $, S_j=\emptyset$
+\STATE $\alpha_j \gets 0, r_j \gets x_j $ (residual) $, A_j=\emptyset$
 \FOR {$i = 1$ to $L$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
-i \gets \argmax_{i \in S_j^C} \lvert d_i^Tr_j \rvert
+i \gets \argmax_{i \in A_j^C} \lvert \left<d_i,r_j\right> \rvert
 \end{equation*}
-\STATE solve with cholesky: $G_{inv} \gets G_S^{-1}$
-\STATE update active set: $S_j \gets S_j \cup \{i\} $
-\STATE update residual: $r_j \gets \left(I-D_SG_{inv}D_S^T \right)x_j$
-\STATE update coefficients: $a_{j_S} \gets G_{inv} D_S^T x_j $
+\STATE solve with cholesky: $G_{inv} \gets G_A^{-1}$
+\STATE update active set: $A_j \gets A_j \cup \{i\} $
+\STATE update residual: $r_j \gets \left(I-D_AG_{inv}D_A^T \right)x_j$
+\STATE update coefficients: $a_{j_A} \gets G_{inv} D_A^T x_j $
 
 \ENDFOR 
 \ENDFOR 
@@ -89,7 +93,7 @@ i \gets \argmax_{i \in S_j^C} \lvert d_i^Tr_j \rvert
 
 
 \subsection{LARS-Lasso}
-The same pre-computation used in the batch-OMP can be also applied in the LARS-Lasso algorithm.
+The same pre-computation of the gramm matrix used in the batch-OMP can be also applied in the LARS-Lasso algorithm.
 Reduction the complexity to: \Todo{lasso complexity}
 
 The complete regularization path based on \cite{Efron2004}
@@ -119,30 +123,46 @@ Task specific training data is a common way to solve the problem of finding the 
 Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
 signal that gets de-noised or restored from in-painting.
 If the task gets bigger it sounds logical to increase the size of training data and take a bigger variety of signals to learn from.
-\Todo{data: USC-SIPI Image Database, flickr, gogh, disney }
+\Todo{data: flickr, gogh, disney }
+
+
 
 \section{Experiments}
 
 \subsection{Dictionary initialization}
 \paragraph{Random data} 
-\paragraph{Training elements}
-
+\paragraph{Random elements from training set}
 
 \subsection{Learning specific dictionaries}
 
-
 \subsection{Clustering the learning step}
-The cluster Merge of results -> it's  map/reduce approach. 
+The cluster merge of results -> 
+it is a map/reduce approach. 
+
 \subsubsection*{Optimizations}
 %\subsection{Adaptive}
 %Thanks to the on-line approach of the training step an adaptive approach can be used. 
 
-
 \subsection{Image compression}
+Todays compression algorithm for images are primary based on knowlege about visual perception.
+The human eye ...
+%Copy
+%The human eye is good at seeing small differences in brightness over a relatively large area, but not so good at distinguishing the exact strength of a high frequency brightness variation. This allows one to greatly reduce the amount of information in the high frequency components. This is done by simply dividing each component in the frequency domain by a constant for that component, and then rounding to the nearest integer. This rounding operation is the only lossy operation in the whole process if the DCT computation is performed with sufficiently high precision. As a result of this, it is typically the case that many of the higher frequency components are rounded to zero, and many of the rest become small positive or negative numbers, which take many fewer bits to represent.
+
+\begin{itemize}
+ \item color space conversion and image conversion
+ \item coding of image signals
+ \item quantization to reduce of the number of non-zero coefficient 
+ \item entropy coding of the coefficient 
+\end{itemize}
+
+
+
 \paragraph{Signal conversion}
 color space, high/low pass filtering
 
 \paragraph{Signal coding}
+
 block sizes
 Number of coefficients
 
@@ -151,9 +171,6 @@ Number of coefficients
 Fixed quantization or learned from dictionary
 The random distribution of the atoms in the dictionary 
 We concentrated on two fixed quantization factor and the analysis of the dictionary elements.
-
-%Copy
-%The human eye is good at seeing small differences in brightness over a relatively large area, but not so good at distinguishing the exact strength of a high frequency brightness variation. This allows one to greatly reduce the amount of information in the high frequency components. This is done by simply dividing each component in the frequency domain by a constant for that component, and then rounding to the nearest integer. This rounding operation is the only lossy operation in the whole process if the DCT computation is performed with sufficiently high precision. As a result of this, it is typically the case that many of the higher frequency components are rounded to zero, and many of the rest become small positive or negative numbers, which take many fewer bits to represent.
 
 The jpeg algorithm 
 We adopt the idea of visual perception idea of jpeg to our approach and sort our element by their frequencies.
@@ -170,6 +187,7 @@ In 1999 Lewicki et al. \cite{Lewicki1999} already made some on comparison the bp
 \paragraph{Arithmetic coding}
 
 %The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
+
 
 
 

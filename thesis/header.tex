@@ -79,7 +79,7 @@
 \addtokomafont{chapter}{\color{chapter}} 
 \makeatletter% siehe De-TeX-FAQ 
 \renewcommand*{\chapterformat}{% 
-  \begingroup% damit \unitlength-Änderung lokal bleibt 
+  \begingroup% damit \unitlength-Ãnderung lokal bleibt 
     \setlength{\unitlength}{1mm}% 
     \begin{picture}(20,40)(0,5) 
       \setlength{\fboxsep}{0pt} 
@@ -109,7 +109,6 @@
 %\fancyhead[ER]{\leftmark}% gerade Seiten, rechts
 %\fancyhead[OL]{\rightmark}% ungerade Seiten, links
 %\fancyhead[OR]{\thepage}% ungerade Seiten, rechts
-
 \fancypagestyle{plain}{%
 \fancyhf{}
 \fancyhead[EL]{\thepage}% gerade Seiten, links
@@ -124,6 +123,7 @@
 \renewcommand{\subsectionmark}[1]{
 \markright{\thesubsection{} #1}
 }
+
 
 
 % commands
