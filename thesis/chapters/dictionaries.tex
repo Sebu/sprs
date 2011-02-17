@@ -23,35 +23,43 @@ First presented in \ref{sec:history}
 
 %\paragraph{Machine Learning}
 
-Besides the construction of dictionaries from mathematical functions, machine learning .. .
+Besides the construction of dictionaries from mathematical functions, machine
+learning .. .
 
 
-``A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E''
+``A computer program is said to learn from experience E with respect to
+some class of tasks T and performance measure P, if its performance at tasks in
+T, as measured by P, improves with experience E''
 
 
 \paragraph{principal component analysis}
 
 
 \paragraph{redundant}
-Unlike the former designed dictionaries and the PCA approach. Dictionaries atoms learned with machine learning methods are not necessarily othogonal.
-Infact the benefit of this new approach is to have overcomplete dictionies w
+Unlike the former designed dictionaries and the PCA approach. Dictionaries atoms
+learned with machine learning methods are not necessarily othogonal. Infact the
+benefit of this new approach is to have overcomplete dictionies w
 %The atoms are not orthonormal. 
 %The dictionary is overcomplete. Overcomplete ...
 
 
 
-Recent research has shown that learned dictionaries show better compression quality than small analytic dictionaries \cite{Chen1998} \cite{Aharon2006} \cite{Mairal2010}
-Rather than selecting an appropriate mathematical construct that can reconstruct a certain group of signals close enough the data, a subset or similar data
-is used as a training set to generate the dictionary itself.
+Recent research has shown that learned dictionaries show better
+compression quality than small analytic dictionaries \cite{Chen1998}
+\cite{Aharon2006} \cite{Mairal2010} Rather than selecting an appropriate
+mathematical construct that can reconstruct a certain group of signals close
+enough the data, a subset or similar data is used as a training set to generate
+the dictionary itself.
 
 
 
 
 %\subsubsection{k-svd}
 \section{Learning}
-In the last decade several learning algorithms have been proposed.
-The basic concept of following algorithms for learning redundant dictionaries is to alter a initial start dictionary
-in this way that it can sparsely reconstruct a set of training data with minimal error. 
+In the last decade several learning algorithms have been proposed. The basic
+concept of following algorithms for learning redundant dictionaries is to alter
+a initial start dictionary in this way that it can sparsely reconstruct a set of
+training data with minimal error. 
 
 \subsection{Batch}
 MOD \cite{Engan1999a}
@@ -61,15 +69,17 @@ K-SVD \cite{Aharon2006}
 
 
 \subsection{Online}
-In 2010 new training algorithms were presented that enabled on-line learning of dictionaries. 
-In contrast to batch learning algorithms with a fixed training set the new approaches enabled
-This is good for very large training sets or training data that is unknown at the start of the training process.
+In 2010 new training algorithms were presented that enabled on-line learning of
+dictionaries. In contrast to batch learning algorithms with a fixed training set
+the new approaches enabled This is good for very large training sets or training
+data that is unknown at the start of the training process.
 
 ... RLS-DLA \cite{Engan2010} ...
 
 \Todo{find the Japanese one}
 
-In 2010 Mairal et. al. \cite{Mairal2010} proposed an on-line approach which from now on will be called TrainDL
+In 2010 Mairal et. al. \cite{Mairal2010} proposed an on-line approach which from
+now on will be called TrainDL
 
 \subsubsection{\trainDL}
 \label{sec:mairal}
@@ -123,12 +133,16 @@ In \cite{Mairal2010} Mairal et al. propose sereval modifikation to their algorit
 
 
 \section{Learning for the Task}
-Guillermo Sapiro mentions in his talk \cite{sapiroSlides} at the MIT CSAIL that it has been shown that learning specific for certain tasks can lead to the best results.
-<<Please do not use the wrong dictionaries...>>
+\label{sec:learnForTheTask}
+Guillermo Sapiro mentions in his talk \cite{sapiroSlides} at the MIT CSAIL
+that it has been shown that learning specific for certain tasks can lead to the
+best results. <<Please do not use the wrong dictionaries...>>
 
 Based on this discovery we will concentrate on a specific class. 
 %<> Join the basis for natural images and cartoon/line images.
-We will also concentrate on real practical data. This means typically 3-channel data of 1+ mega-pixels images found on image hosting services such as flickr, twitpic, imgurl, picasa.
+We will also concentrate on real practical data. This means typically 3-channel
+data of 1+ mega-pixels images found on image hosting services such as flickr,
+twitpic, imgurl, picasa.
 
 
 \section{Related work}
@@ -149,34 +163,38 @@ Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
 
 
 \paragraph{multi-scale}
-Rather than encoding uniform segments of a bigger signal this technique encodes different sized 
-blocks (multiple times of the default block size). The idea is that aligned smooth regions with low variance can be 
-can be combined an encoded as one signal rather than e.g. 4. \cite{saprioSlides}
-\cite{Mairal2007}
+Rather than encoding uniform segments of a bigger signal this technique
+encodes different sized blocks (multiple times of the default block size). The
+idea is that aligned smooth regions with low variance can be can be combined an
+encoded as one signal rather than e.g. 4. \cite{saprioSlides}\cite{Mairal2007}
 
 \Todo{picture with different scales}
 
 \paragraph{multi-channel}
-When dealing with multi-channel data (e.g. RGB images) 
-each channel can be coded separate or as a concatenation of each signal into a single one.
-These approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add pic}
-Fortunately this problem vanishes with big dictionaries and large training sets. \cite{mairal08sparse}
-Nevertheless a solution would be to add a constraint to the sparse coding that pays attention the correlation of the channels.
-\Todo{add formula from paper}
+When dealing with multi-channel data (e.g. RGB images) each channel can be coded
+separate or as a concatenation of each signal into a single one. These
+approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add pic}
+Fortunately this problem vanishes with big dictionaries and large training sets.
+\cite{mairal08sparse} Nevertheless a solution would be to add a constraint to
+the sparse coding that pays attention the correlation of the channels. \Todo{add
+formula from paper}
 
 \paragraph{double sparsity}
-Instead of directly using a collection of trained atoms as dictionary elements. This approach uses sparse coding
-to encode the signals of a bigger dictionary with the help of a smaller on. \cite{Rubinstein2009} 
+Instead of directly using a collection of trained atoms as dictionary
+elements. This approach uses sparse coding to encode the signals of a bigger
+dictionary with the help of a smaller on.\cite{Rubinstein2009} 
 \Todo{formula $B$ .. basis, $A$ sparse matrix, $D=BA$ ...}
 
 \paragraph{structured sparsity}
-similar patches should admit similar patterns \cite{Mairal2009}
+similar patches should admit similar patterns \cite{Mairal2009} 
 \cite{group sparsity}
 \Todo{picture with ditribution difference}
 
 \paragraph{hierarchy}
-Adding hierarchy to dictionaries can lead to faster coding of signals and capture additional information about the learned dictionaries, .
-like in the use for structure analysis of text documents.  Examples for this approach can be found in \cite{Jenatton2010}.
+Adding hierarchy to dictionaries can lead to faster coding of signals and
+capture additional information about the learned dictionaries. like in the use
+for structure analysis of text documents. Examples for this approach can be
+found in\cite{Jenatton2010}.
 
 
 \Todo{picture with hirarchy }

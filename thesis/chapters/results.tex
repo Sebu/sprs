@@ -1,77 +1,7 @@
 \chapter{Results}
 %\thispagestyle{empty}
 
-\section{Expectation}
-
-\section{Dictionaries}
-
-\begin{figure}
-\centering
-\includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-\caption{8x8 OMP after some iterations}
-\label{fig:8_4000_lasso}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-\caption{8x8 LARS after some iterations}
-\label{fig:8_4000_lasso}
-\end{figure}
-
-See the differences in the selection sceme.
-In the beginning OMP is very random.
-
-\begin{figure}
-\centering
-\includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
-\caption{8x8 elements of sketches}
-\label{fig:16_1000_lasso}
-\end{figure}
-
-Mostly reduced to line segments and curve elements.
-
-\begin{figure}
-\centering
-\includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
-\caption{8x8 elements of gogh}
-\label{fig:16_1000_lasso}
-\end{figure}
-
-Similar to natural images.
-
-
-compression dicts
-
-\begin{figure}
-\centering
-\includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-\caption{8x8 LARS-lasso with 4000 elements natural images}
-\label{fig:8_4000_lasso}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
-\caption{16x16 LARS-lasso with 1000 elements}
-\label{fig:16_1000_lasso}
-\end{figure}
-
-
-\begin{figure}
-\centering
-\includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
-\caption{high pass}
-\label{fig:16_1000_lasso}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
-\caption{low pass}
-\label{fig:16_1000_lasso}
-\end{figure}
-
+\section{Experiments}
 
 \section{Common dictionary elements}
 
@@ -111,6 +41,79 @@ compression dicts
 \caption{wavelets}
 \label{fig:wavelets}
 \end{figure}
+
+\section{Dictionaries}
+
+Convergence
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
+\caption{8x8 OMP after some iterations}
+\label{fig:8_4000_lasso}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
+\caption{8x8 LARS after some iterations}
+\label{fig:8_4000_lasso}
+\end{figure}
+
+See the differences in the selection sceme.
+In the beginning OMP is very random.
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.44\textwidth]{images/16_1000_5000_10lasso_sketches.png}
+\caption{16x16 elements of sketches}
+\label{fig:16_1000_lasso}
+\end{figure}
+
+Mostly reduced to line segments and curve elements.
+\Todo{Reconstruction results}
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
+\caption{8x8 elements of gogh}
+\label{fig:16_1000_lasso}
+\end{figure}
+
+Similar to natural images.
+compression dicts
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
+\caption{8x8 LARS-lasso with 4000 elements natural images}
+\label{fig:8_4000_lasso}
+\end{figure}
+
+\Todo{Reconstruction results}
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
+\caption{16x16 LARS-lasso with 1000 elements}
+\label{fig:16_1000_lasso}
+\end{figure}
+
+\Todo{Reconstruction results}
+
+\begin{figure}
+\centering
+\subfloat[low pass]{\includegraphics[width = 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width = 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
+
+\label{fig:16_1000_lasso}
+\end{figure}
+
+
+\Todo{Reconstruction results}
+
 
 
 \section{Quality}

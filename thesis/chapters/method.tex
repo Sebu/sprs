@@ -1,75 +1,32 @@
 \chapter{Method}
 %\thispagestyle{empty}
 
-\section{Performance comparison}
-Before we present the experiments it is necessary to introduce some metrics to measure the performance of test results.
-
-
-\paragraph{Root mean squared error (RMSE)} is error measurement that ...
-
-Comparing the a signal $x$ with a reconstruction $y$ (noisy approxiamtion) of it. The root mean squared error is defined as:
-\begin{align}
- RMSE = \left[\frac{1}{n} \sum_{i=0}^{n}{\lVert x_i - y_i\rVert^{2}} \right]^{\frac{1}{2}}
-\end{align}
-It is primarily used for ...
-
-
-\paragraph{peak signal-to-noise ration (PSNR)}
-
-\Todo{Normalized version of RMSE}
-
-\begin{align}
- PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{RMSE}\right)
-\end{align}
-Where $MAX$ is the maximum possible value of our signal. 
-For an 8-bit image it would be 255. For a 32-bit normalized image it would be 1.
-The PSRN is expressed in a logarithmic decibel scale.
-
-Typical values lossy reconstruction are between 20dB and 50dB.
-
-
-%e.g. relevant for de-noise
-
-
-\paragraph{Bits per pixel (bpp)}
-For comparison of compression ratio of images a well known practice is to measure the bits requires for a single pixel. 
-For example an uncompressed RGB color image with 8-bit of color depth requires 24-bits per pixel, 
-respectively 8-bit for a single channel gray scale image.
-
-Looking at other well known compression algorithms such as jpeg or jpeg2000 a common ratio 
-is about ~1.8 bits-per-pixel for average quality compression(Q=50) of a natural image. 
-\Todo{example image?}
-
-Besides the actual pixel data there is certain amount of extra data from file headers. 
-%The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
-
-\paragraph{Test data}
-In addition to the metrics it is common practice to use some image sets to compare test results of the different algorihms and parameter condfigurations.
-For comparison of the reconstruction quality and compression quality we use a well kwonw set of images from the 
-USC-SIPI Image Database. Such as Lena, Mandril ....
 
 \section{Signal representation}
-As we use natural color images and graphics we require to use multi-channel data. Common 3-channel from a RGB color space.
-%The initial signal data 
-We use an approach to transform our initial signal into other color spaces like in jpeg encoding to account natural human reception of
-color data. 
-Experiment ....
+As we use natural color images and graphics we require to use multi-channel
+data. Common 3-channel from a RGB color space. %The initial signal data 
+We use an approach to transform our initial signal into other color spaces like
+in jpeg encoding to account natural human reception of color data. Experiment
+....
 
 %\subsection{color/signal representation}
 
 \section{Sparse coding step}
 \subsection{Batch-OMP}
-In 2008 Rubinstein et al. \cite{Rubinstein2008} presented the batch-OMP. 
-The \prettyref{alg:batchOMP} is a modified version of the orthogonal-matching-pursuit (\ref{sec:omp}) 
-that can effectively sparse codes multiple signals in parallel. 
-The key of the optimization is the pre-computation of gram matrix $G=D^TD$.
+In 2008 Rubinstein et al.\cite{Rubinstein2008} presented the batch-OMP. The
+\prettyref{alg:batchOMP} is a modified version of the
+orthogonal-matching-pursuit (\ref{sec:omp}) that can effectively sparse codes
+multiple signals in parallel. The key of the optimization is the pre-computation
+of gram matrix $G=D^TD$.
 
+
+\Todo{rewrite with batch-OMP}
 \begin{algorithm}
-\caption{Batch-OMP}
+\caption{multi signal optimized OMP}
 \label{alg:batchOMP}
 \begin{algorithmic}[1]
 \REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
-\STATE precompute gram matrix: $G=D^TD$
+\STATE pre-compute gram matrix: $G=D^TD$
 \FOR[all signals in parallel] {$j = 1$ to $k$ }
 \STATE $\alpha_j \gets 0, r_j \gets x_j $ (residual) $, A_j=\emptyset$
 \FOR {$i = 1$ to $L$}
@@ -81,7 +38,6 @@ i \gets \argmax_{i \in A_j^C} \lvert \left<d_i,r_j\right> \rvert
 \STATE update active set: $A_j \gets A_j \cup \{i\} $
 \STATE update residual: $r_j \gets \left(I-D_AG_{inv}D_A^T \right)x_j$
 \STATE update coefficients: $a_{j_A} \gets G_{inv} D_A^T x_j $
-
 \ENDFOR 
 \ENDFOR 
 
@@ -89,22 +45,26 @@ i \gets \argmax_{i \in A_j^C} \lvert \left<d_i,r_j\right> \rvert
 \end{algorithmic}
 \end{algorithm}
 
-\subsubsection*{Optimizations}
-
+\subsubsection*{Improvement}
+While $L$ is very small the main factor of the computation is
+the multiplication of $D$ with a vector with a complexity of $O(mp)$. 
+This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m + 2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
+with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
 
 \subsection{LARS-Lasso}
-The same pre-computation of the gramm matrix used in the batch-OMP can be also applied in the LARS-Lasso algorithm.
-Reduction the complexity to: \Todo{lasso complexity}
-
-The complete regularization path based on \cite{Efron2004}
 \subsubsection*{Optimizations}
+The same pre-computation of the gram matrix used in the batch-OMP can be
+also applied in the LARS-Lasso algorithm. Reduction the complexity. %to:
+\Todo{lasso complexity}
+
+The complete regularization path based on\cite{Efron2004}
 
 
 \section{Training step}
-Keeping the training sparse vectors too sparse can lead to dictionaries with only low frequency elements.
-Using LARS-Lasso for training generates a good dictionary for LARS and OMP. 
-Training with OMP leads to a dictionary more with a lot of noise 
-that leads better coding results when using OMP 
+Keeping the training sparse vectors too sparse can lead to dictionaries with
+only low frequency elements. Using LARS-Lasso for training generates a good
+dictionary for LARS and OMP. Training with OMP leads to a dictionary more with a
+lot of noise that leads better coding results when using OMP 
 % is LARS better?
 
 \subsection{\trainDL}
@@ -112,54 +72,81 @@ A more in-depth look at the Mairal on-line training algorithm \ref{sec:mairal}.
 Why use this algorithm? Robust, convergent, fast, on-line
 
 \subsection{Initialization}
-At the start of the training process it is requires to initial the dictionary with start data.
-Otherwise the sparse coding step will only find trivial solutions with all coefficient being zero. Which then will have no effect in the learning process.
+%\subsection{Dictionary initialization}
+%\paragraph{Random data} 
+%\paragraph{Random elements from training set}
+At the start of the training process it is requires to initial the
+dictionary with start data. Otherwise the sparse coding step will only find
+trivial solutions with all coefficient being zero. Which then will have no
+effect in the learning process.
 
-There are two common ways to initialize the dictionary using random data or selecting random elements from the training data. Both ways will be tested and 
+There are two common ways to initialize the dictionary using random data or
+selecting random elements from the training data. Both ways will be tested and 
 the quality will be compared.
 
-\section{Training sets}
-Task specific training data is a common way to solve the problem of finding the right dictionary. 
-Here learning for the task comes into account. de-noising/in-painting dictionaries directly learned from the initial
-signal that gets de-noised or restored from in-painting.
-If the task gets bigger it sounds logical to increase the size of training data and take a bigger variety of signals to learn from.
-\Todo{data: flickr, gogh, disney }
+\section{Clustering the learning step}
 
-
-
-\section{Experiments}
-
-\subsection{Dictionary initialization}
-\paragraph{Random data} 
-\paragraph{Random elements from training set}
-
-\subsection{Learning specific dictionaries}
-
-\subsection{Clustering the learning step}
 The cluster merge of results -> 
 it is a map/reduce approach. 
 
 \subsubsection*{Optimizations}
 %\subsection{Adaptive}
-%Thanks to the on-line approach of the training step an adaptive approach can be used. 
+%Thanks to the on-line approach of the training step an adaptive approach can be
+%used. 
 
-\subsection{Image compression}
-Todays compression algorithm for images are primary based on knowlege about visual perception.
-The human eye ...
-%Copy
-%The human eye is good at seeing small differences in brightness over a relatively large area, but not so good at distinguishing the exact strength of a high frequency brightness variation. This allows one to greatly reduce the amount of information in the high frequency components. This is done by simply dividing each component in the frequency domain by a constant for that component, and then rounding to the nearest integer. This rounding operation is the only lossy operation in the whole process if the DCT computation is performed with sufficiently high precision. As a result of this, it is typically the case that many of the higher frequency components are rounded to zero, and many of the rest become small positive or negative numbers, which take many fewer bits to represent.
+\section{Training sets}
+%\subsection{Learning specific dictionaries}
+As mentioned earlier\ref{sec:learnForTheTask} one of key elements 
+of the learning algorithms is the learning of specialization dictionaries.
+Task specific training data is a common way to solve the problem of finding 
+the right dictionary. Here learning for the task comes into
+account. Such as de-noising/in-painting dictionaries directly learned from the
+initial signal that gets de-noised or restored from in-painting. If the task
+gets bigger it sounds logical to increase the size of training data and take a
+bigger variety of signals to learn from.  We have a closer look at differences
+of learned elements from specific sets of images. These sets include sketches,
+still images of animations from Disney and post-impressionistic images from
+Vicent van Gogh. 
+Are big image collections specific enough to benefit from 
 
+
+
+\section{Image compression}
+Todays lossy image compression algorithms are primary based on scientific
+findings about visual perception reaching far back in the 1970s\cite{?} and
+good entropy encoding of the data. Both elements led to to the
+following main steps in lossy image compression algorithms:
 \begin{itemize}
- \item color space conversion and image conversion
- \item coding of image signals
+ \item lossy color space conversion and separation
+ \item spatial separation, sub-sampling of images
+ \item coding/transformation of image signals
  \item quantization to reduce of the number of non-zero coefficient 
- \item entropy coding of the coefficient 
+ \item lossless entropy coding of the coefficient 
 \end{itemize}
-
-
+%Copy
+%The human eye is good at seeing small differences in brightness over
+%a relatively large area, but not so good at distinguishing the exact strength
+%of a high frequency brightness variation. This allows one to greatly reduce the
+%amount of information in the high frequency components. This is done by simply
+%dividing each component in the frequency domain by a constant for that
+%component, and then rounding to the nearest integer. This rounding operation is
+%the only lossy operation in the whole process if the DCT computation is
+%performed with sufficiently high precision. As a result of this, it is
+%typically the case that many of the higher frequency components are rounded to
+%zero, and many of the rest become small positive or negative numbers, which
+%take many fewer bits to represent.
 
 \paragraph{Signal conversion}
-color space, high/low pass filtering
+The human eye is good at sensing small difference in brightness but lacks the
+ability exactly differentiate small changes in color. Converting an image from a
+classical three channel RGB color space into a YCbCr color space which splits
+the image into brightness/luminance (Y) and two color/chroma components (Cb
+and Cr) takes advantage of this effect. The relevant brightness/luminance
+channel will be coded with the full resolution while the color/chroma components
+can be sub-samples with only minor loss in perceptual quality. This is a key
+element of preserving perceptual quality in lossy image compression while
+reducing the amount of data.
+%color space, high/low pass filtering
 
 \paragraph{Signal coding}
 
@@ -170,26 +157,98 @@ Number of coefficients
 \paragraph{Quantization}
 Fixed quantization or learned from dictionary
 The random distribution of the atoms in the dictionary 
-We concentrated on two fixed quantization factor and the analysis of the dictionary elements.
+We concentrated on two fixed quantization factor and the analysis of the
+dictionary elements.
 
 The jpeg algorithm 
-We adopt the idea of visual perception idea of jpeg to our approach and sort our element by their frequencies.
+We adopt the idea of visual perception idea of jpeg to our approach and sort
+our element by their frequencies.
+
+%copy
+The human eye is good at seeing small differences in brightness over a
+relatively large area, but not so good at distinguishing the exact strength of a
+high frequency brightness variation. This allows one to greatly reduce the
+amount of information in the high frequency components. 
 
 \paragraph{Data encoding}
-As mentioned in in \ref{sec:headers} we are aware of the fact that besides the actual sparse matrix data we also have other files informations and meta data.
 Coefficients
 Indices
-In 1999 Lewicki et al. \cite{Lewicki1999} already made some on comparison the bpp required for encoding of the sparse matrix data.
+In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
+the bpp required for encoding of the sparse matrix data.
 \cite{Murray2006}
 
 \paragraph{Run-length encoding (RLE)}
 \paragraph{Huffman coding}
-\paragraph{Arithmetic coding}
+\paragraph{Arithmetic coding} is ...
+While arithmetic coding often yields better compression results than huffman
+coding. The higher processing requirements for coding and the current patent
+situation makes the algorithm unpopular for coding compared to the archived
+compression benefit.
 
+We apply RLE and huffman to our sparse matrices. 
 %The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 
 
+As mentioned in in \ref{sec:headers} we are aware of the fact that besides
+the actual sparse matrix data we also have other file informations and meta
+data but .  
 
+\section{Performance comparison}
+\Todo{move to results? or at end of method}
+
+Before we can present the results of the experiments it is necessary to
+introduce some metrics to measure their performance.
+
+
+\paragraph{Root mean squared error (RMSE)} is error measurement that ...
+
+Comparing the a signal $x$ with a reconstruction $y$ (noisy approximation) of
+it. The root mean squared error is defined as:
+\begin{align}
+ RMSE = \left[\frac{1}{n} \sum_{i=0}^{n}{\lVert x_i - y_i\rVert^{2}}
+\right]^{\frac{1}{2}}
+\end{align}
+It is primarily used for ...
+
+\paragraph{peak signal-to-noise ration (PSNR)}
+
+\Todo{Normalized version of RMSE}
+
+\begin{align}
+ PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{RMSE}\right)
+\end{align}
+Where $MAX$ is the maximum possible value of our signal. For an 8-bit image it
+would be 255. For a 32-bit normalized image it would be 1. The PSRN is expressed
+in a logarithmic decibel scale.
+
+Typical values lossy reconstruction are between 20dB and 50dB.
+
+
+%e.g. relevant for de-noise
+
+
+\paragraph{Bits per pixel (bpp)}
+For comparison of compression ratio of images a well known practice is to
+measure the bits requires for a single pixel. For example an uncompressed RGB
+color image with 8-bit of color depth requires 24-bits per pixel, respectively
+8-bit for a single channel gray scale image.
+
+Looking at other well known compression algorithms such as jpeg or jpeg2000
+a common ratio is about ~1.8 bits-per-pixel for average quality
+compression(Q=50) of a natural image. \Todo{example image?}
+
+Besides the actual pixel data there is certain amount of extra data from file
+headers. 
+%The sparse vector for every are encoded in 2 bytes index and a single byte
+quantized coefficient. Additional zero coefficients from the quantization step
+are removed.
+
+\paragraph{Test data}
+In addition to the metrics it is common practice to use some image sets to
+compare test results of the different algorithms and parameter configurations.
+For comparison of the reconstruction quality and compression quality we use a
+well known set of images from the USC-SIPI Image Database. Such as Lena, Mandril
+....
 
 \section{Implementation}
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
@@ -201,8 +260,9 @@ In 1999 Lewicki et al. \cite{Lewicki1999} already made some on comparison the bp
 %Compression
 %The 
 Computations were made on Apple MacPro with ... \Todo{mac config}
-and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon config} running Debian 32-bit. 
-Each client in the cluster calculated batches of 100 till 10,000 images based on the size of the trainig sets.
+and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
+config} running Debian 32-bit. Each client in the cluster calculated batches of
+100 till 10,000 images based on the size of the trainig sets.
 
 \subsection*{Software}
 
@@ -212,29 +272,36 @@ train dict with samples or just code samples - save dict/image
 
 The whole test suit is written in C++ with the help  of OpenCV, Eigen and OpenMP libs.
 
-Eigen \cite{Eigen} is a template library for fast vector and matrix operations and includes some linear algebra algorithms.
-It is mainly used for operations on dense and sparse matrices and solving of linear equation systems.
+Eigen \cite{Eigen} is a template library for fast vector and matrix operations 
+and includes some linear algebra algorithms. It is mainly used for operations on
+dense and sparse matrices and solving of linear equation systems.
 
-OpenCV \cite{OpenCV} as in Open Computer Vision Library is mainly used for image read and write operations and color space conversion.
-OpenMP \footnote{www.openmp.org \cite{OpenMP}} is a preprocessor based application programming interface (API) for C,C++ and Fortran that enables 
-the user to distribute code block and loops to multiple CPU cores. 
-In situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
+OpenCV \cite{OpenCV} as in Open Computer Vision Library is mainly used for
+image read and write operations and color space conversion. OpenMP
+\footnote{www.openmp.org \cite{OpenMP}} is a preprocessor based application
+programming interface (API) for C,C++ and Fortran that enables the user to
+distribute code block and loops to multiple CPU cores. In situations where it is
+applicable OpenMP is used to utilize multi-core CPUs. 
 
 \paragraph{Coding}
-The OMP implementation is based on the batch-OMP implementation from \cite{Rubinstein}
-The implementation of the LARS-Lasso algorithm is based on the implementation of \cite{Strand2005} and the original paper \cite{Efron2004}
+The OMP implementation is based on the batch-OMP implementation
+from\cite{Rubinstein} The implementation of the LARS-Lasso algorithm is based on
+the implementation of\cite{Strand2005} and the original paper\cite{Efron2004}
 
 \paragraph{Trainig}
-The \trainDL trainer is a straight forward implementation of the algorithm presented in \cite{Mairal2010}.
-It is an implementation of the basic version of the algorithm with the batch optimization applied. 
-Both coding methods (OMP and LARS-Lasso) can be utilized for the coding step.
+The \trainDL trainer is a straight forward implementation of the
+algorithm presented in\cite{Mairal2010}. It is an implementation of the basic
+version of the algorithm with the batch optimization applied. Both coding
+methods (OMP and LARS-Lasso) can be utilized for the coding step.
 
 \paragraph{Misc}
-\Todo{Other: imagemagick for conversion of test image -> jpeg,jp2 and comparison of images}
-Besides the actual coding software some other tools for additional tasks were used.
+\Todo{Other: imagemagick for conversion of test image -> jpeg,jp2000 and
+comparison of images} Besides the actual coding software some other tools for
+additional tasks were used.
 
-Several bash and ruby scripts for workload distribution onto the clients, aggregation and evaluation of the results.
-The imagemagick toolkit for image conversion into jpeg and jpeg200 and for some image comparison tasks.
+Several bash and ruby scripts for workload distribution onto the
+clients, aggregation and evaluation of the results. The imagemagick toolkit for
+image conversion into jpeg and jpeg2000 and for some image comparison tasks.
 
 
 
