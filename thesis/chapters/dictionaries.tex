@@ -62,10 +62,10 @@ a initial start dictionary in this way that it can sparsely reconstruct a set of
 training data with minimal error. 
 
 \subsection{Batch}
-MOD \cite{Engan1999a}
-Generalized PCA \cite{}
-ILS-DLA \cite{}
-K-SVD \cite{Aharon2006}
+MOD\cite{Engan1999a}
+Generalized PCA\cite{?}
+ILS-DLA\cite{?}
+K-SVD\cite{Aharon2006}
 
 
 \subsection{Online}
@@ -74,19 +74,19 @@ dictionaries. In contrast to batch learning algorithms with a fixed training set
 the new approaches enabled This is good for very large training sets or training
 data that is unknown at the start of the training process.
 
-... RLS-DLA \cite{Engan2010} ...
+... RLS-DLA\cite{Engan2010} ...
 
 \Todo{find the Japanese one}
 
-In 2010 Mairal et. al. \cite{Mairal2010} proposed an on-line approach which from
+In 2010 Mairal et. al.\cite{Mairal2010} proposed an on-line approach which from
 now on will be called TrainDL
 
 \subsubsection{\trainDL}
 \label{sec:mairal}
-The algorithm presented by Mairal et al. \cite{Mairal2010} is ...
+The algorithm presented by Mairal et al.\cite{Mairal2010} is ...
 
 \begin{algorithm}
-\caption{Online dictionary learning \cite{Mairal2010}}
+\caption{Online dictionary learning\cite{Mairal2010}}
 \begin{algorithmic}[1]
 \REQUIRE $x \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in \mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
 \STATE $A_0 \in \mathbb{R}^{p \times p} \gets  0, B_0 \in \mathbb{R}^{m \times p}\gets 0$

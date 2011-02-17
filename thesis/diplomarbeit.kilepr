@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0.85
-lastDocument=chapters/method.tex
+lastDocument=chapters/dictionaries.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -172,13 +172,13 @@ order=5
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=76
+column=35
 encoding=UTF-8
 highlight=LaTeX
-line=80
+line=88
 mode=LaTeX
 open=true
-order=3
+order=2
 
 [item:chapters/introduction.tex]
 archive=true
@@ -188,14 +188,14 @@ highlight=LaTeX
 line=5
 mode=LaTeX
 open=true
-order=5
+order=4
 
 [item:chapters/method.tex]
 archive=true
-column=58
+column=13
 encoding=UTF-8
 highlight=LaTeX
-line=132
+line=216
 mode=LaTeX
 open=true
 order=0
@@ -208,7 +208,7 @@ highlight=LaTeX
 line=144
 mode=LaTeX
 open=true
-order=2
+order=1
 
 [item:chapters/results.tex]
 archive=true
@@ -218,7 +218,7 @@ highlight=LaTeX
 line=2
 mode=LaTeX
 open=true
-order=7
+order=6
 
 [item:chapters/sparse_coding.tex]
 archive=true
@@ -228,7 +228,7 @@ highlight=LaTeX
 line=247
 mode=LaTeX
 open=true
-order=6
+order=5
 
 [item:chapters/title.tex]
 archive=true
@@ -238,7 +238,7 @@ highlight=LaTeX
 line=35
 mode=LaTeX
 open=true
-order=4
+order=3
 
 [item:diplomarbeit.kilepr]
 archive=true
@@ -262,13 +262,13 @@ order=5
 
 [item:thesis.tex]
 archive=true
-column=33
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=21
+line=0
 mode=LaTeX
 open=true
-order=1
+order=7
 
 [item:todo.txt]
 archive=true
@@ -293,16 +293,16 @@ CursorColumn=36
 CursorLine=37
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=76
-CursorLine=80
+CursorColumn=35
+CursorLine=88
 
 [view-settings,view=0,item:chapters/introduction.tex]
 CursorColumn=45
 CursorLine=5
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=58
-CursorLine=132
+CursorColumn=13
+CursorLine=216
 
 [view-settings,view=0,item:chapters/overview.tex]
 CursorColumn=76
@@ -325,8 +325,8 @@ CursorColumn=0
 CursorLine=21
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=33
-CursorLine=21
+CursorColumn=0
+CursorLine=0
 
 [view-settings,view=0,item:todo.txt]
 CursorColumn=20
