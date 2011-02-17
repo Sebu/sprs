@@ -1,4 +1,5 @@
 \chapter{Sparse coding}
+\label{sec:sparse_coding}
 %\thispagestyle{empty}
 
 \Todo{better intro}
@@ -41,13 +42,15 @@ To achieve the spare solution we add a constraint to the problem.
 \end{align}
 
 The sparsity is measured with the $\ell_0$ pseudo-norm in the form
-of $\lVert\alpha\rVert_{0}$. The regularization with the $\ell_0$-norm makes the
-initial problem \ref{eq:problem} NP-hard. To get the ideal solution it is
+of $\lVert\alpha\rVert_{0}$. This regularization with the $\ell_0$-norm makes
+the initial problem \ref{eq:problem} NP-hard. To get the ideal solution it is
 necessary to test every combination of atoms. But this does not imply that there
 is no way to efficiently find a solution that is good enough to to keep $\alpha$
 sparse. There exist several greedy algorithms that can solve the problem in a
-not perfect but good enough way. Another approach would be to use $\ell_1$ or
-$\ell_2$ as a convex relaxation of $\ell_0$-norm.
+not perfect but good enough way. 
+
+Another approach would be to use $\ell_1$ or $\ell_2$ as a convex relaxation of
+$\ell_0$-norm.
 
 It can be demonstrated that the $\ell_1$-norm is equivalent to the $\ell_0$-norm .....
 \Todo{image/description of different regularizations}
@@ -119,7 +122,10 @@ i \gets \argmax_{i=1,...,p} \lvert \left<d_i,r\right> \rvert
 a[i]  \gets a[i] + \left<d_i,r\right> \label{eq:mp_update}
 \end{align}
 
-\STATE update residual: $r \gets r - \left<d_i,r\right>d_i$
+\STATE update residual:
+\begin{equation*}
+ r \gets r - \left<d_i,r\right>d_i
+\end{equation*}
 
 \ENDWHILE
 \RETURN $\alpha$
@@ -147,16 +153,23 @@ once.
 \REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
 \STATE $\alpha \gets 0, r \gets x $ (residual) $, A \gets \emptyset$
 \FOR {$j = 0$ to $L$}
-\STATE Select atom with maximum correlation with residual: 
+\STATE Select inactive variable with maximum correlation with residual: 
 \begin{equation*}
 i \gets \argmax_{i \in A^C} \lvert \left<d_i,r\right> \rvert
 \end{equation*}
-\STATE update active set: $A \gets A \cup \{i\} $
-\STATE update residual: $r \gets \left(I-D_A\left( D_A^T D_A \right)^{-1} D_A^T \right)x$
+\STATE update active set:
+\begin{equation*}
+ A \gets A \cup \{i\} 
+\end{equation*}
 \STATE update coefficients: 
 \begin{align}
 a_A \gets \left( D_A^T D_A \right)^{-1} D_A^T x  \label{eq:omp_update}
 \end{align}
+\STATE update residual:
+\begin{equation*}
+ r \gets x-D_Aa_A
+\end{equation*}
+ 
 
 \ENDFOR
 \RETURN $\alpha$
@@ -281,6 +294,7 @@ Limitation one is irrelevant for our experiments as the dictionaries are over-co
 
 %\begin{description}
 \paragraph{noise reduction}
+Elad and Aharon\cite{Elad2006}
 Remove noise from a signal. 
 Using the fact that sparse coding is an approximation of signal that loses ...
 noise? ... in its encoding process. 
@@ -288,7 +302,7 @@ noise? ... in its encoding process.
 y = x + w
 \end{align*}
 
-\cite{Elad2006}
+
 
 
 \paragraph{in-painting}

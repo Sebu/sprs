@@ -67,6 +67,21 @@ Generalized PCA\cite{?}
 ILS-DLA\cite{?}
 K-SVD\cite{Aharon2006}
 
+\subsubsection{K-SVD}
+\label{sec:k-svd}
+\begin{algorithm}
+\caption{K-SVD}
+\begin{algorithmic}[1]
+\REQUIRE $x \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in
+\mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
+\STATE $A_0 \in \mathbb{R}^{p \times p} \gets  0, B_0 \in \mathbb{R}^{m \times
+p}\gets 0$
+\FOR {$t = 1$ to $T$}
+\STATE
+\ENDFOR
+\RETURN $D_T$
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Online}
 In 2010 new training algorithms were presented that enabled on-line learning of

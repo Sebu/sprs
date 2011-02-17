@@ -3,6 +3,7 @@
 
 
 \section{Signal representation}
+\label{sec:signal_representation}
 As we use natural color images and graphics we require to use multi-channel
 data. Common 3-channel from a RGB color space. %The initial signal data 
 We use an approach to transform our initial signal into other color spaces like
@@ -66,6 +67,13 @@ only low frequency elements. Using LARS-Lasso for training generates a good
 dictionary for LARS and OMP. Training with OMP leads to a dictionary more with a
 lot of noise that leads better coding results when using OMP 
 % is LARS better?
+As described in\ref{sec:signal_representation} the learning process is not
+limited to grayscale oder RGB image signals. The presented algorithm can be
+applied to diffrent kinds of signals. Such as images in other color
+spaces, low/high pass filtered sub-images or signals from another domain like
+audio or text. 
+%Some of them are used in our compressions experiments.
+
 
 \subsection{\trainDL}
 A more in-depth look at the Mairal on-line training algorithm \ref{sec:mairal}. 
@@ -84,10 +92,11 @@ There are two common ways to initialize the dictionary using random data or
 selecting random elements from the training data. Both ways will be tested and 
 the quality will be compared.
 
-\section{Clustering the learning step}
+\subsection{Clustering}
 
 The cluster merge of results -> 
 it is a map/reduce approach. 
+
 
 \subsubsection*{Optimizations}
 %\subsection{Adaptive}
@@ -139,36 +148,42 @@ following main steps in lossy image compression algorithms:
 \paragraph{Signal conversion}
 The human eye is good at sensing small difference in brightness but lacks the
 ability exactly differentiate small changes in color. Converting an image from a
-classical three channel RGB color space into a YCbCr color space which splits
-the image into brightness/luminance (Y) and two color/chroma components (Cb
-and Cr) takes advantage of this effect. The relevant brightness/luminance
-channel will be coded with the full resolution while the color/chroma components
-can be sub-samples with only minor loss in perceptual quality. This is a key
-element of preserving perceptual quality in lossy image compression while
-reducing the amount of data.
+classical three channel RGB color space to YCbCr color space takes advantage of
+this effect. The YCbCr color space splits an image
+into a brightness/luminance (Y) and two color/chroma components (Cb
+and Cr). The visual more relevant brightness/luminance channel will be coded
+in the full resolution while the color/chroma components can be sub-samples
+with only minor loss in perceptual quality. This is one key element of
+preserving perceptual quality in lossy image compression while reducing the
+amount of data.
 %color space, high/low pass filtering
 
 \paragraph{Signal coding}
-
+The actual coding step of the prepared signals is a simple application of one
+of the sparse coding algorithms presented in \ref{sec:sparse_coding}.
+But before we can actualy code signals we need a good dictionary.
+We learn dictionaries from our training sets 
 block sizes
 Number of coefficients
 
 
 \paragraph{Quantization}
-Fixed quantization or learned from dictionary
-The random distribution of the atoms in the dictionary 
-We concentrated on two fixed quantization factor and the analysis of the
-dictionary elements.
-
-The jpeg algorithm 
-We adopt the idea of visual perception idea of jpeg to our approach and sort
-our element by their frequencies.
-
 %copy
 The human eye is good at seeing small differences in brightness over a
 relatively large area, but not so good at distinguishing the exact strength of a
 high frequency brightness variation. This allows one to greatly reduce the
 amount of information in the high frequency components. 
+
+Fixed quantization or learned from dictionary
+
+The jpeg algorithm 
+We adopt the idea of visual perception idea of jpeg to our
+approach and sort our element by their frequencies.
+The random distribution of the atoms in the dictionary 
+We concentrated on two fixed quantization factor and the analysis of the
+dictionary elements.
+
+
 
 \paragraph{Data encoding}
 Coefficients
