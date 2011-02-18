@@ -18,10 +18,45 @@ In 2008 Rubinstein et al.\cite{Rubinstein2008} presented the batch-OMP. The
 \prettyref{alg:batchOMP} is a modified version of the
 orthogonal-matching-pursuit (\ref{sec:omp}) that can effectively sparse codes
 multiple signals in parallel. The key of the optimization is the pre-computation
-of gram matrix $G=D^TD$.
+of the gram matrix $G=D^TD$ and a cholesky factorization.
+
+\subsubsection*{Optimizations}
+While $L$ is very small the main factor of the computation is
+the multiplication of $D$ with a vector with a complexity of $O(mp)$. 
+This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
+2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
+with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
 
 
 \Todo{rewrite with batch-OMP}
+\begin{algorithm}
+\caption{multi signal optimized OMP}
+\label{alg:batchOMP}
+\begin{algorithmic}[1]
+\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
+\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
+\STATE $L\gets[1]$
+\WHILE {$\epsilon^{n-1}> \epsilon $}
+\STATE
+\IF {$n>1$}
+\STATE
+\begin{align}
+L \gets \left[
+\begin{array}{ccc}
+L & 0\\
+w^t & \sqrt{1-w^tw}
+\end{array}
+\right]
+\end{align}
+\ENDIF
+\STATE $I \gets I \cup \{ k\}$
+\STATE
+\STATE $n \gets n+1$
+\ENDWHILE
+\RETURN $\alpha$
+\end{algorithmic}
+\end{algorithm}
+
 \begin{algorithm}
 \caption{multi signal optimized OMP}
 \label{alg:batchOMP}
@@ -41,16 +76,10 @@ i \gets \argmax_{i \in A_j^C} \lvert \left<d_i,r_j\right> \rvert
 \STATE update coefficients: $a_{j_A} \gets G_{inv} D_A^T x_j $
 \ENDFOR 
 \ENDFOR 
-
 \RETURN $\alpha$
 \end{algorithmic}
 \end{algorithm}
 
-\subsubsection*{Improvement}
-While $L$ is very small the main factor of the computation is
-the multiplication of $D$ with a vector with a complexity of $O(mp)$. 
-This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m + 2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
-with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
 
 \subsection{LARS-Lasso}
 \subsubsection*{Optimizations}
@@ -287,13 +316,13 @@ train dict with samples or just code samples - save dict/image
 
 The whole test suit is written in C++ with the help  of OpenCV, Eigen and OpenMP libs.
 
-Eigen \cite{Eigen} is a template library for fast vector and matrix operations 
+Eigen\cite{Eigen} is a template library for fast vector and matrix operations 
 and includes some linear algebra algorithms. It is mainly used for operations on
 dense and sparse matrices and solving of linear equation systems.
 
-OpenCV \cite{OpenCV} as in Open Computer Vision Library is mainly used for
+OpenCV\cite{OpenCV} as in Open Computer Vision Library is mainly used for
 image read and write operations and color space conversion. OpenMP
-\footnote{www.openmp.org \cite{OpenMP}} is a preprocessor based application
+\footnote{www.openmp.org\cite{OpenMP}} is a preprocessor based application
 programming interface (API) for C,C++ and Fortran that enables the user to
 distribute code block and loops to multiple CPU cores. In situations where it is
 applicable OpenMP is used to utilize multi-core CPUs. 

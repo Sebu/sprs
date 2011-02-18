@@ -72,14 +72,21 @@ K-SVD\cite{Aharon2006}
 \begin{algorithm}
 \caption{K-SVD}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in
+\REQUIRE $X \in \mathbb{R}^{m \times k}, \lambda \in
 \mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
-\STATE $A_0 \in \mathbb{R}^{p \times p} \gets  0, B_0 \in \mathbb{R}^{m \times
-p}\gets 0$
+\STATE $A \gets D_0$
 \FOR {$t = 1$ to $T$}
-\STATE
+\STATE sparse code X with D: $A$
+\FOR {$i = 1$ to $p$}
+\STATE $D_i \gets 0$
+\STATE $I \gets \{\}$
+\STATE $E \gets X_I - DA_I$
+\STATE $bla$
+\STATE $D_i \gets d$
+\STATE $A_{i,I} \gets g^t$
+\ENDFOR 
 \ENDFOR
-\RETURN $D_T$
+\RETURN $D$
 \end{algorithmic}
 \end{algorithm}
 
