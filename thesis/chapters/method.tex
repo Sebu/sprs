@@ -2,6 +2,63 @@
 %\thispagestyle{empty}
 
 
+\section{Performance comparison}
+\Todo{move to results? or at end of method}
+
+Before we can present the results of the experiments it is necessary to
+introduce some metrics to measure their performance.
+
+
+\paragraph{Root mean squared error (RMSE)} is error measurement that ...
+
+Comparing the a signal $x$ with a reconstruction $y$ (noisy approximation) of
+it. The root mean squared error is defined as:
+\begin{align}
+ RMSE = \left[\frac{1}{n} \sum_{i=0}^{n}{\lVert x_i - y_i\rVert^{2}}
+\right]^{\frac{1}{2}}
+\end{align}
+It is primarily used for ...
+
+\paragraph{peak signal-to-noise ration (PSNR)}
+
+\Todo{Normalized version of RMSE}
+
+\begin{align}
+ PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{RMSE}\right)
+\end{align}
+Where $MAX$ is the maximum possible value of our signal. For an 8-bit image it
+would be 255. For a 32-bit normalized image it would be 1. The PSRN is expressed
+in a logarithmic decibel scale.
+
+Typical values lossy reconstruction are between 20dB and 50dB.
+
+
+%e.g. relevant for de-noise
+
+
+\paragraph{Bits per pixel (bpp)}
+For comparison of compression ratio of images a well known practice is to
+measure the bits requires for a single pixel. For example an uncompressed RGB
+color image with 8-bit of color depth requires 24-bits per pixel, respectively
+8-bit for a single channel gray scale image.
+
+Looking at other well known compression algorithms such as JPEG or JPEG 2000
+a common ratio is about ~1.8 bits-per-pixel for average quality
+compression(Q=50) of a natural image. \Todo{example image?}
+
+Besides the actual pixel data there is certain amount of extra data from file
+headers. 
+%The sparse vector for every are encoded in 2 bytes index and a single byte
+quantized coefficient. Additional zero coefficients from the quantization step
+are removed.
+
+\paragraph{Test data}
+In addition to the metrics it is common practice to use some image sets to
+compare test results of the different algorithms and parameter configurations.
+For comparison of the reconstruction quality and compression quality we use a
+well known set of images from the USC-SIPI Image Database. Such as Lena, Mandril
+....
+
 \section{Signal representation}
 \label{sec:signal_representation}
 As we use natural color images and graphics we require to use multi-channel
@@ -177,19 +234,20 @@ following main steps in lossy image compression algorithms:
 \paragraph{Signal conversion}
 The human eye is good at sensing small difference in brightness but lacks the
 ability exactly differentiate small changes in color. Converting an image from a
-classical three channel RGB color space to YCbCr color space takes advantage of
+typical three channel $RGB$ color space to $YC_bC_r$ color space takes advantage
+of
 this effect. The YCbCr color space splits an image
 into a brightness/luminance (Y) and two color/chroma components (Cb
 and Cr). The visual more relevant brightness/luminance channel will be coded
 in the full resolution while the color/chroma components can be sub-samples
-with only minor loss in perceptual quality. This is one key element of
-preserving perceptual quality in lossy image compression while reducing the
-amount of data.
+with only minor loss in perceptual quality. This procedure is called
+\emph{chroma subsampling} and is one key element to of preserving perceptual
+quality in lossy image compression while.
 %color space, high/low pass filtering
 
 \paragraph{Signal coding}
-The actual coding step of the prepared signals is a simple application of one
-of the sparse coding algorithms presented in \ref{chap:sparse_coding}.
+The actual coding step of the prepared signas is a simple application of one
+of the sparse coding algorithms presented in\ref{chap:sparse_coding}.
 But before we can actualy code signals we need a good dictionary.
 We learn dictionaries from our training sets 
 block sizes
@@ -205,8 +263,8 @@ amount of information in the high frequency components.
 
 Fixed quantization or learned from dictionary
 
-The jpeg algorithm 
-We adopt the idea of visual perception idea of jpeg to our
+%The JPEG algorithm 
+We adopt the idea of visual perception idea of JPEG to our
 approach and sort our element by their frequencies.
 The random distribution of the atoms in the dictionary 
 We concentrated on two fixed quantization factor and the analysis of the
@@ -215,10 +273,13 @@ dictionary elements.
 
 
 \paragraph{Data encoding}
+
 Coefficients
 Indices
 In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
-the bpp required for encoding of the sparse matrix data.
+the bpp required for encoding of the sparse matrix data. Besides the estimation
+of the compression we also really applied some coding schemes to compare real
+world compression data.
 \cite{Murray2006}
 
 \paragraph{Run-length encoding (RLE)}
@@ -237,62 +298,7 @@ As mentioned in in \ref{sec:headers} we are aware of the fact that besides
 the actual sparse matrix data we also have other file informations and meta
 data but .  
 
-\section{Performance comparison}
-\Todo{move to results? or at end of method}
 
-Before we can present the results of the experiments it is necessary to
-introduce some metrics to measure their performance.
-
-
-\paragraph{Root mean squared error (RMSE)} is error measurement that ...
-
-Comparing the a signal $x$ with a reconstruction $y$ (noisy approximation) of
-it. The root mean squared error is defined as:
-\begin{align}
- RMSE = \left[\frac{1}{n} \sum_{i=0}^{n}{\lVert x_i - y_i\rVert^{2}}
-\right]^{\frac{1}{2}}
-\end{align}
-It is primarily used for ...
-
-\paragraph{peak signal-to-noise ration (PSNR)}
-
-\Todo{Normalized version of RMSE}
-
-\begin{align}
- PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{RMSE}\right)
-\end{align}
-Where $MAX$ is the maximum possible value of our signal. For an 8-bit image it
-would be 255. For a 32-bit normalized image it would be 1. The PSRN is expressed
-in a logarithmic decibel scale.
-
-Typical values lossy reconstruction are between 20dB and 50dB.
-
-
-%e.g. relevant for de-noise
-
-
-\paragraph{Bits per pixel (bpp)}
-For comparison of compression ratio of images a well known practice is to
-measure the bits requires for a single pixel. For example an uncompressed RGB
-color image with 8-bit of color depth requires 24-bits per pixel, respectively
-8-bit for a single channel gray scale image.
-
-Looking at other well known compression algorithms such as jpeg or jpeg2000
-a common ratio is about ~1.8 bits-per-pixel for average quality
-compression(Q=50) of a natural image. \Todo{example image?}
-
-Besides the actual pixel data there is certain amount of extra data from file
-headers. 
-%The sparse vector for every are encoded in 2 bytes index and a single byte
-quantized coefficient. Additional zero coefficients from the quantization step
-are removed.
-
-\paragraph{Test data}
-In addition to the metrics it is common practice to use some image sets to
-compare test results of the different algorithms and parameter configurations.
-For comparison of the reconstruction quality and compression quality we use a
-well known set of images from the USC-SIPI Image Database. Such as Lena, Mandril
-....
 
 \section{Implementation}
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
@@ -339,13 +345,13 @@ version of the algorithm with the batch optimization applied. Both coding
 methods (OMP and LARS-Lasso) can be utilized for the coding step.
 
 \paragraph{Misc}
-\Todo{Other: imagemagick for conversion of test image -> jpeg,jp2000 and
+\Todo{Other: imagemagick for conversion of test image -> JPEG,JPEG 2000 and
 comparison of images} Besides the actual coding software some other tools for
 additional tasks were used.
 
 Several bash and ruby scripts for workload distribution onto the
 clients, aggregation and evaluation of the results. The imagemagick toolkit for
-image conversion into jpeg and jpeg2000 and for some image comparison tasks.
+image conversion into JPEG and JPEG 2000 and for some image comparison tasks.
 
 
 

@@ -33,6 +33,9 @@ sparse.
 \min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha \rVert^{2}_{2}}_{reconstruction} \label{eq:problem}
 \end{align}
 
+Describe error and regularize sparsity
+\paragraph{Naming}
+alpha,X,x,D,d,L,epsilon error, L,lamba , A,Isets
 
 \section{Regularization}
 To achieve the spare solution we add a constraint to the problem. 
@@ -140,10 +143,10 @@ in\cite{Pati1993}. Rather than just updating the coefficent of $\alpha$ that is
 currently selected \prettyref{eq:mp_update} the algorithm re-evaluates all
 coefficent in the current active set $S$  \prettyref{eq:omp_update} $\alpha_S$
 by solving a full least-squares solution in every iteration. This improves the
-quality of the solution.\cite{OMP} The name Orthogonal-Matching-Pursuit comes
-from the fact that the residual $r$ is orthogonal to the previously selected
-atoms in $D$ which leads to the effect that every coefficent is only selected
-once.
+quality of the solution.\cite{OMP} The Orthogonal-Matching-Pursuit gets its
+name from the fact that the residual $r$ is orthogonal to the previously
+selected atoms in $D$. The orhogonality leads to the effect that every
+coefficent is only selected once.
 
 
 \begin{algorithm}
@@ -191,7 +194,7 @@ section presents algorithms which solve  a $\ell_1$ regularization version of
 
 
 
-The Lasso (least absolute shrinkage and selection operator) is a
+\paragraph{The Lasso} (least absolute shrinkage and selection operator) is a
 regularized version of a least squares solution. The regularized version is
 found by adding a constraint that induces the $L_1$-norm of the solution to be
 small.\cite{Tibshirani1996}
@@ -293,7 +296,7 @@ Limitation one is irrelevant for our experiments as the dictionaries are over-co
 \section{Application and Related Work}
 
 %\begin{description}
-\paragraph{noise reduction}
+\paragraph{Noise reduction}
 Elad and Aharon\cite{Elad2006}
 Remove noise from a signal. 
 Using the fact that sparse coding is an approximation of signal that loses ...
@@ -304,8 +307,7 @@ y = x + w
 
 
 
-
-\paragraph{in-painting}
+\paragraph{In-painting}
 fill missing parts by removing rows from the dictionary
 Train with the original image
 \begin{align*}
@@ -316,22 +318,22 @@ Wx \approx WD\alpha\text{select subset}\\
 
 \cite{mairal08sparse}
 
-\paragraph{compression} \cite{Murray2006} \cite{Lewicki1999} An example for this
+\paragraph{Compression} \cite{Murray2006} \cite{Lewicki1999} An example for this
 is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
 
 %Task driven dictionaries
-\paragraph{classification} Examples for this can be found in
+\paragraph{Classification} Examples for this can be found in
 \cite{Mairal2008b} and \cite{Bar2009}.
 
-\paragraph{inverse half-toning} ongoing research by Mairal et al., 2010
+\paragraph{Inverse half-toning} ongoing research by Mairal et al., 2010
 \cite{Mairal2010b}
 
-\paragraph{super resolution} \cite{Yang2010} \cite{Wright2008}  
+\paragraph{Super resolution} \cite{Yang2010} \cite{Wright2008}  
 Or the ongoing work by Couzinie-Devy et al., 2010 called digital zooming.
 
-\paragraph{background subtraction} \cite{}
+\paragraph{Background subtraction} \cite{}
 
-\paragraph{sense spase signals}\cite{Duarte2009}
+\paragraph{Sense spase signals}\cite{Duarte2009}
 %\item[noise reduction]
 %\item[in-painting]
 %\item[classification] \Todo{usage:classification}
