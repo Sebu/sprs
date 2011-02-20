@@ -137,7 +137,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 //        else
 //            delta = n*n+realT-n;
         realT += 1.0;
-        double beta = (1.0-1.0/realT);
+        double beta = 1.0; //(1.0-1.0/realT);
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
         std::cout << "| (*A_) += tmp ";// << std::endl;

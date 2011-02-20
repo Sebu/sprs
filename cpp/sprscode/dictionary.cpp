@@ -9,7 +9,7 @@
 
 #include <eigen2/Eigen/Array>
 
-Dictionary::Dictionary(int size, int channels, int elementCount) :data_(0), signalSize_(size*size*channels),
+Dictionary::Dictionary(int size, int channels, int elementCount) : data_(0), signalSize_(size*size*channels),
     elements_(elementCount), channels_(channels), blockSize_(size), meta_(0)
 {
     clear();
@@ -188,7 +188,7 @@ void Dictionary::initRandom() {
 }
 
 void Dictionary::initFromData(Samples& data) {
-    srand ( time(NULL) );
+    srand(time(NULL));
     for(int j=0; j<this->elements_;) {
         int pos  = rand() % data.getData().cols();
         if(!data.getData().col(pos).isZero(0.001)) {

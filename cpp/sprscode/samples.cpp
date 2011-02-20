@@ -139,9 +139,9 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
     cv::Mat lowPass =  inputImage.clone();
     cv::Mat highPass =  inputImage.clone();
     cv::blur(lowPass,lowPass,cv::Size(1,4));
-    inputImage= lowPass - highPass;
-    cv::imwrite("/tmp/debug1.png",inputImage);
-    cv::imwrite("/tmp/debug2.png",lowPass);
+//    inputImage= lowPass - highPass;
+//    cv::imwrite("/tmp/debug1.png",inputImage);
+//    cv::imwrite("/tmp/debug2.png",lowPass);
 
     return sampleImage(inputImage, step);
 
