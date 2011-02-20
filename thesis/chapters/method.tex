@@ -56,8 +56,9 @@ are removed.
 In addition to the metrics it is common practice to use some image sets to
 compare test results of the different algorithms and parameter configurations.
 For comparison of the reconstruction quality and compression quality we use a
-well known set of images from the USC-SIPI Image Database. Such as Lena, Mandril
-....
+well known set of images from the USC-SIPI Image Database often used in image
+processing for evaulation of algorithms. Including pictures such as Lena,
+Mandril and Peppers.
 
 \section{Signal representation}
 \label{sec:signal_representation}
@@ -101,7 +102,7 @@ with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}.
 L \gets \left[
 \begin{array}{ccc}
 L & 0\\
-w^t & \sqrt{1-w^tw}
+w^T & \sqrt{1-w^Tw}
 \end{array}
 \right]
 \end{align}

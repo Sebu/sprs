@@ -3,8 +3,8 @@ def_graphic_ext=eps
 img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
-kileversion=2.1 beta2
-lastDocument=chapters/overview.tex
+kileversion=2.0.85
+lastDocument=chapters/sparse_coding.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -81,7 +81,7 @@ Mode=LaTeX
 ReadWrite=true
 
 [document-settings,item:chapters/sparse_coding.tex]
-Bookmarks=57
+Bookmarks=70
 Encoding=UTF-8
 Highlighting=LaTeX
 Indentation Mode=
@@ -162,73 +162,73 @@ order=-1
 
 [item:chapters/conclusion.tex]
 archive=true
-column=36
+column=37
 encoding=UTF-8
 highlight=LaTeX
-line=37
+line=61
 mode=LaTeX
 open=false
-order=5
+order=4
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=22
+column=48
 encoding=UTF-8
 highlight=LaTeX
-line=73
-mode=LaTeX
-open=true
-order=5
-
-[item:chapters/introduction.tex]
-archive=true
-column=45
-encoding=UTF-8
-highlight=LaTeX
-line=5
+line=221
 mode=LaTeX
 open=true
 order=2
 
-[item:chapters/method.tex]
+[item:chapters/introduction.tex]
 archive=true
-column=16
+column=33
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=3
+mode=LaTeX
+open=true
+order=5
+
+[item:chapters/method.tex]
+archive=true
+column=17
+encoding=UTF-8
+highlight=LaTeX
+line=104
 mode=LaTeX
 open=true
 order=0
 
 [item:chapters/overview.tex]
 archive=true
-column=17
+column=14
 encoding=UTF-8
 highlight=LaTeX
-line=11
-mode=LaTeX
-open=true
-order=1
-
-[item:chapters/results.tex]
-archive=true
-column=1
-encoding=UTF-8
-highlight=LaTeX
-line=3
-mode=LaTeX
-open=false
-order=5
-
-[item:chapters/sparse_coding.tex]
-archive=true
-column=11
-encoding=UTF-8
-highlight=LaTeX
-line=1
+line=22
 mode=LaTeX
 open=true
 order=3
+
+[item:chapters/results.tex]
+archive=true
+column=17
+encoding=UTF-8
+highlight=LaTeX
+line=94
+mode=LaTeX
+open=true
+order=4
+
+[item:chapters/sparse_coding.tex]
+archive=true
+column=24
+encoding=UTF-8
+highlight=LaTeX
+line=155
+mode=LaTeX
+open=true
+order=1
 
 [item:chapters/title.tex]
 archive=true
@@ -255,7 +255,7 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=21
+line=76
 mode=LaTeX
 open=false
 order=5
@@ -265,10 +265,10 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=1
 mode=LaTeX
 open=true
-order=4
+order=6
 
 [item:todo.txt]
 archive=true
@@ -289,32 +289,32 @@ CursorColumn=0
 CursorLine=0
 
 [view-settings,view=0,item:chapters/conclusion.tex]
-CursorColumn=36
-CursorLine=37
+CursorColumn=37
+CursorLine=61
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=6
-CursorLine=79
+CursorColumn=48
+CursorLine=221
 
 [view-settings,view=0,item:chapters/introduction.tex]
-CursorColumn=45
-CursorLine=5
-
-[view-settings,view=0,item:chapters/method.tex]
-CursorColumn=25
-CursorLine=160
-
-[view-settings,view=0,item:chapters/overview.tex]
-CursorColumn=0
-CursorLine=88
-
-[view-settings,view=0,item:chapters/results.tex]
-CursorColumn=1
+CursorColumn=33
 CursorLine=3
 
+[view-settings,view=0,item:chapters/method.tex]
+CursorColumn=17
+CursorLine=104
+
+[view-settings,view=0,item:chapters/overview.tex]
+CursorColumn=14
+CursorLine=22
+
+[view-settings,view=0,item:chapters/results.tex]
+CursorColumn=17
+CursorLine=94
+
 [view-settings,view=0,item:chapters/sparse_coding.tex]
-CursorColumn=11
-CursorLine=1
+CursorColumn=24
+CursorLine=155
 
 [view-settings,view=0,item:chapters/title.tex]
 CursorColumn=0
@@ -322,11 +322,11 @@ CursorLine=35
 
 [view-settings,view=0,item:header.tex]
 CursorColumn=0
-CursorLine=21
+CursorLine=76
 
 [view-settings,view=0,item:thesis.tex]
 CursorColumn=0
-CursorLine=0
+CursorLine=1
 
 [view-settings,view=0,item:todo.txt]
 CursorColumn=20

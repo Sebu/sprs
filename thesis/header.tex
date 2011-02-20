@@ -66,41 +66,40 @@
 }
 
 % use nice footnote indentation
-\deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark}\,}
+%\deffootnote[1em]{1em}{1em}{\textsuperscript{\thefootnotemark}\,}
 
 %\usepackage[Lenny]{fncychap}
 %\ChNumVar{\Huge} 
 %\ChTitleVar{\Huge\sf}
 %\ChRuleWidth{0.2pt} \ChNameUpperCase
 
-\colorlet{chapter}{black!75}
-\addtokomafont{chapter}{\color{chapter}}
 
+%\colorlet{chapter}{black!75}
+%\addtokomafont{chapter}{\color{chapter}}
+%\addtokomafont{chapter}{\color{chapter}} 
+%\makeatletter% siehe De-TeX-FAQ 
+%\renewcommand*{\chapterformat}{% 
+%  \begingroup% damit \unitlength-Ãnderung lokal bleibt 
+%    \setlength{\unitlength}{1mm}% 
+%    \begin{picture}(20,40)(0,5) 
+%      \setlength{\fboxsep}{0pt} 
+%      %\put(0,0){\framebox(20,40){}}% 
+%      %\put(0,20){\makebox(20,20){\rule{20\unitlength}{20\unitlength}}}% 
+%      \put(20,15){\line(1,0){\dimexpr 
+%          \textwidth-20\unitlength\relax\@gobble}}% 
+%      \put(0,0){\makebox(20,20)[r]{% 
+%          \fontsize{28\unitlength}{28\unitlength}\selectfont\thechapter 
+%          \kern-.04em% Ziffer in der Zeichenzelle nach rechts schieben 
+%        }}% 
+%      \put(20,15){\makebox(\dimexpr 
+%          \textwidth-20\unitlength\relax\@gobble,\ht\strutbox\@gobble)[l]{% 
+%            \ \normalsize\color{black}\chapapp~\thechapter\autodot 
+%          }}% 
+%    \end{picture} % <-- Leerzeichen ist hier beabsichtigt! 
+%  \endgroup 
+%} 
+%\makeatother% siehe \makeatletter 
 
-\addtokomafont{chapter}{\color{chapter}} 
-\makeatletter% siehe De-TeX-FAQ 
-\renewcommand*{\chapterformat}{% 
-  \begingroup% damit \unitlength-Ãnderung lokal bleibt 
-    \setlength{\unitlength}{1mm}% 
-    \begin{picture}(20,40)(0,5) 
-      \setlength{\fboxsep}{0pt} 
-      %\put(0,0){\framebox(20,40){}}% 
-      %\put(0,20){\makebox(20,20){\rule{20\unitlength}{20\unitlength}}}% 
-      \put(20,15){\line(1,0){\dimexpr 
-          \textwidth-20\unitlength\relax\@gobble}}% 
-      \put(0,0){\makebox(20,20)[r]{% 
-          \fontsize{28\unitlength}{28\unitlength}\selectfont\thechapter 
-          \kern-.04em% Ziffer in der Zeichenzelle nach rechts schieben 
-        }}% 
-      \put(20,15){\makebox(\dimexpr 
-          \textwidth-20\unitlength\relax\@gobble,\ht\strutbox\@gobble)[l]{% 
-            \ \normalsize\color{black}\chapapp~\thechapter\autodot 
-          }}% 
-    \end{picture} % <-- Leerzeichen ist hier beabsichtigt! 
-  \endgroup 
-} 
-
-\makeatother% siehe \makeatletter 
 % page header & footer
 \usepackage{fancyhdr}
 

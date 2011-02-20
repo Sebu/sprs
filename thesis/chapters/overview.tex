@@ -10,14 +10,17 @@ number of combined terms or a series of many terms where the majority of
 coefficients is close to zero. Consider $x$ a signal that is represent by a
 function $f(x)$ that approximates the signal in a sparse way.
 \begin{equation*}
-x \approx f\left(x\right)
+x \sim \tilde{x} = f\left(x\right)
 \end{equation*}
 
 Simplification of signals in signal processing.
-\begin{gather*}
-x \approx b_{1} + b_{12} + b_{312}\\
- \text{v.s.}\\ x \approx 3b_{1} + 0.001b_{2} ... + 2b_{12} + 0.021b_{13} .. + 10b_{312}
-\end{gather*}
+\begin{equation*}
+\begin{split}
+\tilde{x} & = b_{1}(x) + b_{12}(x) + b_{312}(x)\\
+& = c_{1}b_{1}(x) + 0.001b_{2}(x) ... + 2b_{12}(x) + 0.021b_{13}(x) .. +
+10b_{312}(x)
+\end{split}
+\end{equation*}
 
 
 
@@ -64,7 +67,7 @@ different frequencies, known as frequency components, and gives us the amplitude
 of each frequency component in the signal. The waves are of the form:
 
 \begin{align*}
- F\left(v\right) = \int_{-\infty}^{\infty} \! f(t)e^{-i2\pi vt} \,
+ \mathcal{F}\left(v\right) = \int_{-\infty}^{\infty} \! f(t)e^{-i2\pi vt} \,
 \mathrm{d}t
 \end{align*}
 
@@ -106,7 +109,9 @@ Stay in the frequency domain
 Two of the major players in discrete 
 
 \paragraph{Discrete cosine transformation}
-Is special case of the discrete Fourier transform ( real part )
+Is special case of the discrete Fourier transform ( ony real part ).
+The idea is to make $f$ an odd function $f(x) = f(-x) $ which leads to the
+imaginary part becoming 0.
 \begin{align*}
 X_k = \sum_{n=0}^{N-1}x_n\cos \left[ \frac{\pi}{N} \left(
 n+\frac{1}{2}\right) k\right]
@@ -117,8 +122,10 @@ In image compression this basis is primary used in the JPEG compression.
 
 
 \paragraph{Discrete wavelet transformation}
-%\begin{align*}
-%\end{align*}
+
+Property of the basis functions
+$\int_{-\infty}^{\infty} \! f(t) \, \mathrm{d}t = 0$
+
 \Todo{}
 Other than the Fourier transform the wavelets transforms capture both frequency
 and location information.

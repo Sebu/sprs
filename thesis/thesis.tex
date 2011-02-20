@@ -1,4 +1,6 @@
-\documentclass[fontsize=12pt,pagesize=pdftex,a4paper,appendixprefix,bibtotoc]{scrbook}
+%\documentclass[fontsize=12pt,a4paper,appendixprefix] {scrbook}
+\documentclass[a4paper,12pt,oneside]{book}
+
 
 \input{header}
 
@@ -12,7 +14,6 @@
 \include{chapters/absichtserklaerung}
 \include{chapters/abstract}
 \include{chapters/acknowledgements}
-
 
 \tableofcontents
 
@@ -37,6 +38,8 @@
 \backmatter
 % bibtex
 % \addcontentsline{toc}{chapter}{Bibliography}
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{alpha}
 \bibliography{bibtex/sparse_coding}
 % \nocite{*}

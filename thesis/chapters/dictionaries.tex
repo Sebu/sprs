@@ -8,14 +8,20 @@ Set of orthonormal signal vectors.
 First presented in \ref{sec:history}
 
 \paragraph{cosine}
-\begin{figure}
-%\centering
-\includegraphics[width = 0.33\textwidth]{images/dct.png}
-\caption{dct from wiki jpeg}
-\label{fig:dct}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.33\textwidth]{images/checkerboard.png}
+\caption{checkerboard}
+\label{fig:checkerboard}
 \end{figure}
 
 \paragraph{wavelets}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.33\textwidth]{images/wavelet.png}
+\caption{wavelets}
+\label{fig:wavelets}
+\end{figure}
 \paragraph{curvelets/contourlets/bandelets}
 
 
@@ -32,7 +38,9 @@ some class of tasks T and performance measure P, if its performance at tasks in
 T, as measured by P, improves with experience E''
 
 
-\paragraph{principal component analysis (PCA)}
+\paragraph{Vector quantization}
+
+\paragraph{Principal component analysis (PCA)}
 
 
 \paragraph{redundancy}
@@ -56,19 +64,41 @@ the dictionary itself.
 
 %\subsubsection{k-svd}
 \section{Learning}
+\cite{Olshausen1997,Lewicki2000,Aharon2006}
 In the last decade several learning algorithms have been proposed. The basic
 concept of following algorithms for learning redundant dictionaries is to alter
 a initial start dictionary in this way that it can sparsely reconstruct a set of
 training data with minimal error. 
 
+\begin{align} 
+D = \argmax_{D} \sum_{i=0}^n \max_{x_i} P(x,D)
+\end{align}
+L loss function, E error function
+\begin{align} 
+D = \argmin_{D} \sum_{i=0}^n L(x_i,D)
+\end{align}
+
+\begin{align} 
+\argmin_{D,\alpha} \sum_{i}
+\lVert x_i - D\alpha_i \rVert^{2}_{2}  +  \lambda \lVert \alpha_i
+\rVert_{0,1,2}
+\end{align}
+
+
 \subsection{Batch}
+\paragraph{Method of optimal directions (MOD)}
 MOD\cite{Engan1999a}
-Generalized PCA\cite{?}
-ILS-DLA\cite{?}
-K-SVD\cite{Aharon2006}
+\paragraph{Generalized PCA}
+\cite{?}
+\paragraph{ILS-DLA}
+\cite{?}
+
 
 \subsubsection{K-SVD}
 \label{sec:k-svd}
+
+K-SVD\cite{Aharon2006}
+
 \begin{algorithm}
 \caption{K-SVD}
 \begin{algorithmic}[1]
@@ -83,7 +113,7 @@ K-SVD\cite{Aharon2006}
 \STATE $E \gets X_I - DA_I$
 \STATE $bla$
 \STATE $D_i \gets d$
-\STATE $A_{i,I} \gets g^t$
+\STATE $A_{i,I} \gets g^T$
 \ENDFOR 
 \ENDFOR
 \RETURN $D$
@@ -122,9 +152,16 @@ The algorithm presented by Mairal et al.\cite{Mairal2010} is ...
 \STATE $A_t \gets A_{t-1} + \alpha_t\alpha_t^T$
 \STATE $B_t \gets B_{t-1} + x_t\alpha_t^T$
 \STATE Compute $D_t$ using \prettyref{alg:update}, with $D_{t-1}$ as warm restart 
-\begin{align} 
-D_t \equiv \argmin_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t \left( \lVert x_i - D\alpha_i \rVert^{2}_{2}  +  \lambda \lVert \alpha_i \rVert_{1} \right) \label{eq:update}
-\end{align}
+\begin{equation}
+\begin{split}
+D_t  & \equiv \argmin_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t
+\left( \frac{1}{2} \lVert x_i - D\alpha_i \rVert^{2}_{2}  +  \lambda \lVert
+\alpha_i \rVert_{1} \right) \\
+& = \argmin_{D \in \mathbb{R}^{m x k}}  \frac{1}{t} \sum_{i=1}^t
+\left( \frac{1}{2} Tr(D^TDA_t) - Tr(D^TB_t)\right) \label{eq:update}
+\end{split}
+\end{equation}
+ 
 \ENDFOR
 \RETURN $D_T$
 \end{algorithmic}
@@ -171,20 +208,28 @@ twitpic, imgurl, picasa.
 %Current research is primary concentrating on other tasks. 
 %Like ... related work :)
 %\begin{description}
-%\paragraph{texture synthesis}
+
+\paragraph{Texture synthesis}\cite{Pyre2006}
 
 \paragraph{Vector quantization}
 
-\paragraph{epitomes}
-Factoring repeated content\cite{factor_image}
+\paragraph{Epitomes} In 2008 Wang et al.\cite{Wang2008a} presented
+an approach that factors repeated content in images. The algorihm generates 
+a map of affine transformations and an epitome atlas map with ... . The
+technique is used for real-time synthesis of textures with low memory
+consumption and  fast reconstruction in hardware via pixel shaders. They also
+presented some experiments for unified epitomes for collection of images and
+possible application for larger sets of images. 
+%The algorithm so caled eptimes
+%Factoring repeated content\cite{factor_image}
 
-\paragraph{training with a neural network}
+\paragraph{Training with a neural network}
 Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
 
-\paragraph{compression of facial images}
+\paragraph{Compression of facial images}
 In 2008 Bryt and Elad \cite{Bryt2008} 
 
-\paragraph{multi-scale}
+\paragraph{Multi-scale dictionaries}
 Rather than encoding uniform segments of a bigger signal this technique
 encodes different sized blocks (multiple times of the default block size). The
 idea is that aligned smooth regions with low variance can be can be combined an
@@ -192,7 +237,7 @@ encoded as one signal rather than e.g. 4. \cite{saprioSlides}\cite{Mairal2007}
 
 \Todo{picture with different scales}
 
-\paragraph{multi-channel}
+\paragraph{Multi-channel}
 When dealing with multi-channel data (e.g. RGB images) each channel can be coded
 separate or as a concatenation of each signal into a single one. These
 approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add pic}
@@ -201,18 +246,18 @@ Fortunately this problem vanishes with big dictionaries and large training sets.
 the sparse coding that pays attention the correlation of the channels. \Todo{add
 formula from paper}
 
-\paragraph{double sparsity}
+\paragraph{Double sparsity}
 Instead of directly using a collection of trained atoms as dictionary
 elements. This approach uses sparse coding to encode the signals of a bigger
 dictionary with the help of a smaller on.\cite{Rubinstein2009} 
 \Todo{formula $B$ .. basis, $A$ sparse matrix, $D=BA$ ...}
 
-\paragraph{structured sparsity}
+\paragraph{Structured sparsity}
 similar patches should admit similar patterns \cite{Mairal2009} 
 \cite{group sparsity}
 \Todo{picture with ditribution difference}
 
-\paragraph{hierarchy}
+\paragraph{Hierarchy}
 Adding hierarchy to dictionaries can lead to faster coding of signals and
 capture additional information about the learned dictionaries. like in the use
 for structure analysis of text documents. Examples for this approach can be
