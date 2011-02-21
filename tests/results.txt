@@ -1,5 +1,10 @@
 
-test1
-desc: 
-dict names:
-data file:
+
+{
+  test1 : {
+    desc:  
+    params: --dict ../../output/dicts/test1.dict --input ~/Bilder/misc/4.2.04.tiff --train ../../input/imagedb_100.txt --coeffs 2  --samples 4000  --dictSize 1000  --blockSize 8 --winSize 8  --channels 1 --mode 1
+    dict_name: ../../output/dicts/test1.dict
+    data_file:
+  }
+}

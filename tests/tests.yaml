@@ -1,0 +1,35 @@
+
+
+default: 
+  desc: "stuff" 
+  jobs: [../../input/imagedb_100.txt]
+  clients: [c12]
+  params: "--coeffs 2  --samples 4000  --dictSize 1000  --blockSize 8 --winSize 8  --channels 1 --mode 1"
+  dict_name: ../../output/dicts/test1.dict
+
+dictSizeConverg: 
+  desc: convergence of dict size
+  jobs: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+  mode: dictSize
+  clients: ../input/all.clients
+  params: --coeffs 1  --samples 10000  --blockSize 8  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
+
+
+coeffsConverg: 
+  desc: convergence of dict coefficients
+  jobs: [2, 4, 6, 8, 10, 12, 14, 16]
+  mode: coeffs
+  clients: ../input/all.clients
+  params: --samples 10000  --dictSize 1000 --blockSize 8  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
+
+blockSizeConverg: 
+  desc: convergence of dict coefficients
+  jobs: [4, 8, 12, 16, 20]
+  mode: blockSize
+  clients: ../input/all.clients
+  params:  -coeffs 10 --samples 10000  --dictSize 1000  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
+
+lenaCompress:
+pepperCompress:  
+mandrillCompress: 
+
