@@ -32,7 +32,7 @@ puts test_name
 p test
 jobs.zip(clients).each_with_index do |(job, client), index|
   dict = test["dict_name"] || "../../output/dicts/#{test_name}_#{index}.dict"
-  client_cmd = "ssh #{client} -f --  ~/git/diplom/scripts/sprs_client.rb  --#{mode} #{job} --dict #{dict} #{other_args}" if (cmd=="start")
+  client_cmd = "ssh #{client} -f --  ~/git/diplom/scripts/sprs_client.rb  --#{mode} #{job} --dict #{dict} #{other_args} > ../output/dicts/#{test_name}_#{mode}_#{index}.log" if (cmd=="start")
   client_cmd = "ssh #{client} -f -- killall sparsecli" if (cmd=="stop")
   client_cmd = "ssh #{client} -f -- killall -9 sparsecli" if (cmd=="kill")
   puts "submitting job #{job} to #{client} .. #{client_cmd}"

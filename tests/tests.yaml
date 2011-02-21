@@ -11,23 +11,23 @@ dictSizeConverg:
   desc: convergence of dict size
   jobs: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
   mode: dictSize
-  clients: ../input/all.clients
-  params: --coeffs 1  --samples 10000  --blockSize 8  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
+  clients: [c121, c122, c123, c124, c125, c126, c127, c128, c131, c132]
+  params: --coeffs 1  --samples 4000  --blockSize 8  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
 
 
 coeffsConverg: 
   desc: convergence of dict coefficients
   jobs: [2, 4, 6, 8, 10, 12, 14, 16]
+  clients: ['c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c32']
   mode: coeffs
-  clients: ../input/all.clients
-  params: --samples 10000  --dictSize 1000 --blockSize 8  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
+  params: --samples 2000  --dictSize 512  --blockSize 8  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
 
 blockSizeConverg: 
-  desc: convergence of dict coefficients
+  desc: convergence of block sizes
   jobs: [4, 8, 12, 16, 20]
   mode: blockSize
-  clients: ../input/all.clients
-  params:  -coeffs 10 --samples 10000  --dictSize 1000  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
+  clients: ['c33', 'c34', 'c35', 'c36', 'c37']
+  params:  -coeffs 8 --samples 2000  --dictSize 1000  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/1.list
 
 lenaCompress:
 pepperCompress:  
