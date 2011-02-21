@@ -73,7 +73,7 @@ void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
 void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int batch) {
 
 
-    std::cout << "train..." << std::endl;
+//    std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
         A_ = new MatrixXd(D.getElementCount(), D.getElementCount());
         B_ = new MatrixXd(D.getSignalSize(), D.getElementCount());
@@ -81,9 +81,9 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         A_->setZero();
         B_->setZero();
         //        std::cout << (*A_) << std::endl;
-        std::cout << "init A &  B "<< std::endl;
+//        std::cout << "init A &  B "<< std::endl;
     }
-    std::cout << "train start" << std::endl;
+//    std::cout << "train start" << std::endl;
 
     int maximum = samples.cols_;
 
@@ -98,7 +98,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         int start = t;
         int end = std::min(t+batch,samples.cols_);
         if (start>=end) break;
-        std::cout << "samples: " <<  end << std::endl;
+//        std::cout << "samples: " <<  end << std::endl;
 
         // sparse code sample
         MatrixXd samplesChunk = samples.getData().block(0,start,D.getSignalSize(),end-start);
@@ -119,7 +119,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         Eigen::SparseMatrix<double> a = coder->encode(samplesChunk, D);
         D.meta_->samples_+=samplesChunk.cols();
-        std::cout << "| a*a.t() ";// << std::endl;
+//        std::cout << "| a*a.t() ";// << std::endl;
 
 //        MatrixXd aa = MatrixXd::Zero(a.rows(),a.cols());
 
@@ -140,7 +140,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         double beta = 1.0; //(1.0-1.0/realT);
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
-        std::cout << "| (*A_) += tmp ";// << std::endl;
+//        std::cout << "| (*A_) += tmp ";// << std::endl;
 
         for (int k=0; k<tmp.outerSize(); ++k)
             for (Eigen::SparseMatrix<double>::InnerIterator it(tmp,k); it; ++it) {
@@ -156,11 +156,11 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         (*B_) = beta*(*B_) + samplesChunk*a.transpose();
         // update step (algo. 2)
-        std::cout << "| update((*A_), (*B_), D);" << std::endl;
+//        std::cout << "| update((*A_), (*B_), D);" << std::endl;
 
         MatrixXd Dold = D.getData();
         update((*A_), (*B_), D);
-        std::cout<< "error: " << mse(Dold,D.getData()) << std::endl;
+        std::cout<< D.meta_->samples_ << " : " << mse(Dold,D.getData()) << std::endl;
         std::ostringstream o;
         o << "../../output/tmp/dict_tmp" << t << ".png";
 //        o << "../../output/tmp/dict_tmp.png";

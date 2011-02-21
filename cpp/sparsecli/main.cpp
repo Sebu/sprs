@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
 
 //            if(!resume && counter==1){ center(samples.getData()); dict.initFromData(samples); dict.debugSaveImage( (dictFile + ".png").c_str() );}
 
-            std::cout << "train set fill complete " << std::endl;
+//            std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             trainer.train(samples, dict,  0, sampleCount);
             ifs >> nameStr;

@@ -62,7 +62,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
         stop = -this->coeffs;
 
 
-    std::cout << "precalc done " << stop << std::endl;
+//    std::cout << "precalc done " << stop << std::endl;
 
 #pragma omp parallel for
     for (int signum=0; signum<L; ++signum) {
@@ -118,7 +118,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
                 if(absV(i)>C-1e-6) jvec.push_back(I[i]);
 
             if (!lassocond) { // if a variable has been dropped, do one iteration with this configuration (don't add new one right away)
-                if(jvec.size()>1)  std::cout << "add " << jvec.size() << std::endl;
+//                if(jvec.size()>1)  std::cout << "add " << jvec.size() << std::endl;
                 for(int i=0; i<jvec.size(); i++)
                 {
                     A[signum].push_back(jvec[i]);
@@ -256,7 +256,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
         } // while
     }
-    std::cout << "sparse code done" << std::endl;
+//    std::cout << "sparse code done" << std::endl;
 
     Eigen::SparseMatrix<double> Gamma(X.cols(),L);
     Gamma.startFill();
@@ -267,7 +267,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
     }
     Gamma.endFill();
 
-    std::cout << "copy done" << std::endl;
+//    std::cout << "copy done" << std::endl;
 
     //    if (k == maxk)
     //      std::cout << "LARS warning: Forced exit. Maximum number of iteration reached." << std::endl;

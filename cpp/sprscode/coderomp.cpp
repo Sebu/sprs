@@ -38,7 +38,7 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
         G = D.getData().transpose()*D.getData();
     }
 
-    std::cout << "precalc done" << std::endl;
+//    std::cout << "precalc done" << std::endl;
 
     Eigen::SparseMatrix<double> GammaVector[L];
 
