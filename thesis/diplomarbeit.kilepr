@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0.85
-lastDocument=chapters/sparse_coding.tex
+lastDocument=chapters/conclusion.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -81,7 +81,7 @@ Mode=LaTeX
 ReadWrite=true
 
 [document-settings,item:chapters/sparse_coding.tex]
-Bookmarks=70
+Bookmarks=86
 Encoding=UTF-8
 Highlighting=LaTeX
 Indentation Mode=
@@ -162,70 +162,70 @@ order=-1
 
 [item:chapters/conclusion.tex]
 archive=true
-column=37
+column=20
 encoding=UTF-8
 highlight=LaTeX
 line=61
 mode=LaTeX
-open=false
-order=4
+open=true
+order=6
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=48
+column=28
 encoding=UTF-8
 highlight=LaTeX
-line=221
+line=267
 mode=LaTeX
 open=true
 order=2
 
 [item:chapters/introduction.tex]
 archive=true
-column=33
+column=10
 encoding=UTF-8
 highlight=LaTeX
-line=3
+line=35
 mode=LaTeX
 open=true
-order=5
+order=4
 
 [item:chapters/method.tex]
 archive=true
-column=17
+column=62
 encoding=UTF-8
 highlight=LaTeX
-line=104
+line=342
 mode=LaTeX
 open=true
 order=0
 
 [item:chapters/overview.tex]
 archive=true
-column=14
+column=63
 encoding=UTF-8
 highlight=LaTeX
-line=22
+line=208
 mode=LaTeX
 open=true
 order=3
 
 [item:chapters/results.tex]
 archive=true
-column=17
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=94
+line=75
 mode=LaTeX
 open=true
-order=4
+order=5
 
 [item:chapters/sparse_coding.tex]
 archive=true
-column=24
+column=50
 encoding=UTF-8
 highlight=LaTeX
-line=155
+line=374
 mode=LaTeX
 open=true
 order=1
@@ -262,12 +262,12 @@ order=5
 
 [item:thesis.tex]
 archive=true
-column=0
+column=31
 encoding=UTF-8
 highlight=LaTeX
 line=1
 mode=LaTeX
-open=true
+open=false
 order=6
 
 [item:todo.txt]
@@ -289,32 +289,32 @@ CursorColumn=0
 CursorLine=0
 
 [view-settings,view=0,item:chapters/conclusion.tex]
-CursorColumn=37
+CursorColumn=20
 CursorLine=61
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=48
-CursorLine=221
+CursorColumn=28
+CursorLine=267
 
 [view-settings,view=0,item:chapters/introduction.tex]
-CursorColumn=33
-CursorLine=3
+CursorColumn=10
+CursorLine=35
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=17
-CursorLine=104
+CursorColumn=62
+CursorLine=342
 
 [view-settings,view=0,item:chapters/overview.tex]
-CursorColumn=14
-CursorLine=22
+CursorColumn=63
+CursorLine=208
 
 [view-settings,view=0,item:chapters/results.tex]
-CursorColumn=17
-CursorLine=94
+CursorColumn=0
+CursorLine=75
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
-CursorColumn=24
-CursorLine=155
+CursorColumn=50
+CursorLine=374
 
 [view-settings,view=0,item:chapters/title.tex]
 CursorColumn=0
@@ -325,7 +325,7 @@ CursorColumn=0
 CursorLine=76
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=0
+CursorColumn=31
 CursorLine=1
 
 [view-settings,view=0,item:todo.txt]

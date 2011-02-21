@@ -20,13 +20,22 @@ linear combination of a few non orthonormal atoms from $D$ that is close to the
 signal $X$. The problem is not well-posed because there is more than one
 solution. 
 
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.20\textwidth]{images/sparse.pdf}
+\caption{over-complete and sparse}
+\label{fig:sparse}
+\end{figure}
+
+
 %Sparse coding is the 
 \begin{align}
-x = D\alpha \notag\\
+x \sim \tilde{x} = D\alpha \notag\\
 x = D\alpha+\epsilon \notag\\
 \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary atoms}}
 \underbrace{\begin{pmatrix} \alpha_1 \\ 0 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{sparse vector}}
 \end{align}
+
 
 The solution to this problem is a least-squares solve of an under-determined
 linear system. 
@@ -34,10 +43,10 @@ linear system.
 \min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha \rVert^{2}_{2}}_{reconstruction} \label{eq:problem}
 \end{align}
 But instead off all solutions we want to find the sparsest solution. 
-To archive this it is nessary to keep the coefficient vector $\alpha$ sparse.
+To archive this it is necessary to keep the coefficient vector $\alpha$ sparse.
 %Describe error and regularize sparsity
 \paragraph{Notation}
-alpha,X,x,D,d,L,epsilon error, L,lamba , A,Isets
+alpha,X,x,D,d,L,epsilon error, L,lambda , A,I sets
 
 \section{Regularization}
 To find the sparsest solution sparse coding adds a regularization to the
@@ -68,13 +77,20 @@ be demonstrated that the $\ell_1$-norm is equivalent to the $\ell_0$-norm in
 the effect of inducing sparsity.
 \Todo{image/description of different regularizations}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.44\textwidth]{images/regularization.pdf}
+\caption{sparse solution is approaching ordinary-least-squares solution}
+\label{fig:sparse}
+\end{figure}
+
 
 In the last 15 years several sparse coding algorithms have been proposed. Some
 that solve the initial $\ell_0$ regularized problem greedily, like
 the (orthogonal)-matching-pursuit, and others which modified the problem to
 become convex/linear. These primary derive from the numerical domain in the form
 of large linear system solvers with few optimization constraints. The most
-... are Basis-pursuit, LARS-Lasso, Ridge regressio and FOCUSS.
+... are Basis-pursuit, LARS-Lasso, Ridge regression and FOCUSS.
 
 
 %copy
@@ -108,12 +124,13 @@ respectivly
 \subsection{Matching-Pursuit}
 \label{sec:mp}
 
-The \prettyref{alg:mp} starts with the coefficent vector $\alpha$ set to
+The \prettyref{alg:mp} starts with the coefficient vector $\alpha$ set to
 zero. Then find the atom in the dictionary with the best reduction of the
 error. This is done by selecting the coefficient that has the maximum
 correlation with the residual. Repeat this step $L$ times or until the error
-$\lVert x - D\alpha \rVert^{2}_{2}$ for the curernt $\alpha$ reaches $\lVert x -
-D\alpha \rVert^{2}_{2} \leq \epsilon$ respectifly the residual fullfills $\lVert
+$\lVert x - D\alpha \rVert^{2}_{2}$ for the current $\alpha$ reaches $\lVert x -
+D\alpha \rVert^{2}_{2} \leq \epsilon$ respectively the residual fulfills
+$\lVert
 r \rVert_2 \leq \epsilon$.
 
 
@@ -148,14 +165,15 @@ a[i]  \gets a[i] + \left<d_i,r\right> \label{eq:mp_update}
 
 The Orthogonal-Matching-Pursuit\ref{alg:omp}, an improved version of
 the Matching-Pursuit \ref{sec:mp}, was presented by Pati et al.
-in 1993\cite{Pati1993}. Rather than just updating the coefficent of $\alpha$
+in 1993\cite{Pati1993}. Rather than just updating the coefficient of $\alpha$
 that is currently selected (\ref{eq:mp_update}) the algorithm re-evaluates
 all coefficent in the current active set $A$ 
 $\alpha_A$ by solving a full least-squares solution in every iteration
 (\ref{eq:omp_update}). This improves the quality of the
 solution.\cite{Pati1994} The Orthogonal-Matching-Pursuit gets its name from
 the fact that the residual $r$ is orthogonal to the previously selected atoms in
-$D$. The orhogonality leads to the effect that every coefficent is only selected
+$D$. The orthogonality leads to the effect that every coefficient is only
+selected
 once.
 
 
@@ -191,10 +209,10 @@ a_A \gets \left( D_A^T D_A \right)^{-1} D_A^T x  \label{eq:omp_update}
 
 %\subsection*{Limitations}
 
-All these gready approaches tend to find suitable solutions but because of the
-non-convex problem they can get stuck in local minimas. As shown before an
-$\ell_1$ regularization version of \ref{eq:problem} also keeps the coefficent
-vector $\alpha$ sparse but elimantes the problem of a local minima. The next
+All these greedy approaches tend to find suitable solutions but because of the
+non-convex problem they can get stuck in local minima. As shown before an
+$\ell_1$ regularization version of \ref{eq:problem} also keeps the coefficient
+vector $\alpha$ sparse but eliminates the problem of a local minima. The next
 section presents algorithms which solve  a $\ell_1$ regularization version of
 \ref{eq:problem}.
 
@@ -232,11 +250,12 @@ into LAR and LARS-lasso, better illustrate than use complex formulas}
 \label{sec:lars}
 The LARS-Lasso is a algorithm to solve the LASSO with the help of least
 angle regression. as described in \cite{Efron2004}. It is a modified version of
-the LAR where variables get removed from the active set when their coefficent
+the LAR where variables get removed from the active set when their coefficient
 become zero.
 
 \paragraph{Least angle regression}
-The main idea of the least angle regression is to start with all coefficent zero
+The main idea of the least angle regression is to start with all coefficient
+zero
 $\alpha = 0$. Find the variable $x_i$ with the maximum correlation with the
 residual $r$ and then move linear into the direction of the ordinary least
 squares solution until a new variable has a higher correlation with the
@@ -329,24 +348,28 @@ Wx \approx WD\alpha\text{select subset}\\
 
 \cite{mairal08sparse}
 
-\paragraph{Compression} \cite{Murray2006} \cite{Lewicki1999} An example for this
-is the compression of facial images by Bryt and Elad \cite{Bryt2008}.
+\paragraph{Compression} \cite{Lewicki1999,Murray2006}  
+Another example of a more specific compression task is the
+work on facial image compression by Bryt and Elad \cite{Bryt2008}.
 
 %Task driven dictionaries
-\paragraph{Classification} Examples for this can be found in
+\paragraph{Classification} \cite{?} validation of fake paintings. 
+\cite{?} classification of object by learning  individual dictionaries for each
+object group. Additional examples for sparse coding  being used for
+classification tasks can be found in
 \cite{Raina2007,BradleyBagnel2009,Mairal2008,Mairal2008b,Bar2009,Yang2009}.
 
-\paragraph{Inverse half-toning} Halftoning, as used in printing ,is a process
-where binary raster simulates continouse tone images. Small dots of different
-size and shape create the optical illusion of continouse tones. In 2010 research
+\paragraph{Inverse half-toning} Half-toning, as used in printing ,is a process
+where binary raster simulates continuous tone images. Small dots of different
+size and shape create the optical illusion of continuous tones. In 2010 research
 by Mairal et al.\cite{Mairal2010b} presented 
 
-\paragraph{Super resolution} \cite{Yang2010} \cite{Wright2008}  
+\paragraph{Super resolution} \cite{Wright2008,Yang2010}  
 Or the ongoing work by Couzinie-Devy et al., 2010 called digital zooming.
 
-\paragraph{Background subtraction} \cite{}
+\paragraph{Background subtraction}\cite{}
 
-\paragraph{Sense spase signals}\cite{Duarte2009}
+\paragraph{Sense sparse signals}\cite{Duarte2009}
 %\item[noise reduction]
 %\item[in-painting]
 %\item[classification] \Todo{usage:classification}

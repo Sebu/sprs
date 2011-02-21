@@ -53,12 +53,12 @@ quantized coefficient. Additional zero coefficients from the quantization step
 are removed.
 
 \paragraph{Test data}
-In addition to the metrics it is common practice to use some image sets to
-compare test results of the different algorithms and parameter configurations.
-For comparison of the reconstruction quality and compression quality we use a
-well known set of images from the USC-SIPI Image Database often used in image
-processing for evaulation of algorithms. Including pictures such as Lena,
-Mandril and Peppers.
+In addition to the introduced metrics it is common practice to use some image
+sets to compare test results of the different algorithms and parameter
+configurations. For comparison of the reconstruction quality and compression
+quality we use a well known set of images from the USC-SIPI Image Database often
+used in image processing for evaluation of algorithms. Including pictures such
+as Lena, Mandrill and Peppers.
 
 \section{Signal representation}
 \label{sec:signal_representation}
@@ -147,6 +147,12 @@ also applied in the LARS-Lasso algorithm. Reduction the complexity. %to:
 
 The complete regularization path based on\cite{Efron2004}
 
+\subsection{Observations}
+Difference in the selection strategy.
+Very noisy vs. smooth. 
+How this different selection strategies affect the learning step will be
+presented in the next section.
+
 
 \section{Training step}
 Keeping the training sparse vectors too sparse can lead to dictionaries with
@@ -154,9 +160,9 @@ only low frequency elements. Using LARS-Lasso for training generates a good
 dictionary for LARS and OMP. Training with OMP leads to a dictionary more with a
 lot of noise that leads better coding results when using OMP 
 % is LARS better?
-As described in\ref{sec:signal_representation} the learning process is not
-limited to grayscale oder RGB image signals. The presented algorithm can be
-applied to diffrent kinds of signals. Such as images in other color
+As described in section \ref{sec:signal_representation} the learning process is
+not limited to gray-scale oder RGB image signals. The presented algorithm can be
+applied to different kinds of signals. Such as images in other color
 spaces, low/high pass filtered sub-images or signals from another domain like
 audio or text. 
 %Some of them are used in our compressions experiments.
@@ -179,6 +185,20 @@ There are two common ways to initialize the dictionary using random data or
 selecting random elements from the training data. Both ways will be tested and 
 the quality will be compared.
 
+
+
+
+\subsection{Convegence}
+
+Dictionary size 
+
+As it turns out the OMP, to its greedy nature, has a very aggressive selection
+scheme. This very random/noisy selection strategy is very impractical
+for the \trainDL learning step. But nevertheless the OMP is still good for
+sparse coding. 
+
+When applying the tuning parameter it gets even worse. 
+
 \subsection{Clustering}
 
 The cluster merge of results -> 
@@ -192,7 +212,8 @@ it is a map/reduce approach.
 
 \section{Training sets}
 %\subsection{Learning specific dictionaries}
-As mentioned earlier\ref{sec:learnForTheTask} one of key elements 
+As mentioned earlier in section \ref{sec:learnForTheTask} one of the key
+elements 
 of the learning algorithms is the learning of specialization dictionaries.
 Task specific training data is a common way to solve the problem of finding 
 the right dictionary. Here learning for the task comes into
@@ -202,7 +223,7 @@ gets bigger it sounds logical to increase the size of training data and take a
 bigger variety of signals to learn from.  We have a closer look at differences
 of learned elements from specific sets of images. These sets include sketches,
 still images of animations from Disney and post-impressionistic images from
-Vicent van Gogh. 
+Vincent van Gogh. 
 Are big image collections specific enough to benefit from 
 
 
@@ -242,14 +263,14 @@ into a brightness/luminance (Y) and two color/chroma components (Cb
 and Cr). The visual more relevant brightness/luminance channel will be coded
 in the full resolution while the color/chroma components can be sub-samples
 with only minor loss in perceptual quality. This procedure is called
-\emph{chroma subsampling} and is one key element to of preserving perceptual
+\emph{chroma sub-sampling} and is one key element to of preserving perceptual
 quality in lossy image compression while.
 %color space, high/low pass filtering
 
 \paragraph{Signal coding}
-The actual coding step of the prepared signas is a simple application of one
+The actual coding step of the prepared signals is a simple application of one
 of the sparse coding algorithms presented in\ref{chap:sparse_coding}.
-But before we can actualy code signals we need a good dictionary.
+But before we can actually code signals we need a good dictionary.
 We learn dictionaries from our training sets 
 block sizes
 Number of coefficients
@@ -286,12 +307,12 @@ world compression data.
 \paragraph{Run-length encoding (RLE)}
 \paragraph{Huffman coding}
 \paragraph{Arithmetic coding} is ...
-While arithmetic coding often yields better compression results than huffman
+While arithmetic coding often yields better compression results than Huffman
 coding. The higher processing requirements for coding and the current patent
 situation makes the algorithm unpopular for coding compared to the archived
 compression benefit.
 
-We apply RLE and huffman to our sparse matrices. 
+We apply RLE and Huffman coding to our sparse matrices. 
 %The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 
 
@@ -313,13 +334,13 @@ data but .
 Computations were made on Apple MacPro with ... \Todo{mac config}
 and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
 config} running Debian 32-bit. Each client in the cluster calculated batches of
-100 till 10,000 images based on the size of the trainig sets.
+100 till 10,000 images based on the size of the training sets.
 
 \subsection*{Software}
 
 \Todo{add diagram}
 Split image into sub images, convert sub image to samples from image blocks, 
-train dict with samples or just code samples - save dict/image
+train dict with samples or just code samples - save dictionary/image
 
 The whole test suit is written in C++ with the help  of OpenCV, Eigen and OpenMP libs.
 

@@ -109,7 +109,7 @@ Stay in the frequency domain
 Two of the major players in discrete 
 
 \paragraph{Discrete cosine transformation}
-Is special case of the discrete Fourier transform ( ony real part ).
+Is special case of the discrete Fourier transform ( only real part ).
 The idea is to make $f$ an odd function $f(x) = f(-x) $ which leads to the
 imaginary part becoming 0.
 \begin{align*}
@@ -135,7 +135,7 @@ For example these basis are used in JPEG 2000 image compression and
 \Todo{move}
 In computer vision such applications would be de-noising, in-paiting,
 compression among others. In 80s the search for better transformation basis
-startet to become a major role in field of signal representation.\cite{}
+started to become a major role in field of signal representation.\cite{}
 
 
 \subsection{Splitting the problem}
@@ -151,7 +151,7 @@ and construction of task specific dictionaries $D$ more flexible \cite{?}. The
 initial problem becomes:
 
 \begin{equation}
- x \approx D\alpha
+ x \sim \tilde{x} = D\alpha
 \end{equation}
 
 
@@ -182,7 +182,7 @@ modifications like usage of different coding algorithms in the training process.
 Also Matlab bears/includes some limitations that make it hard to test the
 algorithms with big dictionaries.
 
-To address these problems we reimplemented all nessacary functions of the
+To address these problems we reimplemented all necessary functions of the
 framework in C++ to experiment with the applicability of sparse coding for
 learning large dictionaries from large image databases. The three major steps of
 the following chapters are:
@@ -199,9 +199,14 @@ learning configurations show convergence?'' ``How many atoms do we need  for a
 'good' sparse representation of large image databases?''  and ``How does this
 affect quality and usability for different application?''. 
 
+\Todo{einbauen/conclusion?}
+Better understanding the selection strategies of the algorithm and their
+meaning for perceptional image quality. And evolution of the structure of
+learned dictionaries. 
+
 All these topics are addressed in several experiments. Experiments with
 small sets specific images like from sketches, still images of animations from
-Disney and art styles like post-impressionistic images from Vicent van Gogh.
+Disney and art styles like post-impressionistic images from Vincent van Gogh.
 Evaluation of the quality and size of learned big redundant dictionaries for
 optimal sparse coding of large image databases. Search for a universal
 dictionary for databases of hundredths of thousands of images. Evaluation of

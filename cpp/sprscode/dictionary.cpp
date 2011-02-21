@@ -191,6 +191,7 @@ void Dictionary::initFromData(Samples& data) {
     srand(time(NULL));
     for(int j=0; j<this->elements_;) {
         int pos  = rand() % data.getData().cols();
+        std::cout << pos << std::endl;
         if(!data.getData().col(pos).isZero(0.001)) {
             (*data_).col(j) = data.getData().col(pos);
             j++;

@@ -5,6 +5,7 @@
 #include <sprscode/coderlasso.h>
 #include <sprscode/coderomp.h>
 #include <sprscode/samples.h>
+#include <sprscode/vigra_ext.h>
 
 
 #include <iostream>
@@ -161,7 +162,7 @@ int main(int argc, char *argv[])
             std::cout << nameStr << " " << counter++ << std::endl;
             samples.loadImage(nameStr, blockSize, channels, winSize);
 
-//            if(!resume && counter==1){ dict.initFromData(samples); std::cout << "size" << dict.getData().rows() << std::endl; dict.debugSaveImage( (dictFile + ".png").c_str() );}
+//            if(!resume && counter==1){ center(samples.getData()); dict.initFromData(samples); dict.debugSaveImage( (dictFile + ".png").c_str() );}
 
             std::cout << "train set fill complete " << std::endl;
             if(!running) break;
