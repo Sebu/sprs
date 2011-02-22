@@ -59,8 +59,9 @@ the least-squares problem.
 The regularization acts a constraint to the structure of $\alpha$. It should be
 choosen in a way which keeps the number of non-zero coefficient of $\alpha$ low.
 This sparsity constraint can be achieved with the help of the $\ell_0$ norm in
-the form of $\lVert\alpha\rVert_{0}$. The $\ell_0$ is a pseudo-norm that
-virtually counts the number of non-zero elements in the vector.
+the form of $\lVert\alpha\rVert_{0} = \#\{i:\alpha_i \neq
+0,i=1,...,p,\alpha\in\mathbb{R}^p\}$. The $\ell_0$ is a pseudo-norm that
+virtually counts the number of non-zero elements in the vector .
 
 But the regularization with the $\ell_0$-norm makes the initial problem
 \ref{eq:problem} NP-hard. To get the ideal solution it is necessary to test
@@ -92,6 +93,7 @@ become convex/linear. These primary derive from the numerical domain in the form
 of large linear system solvers with few optimization constraints. The most
 ... are Basis-pursuit, LARS-Lasso, Ridge regression and FOCUSS.
 
+$\ell_2$ Method Of Frames
 
 %copy
 % Following Tao et al., where it was shown that the L1 norm is equivalent to the L0 norm, 
@@ -111,19 +113,20 @@ of large linear system solvers with few optimization constraints. The most
 \section{$\ell_0$ regularization with greedy algorithms}
 These algorithms calculate a coefficient vector $\alpha$ which is an
 greedy solution of the following NP-hard problem
-
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t. } \lVert \alpha \rVert_{0} \leq L
+\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{0}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
 \end{align}
 respectivly
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{0}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
+\min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t.
+} \lVert \alpha \rVert_{0} \leq L
 \end{align}
 \cite{Mallat1993}
 
 \subsection{Matching-Pursuit}
 \label{sec:mp}
-
+Mallat and Zhang\cite{Mallat1993}
+ofImagesMallatandBergeaud \cite{Mallat1995}
 The \prettyref{alg:mp} starts with the coefficient vector $\alpha$ set to
 zero. Then find the atom in the dictionary with the best reduction of the
 error. This is done by selecting the coefficient that has the maximum
@@ -170,7 +173,7 @@ that is currently selected (\ref{eq:mp_update}) the algorithm re-evaluates
 all coefficent in the current active set $A$ 
 $\alpha_A$ by solving a full least-squares solution in every iteration
 (\ref{eq:omp_update}). This improves the quality of the
-solution.\cite{Pati1994} The Orthogonal-Matching-Pursuit gets its name from
+solution.\cite{Pati1993} The Orthogonal-Matching-Pursuit gets its name from
 the fact that the residual $r$ is orthogonal to the previously selected atoms in
 $D$. The orthogonality leads to the effect that every coefficient is only
 selected
@@ -239,7 +242,7 @@ The lagrange multiplier version of the regularized problem \ref{eq:l1} is:
 
 There are several ways to compute the LASSO. .. ...... 
 
-LARS \cite{lars} basis pursuit\cite{BASIS_PURSUIT}  FOCUSS \cite{FOCUSS}
+LAR\cite{Efron2004} basis pursuit\cite{Chen1995}  FOCUSS\cite{FOCUSS}
 
 We chose the LARS method as it is the fastest in low dimension or for
 high correlation. Both conditions are satisfied in our experiments. \Todo{split

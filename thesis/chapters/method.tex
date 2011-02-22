@@ -2,93 +2,148 @@
 %\thispagestyle{empty}
 
 
-\section{Performance comparison}
+\section{Performance comparison/Terms}
 \Todo{move to results? or at end of method}
 
-Before we can present the results of the experiments it is necessary to
-introduce some metrics to measure their performance.
+Before we can go further and present the methods and results of the experiments
+it is necessary to introduce some additional terms. 
+Such as metrics to measure their performance.
 
 
-\paragraph{Root mean squared error (RMSE)} is error measurement that ...
-
-Comparing the a signal $x$ with a reconstruction $y$ (noisy approximation) of
-it. The root mean squared error is defined as:
+\paragraph{Mean squared error (MSE)} is an error measurement that
+describes the error/noise between an given or measured reference signal $x$
+and  and the reconstruction(noisy approximation) $\tilde{x}$ of it.
+Mathematically it is defined as the average of the squared error between two
+signals.
+%The mean squared error is defined as:
 \begin{align}
- RMSE = \left[\frac{1}{n} \sum_{i=0}^{n}{\lVert x_i - y_i\rVert^{2}}
-\right]^{\frac{1}{2}}
+ MSE = \frac{1}{n} \sum_{i=0}^{n} \left( {\lVert x_i -
+\tilde{x}_i\rVert^{2}}\right)
 \end{align}
-It is primarily used for ...
+We primarily use it for testing dictionary learning convergence and as a
+sub term for the measurement described in the next paragraph.
 
-\paragraph{peak signal-to-noise ration (PSNR)}
-
-\Todo{Normalized version of RMSE}
-
+\paragraph{Peak signal-to-noise ration (PSNR)} describes the ratio between the
+error/noise affecting a signal/reconstruction and the maximum possible signal
+amplitude. It is expressed in a logarithmic decibel scale.
 \begin{align}
- PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{RMSE}\right)
+ PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{\sqrt{MSE}}\right)
 \end{align}
-Where $MAX$ is the maximum possible value of our signal. For an 8-bit image it
-would be 255. For a 32-bit normalized image it would be 1. The PSRN is expressed
-in a logarithmic decibel scale.
+Where $MAX$ is the maximum possible value of our signal. For an 8-bit
+image it would be 255. For a 32-bit normalized image it would be 1. And $MSE$ is
+the mean squared error between a reference signal and its reconstruction. The
+PSNR is undefined for zero noise.
 
-Typical values lossy reconstruction are between 20dB and 50dB.
-
-
+The PSNR is primarily used for comparison of the reconstruction quality of
+lossy compression algorithms. Typical values for a lossy reconstruction lie in
+a range between 30dB and
+50dB.\footnote{\url{http://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio}}
 %e.g. relevant for de-noise
 
 
-\paragraph{Bits per pixel (bpp)}
-For comparison of compression ratio of images a well known practice is to
-measure the bits requires for a single pixel. For example an uncompressed RGB
-color image with 8-bit of color depth requires 24-bits per pixel, respectively
-8-bit for a single channel gray scale image.
+\paragraph{Bits per pixel (bpp)} 
+For the comparison of compression ratio of images another well known practice is
+to measure the required \emph{bits per pixel} short bpp. The bbp are calculated
+by dividing the raw image data by the image's dimensions. For example an
+uncompressed RGB color image with 8-bit of color depth requires 24-bits per
+pixel, respectively a gray scale image with 8-bit for a single channel requires
+8-bits. While compression algorithms are able to encode multiple pixels with few
+coefficient leading to much lower bpp rates.
+Looking at other well known compression algorithms such as JPEG or
+JPEG 2000 a common ratio is about $\sim1.8$ bits-per-pixel for average
+quality compression( JPEG quality of 50) of an natural image. 
+\Todo{example image?, lower bit rates, Lewicki estimate for sparse coding}
 
-Looking at other well known compression algorithms such as JPEG or JPEG 2000
-a common ratio is about ~1.8 bits-per-pixel for average quality
-compression(Q=50) of a natural image. \Todo{example image?}
-
-Besides the actual pixel data there is certain amount of extra data from file
-headers. 
-%The sparse vector for every are encoded in 2 bytes index and a single byte
-quantized coefficient. Additional zero coefficients from the quantization step
-are removed.
+Besides the raw pixel data, images formats usually contain a certain amount
+of extra data from file headers and meta data. Fortunately we can ignore this
+for simplification as it is only a few bytes and not being actual pixel data.
 
 \paragraph{Test data}
 In addition to the introduced metrics it is common practice to use some image
 sets to compare test results of the different algorithms and parameter
 configurations. For comparison of the reconstruction quality and compression
-quality we use a well known set of images from the USC-SIPI Image Database often
-used in image processing for evaluation of algorithms. Including pictures such
-as Lena, Mandrill and Peppers.
+quality we use a well known set of standard test images from the \emph{USC-SIPI
+Image Database}\footnote{\url{http://sipi.usc.edu/database/}}. They are often
+used in image processing for evaluation of compression algorithms. 
+Including pictures such as Lena, Mandrill and Peppers.
+
+
 
 \section{Signal representation}
 \label{sec:signal_representation}
-As we use natural color images and graphics we require to use multi-channel
-data. Common 3-channel from a RGB color space. %The initial signal data 
-We use an approach to transform our initial signal into other color spaces like
-in jpeg encoding to account natural human reception of color data. Experiment
-....
+To be able efficiently sparse code images it is necessary to prepare the
+image data. As we mainly use sets of color images and graphics we require
+to work with multi-channel data. Commonly presented in the three channel RGB
+color space. 
 
+%The initial signal data 
+%We use an approach to transform our initial signal into other color spaces like
+%in JPEG encoding to account natural human reception of color data.
+%Experiment ....
+
+%\paragraph{Color space conversion}
+\paragraph{Chroma sub-sampling} is used to reduce the amount of data required by
+color information while preserving perceptual image quality. 
+The human eye is good at sensing small difference in brightness but lacks the
+ability exactly differentiate small changes in color. Chroma sub-sampling takes
+advantage of this human flaw. First the image gets converted into the $YC_bC_r$
+color space, which describes an image in a brightness/luminance (Y) and two
+color/chroma components (Cb and Cr). Then the visual more relevant
+brightness/luminance channel will be coded in the full resolution while the
+color/chroma components can be sub-sampled with only minor loss in perceptual
+quality. This procedure, illustrated in fig. \ref{fig:YCbCr}, is one key element
+in lossy image compression. 
+\begin{figure}[h]
+\centering
+\subfloat[Y]{\includegraphics[width =
+0.3\textwidth]{images/y.png}}
+\hspace{5mm}
+\subfloat[Cb]{\includegraphics[width =
+0.3\textwidth]{images/cb.png}}
+\hspace{5mm}
+\subfloat[Cr]{\includegraphics[width =
+0.3\textwidth]{images/cr.png}}
+\caption{RGB $\rightarrow$ YCbCr}
+\label{fig:YCbCr}
+\end{figure}
+%color space, high/low pass filtering
 %\subsection{color/signal representation}
+
+
+\paragraph{Spartial seperation}
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale = 0.25]{images/segmentation.png}
+\caption{spartial separation}
+\label{fig:spartial}
+\end{figure}
 
 \section{Sparse coding step}
 \subsection{Batch-OMP}
-In 2008 Rubinstein et al.\cite{Rubinstein2008} presented the batch-OMP. The
+In 2008 Rubinstein et al.\cite{Rubinstein2008} presented the \emph{Batch-OMP}.
+The
 \prettyref{alg:batchOMP} is a modified version of the
-orthogonal-matching-pursuit (\ref{sec:omp}) that can effectively sparse codes
+orthogonal-matching-pursuit (\ref{sec:omp}) that can effectively sparse code
 multiple signals in parallel. The key of the optimization is the pre-computation
-of the gram matrix $G=D^TD$ and a cholesky factorization.
+of the gram matrix $G=D^TD$ and the cholesky factorization of ... .
 
-\subsubsection*{Optimizations}
+%\subsubsection*{Optimizations}
 While $L$ is very small the main factor of the computation is
 the multiplication of $D$ with a vector with a complexity of $O(mp)$. 
 This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
 2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
 with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
 
+All modification lead to significant speed increase when coding large sets of
+signals.
+%more signals than dictionary elements.
 
-\Todo{rewrite with batch-OMP}
+
+
+\Todo{rewrite batch-OMP}
 \begin{algorithm}
-\caption{multi signal optimized OMP}
+\caption{Batch-OMP}
 \label{alg:batchOMP}
 \begin{algorithmic}[1]
 \REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
@@ -115,28 +170,31 @@ w^T & \sqrt{1-w^Tw}
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
-\caption{multi signal optimized OMP}
-\label{alg:batchOMP}
-\begin{algorithmic}[1]
-\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
-\STATE pre-compute gram matrix: $G=D^TD$
-\FOR[all signals in parallel] {$j = 1$ to $k$ }
-\STATE $\alpha_j \gets 0, r_j \gets x_j $ (residual) $, A_j=\emptyset$
-\FOR {$i = 1$ to $L$}
-\STATE Select atom with maximum correlation with residual: 
-\begin{equation*}
-i \gets \argmax_{i \in A_j^C} \lvert \left<d_i,r_j\right> \rvert
-\end{equation*}
-\STATE solve with cholesky: $G_{inv} \gets G_A^{-1}$
-\STATE update active set: $A_j \gets A_j \cup \{i\} $
-\STATE update residual: $r_j \gets \left(I-D_AG_{inv}D_A^T \right)x_j$
-\STATE update coefficients: $a_{j_A} \gets G_{inv} D_A^T x_j $
-\ENDFOR 
-\ENDFOR 
-\RETURN $\alpha$
-\end{algorithmic}
-\end{algorithm}
+%\begin{algorithm}
+%\caption{multi signal optimized OMP}
+%\label{alg:batchOMP}
+%\begin{algorithmic}[1]
+%\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
+%\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
+%\STATE pre-compute gram matrix: $G=D^TD$
+%\FOR[all signals in parallel] {$j = 1$ to $k$ }
+%\STATE $\alpha_j \gets 0, r_j \gets x_j $ (residual) $, A_j=\emptyset$
+%\FOR {$i = 1$ to $L$}
+%\STATE Select atom with maximum correlation with residual: 
+%\begin{equation*}
+%i \gets \argmax_{i \in A_j^C} \lvert \left<d_i,r_j\right> \rvert
+%\end{equation*}
+%\STATE solve with cholesky: $G_{inv} \gets G_A^{-1}$
+%\STATE update active set: $A_j \gets A_j \cup \{i\} $
+%\STATE update residual: $r_j \gets \left(I-D_AG_{inv}D_A^T \right)x_j$
+%\STATE update coefficients: $a_{j_A} \gets G_{inv} D_A^T x_j $
+%\ENDFOR 
+%\ENDFOR 
+%\RETURN $\alpha$
+%\end{algorithmic}
+%\end{algorithm}
+
+
 
 
 \subsection{LARS-Lasso}
@@ -147,11 +205,9 @@ also applied in the LARS-Lasso algorithm. Reduction the complexity. %to:
 
 The complete regularization path based on\cite{Efron2004}
 
-\subsection{Observations}
-Difference in the selection strategy.
-Very noisy vs. smooth. 
-How this different selection strategies affect the learning step will be
-presented in the next section.
+
+
+
 
 
 \section{Training step}
@@ -159,9 +215,6 @@ The majority of learning experiments in the literature were made on
 samples of sliding blocks from single images or very similar images.
 When looking at large sets of images and many different blocks we start to talk
 about a different game.
-
-
-
 
 Keeping the training sparse vectors too sparse can lead to dictionaries with
 only low frequency elements. Using LARS-Lasso for training generates a good
@@ -172,8 +225,6 @@ leads better coding results when using OMP.}
 
 Learn basis similar to DCT and  Wavelets/Bandelets(time and freq locality) with
 increasing block size.
-
-
 
 % is LARS better?
 As described in section \ref{sec:signal_representation} the learning process is
@@ -271,24 +322,17 @@ following main steps in lossy image compression algorithms:
 %zero, and many of the rest become small positive or negative numbers, which
 %take many fewer bits to represent.
 
+%The sparse vector for every are encoded in 2 bytes index and a single byte
+quantized coefficient. Additional zero coefficients from the quantization step
+are removed.
+
+
 Experiment on sparse coding for compression have been done before but mainly in
 theory with generated bases dictionaries for comparison and approximations on
 entropy and resulting bit density (BBP). But real practical application is an
 open question.
 
-\paragraph{Signal conversion}
-The human eye is good at sensing small difference in brightness but lacks the
-ability exactly differentiate small changes in color. Converting an image from a
-typical three channel $RGB$ color space to $YC_bC_r$ color space takes advantage
-of
-this effect. The YCbCr color space splits an image
-into a brightness/luminance (Y) and two color/chroma components (Cb
-and Cr). The visual more relevant brightness/luminance channel will be coded
-in the full resolution while the color/chroma components can be sub-samples
-with only minor loss in perceptual quality. This procedure is called
-\emph{chroma sub-sampling} and is one key element to of preserving perceptual
-quality in lossy image compression while.
-%color space, high/low pass filtering
+
 
 \paragraph{Signal coding}
 The actual coding step of the prepared signals is a simple application of one
@@ -373,13 +417,16 @@ train dict with samples or just code samples - save dictionary/image
 
 The whole test suit is written in C++ with the help  of OpenCV, Eigen and OpenMP libs.
 
-Eigen\cite{Eigen} is a template library for fast vector and matrix operations 
+Eigen\footnote{\url{http://eigen.tuxfamily.org/}\cite{Eigen}} is a template
+library for fast vector and matrix operations 
 and includes some linear algebra algorithms. It is mainly used for operations on
 dense and sparse matrices and solving of linear equation systems.
 
-OpenCV\cite{OpenCV} as in Open Computer Vision Library is mainly used for
+OpenCV\footnote{\url{http://opencv.willowgarage.com/}\cite{OpenCV}} as in Open
+Computer Vision Library is mainly used for
 image read and write operations and color space conversion. OpenMP
-\footnote{www.openmp.org\cite{OpenMP}} is a preprocessor based application
+\footnote{\url{http://www.openmp.org/}\cite{OpenMP}} is a preprocessor based
+application
 programming interface (API) for C,C++ and Fortran that enables the user to
 distribute code block and loops to multiple CPU cores. In situations where it is
 applicable OpenMP is used to utilize multi-core CPUs. 
@@ -397,13 +444,12 @@ methods (OMP and LARS-Lasso) can be utilized for the coding step.
 
 \paragraph{Misc}
 \Todo{Other: imagemagick for conversion of test image -> JPEG,JPEG 2000 and
-comparison of images} Besides the actual coding software some other tools for
-additional tasks were used.
-
-Several bash and ruby scripts for workload distribution onto the
-clients, aggregation and evaluation of the results. The imagemagick toolkit for
-image conversion into JPEG and JPEG 2000 and for some image comparison tasks.
-
+comparison of images} 
+Besides the actual coding software some other tools for
+additional tasks were used. Several bash and ruby scripts for workload
+distribution onto the clients, aggregation and evaluation of the results. The
+ImageMagick\footnote{\url{http://www.imagemagick.org/}} toolkit for image
+conversion into JPEG and JPEG 2000 and for some image comparison tasks.
 
 
 

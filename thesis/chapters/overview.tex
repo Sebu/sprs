@@ -49,7 +49,7 @@ The field of signal transformation reaches far back in the early 60s.
 \cite{Rubinstein2010}
 
 In the early approaches in the 60s combinations of cosine
-transformations were used to approximate analog signals Coming from a continues
+transformations were used to approximate analog signals coming from a continues
 representation this makes actually sense. The signal could be represented via
 combinations of connected oscilloscopes with different frequency
 configurations. 
@@ -147,8 +147,14 @@ benefit of this approach is that you can decouple signal coding and dictionary
 design and split the whole process of signal analysis into two tasks. First
 coding of signals and second the design of dictionaries. Separating the problem
 into two distinct problems made the search for efficient coding of signals $z$
-and construction of task specific dictionaries $D$ more flexible \cite{?}. The
+and construction of task specific dictionaries $D$ more flexible\cite{?}. The
 initial problem becomes:
+
+
+\Todo{	}
+\begin{equation}
+X_k = \sum_{n=0}^{N-1}d_nx_n
+\end{equation}
 
 \begin{equation}
  x \sim \tilde{x} = D\alpha
