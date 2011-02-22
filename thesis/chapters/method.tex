@@ -155,10 +155,26 @@ presented in the next section.
 
 
 \section{Training step}
+The majority of learning experiments in the literature were made on
+samples of sliding blocks from single images or very similar images.
+When looking at large sets of images and many different blocks we start to talk
+about a different game.
+
+
+
+
 Keeping the training sparse vectors too sparse can lead to dictionaries with
 only low frequency elements. Using LARS-Lasso for training generates a good
-dictionary for LARS and OMP. Training with OMP leads to a dictionary more with a
-lot of noise that leads better coding results when using OMP 
+dictionary for LARS and OMP. 
+\Todo{ Training with OMP leads to a dictionary more with a lot of noise that
+leads better coding results when using OMP.}
+
+
+Learn basis similar to DCT and  Wavelets/Bandelets(time and freq locality) with
+increasing block size.
+
+
+
 % is LARS better?
 As described in section \ref{sec:signal_representation} the learning process is
 not limited to gray-scale oder RGB image signals. The presented algorithm can be
@@ -197,12 +213,14 @@ scheme. This very random/noisy selection strategy is very impractical
 for the \trainDL learning step. But nevertheless the OMP is still good for
 sparse coding. 
 
-When applying the tuning parameter it gets even worse. 
+%When applying the tuning parameter it gets even worse. 
 
 \subsection{Clustering}
 
-The cluster merge of results -> 
-it is a map/reduce approach. 
+Learning big dictionaries leads to big memory consumption and coding time.
+\Todo{aufwand}
+Try clustering and merging  ->  it is a map/reduce approach. 
+And compare quality in coding.
 
 
 \subsubsection*{Optimizations}
@@ -252,6 +270,11 @@ following main steps in lossy image compression algorithms:
 %typically the case that many of the higher frequency components are rounded to
 %zero, and many of the rest become small positive or negative numbers, which
 %take many fewer bits to represent.
+
+Experiment on sparse coding for compression have been done before but mainly in
+theory with generated bases dictionaries for comparison and approximations on
+entropy and resulting bit density (BBP). But real practical application is an
+open question.
 
 \paragraph{Signal conversion}
 The human eye is good at sensing small difference in brightness but lacks the
