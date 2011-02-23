@@ -125,33 +125,46 @@ In 2008 Rubinstein et al.\cite{Rubinstein2008} presented the \emph{Batch-OMP}.
 The
 \prettyref{alg:batchOMP} is a modified version of the
 orthogonal-matching-pursuit (\ref{sec:omp}) that can effectively sparse code
-multiple signals in parallel. The key of the optimization is the pre-computation
-of the gram matrix $G=D^TD$ and the cholesky factorization of ... .
+multiple signals in parallel. One key element of the optimizations is the
+pre-computation of the gram matrix $G=D^TD$ which can efficiently be reused
+for each signal. Another optimization to a single signal coding step itself
+(\prettyref{alg:batchOMP}) is the cholesky factorization of $\left( D_A^T D_A
+\right)^{-1}$ (line 5 of \prettyref{alg:mp}). $D_A^T
+D_A$ is a symmetric and positive-definite matrix and can be chlolesky decomposed
+into $LL^T$. Even better, due to the nature of the algorithm composing $D_A$
+by adding additional row and columns to it, $L$ can be build up during the
+computation. This reduces the computational cost of the algorithm drastically.
+ 
+\begin{algorithm}
+\caption{Parallel coding}
+\label{alg:batchOMP}
+\begin{algorithmic}[1]
+\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
+\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}, \alpha =
+[\alpha_1,...,\alpha_p] \in
+\mathbb{R}^{p}$
+\STATE pre-compute $G \gets D^TD$
+%\STATE $\epsilon \gets X^TX$
+\FOR {$i = 1$ to $k$}
+\STATE Compute $\alpha_i$ using \prettyref{alg:batchOMP} or
+\ref{alg:lars} for all ${x_i}$ in $X$
+\ENDFOR
+\RETURN $\alpha$
+\end{algorithmic}
+\end{algorithm}
 
-%\subsubsection*{Optimizations}
-While $L$ is very small the main factor of the computation is
-the multiplication of $D$ with a vector with a complexity of $O(mp)$. 
-This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
-2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
-with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
-
-All modification lead to significant speed increase when coding large sets of
-signals.
-%more signals than dictionary elements.
-
-
-
-\Todo{rewrite batch-OMP}
 \begin{algorithm}
 \caption{Batch-OMP}
 \label{alg:batchOMP}
 \begin{algorithmic}[1]
-\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
-\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
-\STATE $L\gets[1]$
+\REQUIRE $x \in \mathbb{R}^{m}, G  \in
+\mathbb{R}^{m\times m}, \epsilon \in \mathbb{R}$
+\STATE $A \gets \emptyset,\alpha \gets 0,\gamma \gets D^Tx,\delta^0 \gets
+0, \epsilon^0\gets x^Tx,L\gets[1],n\gets1$
 \WHILE {$\epsilon^{n-1}> \epsilon $}
-\STATE
+\STATE $k \gets \argmax_k\lvert \alpha_k \rvert$
 \IF {$n>1$}
+\STATE $w \gets L^{-1}G_{A,k}$
 \STATE
 \begin{align}
 L \gets \left[
@@ -162,13 +175,30 @@ w^T & \sqrt{1-w^Tw}
 \right]
 \end{align}
 \ENDIF
-\STATE $I \gets I \cup \{ k\}$
-\STATE
+\STATE add variable to active set: $A \gets A \cup \{ k\}$
+\STATE $\alpha_A \gets (L^T)^{-1}L^{-1}\gamma_A^0$
+\STATE $\beta \gets G_A\alpha_A$
+\STATE $\gamma \gets \gamma^0-\beta$
+\STATE $\delta \gets \alpha_A^T\beta_A$
+\STATE $\epsilon^n \gets \epsilon^{n-1} - \delta^n + \delta^{n-1}$
 \STATE $n \gets n+1$
 \ENDWHILE
 \RETURN $\alpha$
 \end{algorithmic}
 \end{algorithm}
+
+
+%\subsubsection*{Optimizations}
+\Todo{remove?}
+While $L$ is very small the main factor of the computation is
+the multiplication of $D$ with a vector with a complexity of $O(mp)$. 
+This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
+2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
+with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
+
+All modification lead to significant speed increase when coding large sets of
+signals.
+%more signals than dictionary elements.
 
 %\begin{algorithm}
 %\caption{multi signal optimized OMP}
@@ -195,17 +225,14 @@ w^T & \sqrt{1-w^Tw}
 %\end{algorithm}
 
 
-
-
 \subsection{LARS-Lasso}
-\subsubsection*{Optimizations}
-The same pre-computation of the gram matrix used in the batch-OMP can be
-also applied in the LARS-Lasso algorithm. Reduction the complexity. %to:
-\Todo{lasso complexity}
+%\subsubsection*{Optimizations}
+The same pre-computation of the gram matrix used in the Batch-OMP can also
+be applied to the LARS-Lasso algorithm. 
 
-The complete regularization path based on\cite{Efron2004}
-
-
+\Todo{lasso complexity?}
+%Reduction the complexity. %to: 
+%The complete regularization path based on\cite{Efron2004}
 
 
 
@@ -415,32 +442,36 @@ config} running Debian 32-bit. Each client in the cluster calculated batches of
 Split image into sub images, convert sub image to samples from image blocks, 
 train dict with samples or just code samples - save dictionary/image
 
-The whole test suit is written in C++ with the help  of OpenCV, Eigen and OpenMP libs.
+The whole sparse coding and training library is written in C++ with
+additional use of the OpenCV, Eigen and OpenMP libs.
 
-Eigen\footnote{\url{http://eigen.tuxfamily.org/}\cite{Eigen}} is a template
-library for fast vector and matrix operations 
+Eigen\footnote{\url{http://eigen.tuxfamily.org/}\cite{Eigen}}
+is a template library for fast vector and matrix operations 
 and includes some linear algebra algorithms. It is mainly used for operations on
 dense and sparse matrices and solving of linear equation systems.
 
-OpenCV\footnote{\url{http://opencv.willowgarage.com/}\cite{OpenCV}} as in Open
-Computer Vision Library is mainly used for
-image read and write operations and color space conversion. OpenMP
-\footnote{\url{http://www.openmp.org/}\cite{OpenMP}} is a preprocessor based
-application
-programming interface (API) for C,C++ and Fortran that enables the user to
-distribute code block and loops to multiple CPU cores. In situations where it is
-applicable OpenMP is used to utilize multi-core CPUs. 
+OpenCV\footnote{\url{http://opencv.willowgarage.com/}\cite{OpenCV}} as in
+\emph{Open Computer Vision Library} is mainly used for
+image read and write operations, color space conversion adn DCT for the
+quantization matrix generation step. 
+
+OpenMP \footnote{\url{http://www.openmp.org/}\cite{OpenMP}} is a preprocessor
+based application programming interface (API) for C,C++ and Fortran that enables
+the user to distribute code block and loops to multiple CPU cores. In situations
+where it is applicable OpenMP is used to utilize multi-core CPUs. 
 
 \paragraph{Coding}
-The OMP implementation is based on the batch-OMP implementation
-from\cite{Rubinstein} The implementation of the LARS-Lasso algorithm is based on
-the implementation of\cite{Strand2005} and the original paper\cite{Efron2004}
+The Batch-OMP implementation is based on the implementation
+of \cite{Rubinstein} OMPBox with technical modifications to fit into our
+framework. The LARS-Lasso C++ implementation is based on the Matlab
+implementation of\cite{Strand2005} and the original
+paper\cite{Efron2004} on the algorithm.
 
 \paragraph{Trainig}
-The \trainDL trainer is a straight forward implementation of the
-algorithm presented in\cite{Mairal2010}. It is an implementation of the basic
-version of the algorithm with the batch optimization applied. Both coding
-methods (OMP and LARS-Lasso) can be utilized for the coding step.
+The \trainDL  trainer is a straight forward C++ implementation of the
+learning algorithm presented in\cite{Mairal2010}. It is an implementation of the
+basic version of the algorithm with the batch optimization applied. The OMP and
+the LARS-Lasso coding method can be utilized for the coding step.
 
 \paragraph{Misc}
 \Todo{Other: imagemagick for conversion of test image -> JPEG,JPEG 2000 and

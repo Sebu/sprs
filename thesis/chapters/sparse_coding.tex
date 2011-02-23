@@ -46,6 +46,7 @@ But instead off all solutions we want to find the sparsest solution.
 To archive this it is necessary to keep the coefficient vector $\alpha$ sparse.
 %Describe error and regularize sparsity
 \paragraph{Notation}
+$a[i]$ element i of a vector
 alpha,X,x,D,d,L,epsilon error, L,lambda , A,I sets
 
 \section{Regularization}
@@ -128,9 +129,10 @@ respectivly
 Mallat and Zhang\cite{Mallat1993}
 ofImagesMallatandBergeaud \cite{Mallat1995}
 The \prettyref{alg:mp} starts with the coefficient vector $\alpha$ set to
-zero. Then find the atom in the dictionary with the best reduction of the
+zero. Then finds the atom in the dictionary with the best reduction of the
 error. This is done by selecting the coefficient that has the maximum
-correlation with the residual. Repeat this step $L$ times or until the error
+correlation with the current residual. Repeat this step $L$ times or until the
+error
 $\lVert x - D\alpha \rVert^{2}_{2}$ for the current $\alpha$ reaches $\lVert x -
 D\alpha \rVert^{2}_{2} \leq \epsilon$ respectively the residual fulfills
 $\lVert
@@ -252,7 +254,8 @@ into LAR and LARS-lasso, better illustrate than use complex formulas}
 \subsection {LARS-Lasso}
 \label{sec:lars}
 The LARS-Lasso is a algorithm to solve the LASSO with the help of least
-angle regression. as described in \cite{Efron2004}. It is a modified version of
+angle regression. as described in 2004 by Efron et al.\cite{Efron2004}. It
+is a modified version of
 the LAR where variables get removed from the active set when their coefficient
 become zero.
 
@@ -271,6 +274,7 @@ residual.
 
 \begin{algorithm}
 \caption{LARS-lasso}
+\label{alg:lars}
 \begin{algorithmic}[1]
 \REQUIRE $x \in \mathbb{R}^m, D =[d_1,...,d_p] \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
 % xD normalized and centered

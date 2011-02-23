@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0.85
-lastDocument=chapters/method.tex
+lastDocument=chapters/sparse_coding.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -81,7 +81,7 @@ Mode=LaTeX
 ReadWrite=true
 
 [document-settings,item:chapters/sparse_coding.tex]
-Bookmarks=87
+Bookmarks=88
 Encoding=UTF-8
 Highlighting=LaTeX
 Indentation Mode=
@@ -167,17 +167,17 @@ encoding=UTF-8
 highlight=LaTeX
 line=7
 mode=LaTeX
-open=true
+open=false
 order=4
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=80
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=202
+line=150
 mode=LaTeX
-open=true
+open=false
 order=1
 
 [item:chapters/introduction.tex]
@@ -187,18 +187,18 @@ encoding=UTF-8
 highlight=LaTeX
 line=35
 mode=LaTeX
-open=false
-order=3
+open=true
+order=2
 
 [item:chapters/method.tex]
 archive=true
-column=72
+column=11
 encoding=UTF-8
 highlight=LaTeX
-line=46
+line=135
 mode=LaTeX
 open=true
-order=0
+order=1
 
 [item:chapters/overview.tex]
 archive=true
@@ -208,7 +208,7 @@ highlight=LaTeX
 line=51
 mode=LaTeX
 open=true
-order=5
+order=3
 
 [item:chapters/results.tex]
 archive=true
@@ -217,18 +217,18 @@ encoding=UTF-8
 highlight=LaTeX
 line=75
 mode=LaTeX
-open=true
+open=false
 order=3
 
 [item:chapters/sparse_coding.tex]
 archive=true
-column=11
+column=54
 encoding=UTF-8
 highlight=LaTeX
-line=362
+line=256
 mode=LaTeX
 open=true
-order=2
+order=4
 
 [item:chapters/title.tex]
 archive=true
@@ -267,8 +267,8 @@ encoding=UTF-8
 highlight=LaTeX
 line=1
 mode=LaTeX
-open=false
-order=6
+open=true
+order=0
 
 [item:todo.txt]
 archive=true
@@ -293,16 +293,16 @@ CursorColumn=1
 CursorLine=7
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=80
-CursorLine=202
+CursorColumn=0
+CursorLine=150
 
 [view-settings,view=0,item:chapters/introduction.tex]
 CursorColumn=10
 CursorLine=35
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=72
-CursorLine=46
+CursorColumn=11
+CursorLine=135
 
 [view-settings,view=0,item:chapters/overview.tex]
 CursorColumn=57
@@ -313,8 +313,8 @@ CursorColumn=0
 CursorLine=75
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
-CursorColumn=11
-CursorLine=362
+CursorColumn=54
+CursorLine=256
 
 [view-settings,view=0,item:chapters/title.tex]
 CursorColumn=0
