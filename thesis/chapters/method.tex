@@ -243,12 +243,6 @@ samples of sliding blocks from single images or very similar images.
 When looking at large sets of images and many different blocks we start to talk
 about a different game.
 
-Keeping the training sparse vectors too sparse can lead to dictionaries with
-only low frequency elements. Using LARS-Lasso for training generates a good
-dictionary for LARS and OMP. 
-\Todo{ Training with OMP leads to a dictionary more with a lot of noise that
-leads better coding results when using OMP.}
-
 
 Learn basis similar to DCT and  Wavelets/Bandelets(time and freq locality) with
 increasing block size.

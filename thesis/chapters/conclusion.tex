@@ -11,6 +11,14 @@ Very noisy vs. smooth.
 How this different selection strategies affect the learning step will be
 presented in the next section.
 
+
+Keeping the training sparse vectors too sparse can lead to dictionaries with
+only low frequency elements. Using LARS-Lasso for training generates a good
+dictionary for LARS and OMP. 
+\Todo{ Training with OMP leads to a dictionary more with a lot of noise that
+leads better coding results when using OMP.}
+
+
 Compression 
 JPEG and JPEG 2000 are highly optimized lossy image compression algorithms. 
 Years of research went into observation human vision and the 
