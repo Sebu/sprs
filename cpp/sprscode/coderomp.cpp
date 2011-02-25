@@ -33,12 +33,13 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
         DtX = D.getData().transpose()*X;
         #pragma omp section
         if(erroromp)
-            XNorm = (X.cwise()*X).colwise().sum();
+//            XNorm = (X.cwise()*X).colwise().sum();
+            XNorm = (X.array()*X.array()).matrix().colwise().sum();
         #pragma omp section
         G = D.getData().transpose()*D.getData();
     }
 
-//    std::cout << "precalc done" << std::endl;
+    std::cout << "precalc done" << std::endl;
 
     Eigen::SparseMatrix<double> GammaVector[L];
 
@@ -105,7 +106,7 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
             pos = maxabs(alpha);
 
             /* stop criterion: selected same atom twice, or inner product too small */
-
+//            std::cout << pos << std::endl;
             if (selected_atoms(pos,0) || alpha(pos,0)*alpha(pos,0)<1e-14) {
                 break;
             }
@@ -114,6 +115,7 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
             /* mark selected atom */
 
             ind(i) = pos;
+
             selected_atoms(pos) = 1;
 
 
@@ -132,16 +134,23 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
                 vec_assign(tempvec1, Gsub, ind, i, i);            /* extract tempvec1 := Gsub(ind,i) */
 
 //              /* compute tempvec2 = Lchol \ tempvec1 */
-                tempvec2.block(0,0,i,1) = Lchol.block(0,0, i,i).part<Eigen::LowerTriangular>().solveTriangular(tempvec1.block(0,0, i,1));
+//                tempvec2.block(0,0,i,1) = Lchol.block(0,0, i,i).part<Eigen::LowerTriangular>().solveTriangular(tempvec1.block(0,0, i,1));
+                tempvec2.block(0,0,i,1) = Lchol.block(0,0, i,i).triangularView<Lower>().solve(tempvec1.block(0,0, i,1));
 
                 Lchol.block(i,0,1,i) = tempvec2.transpose().block(0,0,1,i);
 
                 /* compute Lchol(i,i) */
-                double sum = 1.0-(tempvec2.block(0,0,i,1).transpose()*tempvec2.block(0,0,i,1))(0,0);
+                MatrixXd bla = tempvec2.block(0,0,i,1).transpose()*tempvec2.block(0,0,i,1);
+//                std::cout << "out" << pos << std::endl;
+
+                double sum = 1.0-bla(0,0);
+
+
                 if ( sum <= 1e-14 ) {     /* Lchol(i,i) is zero => selected atoms are dependent */
                     break;
                 }
                 Lchol(i,i) = sqrt(sum);
+
             }
 
 
@@ -152,8 +161,8 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
             vec_assign(tempvec1, DtX, ind, i, signum);           /* extract tempvec1 = DtX(ind) */
 
 //             /* solve LL'c = tempvec1 for c */
-            c.block(0,0,i,1) = Lchol.block(0,0, i,i).part<Eigen::LowerTriangular>().solveTriangular(tempvec1.block(0,0, i,1));
-            Lchol.block(0,0, i,i).transpose().part<Eigen::UpperTriangular>().solveTriangularInPlace(c.block(0,0,i,1));
+            c.block(0,0,i,1) = Lchol.block(0,0, i,i).triangularView<Lower>().solve(tempvec1.block(0,0, i,1));
+            Lchol.block(0,0, i,i).transpose().triangularView<Upper>().solveInPlace(c.block(0,0,i,1));
             /* Solve L^T * x = y */
 
 

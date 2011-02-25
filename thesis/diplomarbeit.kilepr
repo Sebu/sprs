@@ -3,8 +3,8 @@ def_graphic_ext=eps
 img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
-kileversion=2.0.85
-lastDocument=chapters/conclusion.tex
+kileversion=2.1 beta2
+lastDocument=chapters/method.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -168,17 +168,17 @@ highlight=LaTeX
 line=20
 mode=LaTeX
 open=true
-order=4
+order=6
 
 [item:chapters/dictionaries.tex]
 archive=true
 column=0
-encoding=UTF-8
+encoding=ISO-8859-1
 highlight=LaTeX
 line=150
 mode=LaTeX
-open=false
-order=1
+open=true
+order=2
 
 [item:chapters/introduction.tex]
 archive=true
@@ -188,17 +188,17 @@ highlight=LaTeX
 line=35
 mode=LaTeX
 open=true
-order=2
+order=4
 
 [item:chapters/method.tex]
 archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=245
+line=226
 mode=LaTeX
 open=true
-order=1
+order=0
 
 [item:chapters/overview.tex]
 archive=true
@@ -213,22 +213,22 @@ order=3
 [item:chapters/results.tex]
 archive=true
 column=0
-encoding=UTF-8
+encoding=ISO-8859-1
 highlight=LaTeX
 line=75
 mode=LaTeX
-open=false
-order=3
+open=true
+order=5
 
 [item:chapters/sparse_coding.tex]
 archive=true
 column=54
-encoding=UTF-8
+encoding=ISO-8859-1
 highlight=LaTeX
 line=256
 mode=LaTeX
-open=false
-order=4
+open=true
+order=1
 
 [item:chapters/title.tex]
 archive=true
@@ -262,12 +262,12 @@ order=5
 
 [item:thesis.tex]
 archive=true
-column=31
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=1
+line=0
 mode=LaTeX
-open=true
+open=false
 order=0
 
 [item:todo.txt]

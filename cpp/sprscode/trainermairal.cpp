@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
-#include <eigen2/Eigen/Array>
+//#include <Eigen/Array>
 
 TrainerMairal::TrainerMairal() : A_(0), B_(0)
 {
@@ -145,7 +145,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         for (int k=0; k<tmp.outerSize(); ++k)
             for (Eigen::SparseMatrix<double>::InnerIterator it(tmp,k); it; ++it) {
                 double value = it.value();
-                (*A_)(it.row(),it.col()) = beta*(*A_)(it.row(),it.col()) + value;
+                (*A_)(it.row(),it.col()) = (*A_)(it.row(),it.col()) + value;
+//                (*A_)(it.row(),it.col()) = beta*(*A_)(it.row(),it.col()) + value;
                                if((value!=value) || isinf(value)) {
                                   std::cout << value << std::endl;
                                   std::cout << a << std::endl;
@@ -154,7 +155,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
                                }
             }
 
-        (*B_) = beta*(*B_) + samplesChunk*a.transpose();
+        (*B_) = (*B_) + samplesChunk*a.transpose();
+//        (*B_) = beta*(*B_) + samplesChunk*a.transpose();
         // update step (algo. 2)
 //        std::cout << "| update((*A_), (*B_), D);" << std::endl;
 

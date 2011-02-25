@@ -6,10 +6,12 @@
 #include <iostream>
 #include <vector>
 
-#include <eigen2/Eigen/Core>
-#include <eigen2/Eigen/Array>
+#include <Eigen/Core>
+//#include <Eigen/Array>
 
-USING_PART_OF_NAMESPACE_EIGEN
+//USING_PART_OF_NAMESPACE_EIGEN
+using namespace Eigen;
+
 
 //template <class T, class C1, class C2, class C3>
 //bool linearSolveUpperTriangularC(const vigra::MultiArrayView<2, T, C1> &r, const vigra::MultiArrayView<2, T, C2> &b,
@@ -105,7 +107,8 @@ template<typename T1, typename T2>
 void unshift(MatrixBase<T1>& M, MatrixBase<T2>& shift) {
   for(int i=0; i<M.cols();i++) {
 //    std::cout << i << std::endl;
-    M.col(i).cwise() += shift(i);
+//    M.col(i).cwise() += shift(i);
+      M.col(i).array() += shift(i);
   }
 }
 
@@ -114,7 +117,9 @@ MatrixXd center(MatrixBase<T1>& M) {
     VectorXd shift(M.cols());
     for(int i=0; i<M.cols();i++) {
         shift(i) = M.col(i).sum()/M.rows();
-        M.col(i).cwise() -= shift(i);
+//      M.col(i).cwise() -= shift(i);
+        M.col(i).array() -= shift(i);
+
     }
     return shift;
 }

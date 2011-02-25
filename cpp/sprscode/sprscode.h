@@ -2,9 +2,11 @@
 #define LIBSPARSE_H
 
 #include <string>
-#include <eigen2/Eigen/Core>
-#include <eigen2/Eigen/Sparse>
-USING_PART_OF_NAMESPACE_EIGEN
+#include <Eigen/Core>
+#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+#include <Eigen/Sparse>
+//USING_PART_OF_NAMESPACE_EIGEN
+using namespace Eigen;
 
 #include "sprscode_global.h"
 

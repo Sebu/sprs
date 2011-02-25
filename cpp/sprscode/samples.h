@@ -5,8 +5,10 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-#include <eigen2/Eigen/Core>
-USING_PART_OF_NAMESPACE_EIGEN
+#include <Eigen/Core>
+
+//USING_PART_OF_NAMESPACE_EIGEN
+using namespace Eigen;
 
 #include "sprscode_global.h"
 

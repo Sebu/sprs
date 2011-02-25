@@ -7,8 +7,9 @@
 #include "samples.h"
 
 
-#include <eigen2/Eigen/Core>
-USING_PART_OF_NAMESPACE_EIGEN
+#include <Eigen/Core>
+//USING_PART_OF_NAMESPACE_EIGEN
+using namespace Eigen;
 
 #define DICT_VERSION 3
 

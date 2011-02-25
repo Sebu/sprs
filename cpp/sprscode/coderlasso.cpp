@@ -2,9 +2,9 @@
 
 #include <algorithm>
 #include <float.h>
-#include <eigen2/Eigen/LU>
-#include <eigen2/Eigen/Array>
-#include <eigen2/Eigen/Cholesky>
+#include <Eigen/LU>
+//#include <Eigen/Array>
+#include <Eigen/Cholesky>
 #include <list>
 #include <algorithm>
 #include "coderlasso.h"
@@ -166,7 +166,9 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
             double GA1sum = sqrt(GA1.sum());
             double AA = 1.0/GA1sum;
 
-            MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
+//            MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
+            MatrixXd w = (AA*GA1).array()*s.array(); // weights applied to each active variable to get equiangular direction
+
 
             //MatrixXd Xsub = subselect(X,A[signum]);
             MatrixXd Xsub(X.rows(),vars);
@@ -202,7 +204,8 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
             // LASSO modification
             lassocond = false;
-            VectorXd temp = -1.0*(betasub.cwise()/w);
+//            VectorXd temp = -1.0*(betasub.cwise()/w);
+            VectorXd temp = -1.0*(betasub.array()/w.array());
             double erg = DBL_MAX;
             for(int i=0; i<temp.size(); i++)
                 if(temp(i)>0.0 && temp(i)<erg) erg=temp(i);
@@ -229,9 +232,12 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
             //std::cout << beta_next << std::endl;
             // Early stopping at specified bound on L1 norm of beta
             if (stop > 0.0) {
-                double t2 = beta_next.cwise().abs().sum();
+                //double t2 = beta_next.cwise().abs().sum();
+                double t2 = beta_next.array().abs().sum();
                 if (t2 >= stop) {
-                    double t1 = beta[signum].cwise().abs().sum();
+//                    double t1 = beta[signum].cwise().abs().sum();
+                    double t1 = beta[signum].array().abs().sum();
+
                     double s = (stop - t1)/(t2 - t1); // interpolation factor 0 < s < 1
                     beta_next = beta[signum] + s*(beta_next - beta[signum]);
                     stopcond = true;
