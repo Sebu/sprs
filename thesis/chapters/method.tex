@@ -237,7 +237,7 @@ be applied to the LARS-Lasso algorithm.
 
 
 
-\section{Training step}
+\section{Learning step}
 The majority of learning experiments in the literature were made on
 samples of sliding blocks from single images or very similar images.
 When looking at large sets of images and many different blocks we start to talk
@@ -293,9 +293,20 @@ sparse coding.
 \subsection{Clustering}
 
 Learning big dictionaries leads to big memory consumption and coding time.
+To 
+
 \Todo{aufwand}
 Try clustering and merging  ->  it is a map/reduce approach. 
 And compare quality in coding.
+
+Two ways 
+\paragraph{1. one dictionary per client}
+ -> merge
+ -> drawback: less idipendent learning
+\paragraph{2. one chunk of sample per client}
+  -> merge after evey train iteration
+ drawback: many samples per train step
+
 
 
 \subsubsection*{Optimizations}
