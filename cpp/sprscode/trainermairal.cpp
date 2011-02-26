@@ -90,7 +90,9 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
     if (iterations) maximum = batch*iterations;
 
     static double realT = 0.0;
-
+    center(D.getData());
+//    divVariance(D.getData());
+    D.normalize();
     for(int t=0; t<maximum; t+=batch) {
 
 
@@ -113,13 +115,12 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 //        std::cout << samplesChunk << std::endl;
 //        divVariance(samplesChunk);
 
-        center(D.getData());
-    //    divVariance(D.getData());
-        D.normalize();
+
 
         Eigen::SparseMatrix<double> a = coder->encode(samplesChunk, D);
         D.meta_->samples_+=samplesChunk.cols();
 //        std::cout << "| a*a.t() ";// << std::endl;
+
 
 //        MatrixXd aa = MatrixXd::Zero(a.rows(),a.cols());
 
@@ -145,24 +146,26 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         for (int k=0; k<tmp.outerSize(); ++k)
             for (Eigen::SparseMatrix<double>::InnerIterator it(tmp,k); it; ++it) {
                 double value = it.value();
-                (*A_)(it.row(),it.col()) = (*A_)(it.row(),it.col()) + value;
-//                (*A_)(it.row(),it.col()) = beta*(*A_)(it.row(),it.col()) + value;
-                               if((value!=value) || isinf(value)) {
-                                  std::cout << value << std::endl;
-                                  std::cout << a << std::endl;
-                                  std::cout << samplesChunk << std::endl;
-                               return;
-                               }
+                if((value!=value) || isinf(value)) {
+                   std::cout << value << " " << it.row() << " "<< it.col() << std::endl;
+
+                   //std::cout << a << std::endl;
+                   //std::cout << samplesChunk << std::endl;
+                continue;
+                }
+//                (*A_)(it.row(),it.col()) = (*A_)(it.row(),it.col()) + value;
+              (*A_)(it.row(),it.col()) = beta*(*A_)(it.row(),it.col()) + value;
             }
 
-        (*B_) = (*B_) + samplesChunk*a.transpose();
-//        (*B_) = beta*(*B_) + samplesChunk*a.transpose();
+//        (*B_) = (*B_) + samplesChunk*a.transpose();
+        (*B_) = beta*(*B_) + samplesChunk*a.transpose();
         // update step (algo. 2)
 //        std::cout << "| update((*A_), (*B_), D);" << std::endl;
 
         MatrixXd Dold = D.getData();
         update((*A_), (*B_), D);
-        std::cout<< D.meta_->samples_ << " : " << mse(Dold,D.getData()) << std::endl;
+//        D.normalize();
+        std::cout<< D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
         std::ostringstream o;
         o << "../../output/tmp/dict_tmp" << t << ".png";
 //        o << "../../output/tmp/dict_tmp.png";

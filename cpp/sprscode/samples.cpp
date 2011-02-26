@@ -41,13 +41,22 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
         scale(i) = 1.0;
         if((*data_).col(i).squaredNorm()!=0.0) {
             scale(i) = (*data_).col(i).norm();
-//            (*data_).col(i).normalize();
+            (*data_).col(i).normalize();
         }
     }
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
 
     std::cout << A.nonZeros()/A.outerSize() << std::endl;
 
+    // scale back
+    for (int k=0; k<A.outerSize(); ++k) {
+        for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
+        A.coeffRef(it.row(),it.col()) *= scale(it.col());
+        }
+    }
+    for(int i=0; i<(*data_).cols(); i++) {
+       (*data_).col(i)*= scale(i);
+    }
 
     spc.compress(shift,A);
 //    spc.save(fileName);
@@ -62,10 +71,10 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
 //    std::cout << A << std::endl;
 
-    for(int i=0; i<recon_vigra.cols(); i++) {
+//    for(int i=0; i<recon_vigra.cols(); i++) {
 //        recon_vigra.col(i) *= scale(i);
 //        (*data_).col(i)*= scale(i);
-    }
+//    }
 
 
 //    for (int k=0; k<A.outerSize(); ++k) {
@@ -79,7 +88,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
 
     double mseVal = mse((*data_),recon_vigra);
     std::cout << "PSNR: " << psnr(mseVal) << " dB" << std::endl;
-    std::cout << "RMSE: " << std::sqrt(mseVal) << std::endl;
+    std::cout << "MSE: " << mseVal << std::endl;
 
     std::cout << "reorder  image" << std::endl;
 

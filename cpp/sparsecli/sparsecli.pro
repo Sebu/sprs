@@ -20,7 +20,7 @@ QMAKE_CXXFLAGS += -fopenmp
 # QMAKE_CXXFLAGS += -O3 -msse2 -msse3
 
 # linux
-unix:INCLUDEPATH += /homes/wheel/seb/playground/include
+unix:INCLUDEPATH += /usr/local/include/eigen3 /homes/wheel/seb/playground/include
 unix:LIBS += -L/homes/wheel/seb/playground/lib
 
 # Maces

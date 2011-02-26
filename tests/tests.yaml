@@ -1,35 +1,90 @@
 
 
+test: 
+  desc: "test" 
+  clients: [localhost, localhost]
+  jobs: 2
+  params:
+    input: ../../input/images/bild1.jpg
+    dict: ../../output/dicts/bluba.dict
+    coeffs: 8 
+    channels: 1
+    mode: [1, 2] 
+	  
+
 default: 
   desc: "stuff" 
-  jobs: [../../input/imagedb_100.txt]
   clients: [c12]
-  params: "--coeffs 2  --samples 4000  --dictSize 1000  --blockSize 8 --winSize 8  --channels 1 --mode 1"
-  dict_name: ../../output/dicts/test1.dict
+  jobs: 1
+  params:
+    train: ../../input/imagedb_100.txt
+    dict: ../../output/dicts/test1.dict
+    coeffs: 2  
+    samples: 4000  
+    dictSize: 1000  
+    blockSize: 8 
+    winSize: 8  
+    channels: 1 
+    mode: 1
 
 dictSizeConverg: 
   desc: convergence of dict size
-  jobs: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
-  mode: dictSize
   clients: [c61, c62, c63, c64, c65, c66, c67, c57, c56, c55]
-  params: --coeffs 8  --samples 4000  --blockSize 8  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/2.list
+  jobs: 10
+  params:
+    dictSize: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+    mode: dictSize
+    coeffs: 8  
+    samples: 4000  
+    blockSize: 8  
+    winSize: 8  
+    channels: 3 
+    mode: 2  
+    train: ../../input/imagedb_100_chunk_1000/2.list
 
 
 coeffsConverg: 
   desc: convergence of dict coefficients
-  jobs: [2, 4, 6, 8, 10, 12, 14, 16]
   clients: ['c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c32']
-  mode: coeffs
-  params: --samples 2000  --dictSize 1000  --blockSize 8  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/2.list
+  jobs: 8
+  params:
+    coeffs: [2, 4, 6, 8, 10, 12, 14, 16]
+    samples: 2000  
+    dictSize: 1000
+    blockSize: 8  
+    winSize: 8  
+    channels: 3 
+    mode: 2  
+    train: ../../input/imagedb_100_chunk_1000/2.list
 
 blockSizeConverg: 
   desc: convergence of block sizes
-  jobs: [4, 8, 12, 16, 20]
-  mode: blockSize
-  clients: ['c33', 'c34', 'c35', 'c36', 'c37']
-  params:  --coeffs 8 --samples 2000  --dictSize 1000  --winSize 8  --channels 3 --mode 2  --train ../../input/imagedb_100_chunk_1000/2.list
+  clients: ['c33', 'c34', 'c35', 'c36']
+  jobs: 4
+  params:  
+    blockSize: [8, 12, 16, 20]
+    coeffs: 8 
+    samples: 2000  
+    dictSize: 1000  
+    winSize: 8  
+    channels: 3 
+    mode: 2  
+    train: ../../input/imagedb_100_chunk_1000/2.list
 
-lenaCompress:
-pepperCompress:  
-mandrillCompress: 
+lena:
+  desc: convergence of block sizes
+  clients: ['c33', 'c34', 'c35', 'c36']
+  jobs: 4
+  params:  
+    blockSize: 8
+    dict: ../../output/dicts/bluba.dict    
+    coeffs: 8 
+    mode: 2  
+    
+peppers:  
+mandrill: 
+
+
+
+
 

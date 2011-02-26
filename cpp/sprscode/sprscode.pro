@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       -= core
+QT       += core
 TARGET = sprscode
 TEMPLATE = lib
 DEFINES += LIBSPARSE_LIBRARY
@@ -15,7 +15,7 @@ QMAKE_CXXFLAGS += -fopenmp
 #QMAKE_LFLAGS+= -pg
 
 # linux
-unix:INCLUDEPATH += /homes/wheel/seb/playground/include
+unix:INCLUDEPATH += /usr/local/include/eigen3 /homes/wheel/seb/playground/include
 unix:LIBS += -L/homes/wheel/seb/playground/lib
 
 # Maces

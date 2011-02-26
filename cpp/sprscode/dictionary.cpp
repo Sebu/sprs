@@ -97,7 +97,7 @@ void Dictionary::save(const char* fileName) {
 
 void Dictionary::load(const char* fileName) {
     std::ifstream ifs( fileName );
-    std::cout << "loading: " << fileName << std::endl;
+    std::cout << "dict: " << fileName << std::endl;
 
     if (ifs) {
         int version;

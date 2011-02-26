@@ -11,11 +11,14 @@
 #include "dictionary.h"
 #include "vigra_ext.h"
 
+
+#include <QTime>
+
 CoderLasso::CoderLasso()
 {
 }
 
-Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s D
+Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& Dict) // s D
 {
     //    return lasso(s, D.getData());
 
@@ -37,11 +40,11 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
 
 
-    MatrixXd X = D.getData();
+    MatrixXd D = Dict.getData();
     // LARS variable setup
     // [n p] = size(X);
-    int n = X.rows();
-    int p = X.cols();
+    int n = D.rows();
+    int p = D.cols();
 
     int L = yM.cols();
 
@@ -49,7 +52,8 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
     int maxk = 8*nvars; // Maximum number of iterations
 
-    MatrixXd Gram = X.transpose()*X;
+    MatrixXd Gram = D.transpose()*D;
+   // MatrixXd Dt = D.transpose();
 
     MatrixXd beta[L];
     int k[L];
@@ -62,11 +66,11 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
         stop = -this->coeffs;
 
 
-//    std::cout << "precalc done " << stop << std::endl;
+    //    std::cout << "precalc done " << stop << std::endl;
 
-#pragma omp parallel for
+    //    #pragma omp parallel for
     for (int signum=0; signum<L; ++signum) {
-
+        QTime timer;
         MatrixXd y = yM.col(signum);
 
 
@@ -83,7 +87,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
             continue;
         }
 
-        MatrixXd mu = VectorXd::Constant(n, 0.0);//y.sum()/y.size()); // current "position" as LARS travels towards lsq solution
+        VectorXd mu = VectorXd::Constant(n, 0.0);//y.sum()/y.size()); // current "position" as LARS travels towards lsq solution
 
         // I = 1:p; % inactive set
         std::vector<int> I;
@@ -95,10 +99,14 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
         int jpos = 0;
         while ((vars < nvars) && (!stopcond) && (k[signum] < maxk)) {
+//            timer.start();
             k[signum]++;
 
             // find highest corelation
-            VectorXd c = X.transpose()*(y - mu);
+            // slow
+            VectorXd tmp = y - mu;
+            VectorXd c = D.transpose()*tmp;
+//         std::cout << "The slow operation took" << timer.elapsed() << "milliseconds" << std::endl;
 
             VectorXd absV(p-vars);
             double C = DBL_MIN;
@@ -110,15 +118,16 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
                     jpos = i;
                 }
             }
-//            absV.maxCoeff(&jpos);
-//            double C = absV(jpos);
+            //            absV.maxCoeff(&jpos);
+            //            double C = absV(jpos);
 
             std::vector<int> jvec;
             for(int i=0; i<absV.size(); i++)
+                //              if(absV(i)==C) jvec.push_back(I[i]);
                 if(absV(i)>C-1e-6) jvec.push_back(I[i]);
 
             if (!lassocond) { // if a variable has been dropped, do one iteration with this configuration (don't add new one right away)
-//                if(jvec.size()>1)  std::cout << "add " << jvec.size() << std::endl;
+                //                if(jvec.size()>1)  std::cout << "add " << jvec.size() << std::endl;
                 for(int i=0; i<jvec.size(); i++)
                 {
                     A[signum].push_back(jvec[i]);
@@ -128,6 +137,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
                     vars++;
                 }
             }
+
 
             // s = sign(c(A)); // get the signs of the correlations
             VectorXd s(A[signum].size());
@@ -139,6 +149,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
                 else s(i) = 0.0;
 
             }
+
             //            VectorXd csub2(A[signum].size());
             //            for(int i=0; i<A[signum].size(); i++)
             //                csub2(i) = c( A[signum][i] );
@@ -151,6 +162,9 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
 
             //            MatrixXd Gsub(vars,vars);
+
+
+
             MatrixXd Gsub = s*s.transpose();
             for(int i=0; i<A[signum].size(); i++) {
                 for(int m=0; m<A[signum].size(); m++) {
@@ -158,34 +172,43 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
                 }
             }
 
+
             VectorXd GA1 = VectorXd::Ones(vars);
+
+
             Gsub.llt().solveInPlace(GA1);
+
             //            ( Gsub.cwise()*(s*s.transpose()) ).llt().solveInPlace(GA1);
 
             //      VectorXd GA1 = ( Gsub.cwise()*(s*s.transpose()) ).inverse() * VectorXd::Ones(vars);
             double GA1sum = sqrt(GA1.sum());
             double AA = 1.0/GA1sum;
-
-//            MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
+            //            if((AA!=AA) || isinf(AA)) {
+            //                std::cout << signum << " " << k[signum] << std::endl;
+            //               std::cout << "Bla" << std::endl;
+            //            }
+            //            MatrixXd w = (AA*GA1).cwise()*s; // weights applied to each active variable to get equiangular direction
             MatrixXd w = (AA*GA1).array()*s.array(); // weights applied to each active variable to get equiangular direction
 
 
             //MatrixXd Xsub = subselect(X,A[signum]);
-            MatrixXd Xsub(X.rows(),vars);
+            MatrixXd Dsub(D.rows(),vars);
             VectorXd betasub(vars);
             for(int i=0; i<A[signum].size(); i++) {
-                Xsub.col(i) = X.col(A[signum][i]);
+                Dsub.col(i) = D.col(A[signum][i]);
                 betasub(i) = beta[signum](0,A[signum][i]);
             }
 
 
-            VectorXd u = Xsub*w; // equiangular direction (unit vector)
+            VectorXd u = Dsub*w; // equiangular direction (unit vector)
 
             double gamma = DBL_MAX; // if all variables active, go all the way to the lsq solution
 
             double erg3 = DBL_MAX;
             if (vars != nvars) {
-                VectorXd a = X.transpose()*u;
+
+                // slow
+                VectorXd a = D.transpose()*u;
                 for(int i=0; i<I.size(); i++) {
                     double erg1 = (C-c(I[i]))/(AA-a(I[i]));
                     double erg2 = (C+c(I[i]))/(AA+a(I[i]));
@@ -196,7 +219,6 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
             } else {
                 gamma = C/AA;
             }
-
             //VectorXd betasub(vars);
             //for(int i=0; i<A[signum].size(); i++) {
             //  betasub(i) = beta[signum](0,A[signum][i]);
@@ -204,7 +226,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
             // LASSO modification
             lassocond = false;
-//            VectorXd temp = -1.0*(betasub.cwise()/w);
+            //            VectorXd temp = -1.0*(betasub.cwise()/w);
             VectorXd temp = -1.0*(betasub.array()/w.array());
             double erg = DBL_MAX;
             for(int i=0; i<temp.size(); i++)
@@ -235,7 +257,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
                 //double t2 = beta_next.cwise().abs().sum();
                 double t2 = beta_next.array().abs().sum();
                 if (t2 >= stop) {
-//                    double t1 = beta[signum].cwise().abs().sum();
+                    //                    double t1 = beta[signum].cwise().abs().sum();
                     double t1 = beta[signum].array().abs().sum();
 
                     double s = (stop - t1)/(t2 - t1); // interpolation factor 0 < s < 1
@@ -247,6 +269,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
 
             // If LASSO condition satisfied, drop variable from active set
             if (lassocond) {
+                //                std::cout << "drop" << std::endl;
                 I.push_back(A[signum][jpos]);
                 std::vector<int>::iterator it;
                 it = A[signum].begin();
@@ -260,20 +283,23 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& yM, Dictionary& D) // s
                 stopcond = (vars >= -stop);
 
 
+
         } // while
     }
-//    std::cout << "sparse code done" << std::endl;
+    //    std::cout << "sparse code done" << std::endl;
 
-    Eigen::SparseMatrix<double> Gamma(X.cols(),L);
+    Eigen::SparseMatrix<double> Gamma(D.cols(),L);
     Gamma.startFill();
     for(int signum=0; signum<L; ++signum){
         for(int i=0; i<A[signum].size(); i++) {
-            Gamma.fillrand(A[signum][i],signum) = beta[signum](0,A[signum][i]);
+            double value = beta[signum](0,A[signum][i]);
+            if(!((value!=value) || isinf(value)))
+                Gamma.fillrand(A[signum][i],signum) = beta[signum](0,A[signum][i]);
         }
     }
     Gamma.endFill();
 
-//    std::cout << "copy done" << std::endl;
+    //    std::cout << "copy done" << std::endl;
 
     //    if (k == maxk)
     //      std::cout << "LARS warning: Forced exit. Maximum number of iteration reached." << std::endl;

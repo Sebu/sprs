@@ -126,7 +126,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    std::cout << coeffs << " " << blockSize << "  " << dictSize << " "  << trainFile << std::endl;
+    for(int i=1; i<argc; i++)
+        std::cout << argv[i] << " ";
+
+    std::cout << std::endl;
 
     Dictionary dict(blockSize, channels, dictSize);
 
@@ -166,11 +169,12 @@ int main(int argc, char *argv[])
 
 //            std::cout << "train set fill complete " << std::endl;
             if(!running) break;
+            //samples.normalize();
             trainer.train(samples, dict,  0, sampleCount);
             ifs >> nameStr;
         }
         ifs.close();
-//      dict.sort();
+//        dict.sort();
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
 //        trainer.save((dictFile + ".tmp").c_str() );
@@ -187,7 +191,7 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            dictIn.load(nameStr.c_str() );
+            dictIn.load((nameStr + ".dict").c_str() );
 //            dictIn.sort();
             dict.merge(dictIn, eps);
             ifs >> nameStr;
@@ -204,6 +208,7 @@ int main(int argc, char *argv[])
         Samples samples;
         std::string outputFilename = imageFile + ".recon.png";
         dict.load( dictFile.c_str() );
+        std::cout << "input:" << imageFile << std::endl;
         samples.loadImage(imageFile, blockSize, channels, blockSize);
         samples.saveImage(outputFilename, dict, *coder);
 
