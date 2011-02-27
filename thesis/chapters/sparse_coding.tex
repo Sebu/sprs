@@ -32,29 +32,32 @@ solution.
 \begin{align}
 x \sim \tilde{x} = D\alpha \notag\\
 x = D\alpha+\epsilon \notag\\
-\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal} \approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n \end{pmatrix}}_{\textrm{dictionary atoms}}
-\underbrace{\begin{pmatrix} \alpha_1 \\ 0 \\ \vdots \\ \alpha_n \end{pmatrix}}_{\textrm{sparse vector}}
+\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal}
+\approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n
+\end{pmatrix}}_{\textrm{dictionary atoms}}
+\underbrace{\begin{pmatrix} \alpha_1 \\ 0 \\ \vdots \\ \alpha_n
+\end{pmatrix}}_{\textrm{sparse vector}}
 \end{align}
 
 
 The solution to this problem is a least-squares solve of an under-determined
 linear system. 
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha \rVert^{2}_{2}}_{reconstruction} \label{eq:problem}
+\min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha
+\rVert^{2}_{2}}_{reconstruction} \label{eq:problem}
 \end{align}
 But instead off all solutions we want to find the sparsest solution. 
 To archive this it is necessary to keep the coefficient vector $\alpha$ sparse.
 %Describe error and regularize sparsity
-\paragraph{Notation}
-$a[i]$ element i of a vector
-alpha,X,x,D,d,L,epsilon error, L,lambda , A,I sets
+
 
 \section{Regularization}
 To find the sparsest solution sparse coding adds a regularization to the
 the least-squares problem. 
 %.. over-fitting .. Such a constraint is the regularization.
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} + \underbrace{\psi(\alpha)}_{regularization}
+\min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} +
+\underbrace{\psi(\alpha)}_{regularization}
 \end{align}
 
 The regularization acts a constraint to the structure of $\alpha$. It should be
@@ -97,9 +100,13 @@ of large linear system solvers with few optimization constraints. The most
 $\ell_2$ Method Of Frames
 
 %copy
-% Following Tao et al., where it was shown that the L1 norm is equivalent to the L0 norm, 
-%leads one to solve an easier problem. Finding the candidate with the smallest L1 norm can be expressed relatively
-%easily as a linear program, for which efficient solution methods already exist. These solution methods have been refined over the past few years yielding enormous gain
+% Following Tao et al., where it was shown that the L1 norm is equivalent to the
+L0 norm, 
+%leads one to solve an easier problem. Finding the candidate with the smallest
+L1 norm can be expressed relatively
+%easily as a linear program, for which efficient solution methods already exist.
+These solution methods have been refined over the past few years yielding
+enormous gain
 
 \begin{figure}
 \centering
@@ -115,7 +122,8 @@ $\ell_2$ Method Of Frames
 These algorithms calculate a coefficient vector $\alpha$ which is an
 greedy solution of the following NP-hard problem
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{0}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
+\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{0}   \textrm{ s.t. }
+\lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
 \end{align}
 respectivly
 \begin{align}
@@ -143,7 +151,8 @@ r \rVert_2 \leq \epsilon$.
 \caption{Matching Pursuit}
 \label{alg:mp}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
+\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N},
+\epsilon \in \mathbb{R}$
 \STATE $\alpha_0 \gets 0$ (start with zero vector)
 \STATE $r_0 \gets x-D\alpha_0 = x$ (residual) 
 \WHILE {$\lVert \alpha \rVert_{0} \leq L$ $\lVert r \rVert_2 \leq \epsilon$}
@@ -186,7 +195,8 @@ once.
 \caption{Orthogonal Matching Pursuit}
 \label{alg:omp}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
+\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N},
+\epsilon \in \mathbb{R}$
 \STATE $\alpha \gets 0, r \gets x $ (residual) $, A \gets \emptyset$
 \FOR {$j = 0$ to $L$}
 \STATE Select inactive variable with maximum correlation with residual: 
@@ -233,13 +243,15 @@ found by adding a constraint that induces the $L_1$-norm of the solution to be
 small.\cite{Tibshirani1996}
 
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{1}   \textrm{ s.t. } \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon\label{eq:l1}
+\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{1}   \textrm{ s.t. }
+\lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon\label{eq:l1}
 \end{align}
 
 The lagrange multiplier version of the regularized problem \ref{eq:l1} is:
 
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \lambda \lVert \alpha \rVert_{1}
+\min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} +
+\lambda \lVert \alpha \rVert_{1}
 \end{align}
 
 There are several ways to compute the LASSO. .. ...... 
@@ -269,23 +281,27 @@ residual.
 
 
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} + \lambda \lVert \alpha \rVert_{1}
+\min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} +
+\lambda \lVert \alpha \rVert_{1}
 \end{align}
 
 \begin{algorithm}
 \caption{LARS-lasso}
 \label{alg:lars}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, D =[d_1,...,d_p] \in \mathbb{R}^{m\times p}, L \in \mathbb{N}, \epsilon \in \mathbb{R}$
+\REQUIRE $x \in \mathbb{R}^m, D =[d_1,...,d_p] \in \mathbb{R}^{m\times p}, L \in
+\mathbb{N}, \epsilon \in \mathbb{R}$
 % xD normalized and centered
 \STATE $\alpha \gets 0, \mu_{0} \gets 0, A \gets \emptyset$
 \FOR {$j = 0$ to $L$}
-\STATE calculate correlations with residual: $c \gets D^t\left( x-\mu_j \right) $
+\STATE calculate correlations with residual: $c \gets D^t\left( x-\mu_j \right)
+$
 \STATE Select atom with maximum correlation: 
 \begin{equation*}
 i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \end{equation*}
-\STATE maximum correlation: $c_{max} \gets c_i $ %\left<d_a,r\right> $\STATE update active set: $A \gets A \cup \left{i\right} $
+\STATE maximum correlation: $c_{max} \gets c_i $ %\left<d_a,r\right> $
+\STATE update active set: $A \gets A \cup \left\{i\right\} $
 \STATE calculate movement into OLS direction:
 \STATE signs of the correlations: $s_A \gets  sign\left(c_A\right)$
 \STATE $\tilde{D_A} \gets D_A\left(\ldots s_id_i \ldots\right)_{i\in A}$
@@ -297,8 +313,11 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \STATE correlation between direction and variables: $a \gets D_tu_A$
 \STATE minimal movement:
 \begin{equation*}
-\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-c_i }{A_A-a_i }, \frac{c_{max}+c_i }{A_A+a_i } \right\rbrace
-%\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-\left< x,d_i \right> }{1-\left< d_a,d_i \right> }, \frac{c_{max}+\left< x,d_i \right> }{1+\left< d_a,d_i \right> } \right\rbrace
+\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-c_i }{A_A-a_i },
+\frac{c_{max}+c_i }{A_A+a_i } \right\rbrace
+\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-\left< x,d_i
+\right> }{1-\left< d_a,d_i \right> }, \frac{c_{max}+\left< x,d_i \right>
+}{1+\left< d_a,d_i \right> } \right\rbrace
 \end{equation*}
 \STATE drop coefficent from active that change sign: 
 \STATE $ \tilde{\gamma} \gets -\alpha/s_A^Tw_A  $
@@ -327,7 +346,8 @@ columns.
 the algorithm selects only one column.
 \end{description}
 
-Limitation one is irrelevant for our experiments as the dictionaries are over-complete 
+Limitation one is irrelevant for our experiments as the dictionaries are
+over-complete 
 , with respect to the dimension $m$ of signal $X$, and thus satisfy $p\leq n$.
 
 \section{Application and Related Work}

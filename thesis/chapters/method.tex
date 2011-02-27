@@ -244,7 +244,7 @@ When looking at large sets of images and many different blocks we start to talk
 about a different game.
 
 
-Learn basis similar to DCT and  Wavelets/Bandelets(time and freq locality) with
+Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
 increasing block size.
 
 % is LARS better?
@@ -433,6 +433,61 @@ data but .
 \section{Implementation}
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
 
+
+
+\subsection*{Software}
+The sofware framework consists of a library for sparse coding image signals 
+and learning dictionaries, a command line interface to the library and
+miscellaneous scripts for distribution of coding and learning jobs and
+some a test suite.
+
+The whole sparse coding and training library is written in C++ with
+additional use of the OpenCV, Eigen and OpenMP libs. All operations use double
+precision. Eigen\footnote{\url{http://eigen.tuxfamily.org/}\cite{Eigen}}
+is a template library for fast vector and matrix operations 
+and includes some linear algebra algorithms. It is mainly used for operations on
+dense and sparse matrices and solving of linear equation
+systems. OpenCV\footnote{\url{http://opencv.willowgarage.com/}\cite{OpenCV}} as
+in \emph{Open Computer Vision Library} is mainly used for
+image read and write operations, color space conversion adn DCT for the
+quantization matrix generation step. OpenMP
+\footnote{\url{http://www.openmp.org/}\cite{OpenMP}} is a preprocessor
+based application programming interface (API) for C,C++ and Fortran that enables
+the user to distribute code block and loops to multiple CPU cores. In situations
+where it is applicable OpenMP is used to utilize multi-core CPUs. 
+
+
+\Todo{add diagram}
+
+Split image into sub images, convert sub image to samples from image blocks, 
+train dict with samples or just code samples - save dictionary/image
+
+
+\paragraph{Coding}
+The Batch-OMP implementation is based on the implementation
+of \cite{Rubinstein} OMPBox with technical modifications to fit into our
+framework. The LARS-Lasso C++ implementation is based on the Matlab
+implementation of\cite{Strand2005} and the original
+paper\cite{Efron2004} on the algorithm.
+
+\paragraph{Learning}
+The \trainDL  trainer is a straight forward C++ implementation of the
+learning algorithm presented in\cite{Mairal2010}. It is an implementation of the
+basic version of the algorithm with the batch optimization applied. The OMP and
+the LARS-Lasso coding method can be utilized for the coding step.
+
+
+\paragraph{Command line interface}
+
+
+\paragraph{Miscellaneous}
+Besides the actual coding software some other tools for
+additional tasks were used. Several bash and ruby scripts for workload
+distribution onto the clients, aggregation and evaluation of the results.
+Also he ImageMagick\footnote{\url{http://www.imagemagick.org/}} toolkit was used
+for image conversion into JPEG and JPEG 2000 and for some image comparison
+tasks.
+
 \subsection*{Hardware setup}
 %Problems
 %Big matrices
@@ -443,53 +498,6 @@ Computations were made on Apple MacPro with ... \Todo{mac config}
 and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
 config} running Debian 32-bit. Each client in the cluster calculated batches of
 100 till 10,000 images based on the size of the training sets.
-
-\subsection*{Software}
-
-\Todo{add diagram}
-Split image into sub images, convert sub image to samples from image blocks, 
-train dict with samples or just code samples - save dictionary/image
-
-The whole sparse coding and training library is written in C++ with
-additional use of the OpenCV, Eigen and OpenMP libs.
-
-Eigen\footnote{\url{http://eigen.tuxfamily.org/}\cite{Eigen}}
-is a template library for fast vector and matrix operations 
-and includes some linear algebra algorithms. It is mainly used for operations on
-dense and sparse matrices and solving of linear equation systems.
-
-OpenCV\footnote{\url{http://opencv.willowgarage.com/}\cite{OpenCV}} as in
-\emph{Open Computer Vision Library} is mainly used for
-image read and write operations, color space conversion adn DCT for the
-quantization matrix generation step. 
-
-OpenMP \footnote{\url{http://www.openmp.org/}\cite{OpenMP}} is a preprocessor
-based application programming interface (API) for C,C++ and Fortran that enables
-the user to distribute code block and loops to multiple CPU cores. In situations
-where it is applicable OpenMP is used to utilize multi-core CPUs. 
-
-\paragraph{Coding}
-The Batch-OMP implementation is based on the implementation
-of \cite{Rubinstein} OMPBox with technical modifications to fit into our
-framework. The LARS-Lasso C++ implementation is based on the Matlab
-implementation of\cite{Strand2005} and the original
-paper\cite{Efron2004} on the algorithm.
-
-\paragraph{Trainig}
-The \trainDL  trainer is a straight forward C++ implementation of the
-learning algorithm presented in\cite{Mairal2010}. It is an implementation of the
-basic version of the algorithm with the batch optimization applied. The OMP and
-the LARS-Lasso coding method can be utilized for the coding step.
-
-\paragraph{Misc}
-\Todo{Other: imagemagick for conversion of test image -> JPEG,JPEG 2000 and
-comparison of images} 
-Besides the actual coding software some other tools for
-additional tasks were used. Several bash and ruby scripts for workload
-distribution onto the clients, aggregation and evaluation of the results. The
-ImageMagick\footnote{\url{http://www.imagemagick.org/}} toolkit for image
-conversion into JPEG and JPEG 2000 and for some image comparison tasks.
-
 
 
 

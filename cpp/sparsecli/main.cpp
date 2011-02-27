@@ -15,10 +15,16 @@
 #include <getopt.h>
 
 bool running = true;
+bool info = false;
 
 void terminate(int param)
 {
     running = false;
+}
+
+void showinfo(int param)
+{
+    info = true;
 }
 
 int main(int argc, char *argv[])
@@ -30,8 +36,10 @@ int main(int argc, char *argv[])
     if (prev_fn==SIG_IGN) signal(SIGINT,SIG_IGN);
     prev_fn = signal (SIGTERM,terminate);
     if (prev_fn==SIG_IGN) signal(SIGTERM,SIG_IGN);
-    prev_fn = signal (SIGTERM,terminate);
-    if (prev_fn==SIG_IGN) signal(SIGKILL,SIG_IGN);
+    prev_fn = signal (SIGUSR1,showinfo);
+    if (prev_fn==SIG_IGN) signal(SIGUSR1,SIG_IGN);
+//    prev_fn = signal (SIGTERM,terminate);
+//    if (prev_fn==SIG_IGN) signal(SIGKILL,SIG_IGN);
 
     int opt = 0;
 
@@ -59,7 +67,7 @@ int main(int argc, char *argv[])
         {"coeffs",    required_argument, 0, 'c'},
         {"channels", required_argument, 0, 'l'},
         {"dictSize",  required_argument, 0, 'd'},
-        {"epsilon",    required_argument, 0, 'e'},
+        {"error",    required_argument, 0, 'e'},
         {"dict",    required_argument, 0, 'f'},
         {"input",    required_argument, 0, 'i'},
         {"mode",  required_argument, 0, 'm'},
@@ -171,6 +179,8 @@ int main(int argc, char *argv[])
             if(!running) break;
             //samples.normalize();
             trainer.train(samples, dict,  0, sampleCount);
+            if(!info) { info=false; dict.debugSaveImage( (dictFile + ".png").c_str() );}
+
             ifs >> nameStr;
         }
         ifs.close();

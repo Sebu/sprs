@@ -23,7 +23,6 @@ Simplification of signals in signal processing.
 \end{equation*}
 
 
-
 Those basis signal can be interpreted as atoms in a codebook or dictionary.
 
 We define a \emph{dictionary} as a set of different atoms. We define an atom
@@ -33,7 +32,7 @@ There are essential two major distinct ways to construct the
 desired dictionaries. First the construction of model based on basis functions
 found via harmonic analysis that can represent our signal in a sparse way or
 second via algorithms that learn a sparse dictionary via a training process from
-a set of training data/signal samples. The later approach of training good
+a set of training signal samples. The later approach of training good
 dictionaries has become a major task in the last decades\cite{Mairal2010}.
 
 As a matter of fact a good basis or dictionary is essential for a good
@@ -41,6 +40,9 @@ signal approximation\cite{}.
 
 %Orthonormal (feature) vectors are orthogonal and have unit length.
 
+\paragraph{Notation}
+$a[i]$ element i of a vector
+alpha,X,x,D,d,L,epsilon error, L,lambda , A,I sets
 
 \subsection{History}
 \label{sec:history}
@@ -58,8 +60,9 @@ Later on approximation of signals via combination of limited signal samples
 became a major task in signal analysis. Several 
 %application of such signal analysis and interpretation.
 
-\paragraph{Fourier Transform}
-
+\paragraph{Fourier transform}
+The Fourier transform is one of the most widely used ones.
+The Fourier transform 
 %copy
 The most widely accepted analytic tool for such problems is the Fourier
 transform. The Fourier transform decomposes a signal into basis functions of
@@ -67,14 +70,9 @@ different frequencies, known as frequency components, and gives us the amplitude
 of each frequency component in the signal. The waves are of the form:
 
 \begin{align*}
- \mathcal{F}\left(v\right) = \int_{-\infty}^{\infty} \! f(t)e^{-i2\pi vt} \,
+\mathcal{F}\left(v\right) = \int_{-\infty}^{\infty} \! f(t)e^{-i2\pi vt} \,
 \mathrm{d}t
 \end{align*}
-
-
-
-
-
 %\begin{align*}
 %\end{align*}
 
@@ -84,6 +82,10 @@ of each frequency component in the signal. The waves are of the form:
 %copy
 With the increasing use of computers the usage of and need for digital signal
 processing has increased.
+
+With ... and rising of computers in signal processing and the coresponding move
+to digital signal processing.
+
 A move from linear signals to discrete signals happened in 80s when ... 
 Rather then using continuous signals concentrate on discrete
 signal representation. Continuous signals would be better for .... .  But our
@@ -91,39 +93,41 @@ signal (e.g., images) will be discrete anyway because of their initial digital
 representation. Besides the problem of coding becomes different in the continues
 space \cite{} Because of ...
 
+
+The dicscrete Fourier transform (DFT) ermerged as as special discrete version of
+the continuous Fourier transform.
 \begin{align*}
- X_k = \sum_{n=0}^{N-1}x_ne^{\frac{-i2\pi kn}{N}}
+ x_k = \sum_{n=0}^{N-1}\alpha_ne^{\frac{-i2\pi kn}{N}}
 \end{align*}
+
 
 \Todo{FFT}
-FFT in 65s
-FT or the later FFT as an fast algorithmic approach to calculate the discrete
+
+In 1965s 
+DFT or the later FFT as an fast algorithmic approach to calculate the discrete
 Fourier transform.
-The \emph{fast Fourier transform}  as an fast algorithmic approach to calculate
+The \emph{Fast Fourier transform}  as an fast algorithmic approach to calculate
 the discrete Fourier transform.
-
-
-
 Stay in the frequency domain
 
-Two of the major players in discrete 
+Two of the major players in discrete basis transformations are the discrete
+cosine and wavelet transform.
 
-\paragraph{Discrete cosine transformation}
-Is special case of the discrete Fourier transform ( only real part ).
-The idea is to make $f$ an odd function $f(x) = f(-x) $ which leads to the
-imaginary part becoming 0.
+\paragraph{Discrete cosine transformation (DCT)} is special case of the discrete
+Fourier transform which only uses real part of the equation. The idea is to make
+$f$ an odd function with $\forall x \in \mathbb{R} : f(x) = f(-x)$ which leads
+to the imaginary part of the equation becoming zero.
 \begin{align*}
-X_k = \sum_{n=0}^{N-1}x_n\cos \left[ \frac{\pi}{N} \left(
+x_k = \sum_{n=0}^{N-1}\alpha_n\cos \left[ \frac{\pi}{N} \left(
 n+\frac{1}{2}\right) k\right]
 \end{align*}
-\Todo{}
+An example for the usage of DCT basis is the coding of the image blocks in the
+JPEG image compression algorithm.
 
-In image compression this basis is primary used in the JPEG compression.
 
+\paragraph{Discrete wavelet transformation (DWT)}
 
-\paragraph{Discrete wavelet transformation}
-
-Property of the basis functions
+Property of the basis functions 
 $\int_{-\infty}^{\infty} \! f(t) \, \mathrm{d}t = 0$
 
 \Todo{}
@@ -140,27 +144,23 @@ started to become a major role in field of signal representation.\cite{}
 
 \subsection{Splitting the problem}
 \cite{Rubinstein2010}
-In the last 15 years a concept emerged to interpret basis transforms as a set of
-signal atoms in a dictionary and the signals that they reconstruct as sparse
-linear combination of these atoms. see\cite{Olshausen1996,Mallat1993} The
-benefit of this approach is that you can decouple signal coding and dictionary
-design and split the whole process of signal analysis into two tasks. First
-coding of signals and second the design of dictionaries. Separating the problem
-into two distinct problems made the search for efficient coding of signals $z$
-and construction of task specific dictionaries $D$ more flexible\cite{?}. The
-initial problem becomes:
+In the last two decades (see\cite{Olshausen1996,Mallat1993} ) a concept emerged
+to interpret basis transforms as a set of signal atoms in a dictionary and the
+signals that they reconstruct as sparse
+linear combination of these atoms.  The benefit of this approach is that you can
+decouple signal coding and dictionary design and split the whole process of
+signal analysis into two tasks. First coding of signals and second the design
+of dictionaries. Separating the problem into two distinct problems made the
+search for efficient coding of signals $x$ and construction of task specific
+dictionaries $D$ more flexible\cite{?}. The initial problem becomes:
 
-
-\Todo{	}
 \begin{equation}
-X_k = \sum_{n=0}^{N-1}d_nx_n
+x = \sum_{n=0}^{N-1}d_n\alpha_n
 \end{equation}
 
 \begin{equation}
  x \sim \tilde{x} = D\alpha
 \end{equation}
-
-
 
 Ongoing research in this field emerged in order to:
 \begin{itemize}
@@ -225,7 +225,7 @@ descriptor.
 
 %Convergence of the dictionary learning
 %Quality increase with size increase 
-%Comparison with JPEG,JPEG 2000 via RMSE
+%Comparison with JPEG,JPEG 2000 via MSE
 
 
 
