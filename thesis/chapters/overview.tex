@@ -3,40 +3,43 @@
 \numberwithin{equation}{chapter}
 
 \section{Dictionaries for signal representation}
+\label{sec:dicts}
 %\subsection{Problem statement}
 
-When a signal is meant to be sparse it is either representable with a small
-number of combined terms or a series of many terms where the majority of
-coefficients is close to zero. Consider $x$ a signal that is represent by a
-function $f(x)$ that approximates the signal in a sparse way.
+Simplification of signals in signal processing. ... \Todo{}
+
+Consider $x$ a signal that is represent by a
+function $f(x)$ that approximates the signal $x$ in a sparse way.
 \begin{equation*}
 x \sim \tilde{x} = f\left(x\right)
 \end{equation*}
-
-Simplification of signals in signal processing.
+When a signal is meant to be sparse it is either representable with a small
+number of combined terms or a series of many terms where the majority of
+coefficients is close to zero. 
 \begin{equation*}
 \begin{split}
-\tilde{x} & = b_{1}(x) + b_{12}(x) + b_{312}(x)\\
-& = c_{1}b_{1}(x) + 0.001b_{2}(x) ... + 2b_{12}(x) + 0.021b_{13}(x) .. +
-10b_{312}(x)
+\tilde{x} & = t_{1}(x) + t_{12}(x) + t_{312}(x)\\
+& = 0t_{1}(x) + \cdots + 1.1t_{2}(x) + 0.01t_{12}(x) + \cdots +
+2t_{312}(x)
 \end{split}
 \end{equation*}
+We will call these basis terms $t_n$ \emph{atoms} as they are the basic units
+which build up our representation of signals. So far consider the actual
+appearance of those atoms as unknown. We 
+organize all of them in a indexed set called \emph{dictionary} analog to a
+dictionary of words where the indicies are the words and the atoms the
+discription of them. 
 
-
-Those basis signal can be interpreted as atoms in a codebook or dictionary.
-
-We define a \emph{dictionary} as a set of different atoms. We define an atom
-elementary signal or the smallest unit in such a dictionary.
-
+Active research \cite{} in the last decades has shown that a good basis or
+dictionary is essential for a good signal approximation.
 There are essential two major distinct ways to construct the 
 desired dictionaries. First the construction of model based on basis functions
 found via harmonic analysis that can represent our signal in a sparse way or
 second via algorithms that learn a sparse dictionary via a training process from
 a set of training signal samples. The later approach of training good
-dictionaries has become a major task in the last decades\cite{Mairal2010}.
+dictionaries has become a major task in the last two decades\cite{Mairal2010}.
 
-As a matter of fact a good basis or dictionary is essential for a good
-signal approximation\cite{}.
+
 
 %Orthonormal (feature) vectors are orthogonal and have unit length.
 
@@ -44,35 +47,37 @@ signal approximation\cite{}.
 $a[i]$ element i of a vector
 alpha,X,x,D,d,L,epsilon error, L,lambda , A,I sets
 
+
 \subsection{History}
 \label{sec:history}
 %Compressed sensing
 The field of signal transformation reaches far back in the early 60s.
 \cite{Rubinstein2010}
-
-In the early approaches in the 60s combinations of cosine
+In the early approaches in the 60s combinations of cosine 
 transformations were used to approximate analog signals coming from a continues
-representation this makes actually sense. The signal could be represented via
-combinations of connected oscilloscopes with different frequency
+representation this makes actually sense. For example the signal could be
+represented via combinations of connected oscilloscopes with different frequency
 configurations. 
 
 Later on approximation of signals via combination of limited signal samples
-became a major task in signal analysis. Several 
+became a major task in signal analysis. 
+
+Periodic signal in time represent as 
+Several 
 %application of such signal analysis and interpretation.
 
-\paragraph{Fourier transform}
+%\paragraph{Fourier transform}
 The Fourier transform is one of the most widely used ones.
-The Fourier transform 
+
 %copy
 The most widely accepted analytic tool for such problems is the Fourier
 transform. The Fourier transform decomposes a signal into basis functions of
 different frequencies, known as frequency components, and gives us the amplitude
 of each frequency component in the signal. The waves are of the form:
-
-\begin{align*}
+\begin{equation*}
 \mathcal{F}\left(v\right) = \int_{-\infty}^{\infty} \! f(t)e^{-i2\pi vt} \,
 \mathrm{d}t
-\end{align*}
+\end{equation*}
 %\begin{align*}
 %\end{align*}
 
@@ -94,48 +99,37 @@ representation. Besides the problem of coding becomes different in the continues
 space \cite{} Because of ...
 
 
-The dicscrete Fourier transform (DFT) ermerged as as special discrete version of
+The discrete Fourier transform (DFT) ermerged as as special discrete version of
 the continuous Fourier transform.
-\begin{align*}
+\begin{equation*}
  x_k = \sum_{n=0}^{N-1}\alpha_ne^{\frac{-i2\pi kn}{N}}
-\end{align*}
-
-
-\Todo{FFT}
-
-In 1965s 
-DFT or the later FFT as an fast algorithmic approach to calculate the discrete
-Fourier transform.
-The \emph{Fast Fourier transform}  as an fast algorithmic approach to calculate
-the discrete Fourier transform.
-Stay in the frequency domain
-
-Two of the major players in discrete basis transformations are the discrete
+\end{equation*}
+In 1965 Cooley and Tukey presented\cite{Cooley1965} the \emph{fast Fourier
+transform (FFT)} an fast algorithmic approach to calculation the discreat
+Fourier transform. The fast Fourier transform is actualy a reinvention of a
+similiar algorithm from 1805 by Carl Friedrich Gauß. Two other major players in
+discrete basis transformations are the discrete
 cosine and wavelet transform.
 
-\paragraph{Discrete cosine transformation (DCT)} is special case of the discrete
-Fourier transform which only uses real part of the equation. The idea is to make
-$f$ an odd function with $\forall x \in \mathbb{R} : f(x) = f(-x)$ which leads
-to the imaginary part of the equation becoming zero.
-\begin{align*}
+\paragraph{Discrete cosine transformation (DCT)} is a special case of the
+discrete Fourier transform which only uses real part of the equation. The idea
+is to make $f$ an odd function with $\forall x \in \mathbb{R} : f(x) = f(-x)$
+which leads to the imaginary part of the equation becoming zero.
+\begin{equation*}
 x_k = \sum_{n=0}^{N-1}\alpha_n\cos \left[ \frac{\pi}{N} \left(
 n+\frac{1}{2}\right) k\right]
-\end{align*}
+\end{equation*}
 An example for the usage of DCT basis is the coding of the image blocks in the
 JPEG image compression algorithm.
 
 
 \paragraph{Discrete wavelet transformation (DWT)}
-
 Property of the basis functions 
 $\int_{-\infty}^{\infty} \! f(t) \, \mathrm{d}t = 0$
-
 \Todo{}
 Other than the Fourier transform the wavelets transforms capture both frequency
 and location information.
-
 For example these basis are used in JPEG 2000 image compression and 
-
 \Todo{move}
 In computer vision such applications would be de-noising, in-paiting,
 compression among others. In 80s the search for better transformation basis
@@ -153,7 +147,6 @@ signal analysis into two tasks. First coding of signals and second the design
 of dictionaries. Separating the problem into two distinct problems made the
 search for efficient coding of signals $x$ and construction of task specific
 dictionaries $D$ more flexible\cite{?}. The initial problem becomes:
-
 \begin{equation}
 x = \sum_{n=0}^{N-1}d_n\alpha_n
 \end{equation}
@@ -161,7 +154,6 @@ x = \sum_{n=0}^{N-1}d_n\alpha_n
 \begin{equation}
  x \sim \tilde{x} = D\alpha
 \end{equation}
-
 Ongoing research in this field emerged in order to:
 \begin{itemize}
  \item Find efficient ways for coding signals in a sparse way.
@@ -190,7 +182,7 @@ algorithms with big dictionaries.
 
 To address these problems we reimplemented all necessary functions of the
 framework in C++ to experiment with the applicability of sparse coding for
-learning large dictionaries from large image databases. The three major steps of
+learning large dictionaries for large image databases. The three major steps of
 the following chapters are:
 
 \begin{itemize}
@@ -201,9 +193,9 @@ a large set of training data
 \end{itemize}
 
 This includes topics like ``When do dictionaries different sizes and
-learning configurations show convergence?'' ``How many atoms do we need  for a
+learning configurations show convergence?'' ``How many atoms do we need for a
 'good' sparse representation of large image databases?''  and ``How does this
-affect quality and usability for different application?''. 
+affect quality and usability for certain application?''. 
 
 \Todo{einbauen/conclusion?}
 Better understanding the selection strategies of the algorithm and their

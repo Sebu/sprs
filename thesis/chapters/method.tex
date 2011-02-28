@@ -137,7 +137,7 @@ computation. This reduces the computational cost of the algorithm drastically.
  
 \begin{algorithm}
 \caption{Parallel coding}
-\label{alg:batchOMP}
+\label{alg:parallel}
 \begin{algorithmic}[1]
 \REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
 \mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}, \alpha =
@@ -161,7 +161,7 @@ computation. This reduces the computational cost of the algorithm drastically.
 \mathbb{R}^{m\times m}, \epsilon \in \mathbb{R}$
 \STATE $A \gets \emptyset,\alpha \gets 0,\gamma \gets D^Tx,\delta^0 \gets
 0, \epsilon^0\gets x^Tx,L\gets[1],n\gets1$
-\WHILE {$\epsilon^{n-1}> \epsilon $}
+\WHILE {$ n<L$ \AND $\epsilon^{n-1} > \epsilon $}
 \STATE $k \gets \argmax_k\lvert \alpha_k \rvert$
 \IF {$n>1$}
 \STATE $w \gets L^{-1}G_{A,k}$
@@ -189,15 +189,14 @@ w^T & \sqrt{1-w^Tw}
 
 
 %\subsubsection*{Optimizations}
-\Todo{remove?}
-While $L$ is very small the main factor of the computation is
+%\Todo{remove?}
+All modification lead to significant speed increase when coding large sets of
+signals. While $L$ is very small the main factor of the computation is
 the multiplication of $D$ with a vector with a complexity of $O(mp)$. 
 This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
 2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
 with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
 
-All modification lead to significant speed increase when coding large sets of
-signals.
 %more signals than dictionary elements.
 
 %\begin{algorithm}
@@ -228,13 +227,9 @@ signals.
 \subsection{LARS-Lasso}
 %\subsubsection*{Optimizations}
 The same pre-computation of the gram matrix used in the Batch-OMP can also
-be applied to the LARS-Lasso algorithm. 
-
-\Todo{lasso complexity?}
-%Reduction the complexity. %to: 
-%The complete regularization path based on\cite{Efron2004}
-
-
+be applied to the LARS-Lasso algorithm. Simple combination of
+parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars} preseted
+in\ref{sec:lars}.
 
 
 \section{Learning step}
@@ -242,8 +237,6 @@ The majority of learning experiments in the literature were made on
 samples of sliding blocks from single images or very similar images.
 When looking at large sets of images and many different blocks we start to talk
 about a different game.
-
-
 Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
 increasing block size.
 
@@ -253,6 +246,7 @@ not limited to gray-scale oder RGB image signals. The presented algorithm can be
 applied to different kinds of signals. Such as images in other color
 spaces, low/high pass filtered sub-images or signals from another domain like
 audio or text. 
+
 %Some of them are used in our compressions experiments.
 
 
@@ -281,8 +275,12 @@ improbes quality. but with large training set random data is works fine.
 
 \subsection{Convegence}
 
-Dictionary size 
+Block size of the atoms
 
+Coefficients per signal code respectively $\lambda$
+
+
+Remark:
 As it turns out the OMP, to its greedy nature, has a very aggressive selection
 scheme. This very random/noisy selection strategy is very impractical
 for the \trainDL learning step. But nevertheless the OMP is still good for
@@ -290,26 +288,47 @@ sparse coding.
 
 %When applying the tuning parameter it gets even worse. 
 
+
+Dictionary size 
+Most of the experiments in on small sets of 
+
 \subsection{Clustering}
+One reason not to learn big dictionaries is the fact that learning such big
+dictionaries leads to huge memory consumption and coding time.
+To address these problems we investiage two strategies to distribute the
+workload of the learning step onto multiple clients via a clustering approach.
 
-Learning big dictionaries leads to big memory consumption and coding time.
-To 
+One strategy would be to utilize the batch\ref{sec:trainBatchOptimize}
+modification of the LARS-Lasso algorithm. Rather than just coding a small batch
+of signals in one itereation of the traning step\ref{alg:trainDL} we code one
+batch on each client of the cluster and merge all of them before
+applying\ref{alg:update}. Keeping the dictionary in each iteration fixed
+for every batch coding client. \Todo{The problem is that}
 
-\Todo{aufwand}
-Try clustering and merging  ->  it is a map/reduce approach. 
-And compare quality in coding.
+Another strategy is to learn several smaller dictionaries on disjoint sets of
+training data and when the learning step ended, merge the dictionaries
+into a bigger one. The merge process starts with an empty dictionary and
+sucesifly adds atoms from the dictionaries of the learning step to the
+new dictionary unless the atom can be reconstructed with few atoms of the
+current state of the new dictionary. The drawback of this approach is fact that 
+each atom will be less corelated to whole training set.
+\Todo{algo}
 
-Two ways 
-\paragraph{1. one dictionary per client}
- -> merge
- -> drawback: less idipendent learning
-\paragraph{2. one chunk of sample per client}
-  -> merge after evey train iteration
- drawback: many samples per train step
+Comparission of the quality of dictionaries learnd via cluster strategy and
+with normal single maschine were made.
+
+%\paragraph{1. one dictionary per client}
+% -> merge
+% -> drawback: less idipendent learning
+%\paragraph{2. one chunk of sample per client}
+%  -> merge after evey train iteration
+% drawback: many samples per train step
+
+%\Todo{aufwand}
+%Try clustering and merging  ->  it is a map/reduce approach. 
 
 
-
-\subsubsection*{Optimizations}
+%\subsubsection*{Optimizations}
 %\subsection{Adaptive}
 %Thanks to the on-line approach of the training step an adaptive approach can be
 %used. 
@@ -317,18 +336,18 @@ Two ways
 \section{Training sets}
 %\subsection{Learning specific dictionaries}
 As mentioned earlier in section \ref{sec:learnForTheTask} one of the key
-elements 
-of the learning algorithms is the learning of specialization dictionaries.
-Task specific training data is a common way to solve the problem of finding 
-the right dictionary. Here learning for the task comes into
+elements  of the learning algorithms is the learning of specialization
+dictionaries. Task specific training data is a common way to solve the problem
+of finding  the right dictionary. Here learning for the task comes into
 account. Such as de-noising/in-painting dictionaries directly learned from the
 initial signal that gets de-noised or restored from in-painting. If the task
 gets bigger it sounds logical to increase the size of training data and take a
 bigger variety of signals to learn from.  We have a closer look at differences
 of learned elements from specific sets of images. These sets include sketches,
 still images of animations from Disney and post-impressionistic images from
-Vincent van Gogh. 
-Are big image collections specific enough to benefit from 
+Vincent van Gogh.  
+
+Are big image collections specific enough to benefit from sparse coding?
 
 
 
@@ -345,21 +364,21 @@ following main steps in lossy image compression algorithms:
  \item lossless entropy coding of the coefficient 
 \end{itemize}
 %Copy
-%The human eye is good at seeing small differences in brightness over
-%a relatively large area, but not so good at distinguishing the exact strength
-%of a high frequency brightness variation. This allows one to greatly reduce the
-%amount of information in the high frequency components. This is done by simply
-%dividing each component in the frequency domain by a constant for that
-%component, and then rounding to the nearest integer. This rounding operation is
-%the only lossy operation in the whole process if the DCT computation is
-%performed with sufficiently high precision. As a result of this, it is
-%typically the case that many of the higher frequency components are rounded to
-%zero, and many of the rest become small positive or negative numbers, which
-%take many fewer bits to represent.
+The human eye is good at seeing small differences in brightness over
+a relatively large area, but not so good at distinguishing the exact strength
+of a high frequency brightness variation. This allows one to greatly reduce the
+amount of information in the high frequency components. This is done by simply
+dividing each component in the frequency domain by a constant for that
+component, and then rounding to the nearest integer. This rounding operation is
+the only lossy operation in the whole process if the DCT computation is
+performed with sufficiently high precision. As a result of this, it is
+typically the case that many of the higher frequency components are rounded to
+zero, and many of the rest become small positive or negative numbers, which
+take many fewer bits to represent.
 
-%The sparse vector for every are encoded in 2 bytes index and a single byte
 quantized coefficient. Additional zero coefficients from the quantization step
 are removed.
+%The sparse vector for every are encoded in 2 bytes index and a single byte
 
 
 Experiment on sparse coding for compression have been done before but mainly in
@@ -431,10 +450,6 @@ data but .
 
 
 \section{Implementation}
-%\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
-
-
-
 \subsection*{Software}
 The sofware framework consists of a library for sparse coding image signals 
 and learning dictionaries, a command line interface to the library and
@@ -478,7 +493,7 @@ the LARS-Lasso coding method can be utilized for the coding step.
 
 
 \paragraph{Command line interface}
-
+%\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
 
 \paragraph{Miscellaneous}
 Besides the actual coding software some other tools for
@@ -498,10 +513,3 @@ Computations were made on Apple MacPro with ... \Todo{mac config}
 and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
 config} running Debian 32-bit. Each client in the cluster calculated batches of
 100 till 10,000 images based on the size of the training sets.
-
-
-
-
-\Todo{add diagram}
-
-

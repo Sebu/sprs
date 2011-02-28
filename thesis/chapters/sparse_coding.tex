@@ -10,15 +10,43 @@ to linear combine a small selection of atoms from a dictionary. In
 1996 Olshausen and Field\cite{Olshausen1996} Sparse code have
 their origin in neural science and machine learning.
 
+Back to our initial problem of\ref{sec:dicts} $x \sim \tilde{x} = D\alpha$
+
 
 Consider $X \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each
 column $x_{i}$ representing a signal described by a single vector of
 signal length $m$. The dictionary $D\in\mathbb{R}^{m \times p}$ is another
 matrix with $p$ columns where each column represents an atom signal with the
-same dimension as a single signal $x_{i}$ from $X$. The vector $\alpha$ is
-linear combination of a few non orthonormal atoms from $D$ that is close to the
-signal $X$. The problem is not well-posed because there is more than one
-solution. 
+same dimension as a single signal $x_{i}$ from $X$. The number of 
+atoms $p$ in the dictionary is higher then the dimension $m$ of the signals
+$p > m$ making the dictionary over-complete. The vector $\alpha$ consists of
+coefficients that can describe a linear combination of only a few non
+orthonormal atoms from $D$ that is close to the signal $X$. 
+
+%Sparse coding is the 
+\begin{align}
+X = \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n
+\end{pmatrix}}_{signal}
+\approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n
+\end{pmatrix}}_{\textrm{dictionary atoms}}
+\underbrace{\begin{pmatrix} \alpha_1 \\ 0 \\ \vdots \\ \alpha_n
+\end{pmatrix}}_{\textrm{sparse vector}}
+\end{align}
+Or in other words ...
+\begin{equation}
+x = D\alpha+\epsilon \notag\\
+\end{equation}
+The solution to this problem is a least-squares solve of an under-determined
+linear system.
+\begin{equation}
+\min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha
+\rVert^{2}_{2}}_{error} \label{eq:problem}
+\end{equation}
+The problem is not well-posed because there is more than one
+solution. But instead off all solutions we want to find the sparsest solution. 
+To archive this it is necessary to keep the coefficient vector $\alpha$ sparse.
+Which means that only a few coeffients of $\alpha$ are not zero. 
+%Describe error and regularize sparsity
 
 \begin{figure}[h]
 \centering
@@ -27,39 +55,14 @@ solution.
 \label{fig:sparse}
 \end{figure}
 
-
-%Sparse coding is the 
-\begin{align}
-x \sim \tilde{x} = D\alpha \notag\\
-x = D\alpha+\epsilon \notag\\
-\underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}}_{signal}
-\approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n
-\end{pmatrix}}_{\textrm{dictionary atoms}}
-\underbrace{\begin{pmatrix} \alpha_1 \\ 0 \\ \vdots \\ \alpha_n
-\end{pmatrix}}_{\textrm{sparse vector}}
-\end{align}
-
-
-The solution to this problem is a least-squares solve of an under-determined
-linear system. 
-\begin{align}
-\min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha
-\rVert^{2}_{2}}_{reconstruction} \label{eq:problem}
-\end{align}
-But instead off all solutions we want to find the sparsest solution. 
-To archive this it is necessary to keep the coefficient vector $\alpha$ sparse.
-%Describe error and regularize sparsity
-
-
 \section{Regularization}
-To find the sparsest solution sparse coding adds a regularization to the
-the least-squares problem. 
+To find the sparsest solution the sparse coding approach adds a regularization
+to the the least-squares problem\ref{eq:problem}. 
 %.. over-fitting .. Such a constraint is the regularization.
-\begin{align}
+\begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} +
 \underbrace{\psi(\alpha)}_{regularization}
-\end{align}
-
+\end{equation}
 The regularization acts a constraint to the structure of $\alpha$. It should be
 choosen in a way which keeps the number of non-zero coefficient of $\alpha$ low.
 This sparsity constraint can be achieved with the help of the $\ell_0$ norm in
@@ -121,15 +124,15 @@ enormous gain
 \section{$\ell_0$ regularization with greedy algorithms}
 These algorithms calculate a coefficient vector $\alpha$ which is an
 greedy solution of the following NP-hard problem
-\begin{align}
+\begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{0}   \textrm{ s.t. }
 \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
-\end{align}
+\end{equation}
 respectivly
-\begin{align}
+\begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t.
 } \lVert \alpha \rVert_{0} \leq L
-\end{align}
+\end{equation}
 \cite{Mallat1993}
 
 \subsection{Matching-Pursuit}
@@ -189,8 +192,6 @@ the fact that the residual $r$ is orthogonal to the previously selected atoms in
 $D$. The orthogonality leads to the effect that every coefficient is only
 selected
 once.
-
-
 \begin{algorithm}
 \caption{Orthogonal Matching Pursuit}
 \label{alg:omp}
@@ -215,8 +216,6 @@ a_A \gets \left( D_A^T D_A \right)^{-1} D_A^T x  \label{eq:omp_update}
 \begin{equation*}
  r \gets x-D_Aa_A
 \end{equation*}
- 
-
 \ENDFOR
 \RETURN $\alpha$
 \end{algorithmic}
@@ -241,19 +240,15 @@ section presents algorithms which solve  a $\ell_1$ regularization version of
 regularized version of a least squares solution. The regularized version is
 found by adding a constraint that induces the $L_1$-norm of the solution to be
 small.\cite{Tibshirani1996}
-
-\begin{align}
+\begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{1}   \textrm{ s.t. }
 \lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon\label{eq:l1}
-\end{align}
-
+\end{equation}
 The lagrange multiplier version of the regularized problem \ref{eq:l1} is:
-
-\begin{align}
+\begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} +
 \lambda \lVert \alpha \rVert_{1}
-\end{align}
-
+\end{equation}
 There are several ways to compute the LASSO. .. ...... 
 
 LAR\cite{Efron2004} basis pursuit\cite{Chen1995}  FOCUSS\cite{FOCUSS}
@@ -278,6 +273,8 @@ $\alpha = 0$. Find the variable $x_i$ with the maximum correlation with the
 residual $r$ and then move linear into the direction of the ordinary least
 squares solution until a new variable has a higher correlation with the
 residual. 
+%The complete regularization path based on\cite{Efron2004}
+
 
 
 \begin{align}
