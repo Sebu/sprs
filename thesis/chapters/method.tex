@@ -95,16 +95,18 @@ quality. This procedure, illustrated in fig. \ref{fig:YCbCr}, is one key element
 in lossy image compression. 
 \begin{figure}[h]
 \centering
-\subfloat[Y]{\includegraphics[width =
-0.3\textwidth]{images/y.png}}
-\hspace{5mm}
-\subfloat[Cb]{\includegraphics[width =
-0.3\textwidth]{images/cb.png}}
-\hspace{5mm}
-\subfloat[Cr]{\includegraphics[width =
-0.3\textwidth]{images/cr.png}}
-\caption{RGB $\rightarrow$ YCbCr}
+%\subfloat[Y]{\includegraphics[width =
+%0.3\textwidth]{images/y.png}}
+%\hspace{5mm}
+%\subfloat[Cb]{\includegraphics[width =
+%0.3\textwidth]{images/cb.png}}
+%\hspace{5mm}
+%\subfloat[Cr]{\includegraphics[width =
+%0.3\textwidth]{images/cr.png}}
+\centering
+\includegraphics[scale = 0.30]{images/chroma_subsample.pdf}
 \label{fig:YCbCr}
+\caption{RGB $\rightarrow$ YCbCr}
 \end{figure}
 %color space, high/low pass filtering
 %\subsection{color/signal representation}
@@ -314,6 +316,11 @@ current state of the new dictionary. The drawback of this approach is fact that
 each atom will be less corelated to whole training set.
 \Todo{algo}
 
+Taking strategy two even futher is to learn smaller dictionaries from different
+sets of images or charakteristics. Like paintings, gray-scale sketches and
+smooth images animation. Learning dictionaries for very specific classes of
+images.
+
 Comparission of the quality of dictionaries learnd via cluster strategy and
 with normal single maschine were made.
 
@@ -399,10 +406,10 @@ Number of coefficients
 
 \paragraph{Quantization}
 %copy
-The human eye is good at seeing small differences in brightness over a
-relatively large area, but not so good at distinguishing the exact strength of a
-high frequency brightness variation. This allows one to greatly reduce the
-amount of information in the high frequency components. 
+%The human eye is good at seeing small differences in brightness over a
+%relatively large area, but not so good at distinguishing the exact strength of
+%a high frequency brightness variation. This allows one to greatly reduce the
+%amount of information in the high frequency components. 
 
 Fixed quantization or learned from dictionary
 

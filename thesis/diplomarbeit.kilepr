@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0.85
-lastDocument=chapters/conclusion.tex
+lastDocument=chapters/overview.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -167,17 +167,17 @@ encoding=UTF-8
 highlight=LaTeX
 line=3
 mode=LaTeX
-open=true
+open=false
 order=0
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=0
+column=33
 encoding=UTF-8
 highlight=LaTeX
-line=148
+line=18
 mode=LaTeX
-open=false
+open=true
 order=1
 
 [item:chapters/introduction.tex]
@@ -187,28 +187,28 @@ encoding=UTF-8
 highlight=LaTeX
 line=13
 mode=LaTeX
-open=true
+open=false
 order=1
 
 [item:chapters/method.tex]
 archive=true
-column=62
+column=7
 encoding=UTF-8
 highlight=LaTeX
-line=514
+line=307
 mode=LaTeX
-open=false
-order=0
+open=true
+order=3
 
 [item:chapters/overview.tex]
 archive=true
-column=20
+column=15
 encoding=UTF-8
 highlight=LaTeX
-line=197
+line=26
 mode=LaTeX
-open=false
-order=3
+open=true
+order=0
 
 [item:chapters/results.tex]
 archive=true
@@ -222,12 +222,12 @@ order=5
 
 [item:chapters/sparse_coding.tex]
 archive=true
-column=0
+column=2
 encoding=UTF-8
 highlight=LaTeX
-line=276
+line=111
 mode=LaTeX
-open=false
+open=true
 order=2
 
 [item:chapters/title.tex]
@@ -293,28 +293,28 @@ CursorColumn=0
 CursorLine=3
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=0
-CursorLine=148
+CursorColumn=33
+CursorLine=18
 
 [view-settings,view=0,item:chapters/introduction.tex]
 CursorColumn=0
 CursorLine=13
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=62
-CursorLine=514
+CursorColumn=7
+CursorLine=307
 
 [view-settings,view=0,item:chapters/overview.tex]
-CursorColumn=20
-CursorLine=197
+CursorColumn=15
+CursorLine=26
 
 [view-settings,view=0,item:chapters/results.tex]
 CursorColumn=0
 CursorLine=75
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
-CursorColumn=0
-CursorLine=276
+CursorColumn=2
+CursorLine=111
 
 [view-settings,view=0,item:chapters/title.tex]
 CursorColumn=0

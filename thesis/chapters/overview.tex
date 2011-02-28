@@ -5,8 +5,10 @@
 \section{Dictionaries for signal representation}
 \label{sec:dicts}
 %\subsection{Problem statement}
-
-Simplification of signals in signal processing. ... \Todo{}
+Signals like images, sound, mediacal data from EEG, genome sequences. 
+Signal analysis of continues or discrete to performe operations on these
+signals. Simplification of signals is a major field in signal processing as it
+enables ... \Todo{}
 
 Consider $x$ a signal that is represent by a
 function $f(x)$ that approximates the signal $x$ in a sparse way.
@@ -31,49 +33,43 @@ dictionary of words where the indicies are the words and the atoms the
 discription of them. 
 
 Active research \cite{} in the last decades has shown that a good basis or
-dictionary is essential for a good signal approximation.
-There are essential two major distinct ways to construct the 
-desired dictionaries. First the construction of model based on basis functions
-found via harmonic analysis that can represent our signal in a sparse way or
-second via algorithms that learn a sparse dictionary via a training process from
-a set of training signal samples. The later approach of training good
-dictionaries has become a major task in the last two decades\cite{Mairal2010}.
+dictionary is essential for a good signal approximation. Dictionaries capture
+the esence of the signals that they can represent. There are essential two major
+distinct ways to construct the  desired dictionaries. First the construction of
+model based on basis functions found via harmonic analysis that can represent
+our signal in a sparse way or second via algorithms that learn a sparse
+dictionary via a training process from a set of training signal samples. The
+later approach of training good dictionaries has become a major task in the last
+two decades\cite{Mairal2010}.
 
 
 
 %Orthonormal (feature) vectors are orthogonal and have unit length.
 
-\paragraph{Notation}
-$a[i]$ element i of a vector
-alpha,X,x,D,d,L,epsilon error, L,lambda , A,I sets
-
 
 \subsection{History}
 \label{sec:history}
 %Compressed sensing
-The field of signal transformation reaches far back in the early 60s.
+The field of signal processing reaches far back in the early 60s.
 \cite{Rubinstein2010}
 In the early approaches in the 60s combinations of cosine 
-transformations were used to approximate analog signals coming from a continues
-representation this makes actually sense. For example the signal could be
-represented via combinations of connected oscilloscopes with different frequency
-configurations. 
-
-Later on approximation of signals via combination of limited signal samples
-became a major task in signal analysis. 
+transformations were used to approximate analog signals. For example the signal
+could be represented via combinations of connected oscilloscopes with different
+frequency configurations.  Later on approximation of signals via combination of
+limited signal samples became a major task in signal analysis.  The Fourier
+transform is one of the most widely used ones. Signals are split into basis
+functions with 
 
 Periodic signal in time represent as 
 Several 
 %application of such signal analysis and interpretation.
-
 %\paragraph{Fourier transform}
-The Fourier transform is one of the most widely used ones.
 
 %copy
-The most widely accepted analytic tool for such problems is the Fourier
-transform. The Fourier transform decomposes a signal into basis functions of
-different frequencies, known as frequency components, and gives us the amplitude
-of each frequency component in the signal. The waves are of the form:
+%The most widely accepted analytic tool for such problems is the Fourier
+%transform. The Fourier transform decomposes a signal into basis functions of
+%different frequencies, known as frequency components, and gives us the
+%amplitude of each frequency component in the signal. The waves are of the form:
 \begin{equation*}
 \mathcal{F}\left(v\right) = \int_{-\infty}^{\infty} \! f(t)e^{-i2\pi vt} \,
 \mathrm{d}t
@@ -82,34 +78,24 @@ of each frequency component in the signal. The waves are of the form:
 %\end{align*}
 
 \paragraph{Getting discrete}
-%\subsection{Discrete signals}
-
-%copy
-With the increasing use of computers the usage of and need for digital signal
-processing has increased.
-
-With ... and rising of computers in signal processing and the coresponding move
-to digital signal processing.
-
-A move from linear signals to discrete signals happened in 80s when ... 
-Rather then using continuous signals concentrate on discrete
-signal representation. Continuous signals would be better for .... .  But our
-signal (e.g., images) will be discrete anyway because of their initial digital
-representation. Besides the problem of coding becomes different in the continues
-space \cite{} Because of ...
-
-
-The discrete Fourier transform (DFT) ermerged as as special discrete version of
-the continuous Fourier transform.
+With the beginning of the age of computer technologie the field of digital
+signal processing emergerd. A move from continues signals of analog system to
+the discrete representation common in the digital world happend. Based on this
+move to digital signal processing new approaches for basis transforms of
+discrete signals were required. The discrete Fourier transform (DFT) ermerged as
+as special discrete version of the continuous Fourier transform.
 \begin{equation*}
  x_k = \sum_{n=0}^{N-1}\alpha_ne^{\frac{-i2\pi kn}{N}}
 \end{equation*}
 In 1965 Cooley and Tukey presented\cite{Cooley1965} the \emph{fast Fourier
 transform (FFT)} an fast algorithmic approach to calculation the discreat
 Fourier transform. The fast Fourier transform is actualy a reinvention of a
-similiar algorithm from 1805 by Carl Friedrich Gauß. Two other major players in
-discrete basis transformations are the discrete
-cosine and wavelet transform.
+similiar algorithm from 1805 by Carl Friedrich Gauß. The fast Fourier transform
+was a major leap forward in the field of digital signal processing.
+
+In the following decades two other major players in discrete basis
+transformations emerged. The \emph{discrete cosine transform} and the
+\emph{discrete wavelet transform}.
 
 \paragraph{Discrete cosine transformation (DCT)} is a special case of the
 discrete Fourier transform which only uses real part of the equation. The idea
@@ -128,25 +114,29 @@ Property of the basis functions
 $\int_{-\infty}^{\infty} \! f(t) \, \mathrm{d}t = 0$
 \Todo{}
 Other than the Fourier transform the wavelets transforms capture both frequency
-and location information.
-For example these basis are used in JPEG 2000 image compression and 
+and location information. For example these basis are used in JPEG 2000 image
+compression and 
 \Todo{move}
-In computer vision such applications would be de-noising, in-paiting,
-compression among others. In 80s the search for better transformation basis
-started to become a major role in field of signal representation.\cite{}
+
+In 80s the search for better transformation basis started to become a major role
+in field of signal representation.\cite{} 
+
+
+In computer vision applications for digital signal processing would be
+removing of image noise, reconstruction of missing and compression among others.
 
 
 \subsection{Splitting the problem}
 \cite{Rubinstein2010}
-In the last two decades (see\cite{Olshausen1996,Mallat1993} ) a concept emerged
-to interpret basis transforms as a set of signal atoms in a dictionary and the
-signals that they reconstruct as sparse
-linear combination of these atoms.  The benefit of this approach is that you can
-decouple signal coding and dictionary design and split the whole process of
-signal analysis into two tasks. First coding of signals and second the design
-of dictionaries. Separating the problem into two distinct problems made the
-search for efficient coding of signals $x$ and construction of task specific
-dictionaries $D$ more flexible\cite{?}. The initial problem becomes:
+In the last two decades (see\cite{Olshausen1996,Mallat1993}) a concept emerged
+to interpret basis transforms as a set of discrete signal atoms in a dictionary
+and the signals that they reconstruct as sparse linear combination of these
+atoms. The benefit of this approach is that you can decouple signal coding and
+dictionary design and split the whole process of signal analysis into two tasks.
+First coding of signals and second the design of dictionaries. Separating the
+problem into two distinct problems made the search for efficient coding of
+signals $x$ and construction of task specific dictionaries $D$ more
+flexible\cite{?}. The initial problem becomes:
 \begin{equation}
 x = \sum_{n=0}^{N-1}d_n\alpha_n
 \end{equation}
@@ -162,6 +152,11 @@ way with low error.
 \end{itemize}
 
 %analog problem video compression but with less correlation between images and still image 
+
+
+\paragraph{Notation}
+$a[i]$ element i of a vector
+alpha,X,x,D,d,L,epsilon error, L,lambda , A,I sets
 
 \section{Goal of this thesis}
 The main purpose of the thesis is to learn good dictionaries from large
