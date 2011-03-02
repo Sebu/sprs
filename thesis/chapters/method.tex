@@ -1,14 +1,11 @@
 \chapter{Method}
 %\thispagestyle{empty}
 
-
-\section{Performance comparison/Terms}
 \Todo{move to results? or at end of method}
-
+\section{Performance comparison/Terms}
 Before we can go further and present the methods and results of the experiments
 it is necessary to introduce some additional terms. 
 Such as metrics to measure their performance.
-
 
 \paragraph{Mean squared error (MSE)} is an error measurement that
 describes the error/noise between an given or measured reference signal $x$
@@ -61,9 +58,13 @@ for simplification as it is only a few bytes and not being actual pixel data.
 \paragraph{Test data}
 In addition to the introduced metrics it is common practice to use some image
 sets to compare test results of the different algorithms and parameter
-configurations. For comparison of the reconstruction quality and compression
-quality we use a well known set of standard test images from the \emph{USC-SIPI
-Image Database}\footnote{\url{http://sipi.usc.edu/database/}}. They are often
+configurations. As the dictionaries are specificaly trained for
+reconstruction of the data in the training sets it is mandatory to also use
+these image to test the reconstruction and compression quality.
+In addition to this we want to know how good the dictionaries can reconstruct
+and compress images outside of the training set. For those comparisons we use a
+well known set of standard test images from the \emph{USC-SIPI Image
+Database}\footnote{\url{http://sipi.usc.edu/database/}}. They are often
 used in image processing for evaluation of compression algorithms. 
 Including pictures such as Lena, Mandrill and Peppers.
 
@@ -122,22 +123,24 @@ in lossy image compression.
 \end{figure}
 
 \section{Sparse coding step}
+For 
+
 \subsection{Batch-OMP}
-In 2008 Rubinstein et al.\cite{Rubinstein2008} presented the \emph{Batch-OMP}.
-The
-\prettyref{alg:batchOMP} is a modified version of the
-orthogonal-matching-pursuit (\ref{sec:omp}) that can effectively sparse code
+In 2008 Rubinstein et al.\cite{Rubinstein2008} presented a speed improved
+version of the orthogonal-matching-pursuit(\ref{sec:omp}) called
+\emph{Batch-OMP}. The speed gain of \prettyref{alg:batchOMP} is archieve
+by modifying the OMP in a way that can effectively sparse code
 multiple signals in parallel. One key element of the optimizations is the
 pre-computation of the gram matrix $G=D^TD$ which can efficiently be reused
 for each signal. Another optimization to a single signal coding step itself
 (\prettyref{alg:batchOMP}) is the cholesky factorization of $\left( D_A^T D_A
-\right)^{-1}$ (line 5 of \prettyref{alg:mp}). $D_A^T
+\right)^{-1}$ (line \ref{alg:OMP_DTD} of \prettyref{alg:mp}). $D_A^T
 D_A$ is a symmetric and positive-definite matrix and can be chlolesky decomposed
 into $LL^T$. Even better, due to the nature of the algorithm composing $D_A$
 by adding additional row and columns to it, $L$ can be build up during the
 computation. This reduces the computational cost of the algorithm drastically.
  
-\begin{algorithm}
+\begin{algorithm}[H]
 \caption{Parallel coding}
 \label{alg:parallel}
 \begin{algorithmic}[1]
@@ -155,7 +158,7 @@ computation. This reduces the computational cost of the algorithm drastically.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \caption{Batch-OMP}
 \label{alg:batchOMP}
 \begin{algorithmic}[1]
@@ -228,6 +231,9 @@ with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}.
 
 \subsection{LARS-Lasso}
 %\subsubsection*{Optimizations}
+We chose the LARS method as it is the fastest in low dimension or for
+high correlation. Both conditions are satisfied in our experiments.
+
 The same pre-computation of the gram matrix used in the Batch-OMP can also
 be applied to the LARS-Lasso algorithm. Simple combination of
 parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars} preseted
@@ -358,7 +364,7 @@ Are big image collections specific enough to benefit from sparse coding?
 
 
 
-\section{Image compression}
+\section{Application to image compression}
 Todays lossy image compression algorithms are primary based on scientific
 findings about visual perception reaching far back in the 1970s\cite{?} and
 good entropy encoding of the data. Both elements led to to the
@@ -371,17 +377,17 @@ following main steps in lossy image compression algorithms:
  \item lossless entropy coding of the coefficient 
 \end{itemize}
 %Copy
-The human eye is good at seeing small differences in brightness over
-a relatively large area, but not so good at distinguishing the exact strength
-of a high frequency brightness variation. This allows one to greatly reduce the
-amount of information in the high frequency components. This is done by simply
-dividing each component in the frequency domain by a constant for that
-component, and then rounding to the nearest integer. This rounding operation is
-the only lossy operation in the whole process if the DCT computation is
-performed with sufficiently high precision. As a result of this, it is
-typically the case that many of the higher frequency components are rounded to
-zero, and many of the rest become small positive or negative numbers, which
-take many fewer bits to represent.
+%The human eye is good at seeing small differences in brightness over
+%a relatively large area, but not so good at distinguishing the exact strength
+%of a high frequency brightness variation. This allows one to greatly reduce the
+%amount of information in the high frequency components. This is done by simply
+%dividing each component in the frequency domain by a constant for that
+%component, and then rounding to the nearest integer. This rounding operation is
+%the only lossy operation in the whole process if the DCT computation is
+%performed with sufficiently high precision. As a result of this, it is
+%typically the case that many of the higher frequency components are rounded to
+%zero, and many of the rest become small positive or negative numbers, which
+%take many fewer bits to represent.
 
 quantized coefficient. Additional zero coefficients from the quantization step
 are removed.
@@ -477,15 +483,15 @@ quantization matrix generation step. OpenMP
 based application programming interface (API) for C,C++ and Fortran that enables
 the user to distribute code block and loops to multiple CPU cores. In situations
 where it is applicable OpenMP is used to utilize multi-core CPUs. 
-
-
 \Todo{add diagram}
-
 Split image into sub images, convert sub image to samples from image blocks, 
 train dict with samples or just code samples - save dictionary/image
-
+Image block size, block selection strategy can be specified.
 
 \paragraph{Coding}
+The sparse coding step can be configured to use either the Batch-OMP and 
+set a limitation to the maximum number of coefficients or the LARS-Lasso 
+and set the regularization(\ref{eq:l1}) factor $\lambda$.
 The Batch-OMP implementation is based on the implementation
 of \cite{Rubinstein} OMPBox with technical modifications to fit into our
 framework. The LARS-Lasso C++ implementation is based on the Matlab
@@ -493,10 +499,12 @@ implementation of\cite{Strand2005} and the original
 paper\cite{Efron2004} on the algorithm.
 
 \paragraph{Learning}
-The \trainDL  trainer is a straight forward C++ implementation of the
+The \trainDL is a straight forward C++ implementation of the
 learning algorithm presented in\cite{Mairal2010}. It is an implementation of the
-basic version of the algorithm with the batch optimization applied. The OMP and
-the LARS-Lasso coding method can be utilized for the coding step.
+basic version of the algorithm with the batch optimization applied. Batch-OMP
+and the LARS-Lasso coding method can be utilized for the coding part.
+Dictionary size and the number training signals for each iteration can be
+speficied.
 
 
 \paragraph{Command line interface}
