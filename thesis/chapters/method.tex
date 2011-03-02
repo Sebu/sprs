@@ -96,16 +96,7 @@ quality. This procedure, illustrated in fig. \ref{fig:YCbCr}, is one key element
 in lossy image compression. 
 \begin{figure}[h]
 \centering
-%\subfloat[Y]{\includegraphics[width =
-%0.3\textwidth]{images/y.png}}
-%\hspace{5mm}
-%\subfloat[Cb]{\includegraphics[width =
-%0.3\textwidth]{images/cb.png}}
-%\hspace{5mm}
-%\subfloat[Cr]{\includegraphics[width =
-%0.3\textwidth]{images/cr.png}}
-\centering
-\includegraphics[scale = 0.30]{images/chroma_subsample.pdf}
+\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
 \label{fig:YCbCr}
 \caption{RGB $\rightarrow$ YCbCr}
 \end{figure}
@@ -241,19 +232,23 @@ in\ref{sec:lars}.
 
 
 \section{Learning step}
-The majority of learning experiments in the literature were made on
+The majority of learning experiments in literature were made on
 samples of sliding blocks from single images or very similar images.
-When looking at large sets of images and many different blocks we start to talk
-about a different game.
+A good strategy when the learned dictionaries are only used for operations on
+those images. The dictionary atoms learned from those image have a high
+correlation to the image content.  When looking at large sets of images and many
+different blocks we start to talk about a different game. Now each ...
+
+% is LARS better?
+Section \ref{sec:signal_representation} already describes that the learning
+process is not limited to gray-scale oder RGB image signals. The presented
+algorithm can be applied to different kinds of signals. Such as images in other
+color spaces, low/high pass filtered sub-images or signals from another domain
+like audio or text. 
+
 Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
 increasing block size.
 
-% is LARS better?
-As described in section \ref{sec:signal_representation} the learning process is
-not limited to gray-scale oder RGB image signals. The presented algorithm can be
-applied to different kinds of signals. Such as images in other color
-spaces, low/high pass filtered sub-images or signals from another domain like
-audio or text. 
 
 %Some of them are used in our compressions experiments.
 
@@ -348,8 +343,8 @@ with normal single maschine were made.
 
 \section{Training sets}
 %\subsection{Learning specific dictionaries}
-As mentioned earlier in section \ref{sec:learnForTheTask} one of the key
-elements  of the learning algorithms is the learning of specialization
+Section \ref{sec:learnForTheTask} mentions that one of the key
+elements of the learning algorithms is the learning of specialization
 dictionaries. Task specific training data is a common way to solve the problem
 of finding  the right dictionary. Here learning for the task comes into
 account. Such as de-noising/in-painting dictionaries directly learned from the
@@ -403,7 +398,7 @@ open question.
 
 \paragraph{Signal coding}
 The actual coding step of the prepared signals is a simple application of one
-of the sparse coding algorithms presented in\ref{chap:sparse_coding}.
+of the sparse coding algorithms we present in\ref{chap:sparse_coding}.
 But before we can actually code signals we need a good dictionary.
 We learn dictionaries from our training sets 
 block sizes

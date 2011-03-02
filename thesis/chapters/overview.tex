@@ -2,7 +2,7 @@
 %\thispagestyle{empty}
 \numberwithin{equation}{chapter}
 
-\section{Dictionaries for signal representation}
+\section{Sparse signal representation}
 \label{sec:dicts}
 %\subsection{Problem statement}
 Simplification of signals such as images, audio, video or EEG data is a major
@@ -13,26 +13,26 @@ used in MP3 audio, JPEG images and MPEG4 video compression or to reconstruct
 a signal in order to remove noise or recover missing information.
 
 Consider $x$ a signal that is represent by a function $f(x)$ that approximates
-the signal $x$ in a simplified way.
+the signal $x$ in a simplified sparse way.
 \begin{equation*}
 x = f\left(x\right)
 \end{equation*}
-sparse 
-When a signal is meant to be sparse it is either representable with a small
-number of combined terms or a series of many terms where the majority of
-coefficients is close to zero. 
+We are splitting $f(x)$ into a selection of elements from a large set
+basis functions. In a sparse way, as the signal gets either represented with
+a small selection of basis functions or analog as a series of many basis
+functions where the majority of coefficients is close to zero. 
 \begin{equation*}
 \begin{split}
-\tilde{x} & = t_{1}(x) + t_{12}(x) + t_{312}(x)\\
-& = 0t_{1}(x) + \cdots + 1.1t_{2}(x) + 0.01t_{12}(x) + \cdots +
-2t_{312}(x)
+x & = b_{1}(x) + b_{12}(x) + b_{312}(x)\\
+& = 0b_{1}(x) + \cdots + 1.1b_{2}(x) + 0.01b_{12}(x) + \cdots +
+2b_{312}(x)
 \end{split}
 \end{equation*}
-We call these basis terms $t_n$ \emph{atoms} as they are the basic units
+We call these basis functions $b_n$ \emph{atoms} as they are the basic units
 which build up our representation of signals. So far, consider the actual
-appearance of those atoms as unknown. We organize all of them in a indexed set
-called a \emph{dictionary} analog to a dictionary of words, where the indices
-are the words and the atoms the description of them. 
+appearance of those function atoms as unknown. We organize all of them in a
+indexed set called a \emph{dictionary} analog to a dictionary of words, where
+the indices are the words and the atoms the description of them. 
 
 %Active research in the last decades has shown that 
 Dictionaries capture the essence of the signals that they represent.

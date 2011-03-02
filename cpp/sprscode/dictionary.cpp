@@ -205,18 +205,22 @@ MatrixXd & Dictionary::getData() {
 }
 
 
-void Dictionary::debugSaveImage(const char* filename) {
+void Dictionary::debugSaveImage(const char* filename, VectorXd& selection) {
 
     int tmp = ceil(sqrt(elements_));
 
     MatrixXd D = (*data_);
 
-    cv::Mat outputImage(blockSize_*tmp, blockSize_*tmp, CV_8UC(channels_));
+    cv::Mat outputImage=cv::Mat::zeros(blockSize_*tmp, blockSize_*tmp, CV_8UC(channels_));
     //    cv::Mat outputImage(blockSize_*tmp, blockSize_*tmp, CV_8U);
     for(int j=0; j<blockSize_*tmp; j+=blockSize_) {
         for(int i=0; i<blockSize_*tmp; i+=blockSize_) {
             int index = ceil(j/blockSize_)*tmp + ceil(i/blockSize_);
             if(index>=D.cols()) break;
+
+            //DEBUG
+//            if(&selection!=&null_object && selection(index)==0.0) continue;
+
             MatrixXd d = D.col(index);
             cv::Mat recon_cv(1, signalSize_, CV_8U);
 

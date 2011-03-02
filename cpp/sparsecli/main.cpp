@@ -219,8 +219,8 @@ int main(int argc, char *argv[])
         std::string outputFilename = imageFile + ".recon.png";
         dict.load( dictFile.c_str() );
         std::cout << "input:" << imageFile << std::endl;
-        samples.loadImage(imageFile, blockSize, channels, blockSize);
-        samples.saveImage(outputFilename, dict, *coder);
+        samples.loadImage(imageFile, blockSize, channels, 12);
+        samples.saveImage(outputFilename, dict, *coder, 12);
 
     }
 

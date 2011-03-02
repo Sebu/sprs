@@ -34,7 +34,7 @@ public:
    void normalize();
 
    bool loadImage(std::string& fileName, int winSize, int channels, int step=1);
-   void saveImage(std::string& fileName, Dictionary& dict, Coder& coder);
+   void saveImage(std::string& fileName, Dictionary& dict, Coder& coder, int step);
    bool sampleImage(cv::Mat inputImage, int step);
 
 };

@@ -148,7 +148,7 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
             //          data =(char)round(A.coeff(j,k)/quant_);
             data = (int)round(it.value()/quant);
             //            std::cout << it.row() << " " << it.col() << std::endl;
-            A.coeffRef(it.row(),it.col()) = (double)data*quant;
+//          A.coeffRef(it.row(),it.col()) = (double)data*quant;
 //                        if(!data) pos = -1;
             if(data) {
 //                std::cout << it.value() << std::endl;

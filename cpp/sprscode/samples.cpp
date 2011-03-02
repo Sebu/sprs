@@ -26,7 +26,7 @@ void Samples::normalize() {
     }
 }
 
-void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
+void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, int step) {
 
     quant_ = 20.0;
     coeffs_ = coder.coeffs;
@@ -49,16 +49,18 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     std::cout << A.nonZeros()/A.outerSize() << std::endl;
 
     // scale back
+    VectorXd select = VectorXd::Zero(A.innerSize());
     for (int k=0; k<A.outerSize(); ++k) {
         for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
         A.coeffRef(it.row(),it.col()) *= scale(it.col());
+        if(it.col()==200) select(it.row()) = A.coeffRef(it.row(),it.col());
         }
     }
     for(int i=0; i<(*data_).cols(); i++) {
        (*data_).col(i)*= scale(i);
     }
 
-    spc.compress(shift,A);
+//    spc.compress(shift,A);
 //    spc.save(fileName);
 
     //reconstruct :)
@@ -90,13 +92,17 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
     std::cout << "PSNR: " << psnr(mseVal) << " dB" << std::endl;
     std::cout << "MSE: " << mseVal << std::endl;
 
+
+    dict.debugSaveImage("../../output/tmp/dict_tmp.select.png", select);
+
+
     std::cout << "reorder  image" << std::endl;
 
-    cv::Mat outputImage(imageRows_+blockSize_, imageCols_+blockSize_, CV_8UC(channels_));
+    cv::Mat outputImage = cv::Mat::zeros(imageRows_+blockSize_, imageCols_+blockSize_, CV_8UC(channels_));
     cv::Mat recon_cv(1,rows_,CV_8U);
     int index = 0;
-    for(int j=0; j<imageRows_; j+=blockSize_) {
-        for(int i=0; i<imageCols_; i+=blockSize_) {
+    for(int j=0; j<imageRows_; j+=step) {
+        for(int i=0; i<imageCols_; i+=step) {
 
             for(int jj=0; jj<channels_; jj++){
                 for(int ii=0; ii<rows_/channels_; ii++) {
@@ -109,7 +115,8 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder) {
             //            cv::Mat tmp = inshape(recon_cv, winSize_,  channels_);
 
             cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_, blockSize_) );
-            tmp.copyTo(region);
+            region += tmp;
+            //tmp.copyTo(region);
             index++;
         }
     }

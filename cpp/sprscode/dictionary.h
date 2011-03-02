@@ -13,6 +13,8 @@ using namespace Eigen;
 
 #define DICT_VERSION 3
 
+static VectorXd null_object = VectorXd();
+
 class LIBSPARSESHARED_EXPORT MetaUsage {
 public:
     int usage_;
@@ -62,7 +64,10 @@ public:
 
 
     // debug
-    void debugSaveImage(const char* filename);
+
+    void debugSaveImage(const char* filename, VectorXd& selection=null_object);
 };
+
+
 
 #endif // DICTIONARY_H
