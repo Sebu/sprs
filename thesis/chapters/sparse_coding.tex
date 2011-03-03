@@ -40,11 +40,11 @@ linear system.
 \rVert^{2}_{2}}_{error} \label{eq:problem}
 \end{equation}
 The problem is not well-posed because there is more than one
-solution. But instead off all solutions we want to find the sparsest solution. 
+solution to it. Such a problem is called a ill-posed problem.
+But instead off all solutions we want to find the sparsest
+solution. 
 To archive this it is necessary to keep the coefficient vector $\alpha$ sparse.
 Which means that only a few coeffients of $\alpha$ are not zero. 
-%Describe error and regularize sparsity
-
 \begin{figure}[h]
 \centering
 \includegraphics[width = 0.20\textwidth]{images/sparse.pdf}
@@ -54,22 +54,28 @@ Which means that only a few coeffients of $\alpha$ are not zero.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width = 1.0\textwidth]{images/sparse_selection.pdf}
+%\includegraphics[width = 1.0\textwidth]{images/sparse_selection.pdf}
+\includegraphics[scale = 0.25]{images/segmentation.png}
 \caption{}
 \label{fig:sparse}
 \end{figure}
 The idea of sparse coding image signals has its origin in neural science. 
-Research in this field found that the cells in the visual cortex have
-properties similar to those localized filtering of wavelets functions. Several
-approaches were made to create system that resemble this phenomena but did not
-lead to the desired structures. In 1996 Olshausen and Field\cite{Olshausen1996}
-noticed that when adding a sparsity constraint to these learning algorithms they
-can regenerate those characteristic elements.
+Research in this field found that the cells in the visual cortex, also known as
+\emph{V1}, have properties similar to those localized filtering of wavelets
+functions. Several approaches were made to create system that resemble this
+phenomena but did not lead to the desired structures. In 1996 Olshausen and
+Field\cite{Olshausen1996} noticed that when adding a sparsity constraint to
+these learning algorithms they can regenerate those characteristic elements.
+Following this discovery contraints were added to the least-squares problem.
 
 
 \section{Regularization}
-To find the sparsest solution the sparse coding approach adds a regularization
-to the the least-squares problem\ref{eq:problem}. 
+A regularization adds additional information to a in order to solve an
+ill-posed problem or to prevent
+overfitting.\footnote{\url{
+http://en.wikipedia.org/wiki/Regularization_(mathematics)}}
+To find the sparsest solution the sparse coding approach adds such
+regularization to the the least-squares problem\ref{eq:problem}. 
 %.. over-fitting .. Such a constraint is the regularization.
 \begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} +
@@ -77,11 +83,13 @@ to the the least-squares problem\ref{eq:problem}.
 \end{equation}
 The regularization acts a constraint to the structure of $\alpha$. It should be
 choosen in a way which keeps the number of non-zero coefficient of $\alpha$ low.
-This sparsity constraint can be achieved with the help of the $\ell_0$ norm in
-the form of $\lVert\alpha\rVert_{0} = \#\{i:\alpha_i \neq
-0,i=1,...,p,\alpha\in\mathbb{R}^p\}$. The $\ell_0$ is a pseudo-norm that
-virtually counts the number of non-zero elements in the vector.
-
+This sparsity constraint can be achieved with the help of the $\ell_0$-norm.
+The $\ell_0$-norm is a pseudo-norm that virtually counts the number of non-zero
+elements in the vector in the form of:
+\begin{equation}
+\lVert\alpha\rVert_{0} = \#\{i:\alpha_i \neq 
+0,i=1,...,p,\alpha\in\mathbb{R}^p\} 
+\end{equation}
 There is one significant problem in using $\ell_0$-norm. This particular
 regularization makes the initial problem \ref{eq:problem} NP-hard. To get the
 ideal solution it is necessary to test every combination of atoms. But this
@@ -234,7 +242,7 @@ version of \ref{eq:problem}.
 
 
 
-\section {$\ell_1$ regularization with the Lasso}
+\section {$\ell_1$ regularization with the $\ell_1$asso}
 The $\ell_1$ regularization of our initial problem is also known as the
 \emph{Lasso}. The name stands for \emph{least absolute shrinkage and
 selection operator} and is a regularized version of a least squares
@@ -242,14 +250,18 @@ solution. The regularized version is found by adding a constraint that induces
 the $L_1$-norm of the solution to be small. It was first presented by Tibshirani
 in 1996\cite{Tibshirani1996}. Under this constraint our initial problem becomes:
 \begin{equation}
-\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{1}   \textrm{ s.t. }
-\lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon\label{eq:l1}
+\min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} \textrm{
+s.t. } \lVert \alpha \rVert_{1} \leq L \label{eq:l1}
 \end{equation}
-The lagrange multiplier version of the regularized problem \ref{eq:l1} is:
+The algorithms dealing with this problem often require to formulate this
+constrained function into a single expression. The lagrange multiplier is a
+method to construct such a  from a function and the constraint. The lagrange
+multiplied version of the regularized problem \ref{eq:l1} is:
 \begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} +
 \lambda \lVert \alpha \rVert_{1}\label{eq:l1lagrange}
 \end{equation}
+Where the coefficient $\lambda$ controls the sparsity equivalent to $L$.
 In the last two decades several algorithms were proposed to compute the
 Lasso. The basis pursuit by Chen et al.\cite{Chen1995}, the FOCUSS\cite{FOCUSS}
 the LARS by Efron et al.\cite{Efron2004} among others.
@@ -261,11 +273,11 @@ the LARS by Efron et al.\cite{Efron2004} among others.
 %formulas}
 The LARS-Lasso was first presented in 2004 by Efron et al.\cite{Efron2004}.
 It is a algorithm to solve the Lasso with the help of a regression
-algorithm known as least angle regression. Regression tries to find the
+algorithm known as \emph{least-angle regression}. Regression tries to find the
 correlation between a depended variable, here \prettyref{eq:l1lagrange}, and a
 set of independent variables, our coefficients of $\alpha$.
 
-\paragraph{Least angle regression}
+\paragraph{Least-angle regression}
 The main idea of the least angle regression is to start with all coefficient
 zero $\alpha = 0$. Find the variable $x_i$ with the maximum correlation with the
 residual $r$ and then move linear into the direction of the ordinary least
@@ -283,8 +295,8 @@ It is a modified version of the LAR where variables get removed from the active
 set when their coefficient become zero.
 
 A pseudocode implementation can be found in \prettyref{alg:lars}.
-\begin{algorithm}[H]
-\caption{LARS-lasso}
+\begin{algorithm}
+\caption{LARS-Lasso}
 \label{alg:lars}
 \begin{algorithmic}[1]
 \REQUIRE $x \in \mathbb{R}^m, D =[d_1,...,d_p] \in \mathbb{R}^{m\times p}, L \in
@@ -347,6 +359,11 @@ are over-complete, with respect to the dimension $m$ of signal $X$, and thus
 satisfy $p\leq n$. 
 
 \section{Application and Related Work}
+In the most applications and papers related to sparse coding,the coding
+step and the dictionary learning step are often close tied together. This
+section concentrates on work where the sparse coding step is dominating. Section
+\ref{sec:related_dictionarie} show related work where the learning of dictiories
+is the dominating part of the work.
 
 %\begin{description}
 \paragraph{Noise reduction}
@@ -371,23 +388,11 @@ Wx \approx WD\alpha\text{select subset}\\
 
 
 %Task driven dictionaries
-\paragraph{Classification} \cite{?} validation of fake paintings. 
-\cite{?} classification of object by learning  individual dictionaries for each
-object group. Additional examples for sparse coding  being used for
-classification tasks can be found in
-\cite{Raina2007,BradleyBagnel2009,Mairal2008,Mairal2008b,Bar2009,Yang2009}.
 
 \paragraph{Inverse half-toning} Half-toning, as used in printing ,is a process
 where binary raster simulates continuous tone images. Small dots of different
 size and shape create the optical illusion of continuous tones. In 2010 research
 by Mairal et al.\cite{Mairal2010b} presented 
-
-
-\paragraph{Compression} \cite{Lewicki1999,Murray2006}  
-Another example of a more specific compression task is the
-work on facial image compression by Bryt and Elad \cite{Bryt2008}. 
-They took a collection of black and white facial images. Aligned them and
-learned 
 
 
 \paragraph{Super resolution} \cite{Wright2008,Yang2010, Yang2010}  
