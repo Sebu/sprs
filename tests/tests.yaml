@@ -27,6 +27,23 @@ default:
     channels: 1 
     mode: 1
 
+winSizeConverg: 
+  desc: win size difference
+  clients: [c51, c52]
+  jobs: 2
+  params:
+    dictSize: 192
+    mode: dictSize
+    coeffs: 8 
+    error: 0.8
+    samples: 4000  
+    blockSize: 8  
+    winSize: [8, 4]  
+    channels: 3 
+    mode: 2  
+    train: ../../input/imagedb_100_chunk_1000/2.list    
+    
+
 dictSizeConverg: 
   desc: convergence of dict size
   clients: [c61, c62, c63, c64, c65]
