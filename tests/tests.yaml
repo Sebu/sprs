@@ -43,6 +43,20 @@ winSizeConverg:
     train: ../../input/imagedb_100_chunk_1000/2.list    
     
 
+dictSizeTest: 
+  desc: convergence of dict size
+  clients: [c61, c62, c63, c64, c65]
+  jobs: 4
+  params:
+    dictSize: [192, 384, 1920, 3840, 8000]
+    mode: dictSize
+    coeffs: 2 
+    blockSize: 12  
+    channels: 3 
+    mode: 1
+    input: ../../../Bilder/lena_color.png
+    dict: [../../output/dicts/dictSizeConverg_0.dict, ../../output/dicts/dictSizeConverg_1.dict, ../../output/dicts/dictSizeConverg_2.dict, ../../output/dicts/dictSizeConverg_3.dict]
+    
 dictSizeConverg: 
   desc: convergence of dict size
   clients: [c61, c62, c63, c64, c65]

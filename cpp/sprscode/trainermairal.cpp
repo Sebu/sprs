@@ -138,7 +138,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 //        else
 //            delta = n*n+realT-n;
         realT += 1.0;
-        double beta = 1.0;//(1.0-1.0/realT);
+        double beta = (1.0-1.0/realT);
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
 //        std::cout << "| (*A_) += tmp ";// << std::endl;
@@ -170,7 +170,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         o << "../../output/tmp/dict_tmp" << t << ".png";
 //        o << "../../output/tmp/dict_tmp.png";
 
-        D.debugSaveImage( o.str().c_str() );
+//        D.debugSaveImage( o.str().c_str() );
 
 //        std::cout << D.getData() << std::endl;
 

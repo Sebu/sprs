@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 //            std::cout << nameStr << " " << counter++ << std::endl;
             samples.loadImage(nameStr, blockSize, channels, winSize);
 
-//            if(!resume && counter==1){ center(samples.getData()); dict.initFromData(samples); dict.debugSaveImage( (dictFile + ".png").c_str() );}
+            if(!resume && counter==1){ center(samples.getData()); dict.initFromData(samples); dict.debugSaveImage( (dictFile + ".png").c_str() );}
 
 //            std::cout << "train set fill complete " << std::endl;
             if(!running) break;
@@ -224,8 +224,8 @@ int main(int argc, char *argv[])
         std::string outputFilename = imageFile + ".recon.png";
         dict.load( dictFile.c_str() );
         std::cout << "input:" << imageFile << std::endl;
-        samples.loadImage(imageFile, blockSize, channels, 12);
-        samples.saveImage(outputFilename, dict, *coder, 12);
+        samples.loadImage(imageFile, blockSize, channels, 8);
+        samples.saveImage(outputFilename, dict, *coder, 8);
 
     }
 
