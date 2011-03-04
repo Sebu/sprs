@@ -33,7 +33,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
     spc.header_.quant_ = (int)round(quant_);
 
-//    std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
+    std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
 
     VectorXd shift = center((*data_));
     VectorXd scale((*data_).cols());
