@@ -29,10 +29,10 @@ default:
 
 dictSizeConverg: 
   desc: convergence of dict size
-  clients: [c61, c62, c63, c64, c65, c66, c67, c57, c56, c55]
+  clients: [c61, c62, c63, c64, c65]
   jobs: 10
   params:
-    dictSize: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+    dictSize: [192, 384, 1920, 3840, 8000]
     mode: dictSize
     coeffs: 8  
     samples: 4000  
