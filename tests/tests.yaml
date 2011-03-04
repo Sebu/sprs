@@ -30,13 +30,14 @@ default:
 dictSizeConverg: 
   desc: convergence of dict size
   clients: [c61, c62, c63, c64, c65]
-  jobs: 10
+  jobs: 5
   params:
     dictSize: [192, 384, 1920, 3840, 8000]
     mode: dictSize
-    coeffs: 8  
+    coeffs: 8 
+    error: 0.8
     samples: 4000  
-    blockSize: 8  
+    blockSize: 12  
     winSize: 8  
     channels: 3 
     mode: 2  
