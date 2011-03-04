@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <QDir>
+#include <QTime>
 #include <signal.h>
 #include <getopt.h>
 
@@ -178,8 +179,12 @@ int main(int argc, char *argv[])
 //            std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             //samples.normalize();
+            QTime timer;
+            timer.start();
             trainer.train(samples, dict,  0, sampleCount);
-            if(!info) { info=false; dict.debugSaveImage( (dictFile + ".png").c_str() );}
+            std::cout << nameStr << " " << counter++ << " time: " << timer.elapsed() << std::endl;
+            dict.debugSaveImage( (dictFile + ".png").c_str() );
+//            if(!info) { info=false; dict.debugSaveImage( (dictFile + ".png").c_str() );}
 
             ifs >> nameStr;
         }
