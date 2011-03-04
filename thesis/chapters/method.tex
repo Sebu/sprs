@@ -122,8 +122,7 @@ represent our 2D image data in a set of 1D vectors.
 \end{figure}
 
 \section{Sparse coding step}
-For 
-We chose Batch-OMP and LARS-Lasso
+
 
 \subsection{Batch-OMP}
 In 2008 Rubinstein et al.\cite{Rubinstein2008} presented a speed improved
@@ -231,14 +230,19 @@ with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}.
 
 \subsection{LARS-Lasso}
 %\subsubsection*{Optimizations}
-We chose the LARS method as it is the fastest in low dimension or for
-high correlation. Both conditions are satisfied in our experiments.
+
 
 The same pre-computation of the gram matrix used in the Batch-OMP can also
 be applied to the LARS-Lasso algorithm. Simple combination of
 parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars} preseted
 in\ref{sec:lars}.
 
+\paragraph{}
+We chose the LARS method as it is the fastest in low dimension or for
+high correlation. Both conditions are satisfied in our experiments.
+For 
+We chose Batch-OMP  and LARS-Lasso. Batch-OMP as beeing to solve $\ell_0$
+regularization. And LARS-Lasso 
 
 \section{Learning step}
 The majority of learning experiments in literature were made on
@@ -266,6 +270,9 @@ increasing block size.
 A more in-depth look at the Mairal on-line training algorithm \ref{sec:mairal}. 
 Why use this algorithm? Robust, convergent, fast, on-line
 
+%When applying the tuning parameter it gets even worse. 
+
+
 \subsection{Initialization}
 %\subsection{Dictionary initialization}
 %\paragraph{Random data} 
@@ -291,14 +298,6 @@ Block size of the atoms
 
 Coefficients per signal code respectively $\lambda$
 
-
-Remark:
-As it turns out the OMP, to its greedy nature, has a very aggressive selection
-scheme. This very random/noisy selection strategy is very impractical
-for the \trainDL learning step. But nevertheless the OMP is still good for
-sparse coding. 
-
-%When applying the tuning parameter it gets even worse. 
 
 
 Dictionary size 
