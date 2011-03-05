@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
     std::string dictFile = "";
     std::string trainFile = "";
     std::string mergeFile = "";
-    std::string imageFile = "";
+    std::string inputFile = "";
+    std::string outputFile = "";
     int sampleCount = 10000;
     int dictSize = 4096;
     double eps = 0.0;
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
         {"error",    required_argument, 0, 'e'},
         {"dict",    required_argument, 0, 'f'},
         {"input",    required_argument, 0, 'i'},
+        {"output",    required_argument, 0, 'o'},
         {"mode",  required_argument, 0, 'm'},
         {"merge",  required_argument, 0, 'g'},
         {"train",    required_argument, 0, 't'},
@@ -84,7 +86,7 @@ int main(int argc, char *argv[])
 
     int option_index = 0;
 
-    while ((opt = getopt_long(argc, argv, "b:c:d:e:f:i:m:rs:t:vw:", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "b:c:d:e:f:i:m:o:rs:t:vw:", long_options, &option_index)) != -1) {
         switch(opt) {
         case 'l':
             channels = atoi(optarg);
@@ -105,7 +107,10 @@ int main(int argc, char *argv[])
             mergeFile = optarg;
             break;
         case 'i':
-            imageFile = optarg;
+            inputFile = optarg;
+            break;
+        case 'o':
+            outputFile = optarg;
             break;
         case 'm':
             mode = atoi(optarg);
@@ -219,13 +224,14 @@ int main(int argc, char *argv[])
         dict.save( dictFile.c_str() );
     }
 
-    if(imageFile!="") {
+    if(inputFile!="") {
         Samples samples;
-        std::string outputFilename = imageFile + ".recon.png";
+        if(outputFile=="")
+            outputFile = inputFile + ".recon.png";
         dict.load( dictFile.c_str() );
-        std::cout << "input:" << imageFile << std::endl;
-        samples.loadImage(imageFile, blockSize, channels, blockSize);
-        samples.saveImage(outputFilename, dict, *coder, blockSize);
+        std::cout << "input:" << inputFile << std::endl;
+        samples.loadImage(inputFile, blockSize, channels, blockSize);
+        samples.saveImage(outputFile, dict, *coder, blockSize);
 
     }
 

@@ -19,7 +19,7 @@ winSizeConverg:
 dictSizeTest: 
   desc: test images with block sizes
   clients: [c61, c62, c63, c64, c65]
-  jobs: 5
+  jobs: 4
   params:
     dictSize: [300, 600, 900, 1800, 3000]
     mode: dictSize
@@ -28,6 +28,7 @@ dictSizeTest:
     channels: 3 
     mode: 1
     input: ../../input/list2/28848380.jpg
+    output: [../../output/dicts/dictSizeTest_0.jpg, ../../output/dicts/dictSizeTest_1.jpg, ../../output/dicts/dictSizeTest_2.jpg, ../../output/dicts/dictSizeTest_3.jpg]
     dict: [../../output/dicts/dictSizeConverg_0.dict, ../../output/dicts/dictSizeConverg_1.dict, ../../output/dicts/dictSizeConverg_2.dict, ../../output/dicts/dictSizeConverg_3.dict]
     
 dictSizeLearn: 
