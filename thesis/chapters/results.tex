@@ -4,93 +4,71 @@
 %\section{Experiments}
 
 \section{Dictionary elements}
-
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.33\textwidth]{images/gradient.png} 
-\caption{gradient}
-\label{fig:gradient}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/gradient.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/checkerboard.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/spot.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/edges.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/wavelet.png}}
+\caption{image from database}
+\label{fig:USC-SIPI}
 \end{figure}
 
-\begin{figure}[h]
+\section{Single vs. Cluster}
+\begin{table}[h]
+\caption{single vs. cluster}
 \centering
-\includegraphics[width = 0.33\textwidth]{images/checkerboard.png}
-\caption{checkerboard}
-\label{fig:checkerboard}
+\begin{tabular}{l c c c c c}
+\hline\hline
+Image & 300 & 600 & 900 & 1800 & 3000 \\
+\hline
+image 1 & 30 & 30 & 30 & 30 & 30 \\
+image 2 & 30 & 30 & 30 & 30 & 30 \\
+image 3 & 30 & 30 & 30 & 30 & 30 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\centering
+\subfloat[low pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
+\label{fig:16_1000_lasso}
 \end{figure}
-
-
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width = 0.33\textwidth]{images/spot.png} 
-\caption{spot}
-\label{fig:spot}
+\subfloat[low pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
+\label{fig:16_1000_lasso}
 \end{figure}
-
-
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width = 0.33\textwidth]{images/edges.png}
-\caption{edge}
-\label{fig:edge}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width = 0.33\textwidth]{images/wavelet.png}
-\caption{wavelets}
-\label{fig:wavelets}
-\end{figure}
-
-\section{Natural image database}
-
-Convergence
-
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-% \caption{8x8 OMP after some iterations}
-% \label{fig:8_4000_lasso}
-% \end{figure}
-% 
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-% \caption{8x8 LARS after some iterations}
-% \label{fig:8_4000_lasso}
-% \end{figure}
-
-See the differences in the selection sceme.
-In the beginning OMP is very random.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width = 0.66\textwidth]{images/1000_sketches.png}
-\caption{1000 16x16 elements of sketches database}
+\subfloat[low pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
 \label{fig:16_1000_lasso}
 \end{figure}
 
-Mostly reduced to line segments and curve elements.
-\Todo{Reconstruction results}
+\section{Compression}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width = 0.66\textwidth]{images/16_1000_1000_10_lasso.png}
-\caption{8x8 elements of gogh}
-\label{fig:16_1000_lasso}
-\end{figure}
+\subsection{Natural image database}
 
-Similar to natural images.
-compression dicts
-
-\begin{figure}[h]
-\centering
-\includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-\caption{8x8 LARS-lasso with 4000 elements natural images}
-\label{fig:8_4000_lasso}
-\end{figure}
-
-\Todo{Reconstruction results}
 
 \begin{figure}[h]
 \centering
@@ -99,8 +77,26 @@ compression dicts
 \label{fig:16_1000_lasso}
 \end{figure}
 
-\Todo{Reconstruction results}
-
+\begin{figure}
+\centering
+\subfloat[low pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
+\label{fig:16_1000_lasso}
+\end{figure}
+\begin{figure}
+\centering
+\subfloat[low pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
+\label{fig:16_1000_lasso}
+\end{figure}
 \begin{figure}
 \centering
 \subfloat[low pass]{\includegraphics[width =
@@ -113,14 +109,46 @@ compression dicts
 \end{figure}
 
 
-\Todo{Reconstruction results}
 
+\subsection{Specific image groups}
 
-\section{Specific image groups}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.66\textwidth]{images/1000_sketches.png}
+\caption{1000 16x16 elements of sketches database}
+\label{fig:16_1000_lasso}
+\end{figure}
 
-
-\section{Compression}
-
+\begin{figure}
+\centering
+\subfloat[low pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
+\label{fig:16_1000_lasso}
+\end{figure}
+\begin{figure}
+\centering
+\subfloat[low pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
+\label{fig:16_1000_lasso}
+\end{figure}
+\begin{figure}
+\centering
+\subfloat[low pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[high pass]{\includegraphics[width =
+0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\caption{low pass}
+\label{fig:16_1000_lasso}
+\end{figure}
 %\section{Quality}
 %\subsection*{trained vs. analytical base}
 %\subsection*{Compression ratio}

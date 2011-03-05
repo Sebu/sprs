@@ -61,6 +61,26 @@ sets to compare test results of the different algorithms and parameter
 configurations. As the dictionaries are specificaly trained for
 reconstruction of the data in the training sets it is mandatory to also use
 these image to test the reconstruction and compression quality.
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+\hspace{5mm}
+%\subfloat{\includegraphics[width = 0.3\textwidth]{images/28848380.jpg}}
+%\hspace{5mm}
+%\subfloat{\includegraphics[width = 0.3\textwidth]{images/28859439.jpg}}
+%\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
+\caption{image from database}
+\label{fig:USC-SIPI}
+\end{figure}
 In addition to this we want to know how good the dictionaries can reconstruct
 and compress images outside of the training set. For those comparisons we use a
 well known set of standard test images from the \emph{USC-SIPI Image
@@ -68,6 +88,29 @@ Database}\footnote{\url{http://sipi.usc.edu/database/}}. They are often
 used in image processing for evaluation of compression algorithms. 
 Including pictures such as Lena, Mandrill and Peppers.
 
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_1_05.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_03.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_04.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_05.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_06.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_07.jpg}}
+\caption{images from USC-SIPI Image Database}
+\label{fig:USC-SIPI}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale = 0.20]{images/segmentation.png}
+\caption{spartial separation}
+\label{fig:spartial}
+\end{figure}
 
 
 \section{Signal representation}
@@ -299,6 +342,48 @@ Block size of the atoms
 Coefficients per signal code respectively $\lambda$
 Dictionary size 
 Most of the experiments in on small sets of 
+
+\begin{table}[h]
+\caption{dictionary size}
+\centering
+\begin{tabular}{l  c  c  c  c  c}
+\toprule
+Image & 1 & 2 & 3 & 4 & 5 \\
+\hline
+300 & 30 & 30 & 30 & 30 & 30 \\
+600 & 30 & 30 & 30 & 30 & 30 \\
+900 & 30 & 30 & 30 & 30 & 30 \\
+1800 & 30 & 30 & 30 & 30 & 30 \\
+3000 & 30 & 30 & 30 & 30 & 30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+Convergence
+
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
+% \caption{8x8 OMP after some iterations}
+% \label{fig:8_4000_lasso}
+% \end{figure}
+% 
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
+% \caption{8x8 LARS after some iterations}
+% \label{fig:8_4000_lasso}
+% \end{figure}
+
+See the differences in the selection sceme.
+In the beginning OMP is very random.
+
+Mostly reduced to line segments and curve elements.
+\Todo{Reconstruction results}
+
+Similar to natural images.
+compression dicts
 
 \subsection{Clustering}
 One reason not to learn big dictionaries is the fact that learning such big

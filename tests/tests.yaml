@@ -1,34 +1,7 @@
 
 
-test: 
-  desc: "test" 
-  clients: [localhost, localhost]
-  jobs: 2
-  params:
-    input: ../../input/images/bild1.jpg
-    dict: ../../output/dicts/bluba.dict
-    coeffs: 8 
-    channels: 1
-    mode: [1, 2] 
-	  
-
-default: 
-  desc: "stuff" 
-  clients: [c12]
-  jobs: 1
-  params:
-    train: ../../input/imagedb_100.txt
-    dict: ../../output/dicts/test1.dict
-    coeffs: 2  
-    samples: 4000  
-    dictSize: 1000  
-    blockSize: 8 
-    winSize: 8  
-    channels: 1 
-    mode: 1
-
 winSizeConverg: 
-  desc: win size difference
+  desc: sliding vs. jpeg blocks for training
   clients: [c51, c52]
   jobs: 2
   params:
@@ -44,21 +17,21 @@ winSizeConverg:
     
 
 dictSizeTest: 
-  desc: convergence of dict size
+  desc: test images with block sizes
   clients: [c61, c62, c63, c64, c65]
-  jobs: 4
+  jobs: 5
   params:
     dictSize: [300, 600, 900, 1800, 3000]
     mode: dictSize
-    coeffs: 16 
+    coeffs: 10 
     blockSize: 10 
     channels: 3 
     mode: 1
     input: ../../input/list2/28848380.jpg
     dict: [../../output/dicts/dictSizeConverg_0.dict, ../../output/dicts/dictSizeConverg_1.dict, ../../output/dicts/dictSizeConverg_2.dict, ../../output/dicts/dictSizeConverg_3.dict]
     
-dictSizeConverg: 
-  desc: convergence of dict size
+dictSizeLearn: 
+  desc: learn different dict sizes
   clients: [c61, c62, c63, c64, c65]
   jobs: 5
   params:
@@ -90,15 +63,15 @@ coeffsConverg:
 
 blockSizeConverg: 
   desc: convergence of block sizes
-  clients: ['c33', 'c34', 'c35', 'c36']
-  jobs: 4
+  clients: ['c32', 'c33', 'c34', 'c35', 'c36']
+  jobs: 5
   params:  
-    blockSize: [8, 12, 16, 20]
+    blockSize: [8, 10, 12, 16, 20]
     coeffs: 8 
     samples: 2000  
-    dictSize: 1000  
-    winSize: 8  
-    channels: 3 
+    dictSize: [128, 200, 288, 512, 800]
+    winSize: [8, 10, 12, 16, 20]  
+    channels: 1 
     mode: 2  
     train: ../../input/imagedb_100_chunk_1000/2.list
 
@@ -112,8 +85,6 @@ lena:
     coeffs: 8 
     mode: 2  
     
-peppers:  
-mandrill: 
 
 
 
