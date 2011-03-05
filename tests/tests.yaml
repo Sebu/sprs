@@ -48,13 +48,13 @@ dictSizeTest:
   clients: [c61, c62, c63, c64, c65]
   jobs: 4
   params:
-    dictSize: [192, 384, 1920, 3840, 8000]
+    dictSize: [300, 600, 900, 1800, 3000]
     mode: dictSize
-    coeffs: 2 
-    blockSize: 12  
+    coeffs: 16 
+    blockSize: 10 
     channels: 3 
     mode: 1
-    input: ../../../Bilder/lena_color.png
+    input: ../../input/list2/28848380.jpg
     dict: [../../output/dicts/dictSizeConverg_0.dict, ../../output/dicts/dictSizeConverg_1.dict, ../../output/dicts/dictSizeConverg_2.dict, ../../output/dicts/dictSizeConverg_3.dict]
     
 dictSizeConverg: 
@@ -62,13 +62,13 @@ dictSizeConverg:
   clients: [c61, c62, c63, c64, c65]
   jobs: 5
   params:
-    dictSize: [192, 384, 1920, 3840, 8000]
+    dictSize: [300, 600, 900, 1800, 3000]
     mode: dictSize
     coeffs: 8 
-    error: 0.8
+    error: 0.5
     samples: 4000  
-    blockSize: 12  
-    winSize: 8  
+    blockSize: 10
+    winSize: 10  
     channels: 3 
     mode: 2  
     train: ../../input/imagedb_100_chunk_1000/2.list

@@ -31,7 +31,11 @@ end
 
 
 jobs.zip(clients).each_with_index do |(job, client), index|
-  dict = test["params"]["dict"] || "../../output/dicts/#{test_name}_#{index}.dict"
+  if test["params"]["dict"].kind_of?(Array)
+    dict = test["params"]["dict"][index]
+  else    
+    dict = test["params"]["dict"] || "../../output/dicts/#{test_name}_#{index}.dict"
+  end
   base_cmd = "ssh #{client} -f -- "
   other_args = "--dict #{dict}"
   # consume chains
