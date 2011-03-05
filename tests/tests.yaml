@@ -23,11 +23,11 @@ dictSizeTest:
   params:
     dictSize: [300, 600, 900, 1800, 3000]
     mode: dictSize
-    coeffs: 10 
+    coeffs: 4 
     blockSize: 10 
     channels: 3 
     mode: 1
-    input: ../../input/list2/28848380.jpg
+    input: ../../input/list2/28952841.jpg
     output: [../../output/dicts/dictSizeTest_0.jpg, ../../output/dicts/dictSizeTest_1.jpg, ../../output/dicts/dictSizeTest_2.jpg, ../../output/dicts/dictSizeTest_3.jpg]
     dict: [../../output/dicts/dictSizeConverg_0.dict, ../../output/dicts/dictSizeConverg_1.dict, ../../output/dicts/dictSizeConverg_2.dict, ../../output/dicts/dictSizeConverg_3.dict]
     
