@@ -52,7 +52,7 @@ void TrainerMairal::load(const char* fileName) {
 }
 
 void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
-    //    for(int i=0; i < 1; i++) {
+        for(int i=0; i < 1; i++) {
 #pragma omp parallel for
     for(int j=0; j < D.getElementCount(); j++) {
         MatrixXd a = A.col(j);
@@ -66,7 +66,7 @@ void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
         MatrixXd u = ( (1.0/pivot) * (b-(D.getData()*a)) ) + d;
         D.getData().col(j) = (1.0/std::max(u.norm(),1.0)) * u;
     }
-    //}
+    }
 
 }
 
@@ -75,11 +75,11 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
 //    std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
-        A_ = new MatrixXd(D.getElementCount(), D.getElementCount());
-        B_ = new MatrixXd(D.getSignalSize(), D.getElementCount());
+        A_ = new MatrixXd(0.0001*MatrixXd::Identity(D.getElementCount(), D.getElementCount()) );
+        B_ = new MatrixXd(0.0001*D.getData()); //new MatrixXd(D.getSignalSize(), D.getElementCount());
         // init A,B with 0
-        A_->setZero();
-        B_->setZero();
+//        A_->setZero();
+//        B_->setZero();
         //        std::cout << (*A_) << std::endl;
 //        std::cout << "init A &  B "<< std::endl;
     }
@@ -116,7 +116,6 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 //        divVariance(samplesChunk);
 
 
-
         Eigen::SparseMatrix<double> a = coder->encode(samplesChunk, D);
         D.meta_->samples_+=samplesChunk.cols();
 //        std::cout << "| a*a.t() ";// << std::endl;
@@ -138,7 +137,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 //        else
 //            delta = n*n+realT-n;
         realT += 1.0;
-        double beta = 1.0; //(1.0-1.0/realT);
+        double beta = 1.0;//(1.0-1.0/realT);
+        double scale = 1.0/samplesChunk.cols();
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
 //        std::cout << "| (*A_) += tmp ";// << std::endl;
@@ -154,11 +154,11 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
                 continue;
                 }
 //                (*A_)(it.row(),it.col()) = (*A_)(it.row(),it.col()) + value;
-              (*A_)(it.row(),it.col()) = beta*(*A_)(it.row(),it.col()) + value;
+              (*A_)(it.row(),it.col()) = beta*(*A_)(it.row(),it.col()) + scale*value;
             }
 
 //        (*B_) = (*B_) + samplesChunk*a.transpose();
-        (*B_) = beta*(*B_) + samplesChunk*a.transpose();
+        (*B_) = beta*(*B_) + scale*(samplesChunk*a.transpose());
         // update step (algo. 2)
 //        std::cout << "| update((*A_), (*B_), D);" << std::endl;
 
@@ -170,7 +170,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         o << "../../output/tmp/dict_tmp" << t << ".png";
 //        o << "../../output/tmp/dict_tmp.png";
 
-//        D.debugSaveImage( o.str().c_str() );
+        D.debugSaveImage( o.str().c_str() );
 
 //        std::cout << D.getData() << std::endl;
 
