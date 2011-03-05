@@ -78,7 +78,7 @@ these image to test the reconstruction and compression quality.
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
-\caption{image from database}
+\caption{image from training set}
 \label{fig:USC-SIPI}
 \end{figure}
 In addition to this we want to know how good the dictionaries can reconstruct
@@ -334,14 +334,7 @@ With single images learning, initialization with elements from training sets
 improbes quality. but with large training set random data is works fine.
 
 
-
-\subsection{Convegence}
-
-Depended on block size, dict size, average nuber of coefficients.
-Block size of the atoms
-Coefficients per signal code respectively $\lambda$
-Dictionary size 
-Most of the experiments in on small sets of 
+\subsection{Dict. size}
 
 \begin{table}[h]
 \caption{dictionary size}
@@ -359,8 +352,50 @@ Image & 1 & 2 & 3 & 4 & 5 \\
 \end{tabular}
 \end{table}
 
+\Todo{small image sample comparision}
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+\caption{dict size difference}
+\label{fig:dict size}
+\end{figure}
+
 
 Convergence
+\subsection{Convegence}
+
+Depended on block size, dict size, average nuber of coefficients.
+Block size of the atoms
+Coefficients per signal code respectively $\lambda$
+Dictionary size 
+Most of the experiments in on small sets of 
+
+
+See the differences in the selection sceme.
+In the beginning OMP is very random.
+
+Mostly reduced to line segments and curve elements.
+\Todo{Reconstruction results}
+\subsection{Dictionary elements}
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/gradient.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/checkerboard.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/spot.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/edges.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/wavelet.png}}
+\caption{image from database}
+\label{fig:USC-SIPI}
+\end{figure}
+
+Similar to natural images.
+compression dicts
 
 % \begin{figure}[h]
 % \centering
@@ -376,14 +411,7 @@ Convergence
 % \label{fig:8_4000_lasso}
 % \end{figure}
 
-See the differences in the selection sceme.
-In the beginning OMP is very random.
 
-Mostly reduced to line segments and curve elements.
-\Todo{Reconstruction results}
-
-Similar to natural images.
-compression dicts
 
 \subsection{Clustering}
 One reason not to learn big dictionaries is the fact that learning such big

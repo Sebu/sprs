@@ -47,6 +47,35 @@ dictSizeLearn:
     mode: 2  
     train: ../../input/imagedb_100_chunk_1000/2.list
 
+dictSizeLasso: 
+  desc: learn different dict sizes
+  clients: [c41, c42, c43, c44]
+  jobs: 4
+  params:
+    dictSize: [1000, 2000, 4000, 8000]
+    mode: dictSize
+    error: 0.8
+    samples: 4000  
+    blockSize: 8
+    winSize: 8
+    channels: 3 
+    mode: 2  
+    train: ../../input/imagedb_100_chunk_1000/2.list
+    
+dictSizeOMP: 
+  desc: learn different dict sizes
+  clients: [c31, c32, c33, c34]
+  jobs: 4
+  params:
+    dictSize: [1000, 2000, 4000, 8000]
+    mode: dictSize
+    coeffs: 8
+    samples: 4000  
+    blockSize: 8
+    winSize: 8
+    channels: 3 
+    mode: 1
+    train: ../../input/imagedb_100_chunk_1000/2.list    
 
 coeffsConverg: 
   desc: convergence of dict coefficients
