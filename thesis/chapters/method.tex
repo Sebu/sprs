@@ -1,9 +1,10 @@
-\chapter{Framework}
+\chapter{Method}
 %\thispagestyle{empty}
-To sparse code images and learn big dictionaries we design a software framework.
 
+\section{Framework}
+To sparse code images and learn big dictionaries we design a software framework
 
-\section{Signal representation}
+\subsection{Signal representation}
 \label{sec:signal_representation}
 To be able efficiently sparse code images it is necessary to prepare the
 image data. The signal preparation mainly consists of two sub steps.
@@ -11,11 +12,6 @@ image data. The signal preparation mainly consists of two sub steps.
  \item Color space conversion
  \item Spartial saparation
 \end{itemize}
-
-%The initial signal data 
-%We use an approach to transform our initial signal into other color spaces like
-%in JPEG encoding to account natural human reception of color data.
-%Experiment ....
 
 \paragraph{Color space conversion} As we mainly use sets of natural color images
 and graphics we require to work with multi-channel data. Commonly presented in
@@ -47,8 +43,6 @@ in lossy image compression.
 \label{fig:YCbCr}
 \caption{RGB $\rightarrow$ YCbCr}
 \end{figure}
-%color space, high/low pass filtering
-%\subsection{color/signal representation}
 
 
 \paragraph{Spartial seperation}
@@ -65,9 +59,15 @@ illustrates this separation step.
 \label{fig:separation}
 \end{figure}
 
-\section{Sparse coding step}
+\subsection{Sparse coding step}
+When coding a large number of small or medium sized decomposition problems,
+which is the case for small image blocks in large image sets, some
+optimizations can be made on the sparse coding algorithms. 
+For the framework we chose batch modified versions of the OMP for $\ell_0$
+regularization and the LARS-Lasso for $\ell_1$ regularization in the sparse
+coding step to address this circumstance. 
 
-\subsection{Batch-OMP}
+\subsubsection{Batch-OMP}
 In 2008 Rubinstein et al.\cite{Rubinstein2008} presented a speed improved
 version of the orthogonal-matching-pursuit(\ref{sec:omp}) called
 \emph{Batch-OMP}. The speed gain of \prettyref{alg:batchOMP} is achieved
@@ -82,7 +82,23 @@ into $LL^T$. Even better, due to the nature of the algorithm composing $D_A$
 by adding additional row and columns to it, $L$ can be build up during the
 computation. This reduces the computational cost of the algorithm drastically.
 
-
+\begin{algorithm}[H]
+\caption{Parallel coding}
+\label{alg:parallel}
+\begin{algorithmic}[1]
+\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
+\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}, \alpha =
+[\alpha_1,...,\alpha_p] \in
+\mathbb{R}^{p}$
+\STATE pre-compute $G \gets D^TD$
+%\STATE $\epsilon \gets X^TX$
+\FOR {$i = 1$ to $k$}
+\STATE Compute $\alpha_i$ using \prettyref{alg:batchOMP} or
+\ref{alg:lars} for all ${x_i}$ in $X$
+\ENDFOR
+\RETURN $\alpha$
+\end{algorithmic}
+\end{algorithm}
 
 \begin{algorithm}[H]
 \caption{Batch-OMP}
@@ -134,76 +150,29 @@ Batch-OMP\cite{Rubinstein2008}.
 
 %more signals than dictionary elements.
 
-%\begin{algorithm}
-%\caption{multi signal optimized OMP}
-%\label{alg:batchOMP}
-%\begin{algorithmic}[1]
-%\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
-%\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
-%\STATE pre-compute gram matrix: $G=D^TD$
-%\FOR[all signals in parallel] {$j = 1$ to $k$ }
-%\STATE $\alpha_j \gets 0, r_j \gets x_j $ (residual) $, A_j=\emptyset$
-%\FOR {$i = 1$ to $L$}
-%\STATE Select atom with maximum correlation with residual: 
-%\begin{equation*}
-%i \gets \argmax_{i \in A_j^C} \lvert \left<d_i,r_j\right> \rvert
-%\end{equation*}
-%\STATE solve with cholesky: $G_{inv} \gets G_A^{-1}$
-%\STATE update active set: $A_j \gets A_j \cup \{i\} $
-%\STATE update residual: $r_j \gets \left(I-D_AG_{inv}D_A^T \right)x_j$
-%\STATE update coefficients: $a_{j_A} \gets G_{inv} D_A^T x_j $
-%\ENDFOR 
-%\ENDFOR 
-%\RETURN $\alpha$
-%\end{algorithmic}
-%\end{algorithm}
+\paragraph{LARS-Lasso} is chosen as it one of the fastest $\ell_1$
+regularizationand and it leads to good results for signals of low dimension and
+with high correlation of dictionary elements. Both conditions are satisfied
+when coding small image blocks.
 
-
-%\subsection{LARS-Lasso}
-\paragraph{}
 The same pre-computation of the gram matrix used in the Batch-OMP can also
-be applied to the LARS-Lasso algorithm. Simple combination of
-parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars} presented
+be applied to the LARS-Lasso algorithm. The framework uses a simple combination
+of parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars} presented
 in\ref{sec:lars}.
 
-\paragraph{}
-We chose the LARS method as it is the fastest in low dimension or for
-high correlation. Both conditions are satisfied in our experiments.
-For 
-We chose Batch-OMP  and LARS-Lasso. Batch-OMP as being to solve $\ell_0$
-regularization. And LARS-Lasso 
-\begin{algorithm}[H]
-\caption{Parallel coding}
-\label{alg:parallel}
-\begin{algorithmic}[1]
-\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
-\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}, \alpha =
-[\alpha_1,...,\alpha_p] \in
-\mathbb{R}^{p}$
-\STATE pre-compute $G \gets D^TD$
-%\STATE $\epsilon \gets X^TX$
-\FOR {$i = 1$ to $k$}
-\STATE Compute $\alpha_i$ using \prettyref{alg:batchOMP} or
-\ref{alg:lars} for all ${x_i}$ in $X$
-\ENDFOR
-\RETURN $\alpha$
-\end{algorithmic}
-\end{algorithm}
-
-\section{Learning step}
+\subsection{Learning step}
 The majority of learning experiments in literature were made on
 samples of sliding blocks from single images or small sets of images.
 A good strategy when the learned dictionaries are only used for operations on
 those images. The dictionary atoms learned from those image have a high
 correlation to the image content.  When looking at large sets of images and many
-different blocks we start to talk about a different game. 
-Now each ...
+different blocks we start to talk about a different game. Now each dictionary
+elements dends to captures more general structurs of the signals.
 
+For the learning step we use the \trainDL learning algorithm. As an on-line
+learning algorithm it is able to learn dictionaries from very large sets of
+training data.
 
-For the learning step we use the \trainDL algorithm.
-Robust, convergent, fast, on-line
-
-% is LARS better?
 Section \ref{sec:signal_representation} already describes that the learning
 process is not limited to gray-scale oder RGB image signals. The presented
 algorithm can be applied to different kinds of signals. Such as images in other
@@ -211,123 +180,41 @@ color spaces, low/high pass filtered sub-images or signals from another domain
 like audio or text. 
 
 
-%Some of them are used in our compressions experiments.
-
-
-%\subsection{\trainDL}
-%A more in-depth look at the Mairal on-line training algorithm
-%\ref{sec:mairal}. 
-%Why use this algorithm? Robust, convergent, fast, on-line
-
-%When applying the tuning parameter it gets even worse. 
-
-
-\subsection{Initialization}
-%\subsection{Dictionary initialization}
-%\paragraph{Random data} 
-%\paragraph{Random elements from training set}
+\subsubsection{Initialization}
 At the start of a training process it is requires to initial the
 dictionary with start data. Otherwise the sparse coding step will only find
 trivial solutions with all coefficient being zero. Which then will have no
 effect in the learning process.
 
 There are two common ways to initialize the dictionary using random data or
-selecting random elements from the training data. Both ways can be tested and 
-the quality will be compared.
+selecting random elements from the training data. The framework supports 
+both ways of dictionary initialization. \Todo{optional: image}
+%can be tested and the quality will be compared.
 
-
-\subsection{Dict. size}
-
-\begin{table}[h]
-\caption{dictionary size}
-\centering
-\begin{tabular}{l  c  c  c  c  c}
-\toprule
-Image & 1 & 2 & 3 & 4 & 5 \\
-\hline
-300 & 30 & 30 & 30 & 30 & 30 \\
-600 & 30 & 30 & 30 & 30 & 30 \\
-900 & 30 & 30 & 30 & 30 & 30 \\
-1800 & 30 & 30 & 30 & 30 & 30 \\
-3000 & 30 & 30 & 30 & 30 & 30 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\Todo{small image sample comparision}
-\begin{figure}[h]
-\centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
-\caption{dict size difference}
-\label{fig:dict size}
-\end{figure}
-
-
-Convergence
-\subsection{Convegence}
+\subsubsection{Convegence}
 
 Depended on block size, dict size, average nuber of coefficients.
 Block size of the atoms
 Coefficients per signal code respectively $\lambda$
 Dictionary size 
 Most of the experiments in on small sets of 
-
-
 See the differences in the selection sceme.
 In the beginning OMP is very random.
 
-Mostly reduced to line segments and curve elements.
-\Todo{Reconstruction results}
-\subsection{Dictionary elements}
-\begin{figure}[h]
-\centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/gradient.png}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/checkerboard.png}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/spot.png}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/edges.png}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/wavelet.png}}
-\caption{image from database}
-\label{fig:USC-SIPI}
-\end{figure}
 
-Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
-increasing block size.
-Similar to natural images.
-compression dicts
-
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-% \caption{8x8 OMP after some iterations}
-% \label{fig:8_4000_lasso}
-% \end{figure}
-% 
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-% \caption{8x8 LARS after some iterations}
-% \label{fig:8_4000_lasso}
-% \end{figure}
-
-
-\subsection{Clustering}
-One reason not to learn big dictionaries is the fact that learning such big
-dictionaries leads to huge memory consumption and coding time.
-To address these problems we investiage two strategies to distribute the
-workload of the learning step onto multiple clients via a clustering approach.
+\subsubsection{Clustering}
+One reason not to learn big dictionaries in a single step is the fact that
+learning such big dictionaries leads to huge memory consumption and coding time.
+To address these problems we investiage strategies to distribute the workload of
+the learning step onto multiple clients with a clustering approach similar to
+MapReduce. 
 
 One strategy would be to utilize the batch\ref{sec:trainBatchOptimize}
 modification of the LARS-Lasso algorithm. Rather than just coding a small batch
 of signals in one itereation of the traning step\ref{alg:trainDL} we code one
 batch on each client of the cluster and merge all of them before
 applying\ref{alg:update}. Keeping the dictionary in each iteration fixed
-for every batch coding client. \Todo{The problem is that}
+for every batch coding client. The problem is that it is still required 
 
 Another strategy is to learn several smaller dictionaries on disjoint sets of
 training data and when the learning step ended, merge the dictionaries
@@ -336,15 +223,31 @@ sucesifly adds atoms from the dictionaries of the learning step to the
 new dictionary unless the atom can be reconstructed with few atoms of the
 current state of the new dictionary. The drawback of this approach is fact that 
 each atom will be less corelated to whole training set.
-\Todo{algo}
+
+\begin{algorithm}[H]
+\caption{Merging dictionaries}
+\label{alg:merging}
+\begin{algorithmic}[1]
+\REQUIRE $ S = (D_1,...,D_k) \text{ set of dictionaries } D \in
+\mathbb{R}^{m\times p}$
+
+\STATE $D_{new} \gets D_{1}[1], n \gets 0$
+\FOR {$i = 1$ to $k$}
+\FOR {$j = 1$ to $p$}
+\STATE sparse code 
+\STATE $n \gets n+1$
+\ENDFOR
+\ENDFOR
+\RETURN $D$
+\end{algorithmic}
+\end{algorithm}
 
 Taking strategy two even futher is to learn smaller dictionaries from different
 sets of images or charakteristics. Such as paintings, gray-scale sketches and
-smooth images animation. Learned dictionaries for very specific classes of
-images can be used for classification task.
-
-Comparission of the quality of dictionaries learnd via cluster strategy and
-with normal single maschine were made.
+smooth images animation. For example learning dictionaries for very specific
+classes of images can be utilized for classification tasks. Somthing that can
+come in handy when applying it to operations like search in large image
+databases.
 
 %\paragraph{1. one dictionary per client}
 % -> merge
@@ -353,51 +256,57 @@ with normal single maschine were made.
 %  -> merge after evey train iteration
 % drawback: many samples per train step
 
-%\Todo{aufwand}
-%Try clustering and merging  ->  it is a map/reduce approach. 
-
-
-%\subsubsection*{Optimizations}
-%\subsection{Adaptive}
-%Thanks to the on-line approach of the training step an adaptive approach can be
-%used. 
-
-
-
-\section{Application to image compression}
+\subsection{Application to image compression}
 Experiment on sparse coding as a tool for compression have been done
 before\cite{Lewicki1999,?} but mainly in theory with generated bases
 dictionaries for comparison and approximations on entropy and resulting
 bits-per-pixel. Leading to better density with learned dictionaries over
-designed. As learned dictionary elements also locality in time, 
-But real practical application is an open question,  no quantization
-was applied and the. 
+designed. 
 
 Todays lossy image compression algorithms are primary based on scientific
 findings about visual perception reaching far back in the 1970s\cite{?} and
 good entropy encoding of the data. Both elements led to to the
 following main steps in lossy image compression algorithms:
 \begin{itemize}
- \item lossy color space conversion and separation
- \item spatial separation, sub-sampling of images
+ \item lossy color space conversion
+ \item sub-sampling amd spatial separation
  \item coding of image signals
  \item quantization to reduce of the number of non-zero coefficient 
  \item lossless entropy coding of the coefficient 
 \end{itemize}
 We already describe the first two steps in
-section\ref{sec:signal_representation}.
+section\ref{sec:signal_representation}. So we will concentrate on the last
+three.
+%As learned dictionary elements show also locality in time like , 
+%But real practical application is an open question
+We add quantization and entropy encoding after the sparse coding step to develop
+a simple real world compression algorithm for sparse coded images.
 
-%The sparse vector for every are encoded in 2 bytes index and a single byte
 
 \paragraph{Signal coding}
 The actual coding step of the prepared signals is a simple application of one
 of the sparse coding algorithms we present in\ref{chap:sparse_coding}.
-But before we can actually code signals we need a good dictionary.
-We learn dictionaries from our training sets 
-block sizes
-Number of coefficients
+
+%But before we can actually code signals we need a good dictionary.
+%We learn dictionaries from our training sets  block sizes Number of
+coefficients
 
 \paragraph{Quantization}
+The idea of quantization is that the human eye is not good at seeing high
+frequency brightness variations.
+
+quantized coefficient. Additional zero coefficients from the quantization step
+are removed.
+
+Fixed quantization or learned from dictionary
+
+%The JPEG algorithm 
+We adopt the idea of visual perception idea of JPEG to our
+approach and sort our element by their frequencies.
+The random distribution of the atoms in the dictionary 
+We concentrated on two fixed quantization factor and the analysis of the
+dictionary elements.
+
 %copy
 %The human eye is good at seeing small differences in brightness over a
 %relatively large area, but not so good at distinguishing the exact strength of
@@ -416,17 +325,8 @@ Number of coefficients
 %zero, and many of the rest become small positive or negative numbers, which
 %take many fewer bits to represent.
 
-quantized coefficient. Additional zero coefficients from the quantization step
-are removed.
 
-Fixed quantization or learned from dictionary
 
-%The JPEG algorithm 
-We adopt the idea of visual perception idea of JPEG to our
-approach and sort our element by their frequencies.
-The random distribution of the atoms in the dictionary 
-We concentrated on two fixed quantization factor and the analysis of the
-dictionary elements.
 
 
 \begin{figure}[h]
@@ -437,6 +337,7 @@ dictionary elements.
 \end{figure}
 
 \paragraph{Data encoding}
+%The sparse vector for every are encoded in 2 bytes index and a single byte
 Coefficients
 Indices
 In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
@@ -445,23 +346,30 @@ of the compression we also really applied some coding schemes to compare real
 world compression data.
 \cite{Murray2006}
 
-\paragraph{Run-length encoding (RLE)}
-\paragraph{Huffman coding}
-\paragraph{Arithmetic coding} is ...
+\begin{description}
+ \item[Run-length encoding (RLE)] The main requirement to work well is
+that the data consists of larger groups of the same data.
+  \item[Huffman coding] Elements that occur often are encoded with less bits.
+Leading to a table and a block of encoded data.
+  \item[Arithmetic coding] is ...
 While arithmetic coding often yields better compression results than Huffman
 coding. The higher processing requirements for coding and the current patent
 situation makes the algorithm unpopular for coding compared to the archived
 compression benefit.
+\end{description}
 
-We apply RLE and Huffman coding to our sparse matrices. 
-%The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
+We apply RLE to the sparse matrices and then huffman coding to the remaining
+data.
+%The sparse vector for every are encoded in 2 bytes index and a single byte 
+%quantized coefficient. Additional zero coefficients from the quantization step
+%are removed.
 
 As mentioned in in \ref{sec:headers} we are aware of the fact that besides
 the actual sparse matrix data we also have other file informations and meta
 data but ignore them for simplification.
   
-\section{Implementation}
-\subsection*{Software}
+\subsection{Implementation}
+%\subsection*{Software}
 The sofware framework consists of a library for sparse coding image signals 
 and learning dictionaries, a command line interface to the library and
 miscellaneous scripts for distribution of coding and learning jobs and
@@ -522,7 +430,133 @@ Also he ImageMagick\footnote{\url{http://www.imagemagick.org/}} toolkit was used
 for image conversion into JPEG and JPEG 2000 and for some image comparison
 tasks.
 
-\subsection*{Hardware setup}
+
+\section{Experiments}
+
+%\Todo{move to results? or at end of method}
+\subsection{Comparison terms}
+Before we go further and present the experiments and their results  it is
+necessary to introduce some additional terms. Such as metrics to measure
+their performance.
+
+\paragraph{Mean squared error (MSE)} is an error measurement that
+describes the error/noise between an given or measured reference signal $x$
+and  and the reconstruction(noisy approximation) $\tilde{x}$ of it.
+Mathematically it is defined as the average of the squared error between two
+signals.
+%The mean squared error is defined as:
+\begin{align}
+ MSE = \frac{1}{n} \sum_{i=0}^{n} \left( {\lVert x_i -
+\tilde{x}_i\rVert^{2}}\right)
+\end{align}
+We primarily use it for testing dictionary learning convergence and as a
+sub term for the measurement described in the next paragraph.
+
+\paragraph{Peak signal-to-noise ration (PSNR)} describes the ratio between the
+error/noise affecting a signal/reconstruction and the maximum possible signal
+amplitude. It is expressed in a logarithmic decibel scale.
+\begin{align}
+ PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{\sqrt{MSE}}\right)
+\end{align}
+Where $MAX$ is the maximum possible value of our signal. For an 8-bit
+image it would be 255. For a 32-bit normalized image it would be 1. And $MSE$ is
+the mean squared error between a reference signal and its reconstruction. The
+PSNR is undefined for zero noise.
+
+The PSNR is primarily used for comparison of the reconstruction quality of
+lossy compression algorithms. Typical values for a lossy reconstruction lie in
+a range between 30dB and
+50dB.\footnote{\url{http://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio}}
+%e.g. relevant for de-noise
+
+\paragraph{Bits per pixel (bpp)} 
+For the comparison of compression ratio of images another well known practice is
+to measure the required \emph{bits per pixel} short bpp. The bbp are calculated
+by dividing the raw image data by the image's dimensions. For example an
+uncompressed RGB color image with 8-bit of color depth requires 24-bits per
+pixel, respectively a gray scale image with 8-bit for a single channel requires
+8-bits. While compression algorithms are able to encode multiple pixels with few
+coefficient leading to much lower bpp rates.
+Looking at other well known compression algorithms such as JPEG or
+JPEG 2000 a common ratio is about $\sim1.8$ bits-per-pixel for average
+quality compression( JPEG quality of 50) of an natural image. 
+\Todo{example image?, lower bit rates, Lewicki estimate for sparse coding}
+
+Besides the raw pixel data, images formats usually contain a certain amount
+of extra data from file headers and meta data. Fortunately we can ignore this
+for simplification as it is only a few bytes and not being actual pixel data.
+
+\paragraph{Test data}
+In addition to the introduced metrics it is common practice to use some image
+sets to compare test results of the different algorithms and parameter
+configurations. As the dictionaries are specificaly trained for
+reconstruction of the data in the training sets it is mandatory to also use
+these image to test the reconstruction and compression quality.
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+\hspace{5mm}
+%\subfloat{\includegraphics[width = 0.3\textwidth]{images/28848380.jpg}}
+%\hspace{5mm}
+%\subfloat{\includegraphics[width = 0.3\textwidth]{images/28859439.jpg}}
+%\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
+\caption{image from training set}
+\label{fig:USC-SIPI}
+\end{figure}
+In addition to this we want to know how good the dictionaries can reconstruct
+and compress images outside of the training set. For those comparisons we use a
+well known set of standard test images from the \emph{USC-SIPI Image
+Database}\footnote{\url{http://sipi.usc.edu/database/}}. They are often
+used in image processing for evaluation of compression algorithms. 
+Including pictures such as Lena, Mandrill and Peppers.
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_1_05.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_03.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_04.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_05.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_06.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_07.jpg}}
+\caption{images from USC-SIPI Image Database}
+\label{fig:USC-SIPI}
+\end{figure}
+
+\subsection{Training sets}
+%\subsection{Learning specific dictionaries}
+Section \ref{sec:learnForTheTask} mentions that one of the key
+elements of the learning algorithms is the learning of specialization
+dictionaries. Task specific training data is a common way to solve the problem
+of finding  the right dictionary. Here learning for the task comes into
+account. Such as de-noising/in-painting dictionaries directly learned from the
+initial signal that gets de-noised or restored from in-painting. If the task
+gets bigger it sounds logical to increase the size of training data and take a
+bigger variety of signals to learn from.  We have a closer look at differences
+of learned elements from specific sets of images. These sets include sketches,
+still images of animations from Disney and post-impressionistic images from
+Vincent van Gogh.  
+
+Are big image collections specific enough to benefit from sparse coding?
+%\thispagestyle{empty}
+
+%\section{Experiments}
+Comparission of the quality of dictionaries learnd via cluster strategy and
+with normal single maschine were made.
+
+\subsection{Hardware setup}
 %Problems
 %Big matrices
 %Speed 
@@ -532,3 +566,73 @@ Computations were made on Apple MacPro with ... \Todo{mac config}
 and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
 config} running Debian 32-bit. Each client in the cluster calculated batches of
 100 till 10,000 images based on the size of the training sets.
+
+\subsection{Dictionary size}
+
+\begin{table}[h]
+\caption{dictionary size}
+\centering
+\begin{tabular}{l  c  c  c  c  c}
+\toprule
+Image & 1 & 2 & 3 & 4 & 5 \\
+\hline
+300 & 30 & 30 & 30 & 30 & 30 \\
+600 & 30 & 30 & 30 & 30 & 30 \\
+900 & 30 & 30 & 30 & 30 & 30 \\
+1800 & 30 & 30 & 30 & 30 & 30 \\
+3000 & 30 & 30 & 30 & 30 & 30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\Todo{small image sample comparision}
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+\caption{dict size difference}
+\label{fig:dict size}
+\end{figure}
+
+
+Convergence
+
+
+Mostly reduced to line segments and curve elements.
+\Todo{Reconstruction results}
+\subsection{Dictionary elements}
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/gradient.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/checkerboard.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/spot.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/edges.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/wavelet.png}}
+\caption{image from database}
+\label{fig:USC-SIPI}
+\end{figure}
+
+Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
+increasing block size.
+Similar to natural images.
+compression dicts
+
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
+% \caption{8x8 OMP after some iterations}
+% \label{fig:8_4000_lasso}
+% \end{figure}
+% 
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
+% \caption{8x8 LARS after some iterations}
+% \label{fig:8_4000_lasso}
+% \end{figure}
+

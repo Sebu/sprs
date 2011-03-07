@@ -1,9 +1,8 @@
 \chapter{Conclusion}
 %\thispagestyle{empty}
 
-\section{Summary} % 1/2 - 1 seite
-
-We build all necessary tools to sparse code image signal with $\ell_0$ and
+\section{Summary} 
+We build framework  to sparse code image signal with $\ell_0$ and
 $\ell_1$ regularization. Learned image dictionaries for gray scale images. For
 each separate color channel and for merge color channels. Dictionaries of
 random natural images. In sub sets and in whole. Dictionaries on specific
@@ -11,7 +10,25 @@ groups of images. Tested image compression on images from the
 database/training set and other images from the outside. 
 Compared those compression results with other compression algorithms.
 
+
+
 \section{Discussion}
+Convergence of the dictionary learning step.
+
+OMP:
+  start looks like DCT (random init)
+  noisy
+  only practical for OMP
+
+LARS-lasso:
+  slow 
+  high quality dictionary
+
+  Most common atoms in the dictionary 
+  four major types of elements
+  gradient, checkerboard (low color more b/w), spot, edge
+
+
 
 With single images learning, initialization with elements from training sets
 improbes quality. but with large training set random data is works fine.
@@ -45,15 +62,6 @@ leads better coding results when using OMP.}
 Not only the training data and task but also the right
 sparse code algorithm plays a role for dictionary and reconstruction quality.
 
-Future of dictionaries
-First moving away from structure induced by basis transform in analytical
-dictionaries ... now realizing and moving back to structure ... promising
-results\cite{?,?,?}
-
-With the current development in computer technologie to more
-parallization in form of multi-core CPUs and cloud computing. 
-More indipendent learning strategies are a good direction to look at can
-benefit from clustering. 
 
 Compression 
 JPEG and JPEG 2000 are highly optimized lossy image compression algorithms. 
@@ -75,27 +83,26 @@ Dictionaries to universal ... improved results to DCT .. but varying with field
 of application. possible no universal solution but a good way for better
 understanding of the key elements 
 
-\subsection*{Limits}
-Convergence of the dictionary learning step.
+Just a first glimpse of that can de done to utilize sparse coding and
+dictionary learning for large image databases.
 
-OMP:
-  start looks like DCT (random init)
-  noisy
-  only practical for OMP
+Future of dictionaries
+First moving away from structure induced by basis transform in analytical
+dictionaries ... now realizing and moving back to structure ... promising
+results\cite{?,?,?}
 
-LARS-lasso:
-  slow 
-  high quality dictionary
+With the current development in computer technologie to more
+parallization in form of multi-core CPUs and cloud computing. 
+More indipendent learning strategies are a good direction to look at can
+benefit from clustering. 
 
-  Most common atoms in the dictionary 
-  four major types of elements
-  gradient, checkerboard (low color more b/w), spot, edge
+
 
 \section{Future work}
-The amount of publications regarding in
-the last decade indicate strong ongoing research in the field of sparse coding
-and dictionaries learning. Especially brining structure to the learning stage is
-one of the most active topics in this fields/area of research. 
+The amount of publications regarding in the last decade indicate strong ongoing
+research in the field of sparse coding and dictionaries learning. Especially
+brining structure to the learning stage is one of the most active topics in this
+fields/area of research. 
 
 \subsection{Framework improvements}
 More speed and  sparse coding algorithms.
@@ -105,7 +112,10 @@ Use SPAMS C++ interface.
 \paragraph{Hierarchy}
 \paragraph{Generate atoms}
 \paragraph{Adaptive learning}
-
+%\subsubsection*{Optimizations}
+%\subsection{Adaptive}
+%Thanks to the on-line approach of the training step an adaptive approach can be
+%used. 
 
 
 \subsection{Compression improvements}
