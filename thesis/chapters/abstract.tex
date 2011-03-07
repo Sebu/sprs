@@ -9,22 +9,26 @@
 \addcontentsline{toc}{chapter}{Abstract}
 \chapter*{Abstract}
 \thispagestyle{empty}
-Caputering the esential structure of images is a major task in signal
-processing. and allows us to capture the most significant basis elements that
-make up a signal. These dictionaries can support to speed up and improve quality
-of operations on images. Like transformation, classification or compression
-The learned elements are investigated.
 
-This thesis develops a framework that helps to learn big dictionaries
-from large sets of data and proposes a real world sparse coding compression
-algorithm useable with the learned dictionaries. [benefit of large database] One
-challenge is to overcome speed and convergence limitation of the learning
-algorithm. To address this issue a clustering approach is applied. 
+%Learning the most significant basis elements, that make up an
+%signal, is a popular task in signal processing.
+Images can be decomposed into a sparse linear combination of basis
+elements. This process is known as sparse coding. Learning dictionaries of
+those basis elements rather than desiging them can lead to quality improvements
+of operations on images. Such as noise removal, classification or compression.
+In the last decade several algorithms for learning such basis elements were
+proposed.
 
-For testing, the framework is then used to learn big dictionaries from a large
-set of images. The learned dictionaries are then tested on reconstruction
-tasks on images from the large image database and the compression algorihm is
-compared to JPEG and JPEG 2000 compression strategies.
+This thesis develops a framework that uses those sparse learning algorithms to
+learn big dictionaries that can be used for large image databases in tasks
+such as reconstruction and compression. One challenge is to overcome speed and
+convergence limitation of the learning algorithm. To address this issues a
+clustering approach is applied. 
+
+For evaluation, the framework is then used to learn big dictionaries from a
+large set of images. The learned dictionaries are then tested on reconstruction
+tasks on images from the large image database and a simple compression algorihm
+is compared to JPEG and JPEG 2000 compression strategies.
 
 \phantomsection
 

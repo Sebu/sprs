@@ -12,10 +12,11 @@ significant basis elements that make up a signal. A basis that is
 used in MP3 audio, JPEG images and MPEG4 video compression or to reconstruct
 a signal in order to remove noise or recover missing information.
 
-Consider $x$ a signal that is represent by a function $f(x)$ that approximates
+Consider $\tilde{x}$ a signal that is represent by a function $f(x)$ that
+approximates
 the signal $x$ in a simplified sparse way.
 \begin{equation*}
-x = f\left(x\right)
+x \sim \tilde{x} = f\left(x\right)
 \end{equation*}
 We are splitting $f(x)$ into a selection of elements from a large set
 basis functions. In a sparse way, as the signal gets either represented with
@@ -24,7 +25,7 @@ functions where the majority of coefficients, that weight the function, are
 close to zero. 
 \begin{equation*}
 \begin{split}
-x & = b_{1}(x) + b_{12}(x) + b_{312}(x)\\
+x \sim \tilde{x} & = b_{1}(x) + b_{12}(x) + b_{312}(x)\\
 & = 0b_{1}(x) + \cdots + 1.1b_{2}(x) + 0.01b_{12}(x) + \cdots +
 2b_{312}(x)
 \end{split}
