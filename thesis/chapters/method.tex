@@ -1,4 +1,4 @@
-\chapter{Method}
+\chapter{Framework}
 %\thispagestyle{empty}
 
 \Todo{move to results? or at end of method}
@@ -87,7 +87,6 @@ well known set of standard test images from the \emph{USC-SIPI Image
 Database}\footnote{\url{http://sipi.usc.edu/database/}}. They are often
 used in image processing for evaluation of compression algorithms. 
 Including pictures such as Lena, Mandrill and Peppers.
-
 \begin{figure}[h]
 \centering
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_1_05.jpg}}
@@ -105,18 +104,12 @@ Including pictures such as Lena, Mandrill and Peppers.
 \label{fig:USC-SIPI}
 \end{figure}
 
-\begin{figure}[h]
-\centering
-\includegraphics[scale = 0.20]{images/segmentation.png}
-\caption{spartial separation}
-\label{fig:spartial}
-\end{figure}
 
 
 \section{Signal representation}
 \label{sec:signal_representation}
 To be able efficiently sparse code images it is necessary to prepare the
-image data. The preparation step can be devided in two major steps.
+image data. The signal preparation mainly consists of two sub steps.
 \begin{itemize}
  \item Color space conversion
  \item Spartial saparation
@@ -129,15 +122,23 @@ image data. The preparation step can be devided in two major steps.
 
 \paragraph{Color space conversion} As we mainly use sets of natural color images
 and graphics we require to work with multi-channel data. Commonly presented in
-the three channel RGB color space. 
+the three channel RGB color space.
+When dealing with multi-channel data (e.g. RGB images) each channel can be coded
+separate or as a concatenation of each signal into a single one. These
+approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add picture}
+%Nevertheless 
+A solution would be to add a constraint to the sparse coding that pays attention
+the correlation of the channels. \Todo{add formula from paper} 
+Fortunately this problem vanishes with big dictionaries and large training sets.
+\cite{mairal08sparse}
 
-\paragraph{Chroma sub-sampling} is used to reduce the amount of data required by
-color information while preserving perceptual image quality. 
+%\paragraph{Chroma sub-sampling} is used to reduce the amount of data required
+%by color information while preserving perceptual image quality. 
 The human eye is good at sensing small difference in brightness but lacks the
-ability exactly differentiate small changes in color. Chroma sub-sampling takes
-advantage of this human flaw. First the image gets converted into the $YC_bC_r$
-color space, which describes an image in a brightness/luminance (Y) and two
-color/chroma components (Cb and Cr). Then the visual more relevant
+ability exactly differentiate small changes in color. \emph{Chroma sub-sampling}
+takes advantage of this human flaw. First the image gets converted into the
+$YC_bC_r$ color space, which describes an image in a brightness/luminance (Y)
+and two color/chroma components (Cb and Cr). Then the visual more relevant
 brightness/luminance channel will be coded in the full resolution while the
 color/chroma components can be sub-sampled with only minor loss in perceptual
 quality. This procedure, illustrated in fig. \ref{fig:YCbCr}, is one key element
@@ -155,50 +156,36 @@ in lossy image compression.
 
 \paragraph{Spartial seperation}
 As the sparse coding process is operation on signal vectors it is required to
-represent our 2D image data in a set of 1D vectors. 
-
+represent our 2-D image data in a set of 1-D vectors with size $m$. We extract
+blocks of size $n \times n=m$ from the images. Typically dealing with block
+sizes of $n=8,..,20$. The blocks get extracted in a raster either with
+overlapping content or disjoint from each other. Figure\ref{separation}
+illustrates this separation step.
 \begin{figure}[h]
 \centering
 \includegraphics[scale = 0.25]{images/segmentation.png}
-\caption{spartial separation}
-\label{fig:spartial}
+\caption{spatial separation}
+\label{fig:separation}
 \end{figure}
 
 \section{Sparse coding step}
 
-
 \subsection{Batch-OMP}
 In 2008 Rubinstein et al.\cite{Rubinstein2008} presented a speed improved
 version of the orthogonal-matching-pursuit(\ref{sec:omp}) called
-\emph{Batch-OMP}. The speed gain of \prettyref{alg:batchOMP} is archieve
+\emph{Batch-OMP}. The speed gain of \prettyref{alg:batchOMP} is achieved
 by modifying the OMP in a way that can effectively sparse code
 multiple signals in parallel. One key element of the optimizations is the
 pre-computation of the gram matrix $G=D^TD$ which can efficiently be reused
 for each signal. Another optimization to a single signal coding step itself
 (\prettyref{alg:batchOMP}) is the cholesky factorization of $\left( D_A^T D_A
 \right)^{-1}$ (line \ref{alg:OMP_DTD} of \prettyref{alg:mp}). $D_A^T
-D_A$ is a symmetric and positive-definite matrix and can be chlolesky decomposed
+D_A$ is a symmetric and positive-definite matrix and can be cholesky decomposed
 into $LL^T$. Even better, due to the nature of the algorithm composing $D_A$
 by adding additional row and columns to it, $L$ can be build up during the
 computation. This reduces the computational cost of the algorithm drastically.
- 
-\begin{algorithm}[H]
-\caption{Parallel coding}
-\label{alg:parallel}
-\begin{algorithmic}[1]
-\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
-\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}, \alpha =
-[\alpha_1,...,\alpha_p] \in
-\mathbb{R}^{p}$
-\STATE pre-compute $G \gets D^TD$
-%\STATE $\epsilon \gets X^TX$
-\FOR {$i = 1$ to $k$}
-\STATE Compute $\alpha_i$ using \prettyref{alg:batchOMP} or
-\ref{alg:lars} for all ${x_i}$ in $X$
-\ENDFOR
-\RETURN $\alpha$
-\end{algorithmic}
-\end{algorithm}
+
+
 
 \begin{algorithm}[H]
 \caption{Batch-OMP}
@@ -239,10 +226,14 @@ w^T & \sqrt{1-w^Tw}
 %\Todo{remove?}
 All modification lead to significant speed increase when coding large sets of
 signals. While $L$ is very small the main factor of the computation is
-the multiplication of $D$ with a vector with a complexity of $O(mp)$. 
-This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
-2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
-with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
+the multiplication of $D$ with a vector. Detailed information on the complexity
+and speed gain can be found in the corresponding paper on the
+Batch-OMP\cite{Rubinstein2008}. 
+
+% with a complexity of $O(mp)$. 
+%This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
+%2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
+%with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
 
 %more signals than dictionary elements.
 
@@ -271,29 +262,45 @@ with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}.
 %\end{algorithm}
 
 
-\subsection{LARS-Lasso}
-%\subsubsection*{Optimizations}
-
-
+%\subsection{LARS-Lasso}
+\paragraph{}
 The same pre-computation of the gram matrix used in the Batch-OMP can also
 be applied to the LARS-Lasso algorithm. Simple combination of
-parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars} preseted
+parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars} presented
 in\ref{sec:lars}.
 
 \paragraph{}
 We chose the LARS method as it is the fastest in low dimension or for
 high correlation. Both conditions are satisfied in our experiments.
 For 
-We chose Batch-OMP  and LARS-Lasso. Batch-OMP as beeing to solve $\ell_0$
+We chose Batch-OMP  and LARS-Lasso. Batch-OMP as being to solve $\ell_0$
 regularization. And LARS-Lasso 
+\begin{algorithm}[H]
+\caption{Parallel coding}
+\label{alg:parallel}
+\begin{algorithmic}[1]
+\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
+\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}, \alpha =
+[\alpha_1,...,\alpha_p] \in
+\mathbb{R}^{p}$
+\STATE pre-compute $G \gets D^TD$
+%\STATE $\epsilon \gets X^TX$
+\FOR {$i = 1$ to $k$}
+\STATE Compute $\alpha_i$ using \prettyref{alg:batchOMP} or
+\ref{alg:lars} for all ${x_i}$ in $X$
+\ENDFOR
+\RETURN $\alpha$
+\end{algorithmic}
+\end{algorithm}
 
 \section{Learning step}
 The majority of learning experiments in literature were made on
-samples of sliding blocks from single images or very similar images.
+samples of sliding blocks from single images or small sets of images.
 A good strategy when the learned dictionaries are only used for operations on
 those images. The dictionary atoms learned from those image have a high
 correlation to the image content.  When looking at large sets of images and many
-different blocks we start to talk about a different game. Now each ...
+different blocks we start to talk about a different game. 
+Now each ...
 
 % is LARS better?
 Section \ref{sec:signal_representation} already describes that the learning
@@ -302,16 +309,16 @@ algorithm can be applied to different kinds of signals. Such as images in other
 color spaces, low/high pass filtered sub-images or signals from another domain
 like audio or text. 
 
-Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
-increasing block size.
+
 
 
 %Some of them are used in our compressions experiments.
 
 
-\subsection{\trainDL}
-A more in-depth look at the Mairal on-line training algorithm \ref{sec:mairal}. 
-Why use this algorithm? Robust, convergent, fast, on-line
+%\subsection{\trainDL}
+%A more in-depth look at the Mairal on-line training algorithm
+%\ref{sec:mairal}. 
+%Why use this algorithm? Robust, convergent, fast, on-line
 
 %When applying the tuning parameter it gets even worse. 
 
@@ -328,8 +335,6 @@ effect in the learning process.
 There are two common ways to initialize the dictionary using random data or
 selecting random elements from the training data. Both ways will be tested and 
 the quality will be compared.
-
-
 With single images learning, initialization with elements from training sets
 improbes quality. but with large training set random data is works fine.
 
@@ -394,6 +399,8 @@ Mostly reduced to line segments and curve elements.
 \label{fig:USC-SIPI}
 \end{figure}
 
+Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
+increasing block size.
 Similar to natural images.
 compression dicts
 
@@ -459,25 +466,17 @@ with normal single maschine were made.
 %Thanks to the on-line approach of the training step an adaptive approach can be
 %used. 
 
-\section{Training sets}
-%\subsection{Learning specific dictionaries}
-Section \ref{sec:learnForTheTask} mentions that one of the key
-elements of the learning algorithms is the learning of specialization
-dictionaries. Task specific training data is a common way to solve the problem
-of finding  the right dictionary. Here learning for the task comes into
-account. Such as de-noising/in-painting dictionaries directly learned from the
-initial signal that gets de-noised or restored from in-painting. If the task
-gets bigger it sounds logical to increase the size of training data and take a
-bigger variety of signals to learn from.  We have a closer look at differences
-of learned elements from specific sets of images. These sets include sketches,
-still images of animations from Disney and post-impressionistic images from
-Vincent van Gogh.  
-
-Are big image collections specific enough to benefit from sparse coding?
-
 
 
 \section{Application to image compression}
+Experiment on sparse coding as a tool for compression have been done
+before\cite{Lewicki1999,?} but mainly in theory with generated bases
+dictionaries for comparison and approximations on entropy and resulting
+bits-per-pixel. Leading to better density with learned dictionaries over
+designed. As learned dictionary elements also locality in time, 
+But real practical application is an open question,  no quantization
+was applied and the. 
+
 Todays lossy image compression algorithms are primary based on scientific
 findings about visual perception reaching far back in the 1970s\cite{?} and
 good entropy encoding of the data. Both elements led to to the
@@ -485,34 +484,14 @@ following main steps in lossy image compression algorithms:
 \begin{itemize}
  \item lossy color space conversion and separation
  \item spatial separation, sub-sampling of images
- \item coding/transformation of image signals
+ \item coding of image signals
  \item quantization to reduce of the number of non-zero coefficient 
  \item lossless entropy coding of the coefficient 
 \end{itemize}
-%Copy
-The human eye is good at seeing small differences in brightness over
-a relatively large area, but not so good at distinguishing the exact strength
-of a high frequency brightness variation. This allows one to greatly reduce the
-amount of information in the high frequency components. This is done by simply
-dividing each component in the frequency domain by a constant for that
-component, and then rounding to the nearest integer. This rounding operation is
-the only lossy operation in the whole process if the DCT computation is
-performed with sufficiently high precision. As a result of this, it is
-typically the case that many of the higher frequency components are rounded to
-zero, and many of the rest become small positive or negative numbers, which
-take many fewer bits to represent.
+We already describe the first two steps in
+section\ref{sec:signal_representation}.
 
-quantized coefficient. Additional zero coefficients from the quantization step
-are removed.
 %The sparse vector for every are encoded in 2 bytes index and a single byte
-
-
-Experiment on sparse coding for compression have been done before but mainly in
-theory with generated bases dictionaries for comparison and approximations on
-entropy and resulting bit density (BBP). But real practical application is an
-open question.
-
-
 
 \paragraph{Signal coding}
 The actual coding step of the prepared signals is a simple application of one
@@ -522,13 +501,27 @@ We learn dictionaries from our training sets
 block sizes
 Number of coefficients
 
-
 \paragraph{Quantization}
 %copy
 %The human eye is good at seeing small differences in brightness over a
 %relatively large area, but not so good at distinguishing the exact strength of
 %a high frequency brightness variation. This allows one to greatly reduce the
 %amount of information in the high frequency components. 
+%Copy
+%The human eye is good at seeing small differences in brightness over
+%a relatively large area, but not so good at distinguishing the exact strength
+%of a high frequency brightness variation. This allows one to greatly reduce the
+%amount of information in the high frequency components. This is done by simply
+%dividing each component in the frequency domain by a constant for that
+%component, and then rounding to the nearest integer. This rounding operation is
+%the only lossy operation in the whole process if the DCT computation is
+%performed with sufficiently high precision. As a result of this, it is
+%typically the case that many of the higher frequency components are rounded to
+%zero, and many of the rest become small positive or negative numbers, which
+%take many fewer bits to represent.
+
+quantized coefficient. Additional zero coefficients from the quantization step
+are removed.
 
 Fixed quantization or learned from dictionary
 
@@ -548,7 +541,6 @@ dictionary elements.
 \end{figure}
 
 \paragraph{Data encoding}
-
 Coefficients
 Indices
 In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
@@ -568,13 +560,10 @@ compression benefit.
 We apply RLE and Huffman coding to our sparse matrices. 
 %The sparse vector for every are encoded in 2 bytes index and a single byte quantized coefficient. Additional zero coefficients from the quantization step are removed.
 
-
 As mentioned in in \ref{sec:headers} we are aware of the fact that besides
 the actual sparse matrix data we also have other file informations and meta
-data but .  
-
-
-
+data but ignore them for simplification.
+  
 \section{Implementation}
 \subsection*{Software}
 The sofware framework consists of a library for sparse coding image signals 

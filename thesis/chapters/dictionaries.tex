@@ -141,6 +141,7 @@ repeated for a fixed number of $T$ iterations or until convergence of $D$. In
 the first step all samples of training $X$ are sparse coded with the current
 dictionary $D$. In the second step every dictioanry atom of $D$ is altered in a
 way that the reconstruction error of $X$ is minimized. 
+This is done by ...
 The \prettyref{alg:k-svd} illustrates this procedure. 
 
 \begin{algorithm}[H]
@@ -170,26 +171,35 @@ x_t - D\alpha\rVert_2^2 \text{ s.t.} \lVert\alpha\rVert_0 \leq L
 \end{algorithmic}
 \end{algorithm}
 \Todo{optional: k-svd modifications}
-Section \ref{sec:batch-omp} provides a depper look into the Batch-OMP.
 
 \subsection{Online algorithms}
-In 2010 new training algorithms were presented that enabled on-line learning of
+In 2009 new training algorithms were presented that enabled on-line learning of
 dictionaries. In contrast to batch learning algorithms with a fixed training set
 the new approaches enabled This is good for very large training sets or training
 data that is unknown at the start of the training process.
 
-... RLS-DLA\cite{Engan2010} ...
+\paragraph{Recursive least-square dictioanry learning algorithm (ILS-DLA)}
+The algorithm was presented by Engan et al. in 2010\cite{Engan2010} and is a
+recursive the a modified version of the ILS-DLA algorithm.
 
-\Todo{find the Japanese one}
-
-In 2010 Mairal et. al.\cite{Mairal2010} proposed an on-line approach which from
-now on will be called \trainDL
 
 \subsubsection{\trainDL}
 \label{sec:mairal}
-The algorithm presented by Mairal et al.\cite{Mairal2010} is ...
+In 2010 Mairal et. al.\cite{Mairal2010} proposed an on-line approach which from
+now on we will call \trainDL. The algorithm presented by Mairal et
+al.\cite{Mairal2010} is ... 
+stochastic approximations 
+It is a minimization that uses block-coordiante descent with warm restart for
+the dictioanry update step.
+Like the K-SVD the algorithm learns a dictionary $D$ from a set of training
+samples $X$ and starts with a dictionary $D$ with random data or a random
+selection of elements from the training set. 
+First sparse code a signal  1
 
-As it pretends to scale up to large datasets of millions of training.
+Solving $ $ 
+only store $A$ and $B$ 
+As it pretends to scale up to large datasets of millions of training samples
+and beeing suitable for a large range of learning problems.
 Does it scale up to big dictionaries?
 samples\cite{Mairal2010}
 \begin{algorithm}[H]
@@ -205,8 +215,8 @@ samples\cite{Mairal2010}
 \alpha_t \equiv \argmin_{\alpha\in\mathbb{R}^{p}}  \lVert x_t - D_t\alpha \rVert^{2}_{2}  +  \lambda \lVert \alpha \rVert_{1}
 \end{align*}
 
-\STATE $A_t \gets A_{t-1} + \alpha_t\alpha_t^T$
-\STATE $B_t \gets B_{t-1} + x_t\alpha_t^T$
+\STATE $A_t \gets A_{t-1} + \alpha_t\alpha_t^T$\label{alg:Aupdate}
+\STATE $B_t \gets B_{t-1} + x_t\alpha_t^T$\label{alg:Bupdate}
 \STATE Compute $D_t$ using \prettyref{alg:update}, with $D_{t-1}$ as warm restart 
 \begin{equation}
 \begin{split}
@@ -242,9 +252,18 @@ d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
 \RETURN $D$
 \end{algorithmic}
 \end{algorithm}
+Mairal et al. propose several modification to their algorithm to improve speed
+and convergence. One speed optimization is to sparse code mini-batches of $n$
+signal samples instead of a single signal sample in each iteratation. This
+modification leads to line \ref{alg:Aupdate} and line \ref{alg:Bupdate}
+becoming:
+\begin{align}
+A_t \gets A_{t-1} + \frac{1}{n}\sum_{i=1}^{n}\alpha_{t,i}\alpha_{t,i}^T\\
+B_t \gets B_{t-1} + \frac{1}{n}\sum_{i=1}^{n}x_{t,i}\alpha_{t,i}^T
+\end{align}
 
-In \cite{Mairal2010} Mairal et al. propose several modification to their
-algorithm to improve convergence.
+$A_0  \gets tI$ and $B_0 \gets tD$
+
 
 
 
@@ -252,13 +271,11 @@ algorithm to improve convergence.
 \label{sec:learnForTheTask}
 Guillermo Sapiro mentions in his talk\cite{sapiroSlides} at the \emph{MIT CSAIL}
 that it has been shown that learning specific for certain tasks can lead to the
-best results. <<Please do not use the wrong dictionaries...>>
-
-Based on this discovery we will concentrate on a specific class. 
-%<> Join the basis for natural images and cartoon/line images.
-We will also concentrate on real practical data. This means typically 3-channel
-data of 1+ mega-pixels images found on image hosting services such as flickr,
-twitpic, imgurl, picasa.
+best results.  Based on this discovery we will concentrate on a specific class. 
+``Please do not use the wrong dictionaries...''\footnote{Guillermo Sapiro}
+We will focus on natural images from large image databases. This means 1+
+mega-pixel images with 3-channel RGB data found on image hosting services such
+as flickr.com, twitpic.com, picasa.com among others.
 
 
 \section{Related work}
@@ -308,14 +325,14 @@ classification tasks can be found in
 \cite{Raina2007,BradleyBagnel2009,Mairal2008,Mairal2008b,Bar2009,Yang2009}.
 
 
-\paragraph{Multi-channel}
-When dealing with multi-channel data (e.g. RGB images) each channel can be coded
-separate or as a concatenation of each signal into a single one. These
-approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add picture}
-Fortunately this problem vanishes with big dictionaries and large training sets.
-\cite{mairal08sparse} Nevertheless a solution would be to add a constraint to
-the sparse coding that pays attention the correlation of the channels. \Todo{add
-formula from paper}
+%\paragraph{Multi-channel}
+%When dealing with multi-channel data (e.g. RGB images) each channel can be
+%coded separate or as a concatenation of each signal into a single one. These
+%approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add picture}
+%Fortunately this problem vanishes with big dictionaries and large training
+%sets. \cite{mairal08sparse} Nevertheless a solution would be to add a
+%constraint to the sparse coding that pays attention the correlation of the
+%channels. \Todo{add formula from paper}
 
 \paragraph{Double sparsity}
 Instead of directly using a collection of trained atoms as dictionary

@@ -233,6 +233,11 @@ a_A \gets \left( D_A^T D_A \right)^{-1} D_A^T x  \label{eq:omp_update}
 \RETURN $\alpha$
 \end{algorithmic}
 \end{algorithm}
+
+Section \ref{sec:batch-omp} provides a
+depper look into the Batch-OMP.
+
+
 All these greedy approaches tend to find suitable solutions but
 because of the non-convex problem they can get stuck in local minima. As shown
 before an $\ell_1$ regularization version of \ref{eq:problem} also keeps the
@@ -289,12 +294,11 @@ residual.
 \lambda \lVert \alpha \rVert_{1}
 \end{align}
 
-
 \paragraph{Lasso modification}
-It is a modified version of the LAR where variables get removed from the active
-set when their coefficient become zero.
-
-A pseudocode implementation can be found in \prettyref{alg:lars}.
+The LAR algorithm can be easily modified to solve the Lasso. 
+The modification consists of removing variables from the active set
+when their coefficient become zero. A pseudocode implementation can be found in
+\prettyref{alg:lars}.
 \begin{algorithm}
 \caption{LARS-Lasso}
 \label{alg:lars}

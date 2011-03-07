@@ -12,24 +12,21 @@ database/training set and other images from the outside.
 Compared those compression results with other compression algorithms.
 
 \section{Discussion}
-
-Big training sets tend to get to general.
-
-If the images fit into the same category it is insignificant which images you
-chose. The results will be the same?
-
 Remark:
 As it turns out the OMP, to its greedy nature, has a very aggressive selection
 scheme. This very random/noisy selection strategy is very impractical
 for the \trainDL learning step. But nevertheless the OMP is still good for
 sparse coding. 
-
 %\subsection{Observations}
 Difference in the selection strategy.
 Very noisy vs. smooth. 
 How this different selection strategies affect the learning step will be
 presented in the next section.
 
+Big training sets tend to get to general.
+
+If the images fit into the same category it is insignificant which images you
+chose. The results will be the same?
 
 Keeping the training sparse vectors too sparse can lead to dictionaries with
 only low frequency elements. Using LARS-Lasso for training generates a good
@@ -37,6 +34,21 @@ dictionary for LARS and OMP.
 \Todo{ Training with OMP leads to a dictionary more with a lot of noise that
 leads better coding results when using OMP.}
 
+
+
+
+Not only the training data and task but also the right
+sparse code algorithm plays a role for dictionary and reconstruction quality.
+
+Future of dictionaries
+First moving away from structure induced by basis transform in analytical
+dictionaries ... now realizing and moving back to structure ... promising
+results\cite{?,?,?}
+
+With the current development in computer technologie to more
+parallization in form of multi-core CPUs and cloud computing. 
+More indipendent learning strategies are a good direction to look at can
+benefit from clustering. 
 
 Compression 
 JPEG and JPEG 2000 are highly optimized lossy image compression algorithms. 
@@ -55,21 +67,8 @@ to the quality benefits. And the wide acceptance of JPEG in ...
 
 
 Dictionaries to universal ... improved results to DCT .. but varying with field
-of
-application. possible no universal solution but a good way for better
+of application. possible no universal solution but a good way for better
 understanding of the key elements 
-
-Not only the training data and task but also the right
-sparse code algorithm plays a role for dictionary and reconstruction quality.
-
-Future of dictionaries
-First moving away from structure induced by basis transform in analytical
-dictionaries ... now realizing and moving back to structure ... promising
-results\cite{?,?,?}
-
-With the current development in computer technologie to more
-parallization in form of multi-core CPUs and cloud computing.
-More indipendent learning strategies are a good direction to look at. 
 
 \subsection*{Limits}
 Convergence of the dictionary learning step.
@@ -93,11 +92,16 @@ the last decade indicate strong ongoing research in the field of sparse coding
 and dictionaries learning. Especially brining structure to the learning stage is
 one of the most active topics in this fields/area of research. 
 
-\subsection{Dictionary improvements}
+\subsection{Framework improvements}
+More speed and  sparse coding algorithms.
+\paragraph{Speed}
+Use SPAMS C++ interface.
+\paragraph{Clustering}
 \paragraph{Hierarchy}
 \paragraph{Generate atoms}
 \paragraph{Adaptive learning}
-\paragraph{Clustering}
+
+
 
 \subsection{Compression improvements}
 \paragraph{Reducing block borders} The presented compression experiment
