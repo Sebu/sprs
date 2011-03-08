@@ -1,30 +1,27 @@
 \chapter{Dictionaries}
 %\thispagestyle{empty}
 In section \ref{sec:dicts} we define dictionaries are
-collection of signal atoms with an 1unknown apearance of the atoms. Dictionaries
+collection of signal atoms with an unknown appearance of the atoms. Dictionaries
 for sparse coding of images are indexed collection of vectors with discrete
 pixel data. A linear combination of a sparse selection of those discrete pixel
 atoms will be used to reconstruct signals.
 
 \section{Structure}
-Section \ref{sec:dicts} also states that dictionaries can capture the
-essential structures of signals. But to achieve this quality they need the right
-structure. Finding the right structure for a specific signal is a complex task.
+%Section \ref{sec:dicts} also states that
+Dictionaries can capture the essential structures of signals. But to achieve
+this quality they need the right structure. Finding the right structure for a
+specific signal is a complex task.
 Two main strategies for the generation of the dictionaries are design and
 learning.
-%Implicit and explicit strategies to generate atoms are ... .
-%Dictionaries for sparse coding 
-%Set of orthonormal signal vectors.
 
 \subsection{Designed atoms}
-Section \ref{sec:history} presents 
 The basis transformations first presented in\ref{sec:history} can also
 be interpreted as discrete atoms 
 
-\paragraph{cosine}
-
-
-\paragraph{wavelets}
+%\paragraph{cosine}
+%\paragraph{wavelets}
+%\paragraph{curvelets/contourlets/bandelets}
+%\Todo{}
 
 \begin{figure}
 \centering
@@ -41,8 +38,7 @@ be interpreted as discrete atoms
 \label{fig:16_1000_lasso}
 \end{figure}
 
-\paragraph{curvelets/contourlets/bandelets}
-\Todo{}
+
 
 \subsection{Learned atoms}
 
@@ -55,9 +51,9 @@ A computer program is said to learn from experience E with respect to
 some class of tasks T and performance measure P, if its performance at tasks in
 T, as measured by P, improves with experience E.\footnote{Tom M. Mitchell}
 \end{quotation}
-Maschine learning is a process used to learn essential structures from
+Machine learning is a process used to learn essential structures from
 empirical data. In the case of dictionaries for sparse coding these empirical
-data are sets of signals which are feed as training data into maschine learning
+data are sets of signals which are feed as training data into machine learning
 algorithms.
 
 
@@ -69,16 +65,17 @@ algorithms.
 \paragraph{Redundancy} Unlike the designed dictionary, the PCA and
 vector quantization approaches, dictionary atoms learned with machine learning
 methods are not necessarily orthogonal. In fact one benefit of the machine
-learning approach is to have over-complete dictionaries with non-orthogonal
-basis atoms. This is where redundancy enters the game of constructing
-dictionaries. Not in a way where multiple instance of the same element are part
-of the dictionary but in form of additional elements that reseble a composition
-of other elements from the dictionary. This can lead to less required atoms and
-more sparseness of the coeffient vector $\alpha$ when sparse coding signals.
-Now a single atom can achieve the same reconstruction as a former combination of
-several orthogonal basis elements. Nevertheless redundancy can also be applied
-to the designed dictionaries. For example by adding rotated cosine elements to a
-dictionary with a default configuration of DCT basis elements.
+learning approach is to be able to learn over-complete dictionaries with
+non-orthogonal basis atoms. This is where redundancy enters the game of
+constructing dictionaries. Not in a way where multiple instance of the same
+element are part of the dictionary but in form of additional elements that
+resemble a composition of other elements from the dictionary. This can lead to
+less required atoms and more sparseness of the coefficient vector $\alpha$ when
+sparse coding signals. Now a single atom can achieve the same reconstruction as
+a former combination of several orthogonal basis elements. Nevertheless
+redundancy can also be applied to the designed dictionaries. For example by
+adding rotated cosine elements to a dictionary with a default configuration of
+DCT basis elements.
 %The atoms are not orthonormal. 
 %The dictionary is overcomplete. Overcomplete ...
 
@@ -87,8 +84,9 @@ dictionary with a default configuration of DCT basis elements.
 Recent research\cite{Chen1998,Aharon2006,Mairal2010} has shown that learned
 dictionaries show better compression quality than small analytic
 dictionaries. Rather than selecting an appropriate mathematical construct that
-can reconstruct a certain group of signals close enough the data, a subset or
-similar data is used as a training set to generate the dictionary itself.
+can reconstruct a certain group of signals close enough the data, a subset of
+the data or similar data is used as a training set to learn the dictionary
+itself.
 
 
 
@@ -97,7 +95,7 @@ similar data is used as a training set to generate the dictionary itself.
 \cite{Olshausen1997,Lewicki2000,Aharon2006}
 In the last decade several learning algorithms have been proposed. The basic
 concept of following algorithms for learning redundant dictionaries is to alter
-a initial start dictionary in this way that it can sparsely reconstruct a set of
+a initial start dictionary in a way that it can sparsely reconstruct a set of
 training data with minimal error. 
 
 \begin{align} 
@@ -123,23 +121,23 @@ now introduce some of the most popular algorithms for both ways of learning.
 
 \subsection{Batch algorithms}
 \paragraph{Method of optimal directions (MOD)}
-MOD\cite{Engan1999a}
+Presented by Engan et al. in 1999\cite{Engan1999a} 
 \paragraph{Generalized PCA}
 \cite{?}
 \paragraph{ILS-DLA}
-\cite{Engan2007}
+In 2007 Engan et al.\cite{Engan2007} presented another algorithm by   
 
 
 \subsubsection{K-SVD}
 \label{sec:k-svd}
-One of the most popular batch algorithms the K-SVD presented by
+One of the most popular batch algorithms is the K-SVD presented by
 Aharon et al. in 2006\cite{Aharon2006}. The algorithm learns a dictionary $D$
 from a set of training samples $X$. At the beginning the dictionary $D$ gets
 initialized with either random data or a random selection of elements from the
 training set. The main part of the algorithm consists of two step which are
 repeated for a fixed number of $T$ iterations or until convergence of $D$. In
 the first step all samples of training $X$ are sparse coded with the current
-dictionary $D$. In the second step every dictioanry atom of $D$ is altered in a
+dictionary $D$. In the second step every dictionary atom of $D$ is altered in a
 way that the reconstruction error of $X$ is minimized. 
 This is done by ...
 The \prettyref{alg:k-svd} illustrates this procedure. 
@@ -172,13 +170,14 @@ x_t - D\alpha\rVert_2^2 \text{ s.t.} \lVert\alpha\rVert_0 \leq L
 \end{algorithm}
 \Todo{optional: k-svd modifications}
 
-\subsection{Online algorithms}
+\subsection{On-line algorithms}
 In 2009 new training algorithms were presented that enabled on-line learning of
 dictionaries. In contrast to batch learning algorithms with a fixed training set
-the new approaches enabled This is good for very large training sets or training
-data that is unknown at the start of the training process.
+the new approaches enable learning with a constant flow of training data. This
+is good for very large training sets or training data that is unknown at the
+start of the training process.
 
-\paragraph{Recursive least-square dictioanry learning algorithm (ILS-DLA)}
+\paragraph{Recursive least-square dictionary learning algorithm (ILS-DLA)}
 The algorithm was presented by Engan et al. in 2010\cite{Engan2010} and is a
 recursive the a modified version of the ILS-DLA algorithm.
 
@@ -189,8 +188,8 @@ In 2010 Mairal et. al.\cite{Mairal2010} proposed an on-line approach which from
 now on we will call \trainDL. The algorithm presented by Mairal et
 al.\cite{Mairal2010} is ... 
 stochastic approximations 
-It is a minimization that uses block-coordiante descent with warm restart for
-the dictioanry update step.
+It is a minimization that uses block-coordinate descent with warm restart for
+the dictionary update step.
 Like the K-SVD the algorithm learns a dictionary $D$ from a set of training
 samples $X$ and starts with a dictionary $D$ with random data or a random
 selection of elements from the training set. 
@@ -199,11 +198,11 @@ First sparse code a signal  1
 Solving $ $ 
 only store $A$ and $B$ 
 As it pretends to scale up to large datasets of millions of training samples
-and beeing suitable for a large range of learning problems.
+and being suitable for a large range of learning problems.
 Does it scale up to big dictionaries?
 samples\cite{Mairal2010}
 \begin{algorithm}[H]
-\caption[\trainDL]{Online dictionary learning\cite{Mairal2010}}
+\caption[\trainDL]{On-line dictionary learning\cite{Mairal2010}}
 \label{alg:trainDL}
 \begin{algorithmic}[1]
 \REQUIRE $x \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in \mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
@@ -254,7 +253,7 @@ d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
 \end{algorithm}
 Mairal et al. propose several modification to their algorithm to improve speed
 and convergence. One speed optimization is to sparse code mini-batches of $n$
-signal samples instead of a single signal sample in each iteratation. This
+signal samples instead of a single signal sample in each iteration. This
 modification leads to line \ref{alg:Aupdate} and line \ref{alg:Bupdate}
 becoming:
 \begin{align}
@@ -299,8 +298,11 @@ collection of images and possible application for larger sets of images.
 %The algorithm so caled eptimes
 %Factoring repeated content\cite{factor_image}
 
-\paragraph{Training with a neural network}
-Learning Multiple Layers of Features from Tiny Images \cite{Krizhevsky2009}
+\paragraph{Training with a neural network} In his masters thesis 
+\cite{Krizhevsky2009}
+%Learning Multiple Layers of Features from Tiny Images
+Using an neural network to learn image basis from a large set of tiny images.
+The resulting basis elements look like ...
 
 \paragraph{Compression of facial images}
 In 2008 Bryt and Elad \cite{Bryt2008} 
@@ -319,7 +321,7 @@ encoded as one signal rather than e.g. 4. \cite{saprioSlides}\cite{Mairal2007}
 \Todo{picture with different scales}
 
 \paragraph{Classification} \cite{?} validation of fake paintings. 
-\cite{?} classification of object by learning  individual dictionaries for each
+\cite{?} classification of object by learning individual dictionaries for each
 object group. Additional examples for sparse coding  being used for
 classification tasks can be found in
 \cite{Raina2007,BradleyBagnel2009,Mairal2008,Mairal2008b,Bar2009,Yang2009}.

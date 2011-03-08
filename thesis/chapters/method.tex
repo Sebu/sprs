@@ -1,7 +1,7 @@
-\chapter{Method}
+%\chapter{Method}
 %\thispagestyle{empty}
 
-\section{Framework}
+\chapter{Framework}
 To sparse code images and learn big dictionaries we design a software framework
 
 \subsection{Signal representation}
@@ -10,7 +10,7 @@ To be able efficiently sparse code images it is necessary to prepare the
 image data. The signal preparation mainly consists of two sub steps.
 \begin{itemize}
  \item Color space conversion
- \item Spartial saparation
+ \item Spatial separation
 \end{itemize}
 
 \paragraph{Color space conversion} As we mainly use sets of natural color images
@@ -22,30 +22,14 @@ approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add picture}
 %Nevertheless 
 A solution would be to add a constraint to the sparse coding that pays attention
 the correlation of the channels. \Todo{add formula from paper} 
-Fortunately this problem vanishes with big dictionaries and large training sets.
+Fortunately Mairal et al. also noticed that this problem vanishes with big
+dictionaries and large training sets.
 \cite{mairal08sparse}
 
-%\paragraph{Chroma sub-sampling} is used to reduce the amount of data required
-%by color information while preserving perceptual image quality. 
-The human eye is good at sensing small difference in brightness but lacks the
-ability exactly differentiate small changes in color. \emph{Chroma sub-sampling}
-takes advantage of this human flaw. First the image gets converted into the
-$YC_bC_r$ color space, which describes an image in a brightness/luminance (Y)
-and two color/chroma components (Cb and Cr). Then the visual more relevant
-brightness/luminance channel will be coded in the full resolution while the
-color/chroma components can be sub-sampled with only minor loss in perceptual
-quality. This procedure, illustrated in fig. \ref{fig:YCbCr}, is one key element
-in lossy image compression. 
-\begin{figure}[h]
-\centering
-%\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
-\includegraphics[scale = 0.25]{images/segmentation.png}
-\label{fig:YCbCr}
-\caption{RGB $\rightarrow$ YCbCr}
-\end{figure}
 
 
-\paragraph{Spartial seperation}
+
+\paragraph{Spatial separation}
 As the sparse coding process is operation on signal vectors it is required to
 represent our 2-D image data in a set of 1-D vectors with size $m$. We extract
 blocks of size $n \times n=m$ from the images. Typically dealing with block
@@ -151,7 +135,7 @@ Batch-OMP\cite{Rubinstein2008}.
 %more signals than dictionary elements.
 
 \paragraph{LARS-Lasso} is chosen as it one of the fastest $\ell_1$
-regularizationand and it leads to good results for signals of low dimension and
+regularization and and it leads to good results for signals of low dimension and
 with high correlation of dictionary elements. Both conditions are satisfied
 when coding small image blocks.
 
@@ -167,7 +151,7 @@ A good strategy when the learned dictionaries are only used for operations on
 those images. The dictionary atoms learned from those image have a high
 correlation to the image content.  When looking at large sets of images and many
 different blocks we start to talk about a different game. Now each dictionary
-elements dends to captures more general structurs of the signals.
+elements tends to captures more general structure of the signals.
 
 For the learning step we use the \trainDL learning algorithm. As an on-line
 learning algorithm it is able to learn dictionaries from very large sets of
@@ -191,27 +175,18 @@ selecting random elements from the training data. The framework supports
 both ways of dictionary initialization. \Todo{optional: image}
 %can be tested and the quality will be compared.
 
-\subsubsection{Convegence}
-
-Depended on block size, dict size, average nuber of coefficients.
-Block size of the atoms
-Coefficients per signal code respectively $\lambda$
-Dictionary size 
-Most of the experiments in on small sets of 
-See the differences in the selection sceme.
-In the beginning OMP is very random.
-
 
 \subsubsection{Clustering}
 One reason not to learn big dictionaries in a single step is the fact that
 learning such big dictionaries leads to huge memory consumption and coding time.
-To address these problems we investiage strategies to distribute the workload of
+To address these problems we investigate strategies to distribute the workload
+of
 the learning step onto multiple clients with a clustering approach similar to
 MapReduce. 
 
 One strategy would be to utilize the batch\ref{sec:trainBatchOptimize}
 modification of the LARS-Lasso algorithm. Rather than just coding a small batch
-of signals in one itereation of the traning step\ref{alg:trainDL} we code one
+of signals in one iteration of the training step\ref{alg:trainDL} we code one
 batch on each client of the cluster and merge all of them before
 applying\ref{alg:update}. Keeping the dictionary in each iteration fixed
 for every batch coding client. The problem is that it is still required 
@@ -219,10 +194,10 @@ for every batch coding client. The problem is that it is still required
 Another strategy is to learn several smaller dictionaries on disjoint sets of
 training data and when the learning step ended, merge the dictionaries
 into a bigger one. The merge process starts with an empty dictionary and
-sucesifly adds atoms from the dictionaries of the learning step to the
+successively adds atoms from the dictionaries of the learning step to the
 new dictionary unless the atom can be reconstructed with few atoms of the
 current state of the new dictionary. The drawback of this approach is fact that 
-each atom will be less corelated to whole training set.
+each atom will be less correlated to whole training set.
 
 \begin{algorithm}[H]
 \caption{Merging dictionaries}
@@ -242,10 +217,10 @@ each atom will be less corelated to whole training set.
 \end{algorithmic}
 \end{algorithm}
 
-Taking strategy two even futher is to learn smaller dictionaries from different
-sets of images or charakteristics. Such as paintings, gray-scale sketches and
+Taking strategy two even further is to learn smaller dictionaries from different
+sets of images or characteristics. Such as paintings, gray-scale sketches and
 smooth images animation. For example learning dictionaries for very specific
-classes of images can be utilized for classification tasks. Somthing that can
+classes of images can be utilized for classification tasks. Something that can
 come in handy when applying it to operations like search in large image
 databases.
 
@@ -257,55 +232,85 @@ databases.
 % drawback: many samples per train step
 
 \subsection{Application to image compression}
-Experiment on sparse coding as a tool for compression have been done
-before\cite{Lewicki1999,?} but mainly in theory with generated bases
-dictionaries for comparison and approximations on entropy and resulting
-bits-per-pixel. Leading to better density with learned dictionaries over
-designed. 
-
 Todays lossy image compression algorithms are primary based on scientific
 findings about visual perception reaching far back in the 1970s\cite{?} and
 good entropy encoding of the data. Both elements led to to the
 following main steps in lossy image compression algorithms:
 \begin{itemize}
  \item lossy color space conversion
- \item sub-sampling amd spatial separation
- \item coding of image signals
+ \item sub-sampling and spatial separation
+ \item transformation of image signals
  \item quantization to reduce of the number of non-zero coefficient 
  \item lossless entropy coding of the coefficient 
 \end{itemize}
-We already describe the first two steps in
-section\ref{sec:signal_representation}. So we will concentrate on the last
-three.
+%\paragraph{Chroma sub-sampling} is used to reduce the amount of data required
+%by color information while preserving perceptual image quality. 
+The human eye is good at sensing small difference in brightness but lacks the
+ability exactly differentiate small changes in color. \emph{Chroma sub-sampling}
+takes advantage of this human flaw. First the image gets converted into the
+$YC_bC_r$ color space, which describes an image in a brightness/luminance (Y)
+and two color/chroma components (Cb and Cr). Then the visual more relevant
+brightness/luminance channel will be coded in the full resolution while the
+color/chroma components can be sub-sampled with only minor loss in perceptual
+quality. This procedure, illustrated in fig. \ref{fig:YCbCr}, is one key element
+in lossy image compression. 
+\begin{figure}[h]
+\centering
+%\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
+\includegraphics[scale = 0.25]{images/segmentation.png}
+\label{fig:YCbCr}
+\caption{RGB $\rightarrow$ YCbCr}
+\end{figure}
+
+These steps can also be applied to sparse coding.
+
+Experiment on sparse coding as a tool for compression have been done
+before\cite{Lewicki1999,?} but mainly in theory with learned dictionaries and
+generated generated dictionaries of wavelets bases. Leading to better density
+with learned dictionaries over designed. But no real entropy encoding was
+applied. For comparison of compression quality only approximations for
+resulting bits-per-pixel were made. We add quantization and entropy encoding
+after the sparse coding step to develop a simple real world compression
+algorithm for sparse coding images.
+
+%We already describe the first two steps in
+%section\ref{sec:signal_representation}. So we will concentrate on the last
+%three.
 %As learned dictionary elements show also locality in time like , 
 %But real practical application is an open question
-We add quantization and entropy encoding after the sparse coding step to develop
-a simple real world compression algorithm for sparse coded images.
 
 
 \paragraph{Signal coding}
-The actual coding step of the prepared signals is a simple application of one
-of the sparse coding algorithms we present in\ref{chap:sparse_coding}.
+The actual coding step of the prepared signals. The signal vectors of $X$
+consists of $8\times 8$ non overlapping blocks from the image. The same block
+size and separation strategy as used in JPEG compression. After the signal
+separation we apply one of the sparse coding algorithms present in our framework
+to all blocks. This step is lossy as the number of coefficients for
+regularization chosen is lower than the dimension of the signal. 
+% an impact on reconstruction quality.
 
-%But before we can actually code signals we need a good dictionary.
-%We learn dictionaries from our training sets  block sizes Number of
-coefficients
 
 \paragraph{Quantization}
-The idea of quantization is that the human eye is not good at seeing high
-frequency brightness variations.
+Quantized is the process of reducing informations from continuous set to a
+discrete set. In the case of image compression from double precision to integer
+values. In our framework the resulting coefficient from the coding step get
+divided by a factor and rounded to the next integer.  
 
-quantized coefficient. Additional zero coefficients from the quantization step
-are removed.
+Quantization can either be applied by a fixed factor or by applying different 
+factors to each coefficient based on frequency of the basis element.
 
-Fixed quantization or learned from dictionary
+JPEG quantization uses the fact that the human eye is not good at seeing
+differences in high frequency brightness variations. Each DCT coefficient was
+weighted by their perceptual relevance and weights were stored in quantization
+matrix. This matrix can be applied to the coefficient after the DCT. 
+Afterwards each coefficient gets rounded and zero coefficients can be removed.
 
-%The JPEG algorithm 
-We adopt the idea of visual perception idea of JPEG to our
-approach and sort our element by their frequencies.
-The random distribution of the atoms in the dictionary 
-We concentrated on two fixed quantization factor and the analysis of the
-dictionary elements.
+We adopt the idea of a quantization matrix to our sparse coding approach and
+weight our element by their frequencies. Learning dictionaries with the
+algorithm we present in \ref{sec:mairal} leads to a random distribution of atoms
+with yet unknown information of their structure and frequency. We analysis the
+dictionary elements and sort them by their frequencies. Figure 
+\ref{fig:sorted} illustrates an example of this.
 
 %copy
 %The human eye is good at seeing small differences in brightness over a
@@ -325,46 +330,51 @@ dictionary elements.
 %zero, and many of the rest become small positive or negative numbers, which
 %take many fewer bits to represent.
 
-
-
-
-
 \begin{figure}[h]
 \centering
 \includegraphics[width = 0.75\textwidth]{images/sorted.png}
-\caption{sorted learned dictionary}
+\caption{sorted learned dictionary and quantization weights}
 \label{fig:sorted}
 \end{figure}
 
 \paragraph{Data encoding}
+Compression of the remaining coefficient after quantization is the next step
+of to reduce the amount of data that needs to be stored.
 %The sparse vector for every are encoded in 2 bytes index and a single byte
-Coefficients
-Indices
-In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
-the bpp required for encoding of the sparse matrix data. Besides the estimation
-of the compression we also really applied some coding schemes to compare real
-world compression data.
-\cite{Murray2006}
+%Coefficients Indices
+%In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
+%the bpp required for encoding of the sparse matrix data. Besides the estimation
+%of the compression we also really applied some coding schemes to compare real
+%world compression data.
+%\cite{Murray2006}
 
 \begin{description}
- \item[Run-length encoding (RLE)] The main requirement to work well is
-that the data consists of larger groups of the same data.
-  \item[Huffman coding] Elements that occur often are encoded with less bits.
-Leading to a table and a block of encoded data.
-  \item[Arithmetic coding] is ...
-While arithmetic coding often yields better compression results than Huffman
-coding. The higher processing requirements for coding and the current patent
-situation makes the algorithm unpopular for coding compared to the archived
-compression benefit.
+ \item[Run-length encoding (RLE)] Is the process of encoding data in blocks of
+data value and corresponding run-length of data with the same value. The main
+requirement to work well is that the data consists of larger groups of the same
+data.
+  \item[Huffman coding] Is an algorithm that uses the knowledge about the
+entropy of elements of data. Elements that occur often in the data set are
+encoded with less bits. Leading in a table of elements and a corresponding
+symbol to represent this element and a block of symbols.
+%\item[Arithmetic coding] is ...
+%While arithmetic coding often yields better compression results than Huffman
+%coding. The higher processing requirements for coding and the current patent
+%situation makes the algorithm unpopular for coding compared to the archived
+%compression benefit.
 \end{description}
 
-We apply RLE to the sparse matrices and then huffman coding to the remaining
-data.
+We apply something similar to RLE to the sparse matrices. We know that the
+majority of coefficient of the spars matrices are zero. We code the sparse
+matrices as a series of distances between coefficients and the actual
+coefficients. We use the fact that it is more likely that the next value in our
+matrix is zero. Afterwards the remaining data gets huffman coded. 
+
 %The sparse vector for every are encoded in 2 bytes index and a single byte 
 %quantized coefficient. Additional zero coefficients from the quantization step
 %are removed.
 
-As mentioned in in \ref{sec:headers} we are aware of the fact that besides
+As mentioned in \ref{sec:headers} we are aware of the fact that besides
 the actual sparse matrix data we also have other file informations and meta
 data but ignore them for simplification.
   
@@ -380,25 +390,25 @@ additional use of the OpenCV, Eigen and OpenMP libs. All operations use double
 precision. 
 
 Eigen\footnote{\url{http://eigen.tuxfamily.org/}\cite{Eigen}}
-is a template library for fast vector and matrix operations 
-and includes some linear algebra algorithms. It is mainly used for operations on
-dense and sparse matrices and solving of linear equation
-systems. 
+is a template library for fast vector and matrix operations with vector
+optimizations and includes some linear algebra algorithms. It is mainly used for
+operations on dense and sparse matrices, cholesky factorization and solving of
+linear equation systems. 
 
 OpenCV\footnote{\url{http://opencv.willowgarage.com/}\cite{OpenCV}} as
 in \emph{Open Computer Vision Library} is mainly used for
-image read and write operations, color space conversion adn DCT for the
-quantization matrix generation step. 
+image read and write operations, image conversion and DCT for the
+quantization matrix step. 
 
 OpenMP \footnote{\url{http://www.openmp.org/}\cite{OpenMP}} is a preprocessor
 based application programming interface (API) for C,C++ and Fortran that enables
-the user to distribute code block and loops to multiple CPU cores. In situations
-where it is applicable OpenMP is used to utilize multi-core CPUs. 
+the user to distribute code blocks and loops to multiple CPU cores. In
+situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
 
 \Todo{add diagram}
-Split image into sub images, convert sub image to samples from image blocks, 
-train dict with samples or just code samples - save dictionary/image
-Image block size, block selection strategy can be specified.
+%Split image into sub images, convert sub image to samples from image blocks, 
+%train dict with samples or just code samples - save dictionary/image
+%Image block size, block selection strategy can be specified.
 
 \paragraph{Coding}
 The sparse coding step can be configured to use either the Batch-OMP and 
@@ -431,17 +441,16 @@ for image conversion into JPEG and JPEG 2000 and for some image comparison
 tasks.
 
 
-\section{Experiments}
+\chapter{Experiments}
 
-%\Todo{move to results? or at end of method}
-\subsection{Comparison terms}
+\subsection{Performance measurement}
 Before we go further and present the experiments and their results  it is
 necessary to introduce some additional terms. Such as metrics to measure
 their performance.
 
 \paragraph{Mean squared error (MSE)} is an error measurement that
-describes the error/noise between an given or measured reference signal $x$
-and  and the reconstruction(noisy approximation) $\tilde{x}$ of it.
+describes the error between an given or measured reference signal $x$
+and and the reconstruction(noisy approximation) $\tilde{x}$ of it.
 Mathematically it is defined as the average of the squared error between two
 signals.
 %The mean squared error is defined as:
@@ -453,8 +462,8 @@ We primarily use it for testing dictionary learning convergence and as a
 sub term for the measurement described in the next paragraph.
 
 \paragraph{Peak signal-to-noise ration (PSNR)} describes the ratio between the
-error/noise affecting a signal/reconstruction and the maximum possible signal
-amplitude. It is expressed in a logarithmic decibel scale.
+noise affecting a signal and the maximum possible signal amplitude. It is
+expressed in a logarithmic decibel scale.
 \begin{align}
  PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{\sqrt{MSE}}\right)
 \end{align}
@@ -553,8 +562,8 @@ Are big image collections specific enough to benefit from sparse coding?
 %\thispagestyle{empty}
 
 %\section{Experiments}
-Comparission of the quality of dictionaries learnd via cluster strategy and
-with normal single maschine were made.
+Comparison of the quality of dictionaries learned via cluster strategy and
+with normal single machine were made.
 
 \subsection{Hardware setup}
 %Problems
@@ -566,6 +575,16 @@ Computations were made on Apple MacPro with ... \Todo{mac config}
 and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
 config} running Debian 32-bit. Each client in the cluster calculated batches of
 100 till 10,000 images based on the size of the training sets.
+
+\subsection{Convergence}
+
+Depended on block size, dict size, average nuber of coefficients.
+Block size of the atoms
+Coefficients per signal code respectively $\lambda$
+Dictionary size 
+Most of the experiments in on small sets of 
+See the differences in the selection sceme.
+In the beginning OMP is very random.
 
 \subsection{Dictionary size}
 
