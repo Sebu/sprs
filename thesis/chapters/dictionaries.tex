@@ -1,22 +1,26 @@
 \chapter{Dictionaries}
 %\thispagestyle{empty}
-In section \ref{sec:dicts} we define dictionaries are
-collection of signal atoms with an unknown appearance of the atoms. Dictionaries
-for sparse coding of images are indexed collection of vectors with discrete
-pixel data. A linear combination of a sparse selection of those discrete pixel
-atoms will be used to reconstruct signals.
+In section \ref{sec:dicts} we give a general definition of dictionaries 
+as indexed sets of signal atoms with unknown structure of the atoms.
+Dictionaries for sparse coding of images are indexed collection of vectors with
+discrete pixel data. A linear combination of a sparse selection of those
+discrete pixel atoms are used to reconstruct signals. 
 
 \section{Structure}
-%Section \ref{sec:dicts} also states that
-Dictionaries can capture the essential structures of signals. But to achieve
-this quality they need the right structure. Finding the right structure for a
-specific signal is a complex task.
-Two main strategies for the generation of the dictionaries are design and
+But atoms are not just made up of random pixel data. Dictionary atoms should
+capture structures that are useful for sparse coding. Just picking a few of
+them should lead to a good reconstruction. 
+
+Finding the right structures for a specific signal is a complex task.
+The two main strategies for the generation of the dictionaries are design and
 learning.
 
 \subsection{Designed atoms}
 The basis transformations first presented in\ref{sec:history} can also
-be interpreted as discrete atoms 
+be interpreted as atoms of discrete pixel data. This can be atoms with only
+locality in frequency like cosine from DCT or atoms with both locality in time
+and frequency like wavelts. Figure \ref{fig:generated_atoms}
+shows some examples for such dictionaries. 
 
 %\paragraph{cosine}
 %\paragraph{wavelets}
@@ -25,78 +29,66 @@ be interpreted as discrete atoms
 
 \begin{figure}
 \centering
-\subfloat[DCT]{\includegraphics[width =
+\subfloat[cosine]{\includegraphics[width =
 0.3\textwidth]{images/dct.png}}
 \hspace{5mm}
-\subfloat[haar]{\includegraphics[width =
+\subfloat[haar wavelets]{\includegraphics[width =
 0.3\textwidth]{images/haar.png}}
 \hspace{5mm}
-\subfloat[gabor]{\includegraphics[width =
+\subfloat[gabor wavelts]{\includegraphics[width =
 0.3\textwidth]{images/gabor.png}}
 \caption{generated bases}
 
-\label{fig:16_1000_lasso}
+\label{fig:generated_atoms}
 \end{figure}
 
-
-
 \subsection{Learned atoms}
-
-%\paragraph{Machine Learning}
-
-Besides the construction of dictionaries from mathematical functions, machine
-learning can also be used to to generate dictionaries.
-\begin{quotation}
-A computer program is said to learn from experience E with respect to
-some class of tasks T and performance measure P, if its performance at tasks in
-T, as measured by P, improves with experience E.\footnote{Tom M. Mitchell}
-\end{quotation}
-Machine learning is a process used to learn essential structures from
-empirical data. In the case of dictionaries for sparse coding these empirical
-data are sets of signals which are feed as training data into machine learning
-algorithms.
-
-
-\paragraph{Principal component analysis (PCA)} 
-
-\paragraph{Vector quantization} Is a similar strategy to
-
-
-\paragraph{Redundancy} Unlike the designed dictionary, the PCA and
-vector quantization approaches, dictionary atoms learned with machine learning
-methods are not necessarily orthogonal. In fact one benefit of the machine
-learning approach is to be able to learn over-complete dictionaries with
-non-orthogonal basis atoms. This is where redundancy enters the game of
-constructing dictionaries. Not in a way where multiple instance of the same
-element are part of the dictionary but in form of additional elements that
-resemble a composition of other elements from the dictionary. This can lead to
-less required atoms and more sparseness of the coefficient vector $\alpha$ when
-sparse coding signals. Now a single atom can achieve the same reconstruction as
-a former combination of several orthogonal basis elements. Nevertheless
-redundancy can also be applied to the designed dictionaries. For example by
-adding rotated cosine elements to a dictionary with a default configuration of
-DCT basis elements.
-%The atoms are not orthonormal. 
-%The dictionary is overcomplete. Overcomplete ...
-
-
-\paragraph{}
+%\begin{quotation}
+%A computer program is said to learn from experience E with respect to
+%some class of tasks T and performance measure P, if its performance at tasks in
+%T, as measured by P, improves with experience E.\footnote{Tom M. Mitchell}
+%\end{quotation}
 Recent research\cite{Chen1998,Aharon2006,Mairal2010} has shown that learned
 dictionaries show better compression quality than small analytic
 dictionaries. Rather than selecting an appropriate mathematical construct that
 can reconstruct a certain group of signals close enough the data, a subset of
 the data or similar data is used as a training set to learn the dictionary
 itself.
+%Besides the construction of dictionaries from mathematical functions, machine
+%learning can also be used to to generate dictionaries. 
+Machine learning is such a process that is used to learn essential structures
+from empirical data. In the case of dictionaries for sparse coding these
+empirical data are sets of signals which are feed as training data into machine
+learning algorithms.
+
+Principal component analysis (PCA) can be used as an approach to find such
+dictionary atoms. As the principal components are orthogonal to each other PCA
+can only find a number atoms of atoms that is lower or equal to the dimension of
+the signal. When we want to use these atoms for sparse coding we are limited to
+a small range of possible atoms.
+
+\paragraph{Redundancy} Unlike the PCA approach,
+dictionary atoms learned with machine learning methods are not necessarily
+orthogonal. In fact one benefit of the machine learning approach is to be able
+to learn over-complete dictionaries with non-orthogonal basis atoms. This is
+where redundancy enters the game of constructing dictionaries. Not in a way
+where multiple instance of the same element are part of the dictionary but in
+form of additional elements that resemble a composition of other elements from
+the dictionary. This can lead to less required atoms and more sparseness of the
+coefficient vector $\alpha$ when sparse coding signals. Now a single atom can
+achieve the same reconstruction as a former combination of several orthogonal
+basis elements. 
+Nevertheless redundancy can also be applied to the designed
+dictionaries. For example by adding rotated cosine elements to a dictionary with
+a default configuration of DCT basis elements.
 
 
-
-%\subsubsection{k-svd}
 \section{Learning}
-\cite{Olshausen1997,Lewicki2000,Aharon2006}
-In the last decade several learning algorithms have been proposed. The basic
-concept of following algorithms for learning redundant dictionaries is to alter
-a initial start dictionary in a way that it can sparsely reconstruct a set of
-training data with minimal error. 
+%\cite{Olshausen1997,Lewicki2000,Aharon2006}
+In the last decade several learning algorithms for over-complete dictionaries
+have been proposed. The basic concept of following algorithms for learning
+redundant dictionaries is to alter a initial start dictionary in a way that it
+can sparsely reconstruct a set of training data with minimal error. 
 
 \begin{align} 
 D = \argmax_{D} \sum_{i=0}^n \max_{x_i} P(x,D)
@@ -120,10 +112,12 @@ or big data sets that would challenge the limits of a batch bases algorithm. We
 now introduce some of the most popular algorithms for both ways of learning.
 
 \subsection{Batch algorithms}
+Batch algorithms learn over-complete dictionaries from fixed batches of
+training data. We present some of the most popular of these algorithms.
+
 \paragraph{Method of optimal directions (MOD)}
 Presented by Engan et al. in 1999\cite{Engan1999a} 
-\paragraph{Generalized PCA}
-\cite{?}
+
 \paragraph{ILS-DLA}
 In 2007 Engan et al.\cite{Engan2007} presented another algorithm by   
 
@@ -132,14 +126,28 @@ In 2007 Engan et al.\cite{Engan2007} presented another algorithm by
 \label{sec:k-svd}
 One of the most popular batch algorithms is the K-SVD presented by
 Aharon et al. in 2006\cite{Aharon2006}. The algorithm learns a dictionary $D$
-from a set of training samples $X$. At the beginning the dictionary $D$ gets
-initialized with either random data or a random selection of elements from the
-training set. The main part of the algorithm consists of two step which are
-repeated for a fixed number of $T$ iterations or until convergence of $D$. In
-the first step all samples of training $X$ are sparse coded with the current
-dictionary $D$. In the second step every dictionary atom of $D$ is altered in a
-way that the reconstruction error of $X$ is minimized. 
-This is done by ...
+from a set of training samples $X$ by solving:
+\begin{equation*}
+\min_{D,A} \lVert X - DA \rVert^{2}_{F} \textrm{ s.t. }
+\forall i : \lVert \alpha_i \rVert_{0} \leq L
+\end{equation*}
+At the beginning the dictionary $D$ gets initialized with either random data or
+a random selection of elements from the training set. The main part of the
+algorithm consists of two step which are repeated for a fixed number of $T$
+iterations or until convergence of $D$. In the first step all samples of
+training $X$ are sparse coded with the current dictionary $D$. In the second
+step every dictionary atom $d_j$ of $D$ is altered in a way that the
+reconstruction error of $X$ is minimized. 
+\begin{equation*}
+\min_{d_j,a_j} \lVert d_ja_j - E_j \rVert^{2}_{F} \textrm{ with }
+E_j = \sum_{l\neq j} d_la_l^T - X
+\end{equation*} 
+The trick of update step is to consider only the signal in $X$ which use the
+atom $d_j$. The problem gets then solved with a \emph{Singular Value
+Decomposition (SVD)}. 
+%The name K-SVD comes from $k$ times application of SVD in the update process
+%(line \label{alg:k-svd_start} till line \ref{alg:k-svd_end} in algorithm
+%\ref{alg:k-svd}).
 The \prettyref{alg:k-svd} illustrates this procedure. 
 
 \begin{algorithm}[H]
@@ -155,15 +163,16 @@ The \prettyref{alg:k-svd} illustrates this procedure.
 \alpha = \argmin_{\alpha}\lVert
 x_t - D\alpha\rVert_2^2 \text{ s.t.} \lVert\alpha\rVert_0 \leq L
 \end{equation}
-\FOR {$j = 1$ to $p$}
+\FOR {$j = 1$ to $p$}\label{alg:k-svd_start}
 \STATE $D_j \gets 0$
 \STATE $I \gets \{ i : \forall i : A_{j,i} \neq 0 \}$
 \STATE $E \gets X_I - DA_I$
-\STATE $d,g \gets \argmin_{d,g} \lVert E- dg^T \rVert_F^{2}$ s. t. $\lVert d
+\STATE $\{ d,g\} \gets \argmin_{d,g} \lVert E- dg^T \rVert_F^{2}$ s. t. $\lVert
+d
 \rVert_{2} = 1$
 \STATE $D_j \gets d$
 \STATE $A_{j,I} \gets g^T$
-\ENDFOR 
+\ENDFOR\label{alg:k-svd_end}
 \ENDFOR
 \RETURN $D$
 \end{algorithmic}
@@ -182,7 +191,7 @@ The algorithm was presented by Engan et al. in 2010\cite{Engan2010} and is a
 recursive the a modified version of the ILS-DLA algorithm.
 
 
-\subsubsection{\trainDL}
+\subsubsection{Online dictionary learning}
 \label{sec:mairal}
 In 2010 Mairal et. al.\cite{Mairal2010} proposed an on-line approach which from
 now on we will call \trainDL. The algorithm presented by Mairal et
@@ -202,7 +211,7 @@ and being suitable for a large range of learning problems.
 Does it scale up to big dictionaries?
 samples\cite{Mairal2010}
 \begin{algorithm}[H]
-\caption[\trainDL]{On-line dictionary learning\cite{Mairal2010}}
+\caption[\trainDL]{Online dictionary learning\cite{Mairal2010}}
 \label{alg:trainDL}
 \begin{algorithmic}[1]
 \REQUIRE $x \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in \mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
@@ -251,7 +260,7 @@ d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
 \RETURN $D$
 \end{algorithmic}
 \end{algorithm}
-Mairal et al. propose several modification to their algorithm to improve speed
+Mairal et al. describe several modification to their algorithm to improve speed
 and convergence. One speed optimization is to sparse code mini-batches of $n$
 signal samples instead of a single signal sample in each iteration. This
 modification leads to line \ref{alg:Aupdate} and line \ref{alg:Bupdate}
@@ -261,20 +270,20 @@ A_t \gets A_{t-1} + \frac{1}{n}\sum_{i=1}^{n}\alpha_{t,i}\alpha_{t,i}^T\\
 B_t \gets B_{t-1} + \frac{1}{n}\sum_{i=1}^{n}x_{t,i}\alpha_{t,i}^T
 \end{align}
 
-$A_0  \gets tI$ and $B_0 \gets tD$
+%$A_0  \gets tI$ and $B_0 \gets tD$
 
 
 
 
-\section{Learning for the Task}
+\subsection{Learning for the Task}
 \label{sec:learnForTheTask}
-Guillermo Sapiro mentions in his talk\cite{sapiroSlides} at the \emph{MIT CSAIL}
-that it has been shown that learning specific for certain tasks can lead to the
-best results.  Based on this discovery we will concentrate on a specific class. 
-``Please do not use the wrong dictionaries...''\footnote{Guillermo Sapiro}
-We will focus on natural images from large image databases. This means 1+
-mega-pixel images with 3-channel RGB data found on image hosting services such
-as flickr.com, twitpic.com, picasa.com among others.
+``Please do not use the wrong dictionaries...''\footnote
+mentions Guillermo Sapiro in his talk at the \emph{MIT CSAIL}
+It has been shown that learning specific for certain tasks can lead to the
+best results. Based on this finding we will concentrate on a
+specific class. We will focus on natural images from large image databases.
+This means typicaly 1+ mega-pixel images with 3-channel RGB data found on image
+hosting services such as flickr.com, twitpic.com, picasa.com among others.
 
 
 \section{Related work}
@@ -315,8 +324,8 @@ learned
 \paragraph{Multi-scale dictionaries}
 Rather than encoding uniform segments of a bigger signal this technique
 encodes different sized blocks (multiple times of the default block size). The
-idea is that aligned smooth regions with low variance can be can be combined an
-encoded as one signal rather than e.g. 4. \cite{saprioSlides}\cite{Mairal2007}
+idea is that aligned smooth regions with low variance can be can be combined
+encoded as one signal rather than for example four.\cite{Mairal2007}
 
 \Todo{picture with different scales}
 

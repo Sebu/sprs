@@ -1,9 +1,59 @@
-
-
 \chapter{Results}
+This chapter shows the results for the following experiments.
+
+\begin{enumerate}
+ \item Comparision of reconstruction quality of different sizes of dictionaries
+on images from the training set. 
+ \item Reconstruction quality of single learned dictionaries vs. dictionaries
+merged from smaller dictionaries learnd in clusters.
+ \item Reconstruction quality of outside of the training set.
+ \item Inspection of the main structures of dictionary atoms from different
+groups of images (natural, sketches).
+ \item Compression quality of images from and outside of the training set.
+\end{enumerate}
+
+We discuss the results in the next chapter.
+
+%\section{Quality}
+%\subsection*{trained vs. analytical base}
+%\subsection*{Compression ratio}
+%\subsection*{Dictionary size}
+%Setup:
+%  initialize: random pixels, radom samples 
+%  dict size: 256, 1000, 4000, 8000
+%  coeffs: 5, 10, 20
+
+\section{Dictionary size}
+\begin{table}[h]
+\caption{dictionary size}
+\centering
+\begin{tabular}{l  c  c  c  c  c}
+\toprule
+Image & 1 & 2 & 3 & 4 & 5 \\
+\hline
+300 & 30 & 30 & 30 & 30 & 30 \\
+600 & 30 & 30 & 30 & 30 & 30 \\
+900 & 30 & 30 & 30 & 30 & 30 \\
+1800 & 30 & 30 & 30 & 30 & 30 \\
+3000 & 30 & 30 & 30 & 30 & 30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\Todo{small image sample comparision}
+\begin{figure}[h]
+\centering
+\subfloat[300]{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\hspace{5mm}
+\subfloat[900]{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\hspace{5mm}
+\subfloat[3000]{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\caption{dict size differences on sub region of image}
+\label{fig:dict size}
+\end{figure}
 
 \section{Single vs. Cluster}
-\begin{table}[h]
+\begin{table}[H]
 \caption{single vs. cluster}
 \centering
 \begin{tabular}{l c c c c c}
@@ -17,7 +67,7 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \subfloat[low pass]{\includegraphics[width =
 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
@@ -46,6 +96,22 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
 \caption{low pass}
 \label{fig:16_1000_lasso}
+\end{figure}
+
+\section{Dictionary elements}
+\begin{figure}[H]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/gradient.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/checkerboard.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/spot.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/edges.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/wavelet.png}}
+\caption{image from database}
+\label{fig:USC-SIPI}
 \end{figure}
 
 \section{Compression}
@@ -53,14 +119,14 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \subsection{Natural image database}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
 \caption{16x16 LARS-lasso with 1000 elements}
 \label{fig:16_1000_lasso}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \subfloat[low pass]{\includegraphics[width =
 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
@@ -70,7 +136,7 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \caption{low pass}
 \label{fig:16_1000_lasso}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
 \centering
 \subfloat[low pass]{\includegraphics[width =
 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
@@ -80,7 +146,7 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \caption{low pass}
 \label{fig:16_1000_lasso}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
 \centering
 \subfloat[low pass]{\includegraphics[width =
 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
@@ -95,14 +161,14 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 
 \subsection{Specific image groups}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width = 0.66\textwidth]{images/1000_sketches.png}
 \caption{1000 16x16 elements of sketches database}
 \label{fig:16_1000_lasso}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \subfloat[low pass]{\includegraphics[width =
 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
@@ -112,7 +178,7 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \caption{low pass}
 \label{fig:16_1000_lasso}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
 \centering
 \subfloat[low pass]{\includegraphics[width =
 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
@@ -122,7 +188,7 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \caption{low pass}
 \label{fig:16_1000_lasso}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
 \centering
 \subfloat[low pass]{\includegraphics[width =
 0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
@@ -132,14 +198,7 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \caption{low pass}
 \label{fig:16_1000_lasso}
 \end{figure}
-%\section{Quality}
-%\subsection*{trained vs. analytical base}
-%\subsection*{Compression ratio}
-%\subsection*{Dictionary size}
-%Setup:
-%  initialize: random pixels, radom samples 
-%  dict size: 256, 1000, 4000, 8000
-%  coeffs: 5, 10, 20
+
 
 
 

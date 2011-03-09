@@ -1,7 +1,7 @@
-%\chapter{Method}
+\chapter{Method}
 %\thispagestyle{empty}
 
-\chapter{Framework}
+\section{Framework}
 To sparse code images and learn big dictionaries we design a software framework
 
 \subsection{Signal representation}
@@ -34,7 +34,7 @@ As the sparse coding process is operation on signal vectors it is required to
 represent our 2-D image data in a set of 1-D vectors with size $m$. We extract
 blocks of size $n \times n=m$ from the images. Typically dealing with block
 sizes of $n=8,..,20$. The blocks get extracted in a raster either with
-overlapping content or disjoint from each other. Figure\ref{separation}
+overlapping content or disjoint from each other. Figure \ref{fig:separation}
 illustrates this separation step.
 \begin{figure}[h]
 \centering
@@ -124,8 +124,8 @@ w^T & \sqrt{1-w^Tw}
 All modification lead to significant speed increase when coding large sets of
 signals. While $L$ is very small the main factor of the computation is
 the multiplication of $D$ with a vector. Detailed information on the complexity
-and speed gain can be found in the corresponding paper on the
-Batch-OMP\cite{Rubinstein2008}. 
+and speed gain can be found in the corresponding paper\cite{Rubinstein2008} on
+the Batch-OMP. 
 
 % with a complexity of $O(mp)$. 
 %This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
@@ -200,7 +200,7 @@ current state of the new dictionary. The drawback of this approach is fact that
 each atom will be less correlated to whole training set.
 
 \begin{algorithm}[H]
-\caption{Merging dictionaries}
+\caption{Dictionaries merging}
 \label{alg:merging}
 \begin{algorithmic}[1]
 \REQUIRE $ S = (D_1,...,D_k) \text{ set of dictionaries } D \in
@@ -261,7 +261,6 @@ in lossy image compression.
 \label{fig:YCbCr}
 \caption{RGB $\rightarrow$ YCbCr}
 \end{figure}
-
 These steps can also be applied to sparse coding.
 
 Experiment on sparse coding as a tool for compression have been done
@@ -347,7 +346,6 @@ of to reduce the amount of data that needs to be stored.
 %of the compression we also really applied some coding schemes to compare real
 %world compression data.
 %\cite{Murray2006}
-
 \begin{description}
  \item[Run-length encoding (RLE)] Is the process of encoding data in blocks of
 data value and corresponding run-length of data with the same value. The main
@@ -389,18 +387,18 @@ The whole sparse coding and training library is written in C++ with
 additional use of the OpenCV, Eigen and OpenMP libs. All operations use double
 precision. 
 
-Eigen\footnote{\url{http://eigen.tuxfamily.org/}\cite{Eigen}}
+Eigen\footnote{\url{http://eigen.tuxfamily.org/}}
 is a template library for fast vector and matrix operations with vector
 optimizations and includes some linear algebra algorithms. It is mainly used for
 operations on dense and sparse matrices, cholesky factorization and solving of
 linear equation systems. 
 
-OpenCV\footnote{\url{http://opencv.willowgarage.com/}\cite{OpenCV}} as
+OpenCV\footnote{\url{http://opencv.willowgarage.com/}} as
 in \emph{Open Computer Vision Library} is mainly used for
 image read and write operations, image conversion and DCT for the
 quantization matrix step. 
 
-OpenMP \footnote{\url{http://www.openmp.org/}\cite{OpenMP}} is a preprocessor
+OpenMP \footnote{\url{http://www.openmp.org/}} is a preprocessor
 based application programming interface (API) for C,C++ and Fortran that enables
 the user to distribute code blocks and loops to multiple CPU cores. In
 situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
@@ -415,19 +413,21 @@ The sparse coding step can be configured to use either the Batch-OMP and
 set a limitation to the maximum number of coefficients or the LARS-Lasso 
 and set the regularization(\ref{eq:l1}) factor $\lambda$.
 The Batch-OMP implementation is based on the implementation
-of \cite{Rubinstein} OMPBox with technical modifications to fit into our
+of OMPBox by Ron
+ Rubinstein\footnote{\url{http://www.cs.technion.ac.il/~ronrubin/}} with
+technical modifications to fit into our
 framework. The LARS-Lasso C++ implementation is based on the Matlab
 implementation of\cite{Strand2005} and the original
 paper\cite{Efron2004} on the algorithm.
 
 \paragraph{Learning}
-The \trainDL is a straight forward C++ implementation of the
-learning algorithm presented in\cite{Mairal2010}. It is an implementation of the
-basic version of the algorithm with the batch optimization applied. Batch-OMP
-and the LARS-Lasso coding method can be utilized for the coding part.
+The dictionary learning step is a straight forward C++ implementation of the
+ODL algorithm from section \ref{sec:mairal}. It is an
+implementation of the
+basic version of the algorithm with the mini-batch optimization applied.
+Batch-OMP and the LARS-Lasso coding method can be utilized for the coding part.
 Dictionary size and the number training signals for each iteration can be
 speficied.
-
 
 \paragraph{Command line interface}
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
@@ -441,7 +441,7 @@ for image conversion into JPEG and JPEG 2000 and for some image comparison
 tasks.
 
 
-\chapter{Experiments}
+\section{Experiments}
 
 \subsection{Performance measurement}
 Before we go further and present the experiments and their results  it is
@@ -489,6 +489,7 @@ coefficient leading to much lower bpp rates.
 Looking at other well known compression algorithms such as JPEG or
 JPEG 2000 a common ratio is about $\sim1.8$ bits-per-pixel for average
 quality compression( JPEG quality of 50) of an natural image. 
+
 \Todo{example image?, lower bit rates, Lewicki estimate for sparse coding}
 
 Besides the raw pixel data, images formats usually contain a certain amount
@@ -500,7 +501,8 @@ In addition to the introduced metrics it is common practice to use some image
 sets to compare test results of the different algorithms and parameter
 configurations. As the dictionaries are specificaly trained for
 reconstruction of the data in the training sets it is mandatory to also use
-these image to test the reconstruction and compression quality.
+these image to test the reconstruction and compression quality
+(\prettyref{fig:database_images}).
 \begin{figure}[h]
 \centering
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
@@ -518,15 +520,17 @@ these image to test the reconstruction and compression quality.
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
-\caption{image from training set}
-\label{fig:USC-SIPI}
+\caption{test images from training set}
+\label{fig:database_images}
 \end{figure}
 In addition to this we want to know how good the dictionaries can reconstruct
-and compress images outside of the training set. For those comparisons we use a
-well known set of standard test images from the \emph{USC-SIPI Image
-Database}\footnote{\url{http://sipi.usc.edu/database/}}. They are often
-used in image processing for evaluation of compression algorithms. 
-Including pictures such as Lena, Mandrill and Peppers.
+and compress images outside of the database respectifly the training set. For
+those comparisons we use a well known set of standard test images from the
+\emph{USC-SIPI Image
+Database}\footnote{\url{http://sipi.usc.edu/database/}}
+(\prettyref{fig:USC-SIPI}). They are often used in image processing for
+evaluation of compression algorithms. 
+%Including pictures such as Lena, Mandrill and Peppers.
 \begin{figure}[h]
 \centering
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_1_05.jpg}}
@@ -540,9 +544,15 @@ Including pictures such as Lena, Mandrill and Peppers.
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_06.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_07.jpg}}
-\caption{images from USC-SIPI Image Database}
+\caption{test images from USC-SIPI Image Database}
 \label{fig:USC-SIPI}
 \end{figure}
+
+\subsection{Hardware setup} 
+Computations were made on Apple MacPro with ... \Todo{mac config}
+and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
+config} running Debian 32-bit. Each client in the cluster calculated batches of
+100 till 10,000 images based on the size of the training sets.
 
 \subsection{Training sets}
 %\subsection{Learning specific dictionaries}
@@ -550,34 +560,25 @@ Section \ref{sec:learnForTheTask} mentions that one of the key
 elements of the learning algorithms is the learning of specialization
 dictionaries. Task specific training data is a common way to solve the problem
 of finding  the right dictionary. Here learning for the task comes into
-account. Such as de-noising/in-painting dictionaries directly learned from the
-initial signal that gets de-noised or restored from in-painting. If the task
+account. Such as de-noising or in-painting dictionaries directly learned from
+the initial signal that gets de-noised or restored from in-painting. If the task
 gets bigger it sounds logical to increase the size of training data and take a
 bigger variety of signals to learn from.  We have a closer look at differences
 of learned elements from specific sets of images. These sets include sketches,
 still images of animations from Disney and post-impressionistic images from
 Vincent van Gogh.  
 
-Are big image collections specific enough to benefit from sparse coding?
-%\thispagestyle{empty}
+\subsection{Questions}
+\paragraph{Dictionary size}
+!test
+We want to know if reconstruction quality increases with dictionaries
+size. Linear? (test via MSE)
 
-%\section{Experiments}
-Comparison of the quality of dictionaries learned via cluster strategy and
-with normal single machine were made.
 
-\subsection{Hardware setup}
-%Problems
-%Big matrices
-%Speed 
-%Compression
-%The 
-Computations were made on Apple MacPro with ... \Todo{mac config}
-and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
-config} running Debian 32-bit. Each client in the cluster calculated batches of
-100 till 10,000 images based on the size of the training sets.
-
-\subsection{Convergence}
-
+\paragraph{Convergence}
+In the first itrations the learning algorithm can take big steps.
+Rather than 
+Convergence of the learning step. 
 Depended on block size, dict size, average nuber of coefficients.
 Block size of the atoms
 Coefficients per signal code respectively $\lambda$
@@ -586,72 +587,24 @@ Most of the experiments in on small sets of
 See the differences in the selection sceme.
 In the beginning OMP is very random.
 
-\subsection{Dictionary size}
-
-\begin{table}[h]
-\caption{dictionary size}
-\centering
-\begin{tabular}{l  c  c  c  c  c}
-\toprule
-Image & 1 & 2 & 3 & 4 & 5 \\
-\hline
-300 & 30 & 30 & 30 & 30 & 30 \\
-600 & 30 & 30 & 30 & 30 & 30 \\
-900 & 30 & 30 & 30 & 30 & 30 \\
-1800 & 30 & 30 & 30 & 30 & 30 \\
-3000 & 30 & 30 & 30 & 30 & 30 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\Todo{small image sample comparision}
-\begin{figure}[h]
-\centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
-\caption{dict size difference}
-\label{fig:dict size}
-\end{figure}
-
 
 Convergence
-
-
 Mostly reduced to line segments and curve elements.
-\Todo{Reconstruction results}
-\subsection{Dictionary elements}
-\begin{figure}[h]
-\centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/gradient.png}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/checkerboard.png}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/spot.png}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/edges.png}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/wavelet.png}}
-\caption{image from database}
-\label{fig:USC-SIPI}
-\end{figure}
 
-Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
-increasing block size.
-Similar to natural images.
-compression dicts
+!Test element size inside outside reconstruction
 
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-% \caption{8x8 OMP after some iterations}
-% \label{fig:8_4000_lasso}
-% \end{figure}
-% 
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width = 0.44\textwidth]{images/8_4000_10000_10_lasso.png} 
-% \caption{8x8 LARS after some iterations}
-% \label{fig:8_4000_lasso}
-% \end{figure}
+Can convergence be addressed by 
+
+Does 
+Comparison of the quality of dictionaries learned via cluster strategy and
+with normal single machine were made.
+
+\paragraph{Structure}
+Are big image collections to general or specific enough to benefit from sparse
+coding?
+
+\paragraph{Compression}
+How do we compare tor JPEG and JPEG 2000?
+Can we also compress images from outside of the training data?
+
 

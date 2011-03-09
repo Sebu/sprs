@@ -1,19 +1,8 @@
-\chapter{Conclusion}
+\chapter{Discussion}
 %\thispagestyle{empty}
 
-\section{Summary} 
-We build framework to sparse code image signal with $\ell_0$ and
-$\ell_1$ regularization. Learned image dictionaries for gray scale images. For
-each separate color channel and for merge color channels. Dictionaries of
-random natural images. In sub sets and in whole. Dictionaries on specific
-groups of images. 
-Tested image compression on images from the training set and other images from
-the outside. Compared those compression results with other compression
-algorithms.
 
 
-
-\section{Discussion}
 Convergence of the dictionary learning step.
 
 OMP:
@@ -63,7 +52,7 @@ leads better coding results when using OMP.}
 Not only the training data and task but also the right
 sparse code algorithm plays a role for dictionary and reconstruction quality.
 
-
+\section{Conclusion}
 Compression 
 JPEG and JPEG 2000 are highly optimized lossy image compression algorithms. 
 Years of research went into observation human vision and the 
@@ -103,15 +92,22 @@ benefit from clustering.
 The amount of publications regarding in the last decade indicate strong ongoing
 research in the field of sparse coding and dictionaries learning. Especially
 brining structure to the learning stage is one of the most active topics in this
-fields/area of research. 
+field of research. 
 
 \subsection{Framework improvements}
-More speed and  sparse coding algorithms.
+More speed and sparse coding algorithms.
 \paragraph{Speed}
-Use SPAMS C++ interface.
+The implementation of the Batch-OMP and the OLD are already very fast while the
+LARS-Lasso implementation is quiet slow compared to the KLT implmentation in the
+SPAMS framework. In the near future the SPAMS framework will provide a C++
+interface\footnote{\url{http://www.di.ens.fr/willow/SPAMS/faq.html}}. Adding
+support for this interface could lead to speed improvements.
+
 \paragraph{Clustering}
 \paragraph{Hierarchy}
 \paragraph{Generate atoms}
+The results gained on the structure of the atoms can be used to generate new
+ones.
 \paragraph{Adaptive learning}
 %\subsubsection*{Optimizations}
 %\subsection{Adaptive}
@@ -125,11 +121,28 @@ takes a very simple approach without taking correlation between adjancended
 blocks into account. It is a copy of the JPEG block strategy. But other than
 the JPEG basis transforms the learned atoms do not need to be periodic
 Unable to giving
-hard edges. 
-
+hard edges. The framework can be easyly extended to learn and code different
+kinds of sub-images.
 
 \paragraph{Multi-scale approach}
 
 %\Todo{OPTIONAL add structure for speed and model improvements Multi-scale,
 %multi-channel, hierarchy}
 
+
+
+\section{Summary} 
+We build framework to sparse code image signal with $\ell_0$ and
+$\ell_1$ regularization. Learned image dictionaries for gray scale images. For
+each separate color channel and for merge color channels. Dictionaries of
+random natural images. In sub sets and in whole. Dictionaries on specific
+groups of images. 
+Tested image compression on images from the training set and other images from
+the outside. Compared those compression results with other compression
+algorithms.
+
+
+Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
+increasing block size.
+Similar to natural images.
+compression dicts

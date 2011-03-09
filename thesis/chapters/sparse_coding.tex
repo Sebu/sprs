@@ -2,8 +2,14 @@
 \label{chap:sparse_coding}
 %Back to our initial problem of\ref{sec:dicts} $x = D\alpha$
 
-A sparse code is a sparse vector of coefficients that is used 
-to linear combine a small selection of atoms from a dictionary.
+The Cambridge Advanced Learner defines a code as
+\begin{quotation}
+ ``..a system of numbers, letters or signals which is used to represent
+something in a shorter or more convenient form''
+\end{quotation}
+A sparse code is a sparse coefficients vector that is used to linear combine a
+few basis elements from a dictionary of many of them.
+
 Consider $X \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each
 column $x_{i}$ representing a signal described by a single vector of
 signal length $m$. The dictionary $D\in\mathbb{R}^{m \times p}$ is another
@@ -36,8 +42,8 @@ linear system.
 \rVert^{2}_{2}}_{error} \label{eq:problem}
 \end{equation}
 The problem is not well-posed because there is more than one
-solution to it. Such a problem is called a ill-posed problem.
-But instead off all solutions we want to find the sparsest
+solution to it. %Such a problem is called a ill-posed problem.
+But we only need one of them. We want to find the sparsest
 solution making the problem well-posed. To archive this it is necessary to keep
 the coefficient vector $\alpha$ sparse. Which means that only a few coefficients
 of $\alpha$ are non-zero. 
@@ -55,6 +61,7 @@ of $\alpha$ are non-zero.
 \caption{}
 \label{fig:sparse}
 \end{figure}
+\Todo{fix text inclusion}
 The idea of sparse coding image signals has its origin in neural science. 
 Research in this field found that the cells in the visual cortex, also known as
 \emph{V1}, have properties similar to those localized filtering of wavelets
@@ -70,17 +77,17 @@ A regularization adds additional information to a problem in order to solve an
 ill-posed problem or to prevent over-fitting.\footnote{\url{
 http://en.wikipedia.org/wiki/Regularization_(mathematics)}}
 To find the sparsest solution the sparse coding approach adds such
-regularization to the the least-squares problem\ref{eq:problem}. 
+regularization to the the least-squares problem \ref{eq:problem}. 
 %.. over-fitting .. Such a constraint is the regularization.
 \begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} +
 \underbrace{\psi(\alpha)}_{regularization}
 \end{equation}
-The regularization acts a constraint to the structure of $\alpha$. It should be
-choosen in a way which keeps the number of non-zero coefficient of $\alpha$ low.
-This sparsity constraint can be achieved with the help of the $\ell_0$-norm.
-The $\ell_0$-norm is a pseudo-norm that virtually counts the number of non-zero
-elements in the vector in the form of:
+The regularization acts as a constraint to the structure of $\alpha$. It should
+be choosen in a way which keeps the number of non-zero coefficient of $\alpha$
+low. This sparsity constraint can be achieved with the help of the
+$\ell_0$-norm. The $\ell_0$-norm is a pseudo-norm that virtually counts the
+number of non-zero elements in the vector in the form of:
 \begin{equation}
 \lVert\alpha\rVert_{0} = \#\{i:\alpha_i \neq 
 0,i=1,...,p,\alpha\in\mathbb{R}^p\} 
@@ -92,7 +99,7 @@ does not imply that there is no way to efficiently find a solution that is good
 enough to keep $\alpha$ sparse. There exist several greedy algorithms that can
 solve the problem in a not perfect but good enough way. 
 
-Another regularization that can keep $\alpha$ sparse is the use of the $\ell_1$
+Another regularization that can keep $\alpha$ sparse is the use of the $\ell_1$-
 or $\ell_2$-norm as a convex relaxation of the $\ell_0$-norm. Even though that
 the $\ell_1$-norm is not the same as the $\ell_0$ it can be demonstrated that
 the $\ell_1$-norm is equivalent to the $\ell_0$-norm in the effect of inducing
@@ -105,14 +112,14 @@ sparsity.
 \label{fig:sparse}
 \end{figure}
 
-In the last 15 years several sparse coding algorithms have been proposed. Some
+In the past 15 years several sparse coding algorithms have been proposed. Some
 that solve the initial $\ell_0$ regularized problem greedily, like
-the (orthogonal)-matching-pursuit, and others which modified the problem to
-become convex. The algorithms solve the convex problem  primary derived from the
-numerical domain in the form of large linear system solvers with few
-optimization constraints. The most common of them are the Basis-pursuit,
-LARS-Lasso, Ridge regression and FOCUSS. The next two sections give a more in
-depth look on those algorithms. 
+the (orthogonal)-matching-pursuit or FOCUSS and others which modified the
+problem to become convex. The algorithms solve the convex problem  primary
+derived from the numerical domain in the form of large linear system solvers
+with few optimization constraints. The most common of them are the
+Basis-pursuit, LARS-Lasso and Ridge regression. The next two sections give a
+more in depth look on those algorithms. 
 
 %$\ell_2$ Method Of Frames
 
@@ -135,7 +142,7 @@ depth look on those algorithms.
 \section{$\ell_0$ regularization with greedy algorithms}
 %present a selection of the most common algorithms to solve the initial problem
 %under a $\ell_0$ regularization.
-We now give a more in depth look at two very popular algorithms. 
+We now have a more in depth look at two very popular algorithms. 
 The matching-pursuit and its successor the orthogonal-matching-pursuit.
 Both use a greedy strategy to calculate the coefficient vector $\alpha$ to find
 a solution to the following NP-hard problem.
@@ -148,20 +155,20 @@ respectively
 \min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t.
 } \lVert \alpha \rVert_{0} \leq L
 \end{equation}
-\cite{Mallat1993}
 
 \subsection{Matching-Pursuit}
 \label{sec:mp}
 The matching-pursuit was first presented in 1993 by Mallat and
 Zhang\cite{Mallat1993} on audio samples and later adapted to images by Mallat
 and Bergeaud in\cite{Mallat1995}.
-The \prettyref{alg:mp} starts with the coefficient vector $\alpha$ set to
-zero. Then finds the atom in the dictionary with the best reduction of the
+The algorithm starts with the coefficient vector $\alpha$ set
+to zero. Then finds the atom in the dictionary with the best reduction of the
 error. This is done by selecting the coefficient that has the maximum
 correlation with the current residual. This step is repeated $L$ times
 or until the error $\lVert x - D\alpha \rVert^{2}_{2}$ for the current $\alpha$
 reaches $\lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon$ respectively the
 residual fulfills $\lVert r \rVert_2 \leq \epsilon$.
+Algorithm \prettyref{alg:mp} illustrates this procedure.
 \begin{algorithm}[H]
 \caption{Matching Pursuit}
 \label{alg:mp}
@@ -192,16 +199,18 @@ a[i]  \gets a[i] + \left<d_i,r\right> \label{eq:mp_update}
 \label{sec:omp}
 The Orthogonal-Matching-Pursuit, an improved version of
 the Matching-Pursuit (\ref{sec:mp}), was first presented by Pati et al.
-in 1993\cite{Pati1993}. Rather than just updating the coefficient of $\alpha$
-,that is currently selected (\ref{eq:mp_update}), the algorithm re-evaluates
+in 1993\cite{Pati1993}. Rather than just updating the coefficient of
+$\alpha$, that is currently selected (\ref{eq:mp_update}), the algorithm
+re-evaluates
 all coefficient in the current set $A$ of active atoms 
 $\alpha_A$ by solving a full least-squares solution in every iteration
 (\ref{eq:omp_update}). This improves the quality of the
 solution\cite{Pati1993}. The Orthogonal-Matching-Pursuit gets its name from
 the fact that the residual $r$ is orthogonal to the previously selected atoms
 in dictionary $D$. This orthogonality property leads to the effect that every
-coefficient is only selected once. A description in pseudo-code is shown in
-algorithm \ref{alg:omp}.
+coefficient is only selected once. Algorithm \ref{alg:omp} shows a description
+in pseudo-code.
+.
 \begin{algorithm}[H]
 \caption{Orthogonal Matching Pursuit}
 \label{alg:omp}
@@ -233,11 +242,11 @@ a_A \gets \left( D_A^T D_A \right)^{-1} D_A^T x  \label{eq:omp_update}
 %Section \ref{sec:batch-omp} provides a depper look into the Batch-OMP.
 
 All these greedy approaches tend to find suitable solutions but
-because of the non-convex problem they can get stuck in local minima. As shown
-before an $\ell_1$ regularization version of \ref{eq:problem} also keeps the
-coefficient vector $\alpha$ sparse but eliminates the problem of a local minima.
-The next section presents algorithms which solve  a $\ell_1$ regularization
-version of \ref{eq:problem}.
+because of the non-convex problem they can get stuck in a local minimum. As
+shown before an $\ell_1$ regularization version of \ref{eq:problem} also keeps
+the coefficient vector $\alpha$ sparse but eliminates the problem of a local
+minimum. The next section presents algorithms which solve  a $\ell_1$
+regularization version of \ref{eq:problem}.
 
 
 \section { $\ell_1$asso regularization}
@@ -245,13 +254,14 @@ The $\ell_1$ regularization of our initial problem is also known as the
 \emph{Lasso}. The name stands for \emph{least absolute shrinkage and
 selection operator} and is a regularized version of a least squares
 solution. The sparsity is achieved by adding a constraint that induces
-the $L_1$-norm of the solution to be small. It was first presented by Tibshirani
+the $\ell_1$-norm of the solution to be small. It was first presented by
+Tibshirani
 in 1996\cite{Tibshirani1996}. Under this constraint our initial problem becomes:
 \begin{equation}
 \min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} \textrm{
 s.t. } \lVert \alpha \rVert_{1} \leq L \label{eq:l1}
 \end{equation}
-The algorithms dealing with this problem often require to formulate the
+Algorithms dealing with this problem often require to formulate the
 constrained function into a single expression. The lagrange multiplier is a
 method to construct such an expression from a function and the constraint. With
 the  lagrange multiplier applied the regularized problem \ref{eq:l1} becomes:
@@ -259,21 +269,24 @@ the  lagrange multiplier applied the regularized problem \ref{eq:l1} becomes:
 \min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} +
 \lambda \lVert \alpha \rVert_{1}\label{eq:l1lagrange}
 \end{equation}
-Where the coefficient $\lambda$ controls the sparsity equivalent to $L$.
+Where the coefficient $\lambda$ controls the sparsity in equivalent to $L$.
 In the last two decades several algorithms were proposed to compute the
 Lasso. The basis pursuit by Chen et al.\cite{Chen1995}, the FOCUSS\cite{FOCUSS}
-the LARS by Efron et al.\cite{Efron2004} among others.
+the LARS by Efron et al.\cite{Efron2004} among others. We have a more in-depth
+look at the LARS-Lasso.
 
 
-\subsection {LARS-Lasso}
+\subsection{LARS-Lasso}
 \label{sec:lars}
 % \Todo{split into LAR and LARS-lasso, better illustrate than use complex
 %formulas}
-The LARS-Lasso was first presented in 2004 by Efron et al.\cite{Efron2004}.
-It is a algorithm to solve the Lasso with the help of a regression
-algorithm known as \emph{least-angle regression}. Regression tries to find the
-correlation between a depended variable, here \prettyref{eq:l1lagrange}, and a
-set of independent variables, our coefficients of $\alpha$.
+The LARS-Lasso is an algorithm to solve the Lasso with the help of a regression
+algorithm known as \emph{least-angle regression (LAR)}. Regression tries to find
+the correlation between a depended variable, here \prettyref{eq:l1lagrange}, and
+a set of independent variables, our coefficients of $\alpha$.
+The LAR and LARS-Lasso were first presented in 2004 by Efron et
+al.\cite{Efron2004}.
+
 
 \paragraph{Least-angle regression}
 The main idea of the least angle regression is to start with all coefficient
@@ -331,7 +344,7 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \STATE $ i \gets \min_{i\in A}^{+} \left( \tilde{\gamma}_i \right) $
 %\STATE $ i \gets \alpha_{i} = 0, i \in A $
 \IF {$\tilde{\gamma}_i>0$ and $\tilde{\gamma}_i<\gamma$}
-\STATE remove from active set: $ A \gets A \backslash \{i\} $
+\STATE remove $i$ from active set: $ A \gets A \backslash \{i\} $
 \STATE update movement: $ \gamma \gets \tilde{\gamma} $  
 \ENDIF
 %\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $
@@ -343,7 +356,7 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 
 
 \paragraph{Limitations}
-We have to admit that the LARS-Lasso algorithm some limitations.
+We have to admit that the LARS-Lasso algorithm has some limitations.
 \begin{description}
  \item[Dimension] When the dimension $p$ of the signal $X$ is much higher than
 the the dimension $m$ of the dictionary $D$ the algorithm can only select $m$
