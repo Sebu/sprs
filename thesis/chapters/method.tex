@@ -232,6 +232,7 @@ databases.
 % drawback: many samples per train step
 
 \subsection{Application to image compression}
+\label{sec:compression}
 Todays lossy image compression algorithms are primary based on scientific
 findings about visual perception reaching far back in the 1970s\cite{?} and
 good entropy encoding of the data. Both elements led to to the
@@ -573,6 +574,8 @@ One of the main questions
 is the OLD paper $\ell_1$ regularization is used does $\ell_0$ also performe
 good? All test will be made with OMP and Lasso runs.
 
+Further extend them to capture more?
+
 Unless we want to able to reconstruct a large variety of images.	
 
 In the first itrations the learning algorithm can take big steps.
@@ -582,13 +585,11 @@ See the differences in the selection sceme.
 
 !Test element size inside outside reconstruction
 
-\paragraph{Dictionary size}
-!test
-We want to know if reconstruction quality increases with dictionaries
-size. Linear? (test via MSE)
-
-
 \paragraph{Convergence}
+Mairal et al. also propose some settings but do they also apply to our problem?
+For training sets of $1.25\cdot 10^6$ and about 10 coefficients.
+But only dicts with redundancy of 4.
+
 Depended on block size, dict size, average nuber of coefficients in the
 learning process.
 Of block size, dict size, 
@@ -599,18 +600,33 @@ Coefficients per signal code respectively $\lambda$
 Dictionary size 
 Can convergence be addressed by 
 Overcomp reconstruction convergence by clustering.
+
+
+
+\paragraph{Dictionary size}
+After we found good settings to learn from large sets of different images we
+wanted to know how big we can make the dictionaries and still profit from them.
+!test
+We want to know if reconstruction quality increases with dictionaries
+size. Linear? (test via MSE)
+
 Comparison of the quality of dictionaries learned via cluster strategy and
 with normal single machine were made.
 
 \paragraph{Structure}
 How do the atoms look like? do they resemble known structures?
+Which can be generated?
 How do they change with size?
 Are big image collections to general or specific enough to benefit from sparse
 coding?
 what show Other signals?
 
 \paragraph{Compression}
+One benefit of the learned dictionary approach is the ability to to learn and
+use specific dictionaries for each group of images.
+We use the simple compression algorithm from section\ref{sec:compression}.
 How do we compare tor JPEG and JPEG 2000?
 Can we also compress images from outside of the training data?
+
 
 

@@ -12,7 +12,7 @@ WITH IMAGEMAGICK
 test images from The USC-SIPI Image Database
 
 
-for i in *.tiff; do echo $i; convert $i -quality 50%  ~/git/diplom/tests/output/$i.jpg; done
+for i in *.tiff; do echo $i; convert $i -quality 50%  ~/git/diplom/tests/jpeg/$i.jpg; done
 
 for i in *.tiff; do echo $i; compare -metric PSNR  $i ~/git/diplom/tests/output/$i.jpg ~/git/diplom/tests/output/$i.diff.jpg; done
 
