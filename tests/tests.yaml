@@ -72,7 +72,7 @@ coeffsConverg:
     samples: 2000  
     dictSize: 1000
     blockSize: 8  
-    winSize: 8  
+    winSize: 5  
     channels: 3 
     mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list
@@ -85,9 +85,9 @@ blockSizeConverg:
     blockSize: [8, 10, 12, 14, 16, 20]
     coeffs: 8 
     samples: 2000  
-    dictSize: [128, 200, 288, 512, 800]
-    winSize: 8
-    channels: 1 
+    dictSize: [128, 200, 288, 392, 512, 800]
+    winSize: 4
+    channels: 3 
     mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list
 
