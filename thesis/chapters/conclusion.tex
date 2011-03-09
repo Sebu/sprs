@@ -9,11 +9,11 @@ OMP:
   start looks like DCT (random init)
   noisy
   only practical for OMP
+  In the beginning OMP is very random
 
 LARS-lasso:
   slow 
   high quality dictionary
-
   Most common atoms in the dictionary 
   four major types of elements
   gradient, checkerboard (low color more b/w), spot, edge
@@ -27,7 +27,8 @@ improbes quality. but with large training set random data is works fine.
 Remark:
 As it turns out the OMP, to its greedy nature, has a very aggressive selection
 scheme. This very random/noisy selection strategy is very impractical
-for the \trainDL learning step. But nevertheless the OMP is still good for
+for the \trainDL learning step under certain conditions. 
+But nevertheless the OMP is still good for
 sparse coding. 
 %\subsection{Observations}
 Difference in the selection strategy.

@@ -570,8 +570,17 @@ Vincent van Gogh.
 
 \subsection{Questions}
 One of the main questions
-is the OLD papler $\ell_1$ regularization is used does $\ell_0$ also performe
+is the OLD paper $\ell_1$ regularization is used does $\ell_0$ also performe
 good? All test will be made with OMP and Lasso runs.
+
+Unless we want to able to reconstruct a large variety of images.
+
+In the first itrations the learning algorithm can take big steps.
+Most of the experiments in on small sets of 
+See the differences in the selection sceme.
+
+
+!Test element size inside outside reconstruction
 
 \paragraph{Dictionary size}
 !test
@@ -580,25 +589,16 @@ size. Linear? (test via MSE)
 
 
 \paragraph{Convergence}
-Depended on block size, dict size, average nuber of coefficients.
+Depended on block size, dict size, average nuber of coefficients in the
+learning process.
 Of block size, dict size, 
-OMP vs. lasso
-
-!Test element size inside outside reconstruction
-
-In the first itrations the learning algorithm can take big steps.
+Reconstruction with different block size.
 Rather than Convergence of the learning step. 
 Block size of the atoms
 Coefficients per signal code respectively $\lambda$
 Dictionary size 
-Most of the experiments in on small sets of 
-See the differences in the selection sceme.
-In the beginning OMP is very random.
-
-
 Can convergence be addressed by 
-
-Does 
+Overcomp reconstruction convergence by clustering.
 Comparison of the quality of dictionaries learned via cluster strategy and
 with normal single machine were made.
 

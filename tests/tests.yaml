@@ -1,6 +1,6 @@
 
 
-winSizeConverg: 
+winSizeDifference: 
   desc: sliding vs. jpeg blocks for training
   clients: [c51, c52]
   jobs: 2
@@ -12,7 +12,7 @@ winSizeConverg:
     blockSize: 8  
     winSize: [8, 2]  
     channels: 3 
-    mode: 2  
+    mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list    
     
 
@@ -31,7 +31,7 @@ dictSizeTest:
     output: [../../output/dicts/dictSizeTest_0.jpg, ../../output/dicts/dictSizeTest_1.jpg, ../../output/dicts/dictSizeTest_2.jpg, ../../output/dicts/dictSizeTest_3.jpg]
     dict: [../../output/dicts/dictSizeConverg_0.dict, ../../output/dicts/dictSizeConverg_1.dict, ../../output/dicts/dictSizeConverg_2.dict, ../../output/dicts/dictSizeConverg_3.dict]
     
-dictSizeLearn: 
+dictSizeOMP: 
   desc: learn different dict sizes
   clients: [c61, c62, c63, c64, c65, c66, c67, c51]
   jobs: 8
@@ -46,7 +46,7 @@ dictSizeLearn:
     mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list
     
-dictSizeLearnLasso: 
+dictSizeLasso: 
   desc: learn different dict sizes
   clients: [c41, c42, c43, c44, c45, c46, c47, c52]
   jobs: 8
@@ -61,35 +61,7 @@ dictSizeLearnLasso:
     mode: 2
     train: ../../input/imagedb_100_chunk_1000/2.list    
 
-dictSizeLasso: 
-  desc: learn different dict sizes
-  clients: [c41, c42, c43, c44]
-  jobs: 4
-  params:
-    dictSize: [1000, 2000, 4000, 8000]
-    mode: dictSize
-    error: 0.8
-    samples: 4000  
-    blockSize: 8
-    winSize: 8
-    channels: 3 
-    mode: 2  
-    train: ../../input/imagedb_100_chunk_1000/2.list
     
-dictSizeOMP: 
-  desc: learn different dict sizes
-  clients: [c31, c32, c33, c34]
-  jobs: 4
-  params:
-    dictSize: [1000, 2000, 4000, 8000]
-    mode: dictSize
-    coeffs: 8
-    samples: 4000  
-    blockSize: 8
-    winSize: 8
-    channels: 3 
-    mode: 1
-    train: ../../input/imagedb_100_chunk_1000/2.list    
 
 coeffsConverg: 
   desc: convergence of dict coefficients
@@ -102,21 +74,21 @@ coeffsConverg:
     blockSize: 8  
     winSize: 8  
     channels: 3 
-    mode: 2  
+    mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list
 
 blockSizeConverg: 
   desc: convergence of block sizes
-  clients: ['c32', 'c33', 'c34', 'c35', 'c36']
+  clients: ['c11', 'c12', 'c32', 'c33', 'c34', 'c35', 'c36']
   jobs: 5
   params:  
-    blockSize: [8, 10, 12, 16, 20]
+    blockSize: [8, 10, 12, 14, 16, 20]
     coeffs: 8 
     samples: 2000  
     dictSize: [128, 200, 288, 512, 800]
-    winSize: [8, 10, 12, 16, 20]  
+    winSize: 8
     channels: 1 
-    mode: 2  
+    mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list
 
 lena:
