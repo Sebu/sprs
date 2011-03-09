@@ -75,8 +75,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
 //    std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
-        A_ = new MatrixXd(0.0001*MatrixXd::Identity(D.getElementCount(), D.getElementCount()) );
-        B_ = new MatrixXd(0.0001*D.getData()); //new MatrixXd(D.getSignalSize(), D.getElementCount());
+        A_ = new MatrixXd(0.00001*MatrixXd::Identity(D.getElementCount(), D.getElementCount()) );
+        B_ = new MatrixXd(0.00001*D.getData()); //new MatrixXd(D.getSignalSize(), D.getElementCount());
         // init A,B with 0
 //        A_->setZero();
 //        B_->setZero();

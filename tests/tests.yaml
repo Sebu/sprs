@@ -33,18 +33,17 @@ dictSizeTest:
     
 dictSizeLearn: 
   desc: learn different dict sizes
-  clients: [c61, c62, c63, c64, c65]
-  jobs: 5
+  clients: [c61, c62, c63, c64, c65, c66, c67, c51]
+  jobs: 8
   params:
-    dictSize: [300, 600, 900, 1800, 3000]
+    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
     mode: dictSize
     coeffs: 8 
-    error: 0.5
     samples: 4000  
     blockSize: 10
     winSize: 10  
     channels: 3 
-    mode: 2  
+    mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list
 
 dictSizeLasso: 
