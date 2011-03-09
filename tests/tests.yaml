@@ -45,6 +45,21 @@ dictSizeLearn:
     channels: 3 
     mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list
+    
+dictSizeLearnLasso: 
+  desc: learn different dict sizes
+  clients: [c41, c42, c43, c44, c45, c46, c47, c52]
+  jobs: 8
+  params:
+    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
+    mode: dictSize
+    error: 0.8
+    samples: 4000  
+    blockSize: 10
+    winSize: 10  
+    channels: 3 
+    mode: 2
+    train: ../../input/imagedb_100_chunk_1000/2.list    
 
 dictSizeLasso: 
   desc: learn different dict sizes

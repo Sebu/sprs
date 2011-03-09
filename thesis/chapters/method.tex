@@ -569,6 +569,10 @@ still images of animations from Disney and post-impressionistic images from
 Vincent van Gogh.  
 
 \subsection{Questions}
+One of the main questions
+is the OLD papler $\ell_1$ regularization is used does $\ell_0$ also performe
+good? All test will be made with OMP and Lasso runs.
+
 \paragraph{Dictionary size}
 !test
 We want to know if reconstruction quality increases with dictionaries
@@ -576,10 +580,14 @@ size. Linear? (test via MSE)
 
 
 \paragraph{Convergence}
-In the first itrations the learning algorithm can take big steps.
-Rather than 
-Convergence of the learning step. 
 Depended on block size, dict size, average nuber of coefficients.
+Of block size, dict size, 
+OMP vs. lasso
+
+!Test element size inside outside reconstruction
+
+In the first itrations the learning algorithm can take big steps.
+Rather than Convergence of the learning step. 
 Block size of the atoms
 Coefficients per signal code respectively $\lambda$
 Dictionary size 
@@ -588,11 +596,6 @@ See the differences in the selection sceme.
 In the beginning OMP is very random.
 
 
-Convergence
-Mostly reduced to line segments and curve elements.
-
-!Test element size inside outside reconstruction
-
 Can convergence be addressed by 
 
 Does 
@@ -600,8 +603,11 @@ Comparison of the quality of dictionaries learned via cluster strategy and
 with normal single machine were made.
 
 \paragraph{Structure}
+How do the atoms look like? do they resemble known structures?
+How do they change with size?
 Are big image collections to general or specific enough to benefit from sparse
 coding?
+what show Other signals?
 
 \paragraph{Compression}
 How do we compare tor JPEG and JPEG 2000?
