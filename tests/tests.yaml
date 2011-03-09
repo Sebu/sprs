@@ -18,18 +18,18 @@ winSizeDifference:
 
 dictSizeTest: 
   desc: test images with block sizes
-  clients: [c61, c62, c63, c64, c65]
-  jobs: 4
+  clients: [c61, c62, c63, c64, c65, c66, c67, c51]
+  jobs: 8
   params:
-    dictSize: [300, 600, 900, 1800, 3000]
+    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
     mode: dictSize
     coeffs: 4 
     blockSize: 10 
     channels: 3 
     mode: 1
     input: ../../input/list2/28952841.jpg
-    output: [../../output/dicts/dictSizeTest_0.jpg, ../../output/dicts/dictSizeTest_1.jpg, ../../output/dicts/dictSizeTest_2.jpg, ../../output/dicts/dictSizeTest_3.jpg]
-    dict: [../../output/dicts/dictSizeConverg_0.dict, ../../output/dicts/dictSizeConverg_1.dict, ../../output/dicts/dictSizeConverg_2.dict, ../../output/dicts/dictSizeConverg_3.dict]
+    output: [../../output/dicts/dictSizeTest_0.jpg, ../../output/dicts/dictSizeTest_1.jpg, ../../output/dicts/dictSizeTest_2.jpg, ../../output/dicts/dictSizeTest_3.jpg, ../../output/dicts/dictSizeTest_4.jpg, ../../output/dicts/dictSizeTest_5.jpg, ../../output/dicts/dictSizeTest_6.jpg, ../../output/dicts/dictSizeTest_7.jpg]
+    dict: [../../output/dicts/dictSizeLearn_0.dict, ../../output/dicts/dictSizeLearn_1.dict, ../../output/dicts/dictSizeLearn_2.dict, ../../output/dicts/dictSizeLearn_3.dict, ../../output/dicts/dictSizeLearn_4.dict, ../../output/dicts/dictSizeLearn_5.dict, ../../output/dicts/dictSizeLearn_6.dict, ../../output/dicts/dictSizeLearn_7.dict]
     
 dictSizeOMP: 
   desc: learn different dict sizes
