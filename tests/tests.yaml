@@ -79,8 +79,8 @@ coeffsConverg:
 
 blockSizeConverg: 
   desc: convergence of block sizes
-  clients: ['c11', 'c12', 'c32', 'c33', 'c34', 'c35', 'c36']
-  jobs: 5
+  clients: ['c11', 'c32', 'c33', 'c34', 'c35', 'c36']
+  jobs: 6
   params:  
     blockSize: [8, 10, 12, 14, 16, 20]
     coeffs: 8 
