@@ -66,15 +66,16 @@ dictSizeLasso:
 coeffsConverg: 
   desc: convergence of dict coefficients
   clients: ['c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c32']
-  jobs: 8
+  jobs: 5
   params:
     coeffs: [2, 4, 6, 8, 10, 12, 14, 16]
+    error: [0.2, 0.4, 0.8, 1.6, 3.2]
     samples: 2000  
     dictSize: 1000
     blockSize: 8  
     winSize: 5  
     channels: 3 
-    mode: 1  
+    mode: 2 
     train: ../../input/imagedb_100_chunk_1000/2.list
 
 blockSizeConverg: 
