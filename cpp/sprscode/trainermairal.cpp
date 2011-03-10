@@ -154,7 +154,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         MatrixXd Dold = D.getData();
 
-        std::cout << "daft" << std::endl;
+//        std::cout << "daft" << std::endl;
         VectorXd sum = VectorXd::Constant(a.cols(),0.0);
         for (int k=0; k<a.outerSize(); ++k) {
             for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
