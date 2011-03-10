@@ -2,7 +2,9 @@
 %\thispagestyle{empty}
 
 \section{Framework}
-To sparse code images and learn big dictionaries we design a software framework
+To sparse code images and learn big dictionaries we designed a software
+framework. This section describes the functionality and dicisions made while
+developing it from idea to implementation.
 
 \subsection{Signal representation}
 \label{sec:signal_representation}
@@ -25,8 +27,6 @@ the correlation of the channels. \Todo{add formula from paper}
 Fortunately Mairal et al. also noticed that this problem vanishes with big
 dictionaries and large training sets.
 \cite{mairal08sparse}
-
-
 
 
 \paragraph{Spatial separation}
@@ -75,7 +75,7 @@ computation. This reduces the computational cost of the algorithm drastically.
 [\alpha_1,...,\alpha_p] \in
 \mathbb{R}^{p}$
 \STATE pre-compute $G \gets D^TD$
-%\STATE $\epsilon \gets X^TX$
+\STATE pre-compute $DtX \gets D^TX$
 \FOR {$i = 1$ to $k$}
 \STATE Compute $\alpha_i$ using \prettyref{alg:batchOMP} or
 \ref{alg:lars} for all ${x_i}$ in $X$
@@ -136,13 +136,13 @@ the Batch-OMP.
 
 \paragraph{LARS-Lasso} is chosen as it one of the fastest $\ell_1$
 regularization and and it leads to good results for signals of low dimension and
-with high correlation of dictionary elements. Both conditions are satisfied
-when coding small image blocks.
+with high correlation of dictionary elements.\cite{Mairal2010} Both conditions
+are satisfied when coding small image blocks.
 
-The same pre-computation of the gram matrix used in the Batch-OMP can also
-be applied to the LARS-Lasso algorithm. The framework uses a simple combination
-of parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars} presented
-in\ref{sec:lars}.
+The same pre-computation of the gram matrix $D^TD$ and $D^TX$  used in the
+Batch-OMP can also be applied to the LARS-Lasso algorithm. The framework uses a
+simple combination of parallel coding\ref{alg:parallel} and the
+LARS\ref{alg:lars} presented in\ref{sec:lars}.
 
 \subsection{Learning step}
 The majority of learning experiments in literature were made on
@@ -393,7 +393,8 @@ of OMPBox by Ron
 technical modifications to fit into our
 framework. The LARS-Lasso C++ implementation is based on the Matlab
 implementation of\cite{Strand2005} and the original
-paper\cite{Efron2004} on the algorithm.
+paper\cite{Efron2004} on the algorithm with some additional optimizations
+for coding of multiple signals in parallel. 
 
 \paragraph{Learning}
 The dictionary learning step is a straight forward C++ implementation of the

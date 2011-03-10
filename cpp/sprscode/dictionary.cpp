@@ -143,14 +143,14 @@ void Dictionary::sort() {
                 tmp.at<double>(j*blockSize_+k,0) = 0.0;
 
                 tmp.at<double>(j*blockSize_+k,0) += (*data_)((j*blockSize_+k)+blockSize_*blockSize_*0,i);
-                tmp.at<double>(j*blockSize_+k,0) += (*data_)((j*blockSize_+k)+blockSize_*blockSize_*1,i);
-                tmp.at<double>(j*blockSize_+k,0) += (*data_)((j*blockSize_+k)+blockSize_*blockSize_*2,i);
+//                tmp.at<double>(j*blockSize_+k,0) += (*data_)((j*blockSize_+k)+blockSize_*blockSize_*1,i);
+//                tmp.at<double>(j*blockSize_+k,0) += (*data_)((j*blockSize_+k)+blockSize_*blockSize_*2,i);
 
                 tmp2.at<double>(j*blockSize_+k,0) = 0.0;
 
                 tmp2.at<double>(j*blockSize_+k,0) += (*data_)((k*blockSize_+j)+blockSize_*blockSize_*0,i);
-                tmp2.at<double>(j*blockSize_+k,0) += (*data_)((k*blockSize_+j)+blockSize_*blockSize_*1,i);
-                tmp2.at<double>(j*blockSize_+k,0) += (*data_)((k*blockSize_+j)+blockSize_*blockSize_*2,i);
+//                tmp2.at<double>(j*blockSize_+k,0) += (*data_)((k*blockSize_+j)+blockSize_*blockSize_*1,i);
+//                tmp2.at<double>(j*blockSize_+k,0) += (*data_)((k*blockSize_+j)+blockSize_*blockSize_*2,i);
 
 
             }

@@ -89,8 +89,8 @@ low. This sparsity constraint can be achieved with the help of the
 $\ell_0$-norm. The $\ell_0$-norm is a pseudo-norm that virtually counts the
 number of non-zero elements in the vector in the form of:
 \begin{equation}
-\lVert\alpha\rVert_{0} = \#\{i:\alpha_i \neq 
-0,i=1,...,p,\alpha\in\mathbb{R}^p\} 
+\lVert x\rVert_{0} = \#\{i:x_i \neq 
+0,i=1,...,n, x\in\mathbb{R}^n\} 
 \end{equation}
 There is one significant problem in using $\ell_0$-norm. This particular
 regularization makes the initial problem \ref{eq:problem} NP-hard. To get the
@@ -99,11 +99,15 @@ does not imply that there is no way to efficiently find a solution that is good
 enough to keep $\alpha$ sparse. There exist several greedy algorithms that can
 solve the problem in a not perfect but good enough way. 
 
-Another regularization that can keep $\alpha$ sparse is the use of the $\ell_1$-
-or $\ell_2$-norm as a convex relaxation of the $\ell_0$-norm. Even though that
-the $\ell_1$-norm is not the same as the $\ell_0$ it can be demonstrated that
-the $\ell_1$-norm is equivalent to the $\ell_0$-norm in the effect of inducing
-sparsity.
+Another regularization that can keep $\alpha$ sparse is the use of the
+$\ell_p$-norm.
+\begin{equation*}
+\lVert x\rVert_p = \sum_{i=1}^n\left(\lVert x_i \lVert^p\right)^{1/p}
+\end{equation*}
+With either the $\ell_1$-norm ($p=1$) or $\ell_2$-norm ($p=2$) as a
+convex relaxation of the $\ell_0$-norm. Even though that the $\ell_1$-norm is
+not the same as the $\ell_0$ it can be demonstrated that the $\ell_1$-norm is
+equivalent to the $\ell_0$-norm in the effect of inducing sparsity.
 \Todo{image/description of different regularizations}
 \begin{figure}[h]
 \centering

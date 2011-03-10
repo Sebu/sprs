@@ -229,6 +229,7 @@ int main(int argc, char *argv[])
         if(outputFile=="")
             outputFile = inputFile + ".recon.png";
         dict.load( dictFile.c_str() );
+        dict.sort();
         std::cout << "input:" << inputFile << std::endl;
         samples.loadImage(inputFile, blockSize, channels, blockSize);
         samples.saveImage(outputFile, dict, *coder, blockSize);

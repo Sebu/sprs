@@ -35,15 +35,16 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
 
     std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
 
-    VectorXd shift = center((*data_));
     VectorXd scale((*data_).cols());
     for(int i=0; i<(*data_).cols(); i++) {
         scale(i) = 1.0;
         if((*data_).col(i).squaredNorm()!=0.0) {
-            scale(i) = (*data_).col(i).norm();
-            (*data_).col(i).normalize();
+//            scale(i) = (*data_).col(i).norm();
+//            (*data_).col(i).normalize();
         }
     }
+    VectorXd shift = center((*data_));
+
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
 
     std::cout << A.nonZeros()/A.outerSize() << std::endl;
@@ -52,15 +53,15 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     VectorXd select = VectorXd::Zero(A.innerSize());
     for (int k=0; k<A.outerSize(); ++k) {
         for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
-        A.coeffRef(it.row(),it.col()) *= scale(it.col());
+//        A.coeffRef(it.row(),it.col()) *= scale(it.col());
         if(it.col()==200) select(it.row()) = A.coeffRef(it.row(),it.col());
         }
     }
     for(int i=0; i<(*data_).cols(); i++) {
-       (*data_).col(i)*= scale(i);
+//       (*data_).col(i)*= scale(i);
     }
 
-//    spc.compress(shift,A);
+    spc.compress(shift,A);
 //    spc.save(fileName);
 
     //reconstruct :)

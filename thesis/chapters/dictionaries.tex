@@ -8,8 +8,8 @@ discrete pixel atoms are used to reconstruct signals.
 
 \section{Structure}
 But atoms are not just made up of random pixel data. Dictionary atoms should
-capture structures that are useful for sparse coding. Just picking a few of
-them should lead to a good reconstruction. 
+capture structures that are useful for sparse coding. Just picking a few atoms
+should lead to a good reconstruction. 
 
 Finding the right structures for a specific signal is a complex task.
 The two main strategies for the generation of the dictionaries are design and
@@ -32,10 +32,10 @@ shows some examples for such dictionaries.
 \subfloat[cosine]{\includegraphics[width =
 0.3\textwidth]{images/dct.png}}
 \hspace{5mm}
-\subfloat[haar wavelets]{\includegraphics[width =
+\subfloat[haar filter]{\includegraphics[width =
 0.3\textwidth]{images/haar.png}}
 \hspace{5mm}
-\subfloat[gabor wavelts]{\includegraphics[width =
+\subfloat[gabor filter]{\includegraphics[width =
 0.3\textwidth]{images/gabor.png}}
 \caption{generated bases}
 
@@ -188,15 +188,15 @@ start of the training process.
 
 \paragraph{Recursive least-square dictionary learning algorithm (ILS-DLA)}
 The algorithm was presented by Engan et al. in 2010\cite{Engan2010} and is a
-recursive the a modified version of the ILS-DLA algorithm.
+recursive modified version of the ILS-DLA algorithm.
 
 
 \subsubsection{Online dictionary learning}
 \label{sec:mairal}
-In 2010 Mairal et. al.\cite{Mairal2010} proposed an on-line approach which from
-now on we will call \trainDL. The algorithm presented by Mairal et
-al.\cite{Mairal2010} is ... 
-stochastic approximations 
+In 2009 Mairal et. al.\cite{Mairal2009} presented an on-line approach which from
+now on we will call \trainDL.
+
+The algorithm uses stochastic approximations 
 It is a minimization that uses block-coordinate descent with warm restart for
 the dictionary update step.
 Like the K-SVD the algorithm learns a dictionary $D$ from a set of training
@@ -209,9 +209,9 @@ only store $A$ and $B$
 As it pretends to scale up to large datasets of millions of training samples
 and being suitable for a large range of learning problems.
 Does it scale up to big dictionaries?
-samples\cite{Mairal2010}
+
 \begin{algorithm}[H]
-\caption[\trainDL]{Online dictionary learning\cite{Mairal2010}}
+\caption[\trainDL]{Online dictionary learning}
 \label{alg:trainDL}
 \begin{algorithmic}[1]
 \REQUIRE $x \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in \mathbb{R}, D_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
@@ -260,10 +260,11 @@ d_j \gets \frac{1}{\max\left(\lVert u_j \rVert_2,1\right)} u_j
 \RETURN $D$
 \end{algorithmic}
 \end{algorithm}
-Mairal et al. describe several modification to their algorithm to improve speed
-and convergence. One speed optimization is to sparse code mini-batches of $n$
-signal samples instead of a single signal sample in each iteration. This
-modification leads to line \ref{alg:Aupdate} and line \ref{alg:Bupdate}
+In 2010 Mairal et al. \cite{2010} describe several modification to their
+algorithm to improve speed and convergence. One speed optimization is to sparse
+code mini-batches of $n$ signal samples instead of a single signal sample in
+each iteration. This modification leads to line \ref{alg:Aupdate} and line
+\ref{alg:Bupdate}
 becoming:
 \begin{align}
 A_t \gets A_{t-1} + \frac{1}{n}\sum_{i=1}^{n}\alpha_{t,i}\alpha_{t,i}^T\\

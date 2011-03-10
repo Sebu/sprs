@@ -112,8 +112,9 @@ void unshift(MatrixBase<T1>& M, MatrixBase<T2>& shift) {
   }
 }
 
+
 template<typename T1>
-MatrixXd center(MatrixBase<T1>& M) {
+MatrixXd centerAll(MatrixBase<T1>& M) {
     VectorXd shift(M.cols());
     for(int i=0; i<M.cols();i++) {
         shift(i) = M.col(i).sum()/M.rows();
@@ -125,9 +126,20 @@ MatrixXd center(MatrixBase<T1>& M) {
 }
 
 template<typename T1>
+MatrixXd center(MatrixBase<T1>& M) {
+    VectorXd shift(M.cols());
+    for(int i=0; i<M.cols();i++) {
+        shift(i) = M.col(i).sum()/M.rows();
+        M.col(i).array() -= shift(i);
+
+    }
+    return shift;
+}
+
+template<typename T1>
 void divVariance(MatrixBase<T1>& M) {
     for(int i=0; i<M.cols();i++) {
-        double var = M.col(i).squaredNorm(); ///M.rows();
+        double var = std::sqrt(M.col(i).squaredNorm()/M.rows());
         if (var==0.0) continue;
         for(int j=0; j<M.rows();j++)
           M(j,i) /= var;
