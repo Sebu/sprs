@@ -1,9 +1,16 @@
 \chapter{Discussion}
 %\thispagestyle{empty}
 
-
-
 Convergence of the dictionary learning step.
+Keeping the training sparse vectors too sparse can lead to dictionaries with
+only low frequency elements. Using LARS-Lasso for training generates a good
+dictionary for LARS and OMP. 
+\Todo{ Training with OMP leads to a dictionary more with a lot of noise that
+leads better coding results when using OMP.}
+
+Quality
+With single images learning, initialization with elements from training sets
+improbes quality. but with large training set random data is works fine.
 
 OMP:
   start looks like DCT (random init)
@@ -19,11 +26,6 @@ LARS-lasso:
   gradient, checkerboard (low color more b/w), spot, edge
 
 
-
-With single images learning, initialization with elements from training sets
-improbes quality. but with large training set random data is works fine.
-
-
 Remark:
 As it turns out the OMP, to its greedy nature, has a very aggressive selection
 scheme. This very random/noisy selection strategy is very impractical
@@ -37,45 +39,42 @@ How this different selection strategies affect the learning step will be
 presented in the next section.
 
 Big training sets tend to get to general.
-
 If the images fit into the same category it is insignificant which images you
-chose. The results will be the same?
+chose. The results will not much differ.
 
-Keeping the training sparse vectors too sparse can lead to dictionaries with
-only low frequency elements. Using LARS-Lasso for training generates a good
-dictionary for LARS and OMP. 
-\Todo{ Training with OMP leads to a dictionary more with a lot of noise that
-leads better coding results when using OMP.}
+Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
+increasing block size. Use to verify if it is a jpeg image?
+Similar to natural images.
+compression dicts
+Dictionaries to universal ... improved results to DCT .. but varying with field
+of application. possible no universal solution but a good way for better
+understanding of the key elements
 
+Compression
+For the short time available our results show promising results in visual
+quality but still lack ...
 
-
+\section{Conclusion}
+Just a first glimpse of that can de done to utilize sparse coding and
+dictionary learning for large image databases.
 
 Not only the training data and task but also the right
 sparse code algorithm plays a role for dictionary and reconstruction quality.
 
-\section{Conclusion}
 Compression 
 JPEG and JPEG 2000 are highly optimized lossy image compression algorithms. 
 Years of research went into observation human vision and the 
 Especially the quantization and and the entropy encoding step are highly
-optimized for the ... data.
-For the short time available our results show promising results in visual
-quality but still lack ...
+optimized for specific data.
 But it is hard to compete with the market leader in this field.  Even JPEG 2000,
 which leads to better results than JPEG especially in the area block artifacts,
 did not catch up with the success of JPEG. 
 The reason probably lies in the potential patent issues and higher computational
 requirements of the algorithm compared
-to the quality benefits. And the wide acceptance of JPEG in ...
-\Todo{photo/Internet}.
+to the quality benefits. And the wide acceptance of JPEG in photo/Internet.
 
 
-Dictionaries to universal ... improved results to DCT .. but varying with field
-of application. possible no universal solution but a good way for better
-understanding of the key elements 
 
-Just a first glimpse of that can de done to utilize sparse coding and
-dictionary learning for large image databases.
 
 Future of dictionaries
 First moving away from structure induced by basis transform in analytical
@@ -105,15 +104,14 @@ interface\footnote{\url{http://www.di.ens.fr/willow/SPAMS/faq.html}}. Adding
 support for this interface could lead to speed improvements.
 
 \paragraph{Clustering}
-\paragraph{Hierarchy}
+We shown that clustering can 
+
 \paragraph{Generate atoms}
 The results gained on the structure of the atoms can be used to generate new
 ones.
 \paragraph{Adaptive learning}
-%\subsubsection*{Optimizations}
-%\subsection{Adaptive}
-%Thanks to the on-line approach of the training step an adaptive approach can be
-%used. 
+Thanks to the on-line approach of the training step an adaptive approach can be
+used. 
 
 
 \subsection{Compression improvements}
@@ -126,9 +124,6 @@ hard edges. The framework can be easyly extended to learn and code different
 kinds of sub-images.
 
 \paragraph{Multi-scale approach}
-
-%\Todo{OPTIONAL add structure for speed and model improvements Multi-scale,
-%multi-channel, hierarchy}
 
 
 
@@ -143,7 +138,3 @@ the outside. Compared those compression results with other compression
 algorithms.
 
 
-Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
-increasing block size.
-Similar to natural images.
-compression dicts

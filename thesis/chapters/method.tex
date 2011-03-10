@@ -234,18 +234,7 @@ databases.
 \subsection{Application to image compression}
 \label{sec:compression}
 Todays lossy image compression algorithms are primary based on scientific
-findings about visual perception reaching far back in the 1970s\cite{?} and
-good entropy encoding of the data. Both elements led to to the
-following main steps in lossy image compression algorithms:
-\begin{itemize}
- \item lossy color space conversion
- \item sub-sampling and spatial separation
- \item transformation of image signals
- \item quantization to reduce of the number of non-zero coefficient 
- \item lossless entropy coding of the coefficient 
-\end{itemize}
-%\paragraph{Chroma sub-sampling} is used to reduce the amount of data required
-%by color information while preserving perceptual image quality. 
+findings about visual perception reaching far back in the 1970s\cite{?}
 The human eye is good at sensing small difference in brightness but lacks the
 ability exactly differentiate small changes in color. \emph{Chroma sub-sampling}
 takes advantage of this human flaw. First the image gets converted into the
@@ -255,6 +244,16 @@ brightness/luminance channel will be coded in the full resolution while the
 color/chroma components can be sub-sampled with only minor loss in perceptual
 quality. This procedure, illustrated in fig. \ref{fig:YCbCr}, is one key element
 in lossy image compression. 
+and good entropy encoding of the data. Both elements led to to the
+following main steps in lossy image compression algorithms:
+\begin{itemize}
+ \item lossy color space conversion
+ \item sub-sampling and spatial separation
+ \item transformation of image signals
+ \item quantization to reduce of the number of non-zero coefficient 
+ \item lossless entropy coding of the coefficient 
+\end{itemize}
+
 \begin{figure}[h]
 \centering
 %\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
@@ -312,23 +311,6 @@ with yet unknown information of their structure and frequency. We analysis the
 dictionary elements and sort them by their frequencies. Figure 
 \ref{fig:sorted} illustrates an example of this.
 
-%copy
-%The human eye is good at seeing small differences in brightness over a
-%relatively large area, but not so good at distinguishing the exact strength of
-%a high frequency brightness variation. This allows one to greatly reduce the
-%amount of information in the high frequency components. 
-%Copy
-%The human eye is good at seeing small differences in brightness over
-%a relatively large area, but not so good at distinguishing the exact strength
-%of a high frequency brightness variation. This allows one to greatly reduce the
-%amount of information in the high frequency components. This is done by simply
-%dividing each component in the frequency domain by a constant for that
-%component, and then rounding to the nearest integer. This rounding operation is
-%the only lossy operation in the whole process if the DCT computation is
-%performed with sufficiently high precision. As a result of this, it is
-%typically the case that many of the higher frequency components are rounded to
-%zero, and many of the rest become small positive or negative numbers, which
-%take many fewer bits to represent.
 
 \begin{figure}[h]
 \centering
@@ -340,8 +322,6 @@ dictionary elements and sort them by their frequencies. Figure
 \paragraph{Data encoding}
 Compression of the remaining coefficient after quantization is the next step
 of to reduce the amount of data that needs to be stored.
-%The sparse vector for every are encoded in 2 bytes index and a single byte
-%Coefficients Indices
 %In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
 %the bpp required for encoding of the sparse matrix data. Besides the estimation
 %of the compression we also really applied some coding schemes to compare real
@@ -356,22 +336,13 @@ data.
 entropy of elements of data. Elements that occur often in the data set are
 encoded with less bits. Leading in a table of elements and a corresponding
 symbol to represent this element and a block of symbols.
-%\item[Arithmetic coding] is ...
-%While arithmetic coding often yields better compression results than Huffman
-%coding. The higher processing requirements for coding and the current patent
-%situation makes the algorithm unpopular for coding compared to the archived
-%compression benefit.
 \end{description}
 
 We apply something similar to RLE to the sparse matrices. We know that the
 majority of coefficient of the spars matrices are zero. We code the sparse
 matrices as a series of distances between coefficients and the actual
 coefficients. We use the fact that it is more likely that the next value in our
-matrix is zero. Afterwards the remaining data gets huffman coded. 
-
-%The sparse vector for every are encoded in 2 bytes index and a single byte 
-%quantized coefficient. Additional zero coefficients from the quantization step
-%are removed.
+matrix is zero. Afterwards the remaining data gets huffman coded.
 
 As mentioned in \ref{sec:headers} we are aware of the fact that besides
 the actual sparse matrix data we also have other file informations and meta
@@ -383,6 +354,8 @@ The sofware framework consists of a library for sparse coding image signals
 and learning dictionaries, a command line interface to the library and
 miscellaneous scripts for distribution of coding and learning jobs and
 some a test suite.
+
+
 
 The whole sparse coding and training library is written in C++ with
 additional use of the OpenCV, Eigen and OpenMP libs. All operations use double
@@ -403,6 +376,7 @@ OpenMP \footnote{\url{http://www.openmp.org/}} is a preprocessor
 based application programming interface (API) for C,C++ and Fortran that enables
 the user to distribute code blocks and loops to multiple CPU cores. In
 situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
+
 
 \Todo{add diagram}
 %Split image into sub images, convert sub image to samples from image blocks, 
