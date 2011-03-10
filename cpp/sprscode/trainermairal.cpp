@@ -52,7 +52,7 @@ void TrainerMairal::load(const char* fileName) {
 }
 
 void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
-    for(int i=0; i < 1; i++) {
+//    for(int i=0; i < 1; i++) {
 #pragma omp parallel for
         for(int j=0; j < D.getElementCount(); j++) {
             MatrixXd a = A.col(j);
@@ -65,8 +65,9 @@ void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
 
             MatrixXd u = ( (1.0/pivot) * (b-(D.getData()*a)) ) + d;
             D.getData().col(j) = (1.0/std::max(u.norm(),1.0)) * u;
+//            std::cout<< u.norm() << " ";
         }
-    }
+//    }
 
 }
 
@@ -75,13 +76,13 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
     //    std::cout << "train..." << std::endl;
     if(!A_ && !B_) {
+        center(D.getData());
+        D.normalize();
+//        divVariance(D.getData());
         A_ = new MatrixXd(0.0001*MatrixXd::Identity(D.getElementCount(), D.getElementCount()) );
         B_ = new MatrixXd(0.0001*D.getData()); //new MatrixXd(D.getSignalSize(), D.getElementCount());
-        center(D.getData());
-        divVariance(D.getData());
-//        D.normalize();
+        //    std::cout << "train start" << std::endl;
     }
-    //    std::cout << "train start" << std::endl;
 
     int maximum = samples.cols_;
 
@@ -91,7 +92,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
     for(int t=0; t<maximum; t+=batch) {
 
-
+        D.normalize();
         // draw sample from trainig set
         int start = t;
         int end = std::min(t+batch,samples.cols_);
@@ -102,7 +103,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         MatrixXd samplesChunk = samples.getData().block(0,start,D.getSignalSize(),end-start);
 
         center(samplesChunk);
-////        divVariance(samplesChunk);
+//        divVariance(samplesChunk);
                 for(int i=0; i<samplesChunk.cols(); i++) {
                     if(samplesChunk.col(i).norm()!=0.0) {
                         samplesChunk.col(i).normalize();
@@ -134,7 +135,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         //        else
         //            delta = n*n+realT-n;
         realT += 1.0;
-        double beta = (1.0-1.0/realT);
+        double beta = 1.0; //(1.0-1.0/realT);
         double scale = 1.0/samplesChunk.cols();
 
         Eigen::SparseMatrix<double> tmp = a * a.transpose();
@@ -157,15 +158,18 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         VectorXd sum = VectorXd::Constant(a.cols(),0.0);
         for (int k=0; k<a.outerSize(); ++k) {
             for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
-                sum(it.col()) += 0.15*std::abs(it.value());
+                sum(it.col()) += 0.8*std::abs(it.value());
             }
         }
+
+        static double r = 0.0;
+
+        r += (0.5*((samplesChunk-D.getData()*a).array().square().matrix().colwise().sum())+sum.transpose()).sum();
+//        r += 0.5*(D.getData().transpose()*D.getData()*(*A_)).trace()+(D.getData().transpose()*(*B_)).trace();
+
         update((*A_), (*B_), D);
-//        double r = (0.5*((samplesChunk-D.getData()*a).array().square().matrix().colwise().sum())+sum.transpose()).mean();
 
-        //        D.normalize();
-
-        std::cout<< D.meta_->samples_ << " : "  << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
+        std::cout<< D.meta_->samples_ << " : " << r/D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
         std::ostringstream o;
         o << "../../output/tmp/dict_tmp" << t << ".png";
 
