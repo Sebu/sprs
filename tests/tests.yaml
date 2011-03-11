@@ -93,10 +93,27 @@ coeffsConverg1:
     mode: 2 
     train: ../../input/imagedb_100_chunk_1000/2.list
     input: ../../tests/images/4.2.03.tiff
+    
+    
+blockSizeConverg1Test: 
+  desc: convergence of block sizes
+  clients: ['c12', 'c32', 'c33', 'c34', 'c35', 'c36']
+  jobs: 6
+  params:  
+    blockSize: [8, 10, 12, 14, 16, 20]
+    coeffs: 8 
+    samples: 2000  
+    dictSize: [128, 200, 288, 392, 512, 800]
+    winSize: 4
+    channels: 3 
+    mode: 1  
+    inputs: ../../input/list2/28952841.jpg
+    output: ../../output/dicts/dictSizeTest_0.jpg
+    dict: [../../output/dicts_c31/blockSize1_0.dict, ../../output/dicts_c31/blockSize1_1.dict, ../../output/dicts_c31/blockSize1_2.dict, ../../output/dicts_c31/blockSize1_3.dict, ../../output/dicts_c31/blockSize1_4.dict, ../../output/dicts_c31/blockSize1_5.dict, ../../output/dicts_c31/blockSize1_6.dict, ../../output/dicts_c31/blockSize1_7.dict] 
 
 blockSizeConverg1: 
   desc: convergence of block sizes
-  clients: ['c11', 'c32', 'c33', 'c34', 'c35', 'c36']
+  clients: ['c12', 'c32', 'c33', 'c34', 'c35', 'c36']
   jobs: 6
   params:  
     blockSize: [8, 10, 12, 14, 16, 20]
