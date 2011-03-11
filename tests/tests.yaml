@@ -101,7 +101,7 @@ blockSizeConverg1Test:
   jobs: 6
   params:  
     blockSize: [8, 10, 12, 14, 16, 20]
-    coeffs: 8 
+    coeffs: [4, 6, 9, 12, 16, 25] 
     samples: 2000  
     dictSize: [128, 200, 288, 392, 512, 800]
     winSize: 4
