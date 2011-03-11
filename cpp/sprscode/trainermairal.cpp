@@ -52,22 +52,22 @@ void TrainerMairal::load(const char* fileName) {
 }
 
 void TrainerMairal::update(MatrixXd& A, MatrixXd& B, Dictionary& D) {
-//    for(int i=0; i < 1; i++) {
+    //    for(int i=0; i < 1; i++) {
 #pragma omp parallel for
-        for(int j=0; j < D.getElementCount(); j++) {
-            MatrixXd a = A.col(j);
-            MatrixXd b = B.col(j);
-            MatrixXd d = D.getData().col(j);
-            double pivot = A.coeff(j,j);
-            if(pivot==0.0) continue;
-            //        if(isinf(pivot))
-            //            std::cout << "Sdsd" << std::endl;
+    for(int j=0; j < D.getElementCount(); j++) {
+        MatrixXd a = A.col(j);
+        MatrixXd b = B.col(j);
+        MatrixXd d = D.getData().col(j);
+        double pivot = A.coeff(j,j);
+        if(pivot==0.0) continue;
+        //        if(isinf(pivot))
+        //            std::cout << "Sdsd" << std::endl;
 
-            MatrixXd u = ( (1.0/pivot) * (b-(D.getData()*a)) ) + d;
-            D.getData().col(j) = (1.0/std::max(u.norm(),1.0)) * u;
-//            std::cout<< u.norm() << " ";
-        }
-//    }
+        MatrixXd u = ( (1.0/pivot) * (b-(D.getData()*a)) ) + d;
+        D.getData().col(j) = (1.0/std::max(u.norm(),1.0)) * u;
+        //            std::cout<< u.norm() << " ";
+    }
+    //    }
 
 }
 
@@ -78,7 +78,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
     if(!A_ && !B_) {
         center(D.getData());
         D.normalize();
-//        divVariance(D.getData());
+        //        divVariance(D.getData());
         A_ = new MatrixXd(0.0001*MatrixXd::Identity(D.getElementCount(), D.getElementCount()) );
         B_ = new MatrixXd(0.0001*D.getData()); //new MatrixXd(D.getSignalSize(), D.getElementCount());
         //    std::cout << "train start" << std::endl;
@@ -103,15 +103,15 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         MatrixXd samplesChunk = samples.getData().block(0,start,D.getSignalSize(),end-start);
 
         center(samplesChunk);
-//        divVariance(samplesChunk);
-                for(int i=0; i<samplesChunk.cols(); i++) {
-                    if(samplesChunk.col(i).norm()!=0.0) {
-                        samplesChunk.col(i).normalize();
-                    }
-                }
+        //        divVariance(samplesChunk);
+        for(int i=0; i<samplesChunk.cols(); i++) {
+            if(samplesChunk.col(i).norm()!=0.0) {
+                samplesChunk.col(i).normalize();
+            }
+        }
 
         //        std::cout << samplesChunk << std::endl;
-//                divVariance(samplesChunk);
+        //                divVariance(samplesChunk);
 
 
         Eigen::SparseMatrix<double> a = coder->encode(samplesChunk, D);
@@ -154,7 +154,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         MatrixXd Dold = D.getData();
 
-//        std::cout << "daft" << std::endl;
+        //        std::cout << "daft" << std::endl;
         VectorXd sum = VectorXd::Constant(a.cols(),0.0);
         for (int k=0; k<a.outerSize(); ++k) {
             for (Eigen::SparseMatrix<double>::InnerIterator it(a,k); it; ++it) {
@@ -164,12 +164,15 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         static double r = 0.0;
 
-        r += (0.5*((samplesChunk-D.getData()*a).array().square().matrix().colwise().sum())+sum.transpose()).sum();
-//        r += 0.5*(D.getData().transpose()*D.getData()*(*A_)).trace()+(D.getData().transpose()*(*B_)).trace();
+        //        r += (0.5*((samplesChunk-D.getData()*a).array().square().matrix().colwise().sum())+sum.transpose()).sum();
+        //        r += 0.5*(D.getData().transpose()*D.getData()*(*A_)).trace()+(D.getData().transpose()*(*B_)).trace();
 
         update((*A_), (*B_), D);
 
-        std::cout<< D.meta_->samples_ << " : " << r/D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
+//        std::cout<< D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
+
+
+        //        std::cout<< D.meta_->samples_ << " : " << r/D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
         std::ostringstream o;
         o << "../../output/tmp/dict_tmp" << t << ".png";
 
