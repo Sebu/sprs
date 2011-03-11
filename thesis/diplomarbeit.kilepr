@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0.85
-lastDocument=chapters/sparse_coding.tex
+lastDocument=chapters/method.tex
 masterDocument=
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -167,7 +167,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=45
 mode=LaTeX
-open=true
+open=false
 order=2
 
 [item:chapters/dictionaries.tex]
@@ -177,7 +177,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=86
 mode=LaTeX
-open=true
+open=false
 order=3
 
 [item:chapters/introduction.tex]
@@ -187,15 +187,15 @@ encoding=UTF-8
 highlight=LaTeX
 line=33
 mode=LaTeX
-open=true
+open=false
 order=4
 
 [item:chapters/method.tex]
 archive=true
-column=0
+column=17
 encoding=UTF-8
 highlight=LaTeX
-line=30
+line=546
 mode=LaTeX
 open=true
 order=1
@@ -207,15 +207,15 @@ encoding=UTF-8
 highlight=LaTeX
 line=209
 mode=LaTeX
-open=true
+open=false
 order=5
 
 [item:chapters/results.tex]
 archive=true
-column=41
+column=44
 encoding=UTF-8
 highlight=LaTeX
-line=4
+line=8
 mode=LaTeX
 open=true
 order=0
@@ -227,7 +227,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=276
 mode=LaTeX
-open=true
+open=false
 order=6
 
 [item:chapters/title.tex]
@@ -301,16 +301,16 @@ CursorColumn=0
 CursorLine=33
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=0
-CursorLine=30
+CursorColumn=17
+CursorLine=546
 
 [view-settings,view=0,item:chapters/overview.tex]
 CursorColumn=0
 CursorLine=209
 
 [view-settings,view=0,item:chapters/results.tex]
-CursorColumn=41
-CursorLine=4
+CursorColumn=44
+CursorLine=8
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
 CursorColumn=55
