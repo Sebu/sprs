@@ -33,21 +33,22 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
     spc.header_.quant_ = (int)round(quant_);
 
-    std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
+//    std::cout << "restore image" << dict.getData().rows() << " " <<  (*data_).rows() << std::endl;
+
+    VectorXd shift = center((*data_));
 
     VectorXd scale((*data_).cols());
     for(int i=0; i<(*data_).cols(); i++) {
         scale(i) = 1.0;
         if((*data_).col(i).squaredNorm()!=0.0) {
-//            scale(i) = (*data_).col(i).norm();
-//            (*data_).col(i).normalize();
+            scale(i) = (*data_).col(i).norm();
+            (*data_).col(i).normalize();
         }
     }
-    VectorXd shift = center((*data_));
 
     Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
 
-    std::cout << A.nonZeros()/A.outerSize() << std::endl;
+//    std::cout << A.nonZeros()/A.outerSize() << std::endl;
 
     // scale back
     VectorXd select = VectorXd::Zero(A.innerSize());
@@ -61,7 +62,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
 //       (*data_).col(i)*= scale(i);
     }
 
-    spc.compress(shift,A);
+//    spc.compress(shift,A);
 //    spc.save(fileName);
 
     //reconstruct :)
@@ -74,24 +75,25 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
 
 //    std::cout << A << std::endl;
 
-//    for(int i=0; i<recon_vigra.cols(); i++) {
-//        recon_vigra.col(i) *= scale(i);
-//        (*data_).col(i)*= scale(i);
-//    }
+    for(int i=0; i<recon_vigra.cols(); i++) {
+        recon_vigra.col(i) *= scale(i);
+        (*data_).col(i)*= scale(i);
+    }
 
 
-//    for (int k=0; k<A.outerSize(); ++k) {
-//        for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
-//            A.coeffRef(it.row(),it.col()) = it.value()*scale(it.row());
-//        }
-//    }
+    for (int k=0; k<A.outerSize(); ++k) {
+        for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
+            A.coeffRef(it.row(),it.col()) = it.value()*scale(it.row());
+        }
+    }
 
     unshift((*data_),shift);
     unshift(recon_vigra,shift);
 
     double mseVal = mse((*data_),recon_vigra);
-    std::cout << "PSNR: " << psnr(mseVal) << " dB" << std::endl;
-    std::cout << "MSE: " << mseVal << std::endl;
+    std::cout << dict.meta_->samples_ << " " << psnr(mseVal) << std::endl;
+//    std::cout << "PSNR: " << psnr(mseVal) << " dB" << std::endl;
+//    std::cout << "MSE: " << mseVal << std::endl;
 
 
     dict.debugSaveImage("../../output/tmp/dict_tmp.select.png", select);

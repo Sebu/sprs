@@ -156,7 +156,8 @@ int main(int argc, char *argv[])
     coder->eps = eps;
     coder->coeffs = coeffs;
 
-
+    if(outputFile=="")
+        outputFile = inputFile + ".recon.png";
 
     if(trainFile != "") {
         Samples samples;
@@ -190,7 +191,9 @@ int main(int argc, char *argv[])
             std::cout << nameStr << " " << counter++ << " time: " << timer.elapsed() << std::endl;
             dict.debugSaveImage( (dictFile + ".png").c_str() );
 //            if(!info) { info=false; dict.debugSaveImage( (dictFile + ".png").c_str() );}
-
+            Samples samples;
+            samples.loadImage(inputFile, blockSize, channels, blockSize);
+            samples.saveImage(outputFile, dict, *coder, blockSize);
             ifs >> nameStr;
         }
         ifs.close();
@@ -226,8 +229,7 @@ int main(int argc, char *argv[])
 
     if(inputFile!="") {
         Samples samples;
-        if(outputFile=="")
-            outputFile = inputFile + ".recon.png";
+
         dict.load( dictFile.c_str() );
         dict.sort();
         std::cout << "input:" << inputFile << std::endl;
