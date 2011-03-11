@@ -41,6 +41,7 @@ private:
 
 public:
     MetaDict* meta_;
+    std::string fileName_;
 
     Dictionary(int, int, int);
     MatrixXd & getData();

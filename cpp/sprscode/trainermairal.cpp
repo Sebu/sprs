@@ -91,8 +91,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
     static double realT = 0.0;
 
     for(int t=0; t<maximum; t+=batch) {
+        //    D.normalize();
 
-        D.normalize();
         // draw sample from trainig set
         int start = t;
         int end = std::min(t+batch,samples.cols_);
@@ -169,14 +169,21 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         update((*A_), (*B_), D);
 
-//        std::cout<< D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
+                std::cout<< D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
 
 
         //        std::cout<< D.meta_->samples_ << " : " << r/D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
-        std::ostringstream o;
-        o << "../../output/tmp/dict_tmp" << t << ".png";
-
-        D.debugSaveImage( o.str().c_str() );
+        static int allOver = 0;
+        int current = D.meta_->samples_/1000;
+        if(current>allOver) {
+            allOver = current;
+//            std::cout << allOver << " " << D.meta_->samples_   << std::endl;
+            std::ostringstream o,o2;
+            o << D.fileName_ << allOver << ".png";
+            o2 << D.fileName_ << allOver << ".dict";
+            D.debugSaveImage( o.str().c_str() );
+            D.save( o2.str().c_str() );
+        }
 
 
     }

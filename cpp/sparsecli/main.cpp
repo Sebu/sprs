@@ -153,8 +153,13 @@ int main(int argc, char *argv[])
     case 2: coder = new CoderLasso(); break;
     }
 
+
     coder->eps = eps;
     coder->coeffs = coeffs;
+
+
+    Coder* testCoder = new CoderOMP();
+    testCoder->coeffs = 10;
 
     if(outputFile=="")
         outputFile = inputFile + ".recon.png";
@@ -169,6 +174,7 @@ int main(int argc, char *argv[])
             trainer.load((dictFile + ".tmp").c_str() );
         } else {
             dict.initRandom();
+            dict.fileName_ = dictFile;
         }
 
         std::ifstream ifs( (trainFile).c_str() );
@@ -191,13 +197,13 @@ int main(int argc, char *argv[])
             std::cout << nameStr << " " << counter++ << " time: " << timer.elapsed() << std::endl;
             dict.debugSaveImage( (dictFile + ".png").c_str() );
 //            if(!info) { info=false; dict.debugSaveImage( (dictFile + ".png").c_str() );}
-            Samples samples;
-            samples.loadImage(inputFile, blockSize, channels, blockSize);
-            samples.saveImage(outputFile, dict, *coder, blockSize);
+//            Samples samples;
+//            samples.loadImage(inputFile, blockSize, channels, blockSize);
+//            samples.saveImage(outputFile, dict, *testCoder, blockSize);
             ifs >> nameStr;
         }
         ifs.close();
-//        dict.sort();
+        dict.sort();
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
 //        trainer.save((dictFile + ".tmp").c_str() );
