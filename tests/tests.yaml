@@ -62,7 +62,21 @@ dictSizeLasso1:
     mode: 2
     train: ../../input/imagedb_100_chunk_1000/2.list    
 
-    
+coeffsConverg1Test: 
+  desc: convergence of dict coefficients
+  clients: ['c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c32']
+  jobs: 5
+  params:
+    coeffs: 6
+    samples: 512  
+    dictSize: 512
+    blockSize: 8  
+    winSize: 5  
+    channels: 3 
+    mode: 1 
+    input: ../../input/list2/28952841.jpg
+    output: ../../output/dicts/dictSizeTest_0.jpg
+    dict: [../../output/dicts_c31/coeffsConverg1_0.dict, ../../output/dicts_c31/coeffsConverg1_1.dict, ../../output/dicts_c31/coeffsConverg1_2.dict, ../../output/dicts_c31/coeffsConverg1_3.dict, ../../output/dicts_c31/coeffsConverg1_4.dict, ../../output/dicts_c31/coeffsConverg1_5.dict, ../../output/dicts_c31/coeffsConverg1_6.dict, ../../output/dicts_c31/coeffsConverg1_7.dict]    
 
 coeffsConverg1: 
   desc: convergence of dict coefficients

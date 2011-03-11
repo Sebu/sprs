@@ -28,7 +28,7 @@ void Samples::normalize() {
 
 void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, int step) {
 
-    quant_ = 20.0;
+//    quant_ = 20.0;
     coeffs_ = coder.coeffs;
     Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
     spc.header_.quant_ = (int)round(quant_);
@@ -54,20 +54,21 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     VectorXd select = VectorXd::Zero(A.innerSize());
     for (int k=0; k<A.outerSize(); ++k) {
         for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
-//        A.coeffRef(it.row(),it.col()) *= scale(it.col());
+        A.coeffRef(it.row(),it.col()) *= scale(it.col());
         if(it.col()==200) select(it.row()) = A.coeffRef(it.row(),it.col());
         }
     }
     for(int i=0; i<(*data_).cols(); i++) {
-//       (*data_).col(i)*= scale(i);
+       (*data_).col(i)*= scale(i);
     }
 
 //    spc.compress(shift,A);
 //    spc.save(fileName);
 
     //reconstruct :)
+//    std::cout << "uncopressssssssssssssssssssssssssss" << std::endl;
     //TODO: fill a new A
-    //spc.load(fileName);
+//    spc.load(fileName);
 //    spc.uncompress(shift,A);
 
 
@@ -75,17 +76,17 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
 
 //    std::cout << A << std::endl;
 
-    for(int i=0; i<recon_vigra.cols(); i++) {
-        recon_vigra.col(i) *= scale(i);
-        (*data_).col(i)*= scale(i);
-    }
+//    for(int i=0; i<recon_vigra.cols(); i++) {
+//        recon_vigra.col(i) *= scale(i);
+//        (*data_).col(i)*= scale(i);
+//    }
 
 
-    for (int k=0; k<A.outerSize(); ++k) {
-        for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
-            A.coeffRef(it.row(),it.col()) = it.value()*scale(it.row());
-        }
-    }
+//    for (int k=0; k<A.outerSize(); ++k) {
+//        for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
+//            A.coeffRef(it.row(),it.col()) = it.value()*scale(it.row());
+//        }
+//    }
 
     unshift((*data_),shift);
     unshift(recon_vigra,shift);
@@ -99,7 +100,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     dict.debugSaveImage("../../output/tmp/dict_tmp.select.png", select);
 
 
-    std::cout << "reorder  image" << std::endl;
+//    std::cout << "reorder  image" << std::endl;
 
     cv::Mat outputImage = cv::Mat::zeros(imageRows_+blockSize_, imageCols_+blockSize_, CV_8UC(channels_));
     cv::Mat recon_cv(1,rows_,CV_8U);
@@ -119,6 +120,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
 
             cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_, blockSize_) );
             region += tmp;
+//            region = region/2.0 + tmp/2.0;
             //tmp.copyTo(region);
             index++;
         }
@@ -128,7 +130,7 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
 
 //    cv::imshow("sprscode", im);
 //    cv::waitKey();
-    cv::imwrite(fileName, im);
+//    cv::imwrite(fileName, im);
 }
 
 bool Samples::loadImage(std::string& fileName, int winSize, int channels, int step) {

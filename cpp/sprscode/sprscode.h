@@ -17,6 +17,7 @@ typedef struct {
     unsigned char blockSize_;
     unsigned char quant_;
     unsigned char coeffs_;
+    unsigned short count_;
 
 } SprsHeader;
 
@@ -28,7 +29,7 @@ public:
     int indicesNum_;
     int coeffsNum_;
 
-    unsigned char* shift_;
+    char* shift_;
     unsigned short* indices_;
     char* coeffs_;
 

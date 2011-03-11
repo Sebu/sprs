@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
     if (prev_fn==SIG_IGN) signal(SIGTERM,SIG_IGN);
     prev_fn = signal (SIGUSR1,showinfo);
     if (prev_fn==SIG_IGN) signal(SIGUSR1,SIG_IGN);
-//    prev_fn = signal (SIGTERM,terminate);
-//    if (prev_fn==SIG_IGN) signal(SIGKILL,SIG_IGN);
+    //    prev_fn = signal (SIGTERM,terminate);
+    //    if (prev_fn==SIG_IGN) signal(SIGKILL,SIG_IGN);
 
     int opt = 0;
 
@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     std::string trainFile = "";
     std::string mergeFile = "";
     std::string inputFile = "";
+    std::string inputFiles = "";
     std::string outputFile = "";
     int sampleCount = 10000;
     int dictSize = 4096;
@@ -72,6 +73,7 @@ int main(int argc, char *argv[])
         {"error",    required_argument, 0, 'e'},
         {"dict",    required_argument, 0, 'f'},
         {"input",    required_argument, 0, 'i'},
+        {"inputs",    required_argument, 0, 'j'},
         {"output",    required_argument, 0, 'o'},
         {"mode",  required_argument, 0, 'm'},
         {"merge",  required_argument, 0, 'g'},
@@ -86,7 +88,7 @@ int main(int argc, char *argv[])
 
     int option_index = 0;
 
-    while ((opt = getopt_long(argc, argv, "b:c:d:e:f:i:m:o:rs:t:vw:", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "b:c:d:e:f:i:j:m:o:rs:t:vw:", long_options, &option_index)) != -1) {
         switch(opt) {
         case 'l':
             channels = atoi(optarg);
@@ -108,6 +110,9 @@ int main(int argc, char *argv[])
             break;
         case 'i':
             inputFile = optarg;
+            break;
+        case 'j':
+            inputFiles = optarg;
             break;
         case 'o':
             outputFile = optarg;
@@ -183,12 +188,12 @@ int main(int argc, char *argv[])
         int counter=0;
         while( !ifs.eof() ) {
             if(!running) break;
-//            std::cout << nameStr << " " << counter++ << std::endl;
+            //            std::cout << nameStr << " " << counter++ << std::endl;
             samples.loadImage(nameStr, blockSize, channels, winSize);
 
-//            if(!resume && counter==0){ center(samples.getData()); dict.initFromData(samples); dict.debugSaveImage( (dictFile + ".png").c_str() );}
+            //            if(!resume && counter==0){ center(samples.getData()); dict.initFromData(samples); dict.debugSaveImage( (dictFile + ".png").c_str() );}
 
-//            std::cout << "train set fill complete " << std::endl;
+            //            std::cout << "train set fill complete " << std::endl;
             if(!running) break;
             //samples.normalize();
             QTime timer;
@@ -196,17 +201,17 @@ int main(int argc, char *argv[])
             trainer.train(samples, dict,  0, sampleCount);
             std::cout << nameStr << " " << counter++ << " time: " << timer.elapsed() << std::endl;
             dict.debugSaveImage( (dictFile + ".png").c_str() );
-//            if(!info) { info=false; dict.debugSaveImage( (dictFile + ".png").c_str() );}
-//            Samples samples;
-//            samples.loadImage(inputFile, blockSize, channels, blockSize);
-//            samples.saveImage(outputFile, dict, *testCoder, blockSize);
+            //            if(!info) { info=false; dict.debugSaveImage( (dictFile + ".png").c_str() );}
+            //            Samples samples;
+            //            samples.loadImage(inputFile, blockSize, channels, blockSize);
+            //            samples.saveImage(outputFile, dict, *testCoder, blockSize);
             ifs >> nameStr;
         }
         ifs.close();
         dict.sort();
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
-//        trainer.save((dictFile + ".tmp").c_str() );
+        //        trainer.save((dictFile + ".tmp").c_str() );
     }
 
 
@@ -221,26 +226,43 @@ int main(int argc, char *argv[])
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
             dictIn.load((nameStr + ".dict").c_str() );
-//            dictIn.sort();
+            //            dictIn.sort();
             dict.merge(dictIn, eps);
             ifs >> nameStr;
         }
         ifs.close();
         dict.sort();
-//        for (int i=0; i<dict.meta_->col_.size(); i++)
-//            std::cout << dict.meta_->col_[i].var_ << std::endl;
+        //        for (int i=0; i<dict.meta_->col_.size(); i++)
+        //            std::cout << dict.meta_->col_[i].var_ << std::endl;
         dict.debugSaveImage( (dictFile + ".png").c_str() );
         dict.save( dictFile.c_str() );
     }
 
+    if(inputFiles!="") {
+//        std::string nameStr;
+//        ifs >> nameStr;
+//        while( !ifs.eof() ) {
+        for(int i=1; i<110; i++) {
+            std::ostringstream o;
+            o << dictFile << i << ".dict";
+            dict.load( o.str().c_str() );
+            Samples samples;
+            samples.loadImage(inputFiles, blockSize, channels, blockSize);
+            samples.saveImage(outputFile, dict, *coder, blockSize);
+//            ifs >> nameStr;
+
+        }
+    }
+
     if(inputFile!="") {
-        Samples samples;
 
         dict.load( dictFile.c_str() );
         dict.sort();
         std::cout << "input:" << inputFile << std::endl;
+        Samples samples;
         samples.loadImage(inputFile, blockSize, channels, blockSize);
         samples.saveImage(outputFile, dict, *coder, blockSize);
+
 
     }
 
