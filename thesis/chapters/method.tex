@@ -545,65 +545,55 @@ of learned elements from specific sets of images. These sets include sketches,
 still images of animations from Disney and post-impressionistic images from
 Vincent van Gogh.  
 
-
-
 \subsection{Tests}
 One of the main questions is the OLD paper $\ell_1$ regularization is used does
-$\ell_0$ also performe good? All test will be made with OMP and Lasso runs.
+$\ell_0$ also performe good.
+All test will be made with OMP and Lasso runs.
 
-Further extend them to capture more?
+We want to know if we can also good reconstruct images outsize of the training
+sets.
 
-Unless we want to able to reconstruct a large variety of images.	
+%Further extend them to capture more?
+%Unless we want to able to reconstruct a large variety of images.	
+%In the first itrations the learning algorithm can take big steps.
+%Most of the experiments in on small sets of  See the differences in the
+%selection sceme.
 
-In the first itrations the learning algorithm can take big steps.
-Most of the experiments in on small sets of 
-See the differences in the selection sceme.
 
-
-!Test element size inside outside reconstruction
 
 \paragraph{Convergence}
-Mairal et al. also propose some settings but do they also apply to our problem?
-For training sets of $1.25\cdot 10^6$ and about 10 coefficients.
-But only dicts with redundancy of 4.
-
-Depended on block size, dict size, average nuber of coefficients in the
-learning process.
-Of block size, dict size, 
-Reconstruction with different block size.
-Rather than Convergence of the learning step. 
-Block size of the atoms
-Coefficients per signal code respectively $\lambda$
-Dictionary size 
-Can convergence be addressed by 
-Overcomp reconstruction convergence by clustering.
-
-Find good settings for large set of different samples.
-
+Mairal et al. already propose some learning parameters.
+For training sets of $1.25\cdot 10^6$ and average of 10 coefficients.
+But as most other learn only dictionaries with redundancy of $4\times$.
+We want to known if they also apply to big number of samples and bigger
+dictionaries.
+We compare the reconstruction quality dependency on block size, dictionary
+size and average number of coefficients in the learning process.
+We want to find good settings for large set of different samples.
 
 \paragraph{Dictionary size}
-After we found good settings to learn from large sets of different images we
-wanted to know how big we can make the dictionaries and still profit from them.
-!test
+After we find good settings to learn from large sets of different images we
+want to know how big we can make the dictionaries and still profit from them.
 We want to know if reconstruction quality increases with dictionaries
-size. Linear? (test via MSE)
-
-Comparison of the quality of dictionaries learned via cluster strategy and
-with normal single machine were made.
-
-
-\paragraph{Compression}
-One benefit of the learned dictionary approach is the ability to to learn and
-use specific dictionaries for each group of images.
-We use the simple compression algorithm from section\ref{sec:compression}.
-How do we compare tor JPEG and JPEG 2000?
-Can we also compress images from outside of the training data?
+size and when convergence is reached.
+In addition we want to know how good the cluster approach performs in
+comparisons to a dictionary learned in single.
 
 \paragraph{Structure}
-How do the atoms look like? do they resemble known structures?
-Which can be generated?
-How do they change with size?
-Are big image collections to general or specific enough to benefit from sparse
-coding?
-what show Other signals?
+We want to know how the structure of the learned atoms from natural images looks
+like. Do they resemble known structures from designed dictionaries? How do these
+learned structures change with the block size of the atoms?
+What structure show samples from other groups of images?
+
+\paragraph{Compression}
+Besides the ability of learned dictionaries 
+We use the simple compression algorithm from section\ref{sec:compression} .
+and compare it to a collection of JPEG and JPEG 2000 compressed images with the
+same file size. 
+The objective is see to if the extra amount of index data is a big hit on the
+load of data.
+One benefit of the learned dictionary approach that could play well in our
+hands is the ability to to learn and use specific dictionaries for each group of
+images. To tests this we also compress some sketches 
+
 

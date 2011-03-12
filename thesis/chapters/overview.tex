@@ -11,6 +11,7 @@ significant basis elements that make up a signal. A basis that is
 used in MP3 audio, JPEG images and MPEG4 video compression or to reconstruct
 a signal in order to remove noise or recover missing information.
 
+\paragraph{}
 Consider $\vec{\tilde{x}}$ a signal that is represent by a function $f(x)$ that
 approximates the signal $\vec{x}$ in a simplified sparse way.
 \begin{equation*}
@@ -22,13 +23,7 @@ a small selection of basis functions or as a series of many basis
 functions where the majority of coefficients, that weight the function, are
 close to zero. 
 
-%\begin{equation*}
-%\begin{split}
-%x \sim \tilde{x} & = b_{1}(x) + b_{12}(x) + b_{312}(x)\\
-%& = 0b_{1}(x) + \cdots + 1.1b_{2}(x) + 0.01b_{12}(x) + \cdots +
-%2b_{312}(x)
-%\end{split}
-%\end{equation*}
+\paragraph{}
 We call these basis functions \emph{atoms} as they are the basic units
 which build up our representation of signals. So far, consider the actual
 structure of those function atoms as unknown. We organize all of them in a
@@ -82,14 +77,12 @@ approaches for basis transforms of discrete signals were required. The
 of the continuous
 Fourier transform. Where the integral of time becomes the sum of the dimension
 of the signal. 
-\begin{equation*}
+  \begin{equation*}
  x_k = \sum_{n=0}^{N-1}\alpha_ne^{\frac{-i2\pi kn}{N}}
 \end{equation*}
 In 1965 Cooley and Tukey presented\cite{Cooley1965} the \emph{fast Fourier
 transform (FFT)} an fast algorithmic approach to calculate the discrete
-Fourier transform. 
-%The fast Fourier transform is actual a reinvention of a
-%similar algorithm from 1805 by Carl Friedrich Gau{\ss}. 
+Fourier transform.
 The FFT was a major leap forward in the field of digital signal processing.
 
 In the following decades two other major players in discrete basis
