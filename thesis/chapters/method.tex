@@ -20,12 +20,12 @@ and graphics we require to work with multi-channel data. Commonly presented in
 the three channel RGB color space.
 When dealing with multi-channel data (e.g. RGB images) each channel can be coded
 separate or as a concatenation of each signal into a single one. These
-approaches can lead to color bleeding \cite{mairal08sparse} \Todo{add picture}
+approaches can lead to color bleeding \cite{mairal08sparse}. \Todo{add picture}
 %Nevertheless 
-A solution would be to add a constraint to the sparse coding that pays attention
-the correlation of the channels. \Todo{add formula from paper} 
+A solution would be to add a constraint to the sparse coding that pays
+attention to correlation of the channels. \Todo{add formula from paper} 
 Fortunately Mairal et al. also noticed that this problem vanishes with big
-dictionaries and large training sets.
+dictionaries and large training sets as present in our experiments.
 \cite{mairal08sparse}
 
 
@@ -47,9 +47,9 @@ illustrates this separation step.
 When coding a large number of small or medium sized decomposition problems,
 which is the case for small image blocks in large image sets, some
 optimizations can be made on the sparse coding algorithms. 
-For the framework we chose batch modified versions of the OMP for $\ell_0$
-regularization and the LARS-Lasso for $\ell_1$ regularization in the sparse
-coding step to address this circumstance. 
+For the framework we chose to include a batch modified versions of the OMP for
+$\ell_0$ regularization and the LARS-Lasso for $\ell_1$ regularization in the
+sparse coding step to address this circumstance. 
 
 \subsubsection{Batch-OMP}
 In 2008 Rubinstein et al.\cite{Rubinstein2008} presented a speed improved
@@ -70,17 +70,17 @@ computation. This reduces the computational cost of the algorithm drastically.
 \caption{Parallel coding}
 \label{alg:parallel}
 \begin{algorithmic}[1]
-\REQUIRE $X =[x_1,...,x_k]  \in \mathbb{R}^{m \times k}, D  =[d_1,...,d_p]  \in
-\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}, \alpha =
-[\alpha_1,...,\alpha_p] \in
-\mathbb{R}^{p}$
-\STATE pre-compute $G \gets D^TD$
-\STATE pre-compute $DtX \gets D^TX$
+\REQUIRE $\mat{X} =[\vec{x}_1,...,\vec{x}_k]  \in \mathbb{R}^{m \times k},
+\mat{D} =[\vec{d}_1,...,\vec{d}_p] \in
+\mathbb{R}^{m\times p}, \epsilon \in \mathbb{R}$
+%mat{A} = [\alpha_1,...,\alpha_p] \in \mathbb{R}^{p}
+\STATE pre-compute $\mat{G} \gets \mat{D}^T\mat{D}$
+\STATE pre-compute $\mat{DtX} \gets \mat{D}^T\mat{X}$
 \FOR {$i = 1$ to $k$}
-\STATE Compute $\alpha_i$ using \prettyref{alg:batchOMP} or
-\ref{alg:lars} for all ${x_i}$ in $X$
+\STATE Compute $\vec{\alpha}_i$ using \prettyref{alg:batchOMP} or
+\ref{alg:lars} for all $\vec{x}_i$ in $\mat{X}$
 \ENDFOR
-\RETURN $\alpha$
+\RETURN $\vec{\alpha}$
 \end{algorithmic}
 \end{algorithm}
 
@@ -88,50 +88,48 @@ computation. This reduces the computational cost of the algorithm drastically.
 \caption{Batch-OMP}
 \label{alg:batchOMP}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^{m}, G  \in
+\REQUIRE $\vec{x} \in \mathbb{R}^{m}, \mat{G}  \in
 \mathbb{R}^{m\times m}, \epsilon \in \mathbb{R}$
-\STATE $A \gets \emptyset,\alpha \gets 0,\gamma \gets D^Tx,\delta^0 \gets
-0, \epsilon^0\gets x^Tx,L\gets[1],n\gets1$
+\STATE $A \gets \emptyset,\vec{\alpha} \gets 0,\vec{\gamma} \gets
+\mat{D}^T\vec{x},\vec{\delta}^0 \gets
+0, \epsilon^0\gets \vec{x}^T\vec{x},\mat{L}\gets[1],n\gets1$
 \WHILE {$ n<L$ \AND $\epsilon^{n-1} > \epsilon $}
-\STATE $k \gets \argmax_k\lvert \alpha_k \rvert$
+\STATE $k \gets \argmax_k\lvert \vec{\alpha}_k \rvert$
 \IF {$n>1$}
-\STATE $w \gets L^{-1}G_{A,k}$
+\STATE $\vec{w} \gets \mat{L}^{-1}\mat{G}_{A,k}$
 \STATE
 \begin{align}
-L \gets \left[
+\mat{L} \gets \left[
 \begin{array}{ccc}
-L & 0\\
-w^T & \sqrt{1-w^Tw}
+\mat{L} & 0\\
+\vec{w}^T & \sqrt{1-\vec{w}^T\vec{w}}
 \end{array}
 \right]
 \end{align}
 \ENDIF
 \STATE add variable to active set: $A \gets A \cup \{ k\}$
-\STATE $\alpha_A \gets (L^T)^{-1}L^{-1}\gamma_A^0$
-\STATE $\beta \gets G_A\alpha_A$
-\STATE $\gamma \gets \gamma^0-\beta$
-\STATE $\delta \gets \alpha_A^T\beta_A$
+\STATE $\vec{\alpha}_A \gets (\mat{L}^T)^{-1}\mat{L}^{-1}\vec{\gamma}_A^0$
+\STATE $\vec{\beta} \gets \mat{G}_A\vec{\alpha}_A$
+\STATE $\vec{\gamma} \gets \vec{\gamma}^0-\vec{\beta}$
+\STATE $\delta \gets \vec{\alpha}_A^T\vec{\beta}_A$
 \STATE $\epsilon^n \gets \epsilon^{n-1} - \delta^n + \delta^{n-1}$
 \STATE $n \gets n+1$
 \ENDWHILE
-\RETURN $\alpha$
+\RETURN $\vec{\alpha}$
 \end{algorithmic}
 \end{algorithm}
 
-
-%\subsubsection*{Optimizations}
-%\Todo{remove?}
 All modification lead to significant speed increase when coding large sets of
 signals. While $L$ is very small the main factor of the computation is
-the multiplication of $D$ with a vector. Detailed information on the complexity
-and speed gain can be found in the corresponding paper\cite{Rubinstein2008} on
-the Batch-OMP. 
+the multiplication of $\mat{D}$ with a vector. Batch-OMP reduces the number of
+those multiplications compared to the ordinary OMP. Detailed information on the
+complexity and speed gain can be found in the corresponding
+paper\cite{Rubinstein2008} on the Batch-OMP. 
 
 % with a complexity of $O(mp)$. 
 %This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
 %2L(p+m) + L^3\right)$ to $O\left(2mp + L^2p + 3Lp + L^3\right)$ 
 %with pre-computation $\left(mp^2\right)$ as shown in\cite{Rubinstein2008}. 
-
 %more signals than dictionary elements.
 
 \paragraph{LARS-Lasso} is chosen as it one of the fastest $\ell_1$
@@ -139,29 +137,32 @@ regularization and and it leads to good results for signals of low dimension and
 with high correlation of dictionary elements.\cite{Mairal2010} Both conditions
 are satisfied when coding small image blocks.
 
-The same pre-computation of the gram matrix $D^TD$ and $D^TX$  used in the
-Batch-OMP can also be applied to the LARS-Lasso algorithm. The framework uses a
-simple combination of parallel coding\ref{alg:parallel} and the
-LARS\ref{alg:lars} presented in\ref{sec:lars}.
+The same pre-computation of the gram matrix $\mat{D}^T\mat{D}$ and
+$\mat{D}^T\mat{X}$ used in the Batch-OMP can also be applied to the LARS-Lasso
+algorithm. This also helps to reduce the number of big matrix multiplications
+when coding multiple signals in parallel. The framework implements a simple
+combination of parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars}
+presented in\ref{sec:lars}.
 
 \subsection{Learning step}
 The majority of learning experiments in literature were made on
 samples of sliding blocks from single images or small sets of images.
-A good strategy when the learned dictionaries are only used for operations on
+With samples of $n \ge 100.000$ and approximately about 10 non-zero coefficient.
+A common strategy when the learned dictionaries are only used for operations on
 those images. The dictionary atoms learned from those image have a high
 correlation to the image content.  When looking at large sets of images and many
 different blocks we start to talk about a different game. Now each dictionary
 elements tends to captures more general structure of the signals.
 
-For the learning step we use the \trainDL learning algorithm. As an on-line
-learning algorithm it is able to learn dictionaries from very large sets of
-training data.
+For the learning step we use the ODL algorithm from section \ref{sec:mairal}. As
+an on-line learning algorithm it is able to learn dictionaries from very large
+sets of training data $n\ge 10.000.000$.
 
-Section \ref{sec:signal_representation} already describes that the learning
-process is not limited to gray-scale oder RGB image signals. The presented
-algorithm can be applied to different kinds of signals. Such as images in other
-color spaces, low/high pass filtered sub-images or signals from another domain
-like audio or text. 
+%Section \ref{sec:signal_representation} already describes that the learning
+%process is not limited to gray-scale oder RGB image signals. The presented
+%algorithm can be applied to different kinds of signals. Such as images in other
+%color spaces, low/high pass filtered sub-images or signals from another domain
+%like audio or text. 
 
 
 \subsubsection{Initialization}
@@ -180,40 +181,45 @@ both ways of dictionary initialization. \Todo{optional: image}
 One reason not to learn big dictionaries in a single step is the fact that
 learning such big dictionaries leads to huge memory consumption and coding time.
 To address these problems we investigate strategies to distribute the workload
-of
-the learning step onto multiple clients with a clustering approach similar to
+of the learning step onto multiple clients with a clustering approach similar to
 MapReduce. 
 
-One strategy would be to utilize the batch\ref{sec:trainBatchOptimize}
-modification of the LARS-Lasso algorithm. Rather than just coding a small batch
-of signals in one iteration of the training step\ref{alg:trainDL} we code one
-batch on each client of the cluster and merge all of them before
-applying\ref{alg:update}. Keeping the dictionary in each iteration fixed
-for every batch coding client. The problem is that it is still required 
+One strategy would be to utilize the mini-batch
+modification of the LARS-Lasso algorithm \ref{sec:lars}. But rather
+than just coding a small batch of signals in one iteration of the training
+step (\prettyref{alg:trainDL}) we code one batch on each client of the cluster
+and merge all of them before applying (\prettyref{alg:update}). Keeping the
+dictionary in each iteration fixed for every batch coding client. The problem is
+that this modifications is only good at handling mini-batches in a range of one
+to thousands samples. Impractical for our desired size of millions of samples.
 
-Another strategy is to learn several smaller dictionaries on disjoint sets of
-training data and when the learning step ended, merge the dictionaries
-into a bigger one. The merge process starts with an empty dictionary and
-successively adds atoms from the dictionaries of the learning step to the
-new dictionary unless the atom can be reconstructed with few atoms of the
-current state of the new dictionary. The drawback of this approach is fact that 
-each atom will be less correlated to whole training set.
+Another strategy is to learn a set of smaller dictionaries $S =
+(\mat{D}_1, ..., \mat{D}_k)$ on disjoint sets of training samples and when
+the learning step ended, merge the dictionaries $\mat{D}_i$ into a bigger one
+$\mat{D}_{new}$ . The merge process starts with an empty dictionary
+$\mat{D}_{new}$  and successively adds atoms from the dictionaries of the
+learning step to the new dictionary $\mat{D}_{new}$  unless the atom can be
+reconstructed with only few atoms (e.g., 2) of the current state of
+$\mat{D}_{new}$ . The drawback of this approach is fact that 
+each atom will be less correlated to whole training set. But this will happen
+anyway as we learn dictionaries from large sets of possibly very different
+samples. 
 
 \begin{algorithm}[H]
 \caption{Dictionaries merging}
 \label{alg:merging}
 \begin{algorithmic}[1]
-\REQUIRE $ S = (D_1,...,D_k) \text{ set of dictionaries } D \in
-\mathbb{R}^{m\times p}$
+\REQUIRE $ S = (\mat{D}_1, ..., \mat{D}_k) \text{ set of dictionaries } \mat{D}
+\in \mathbb{R}^{m\times p}$
 
-\STATE $D_{new} \gets D_{1}[1], n \gets 0$
+\STATE $\mat{D}_{new} \gets \mat{D}_{1}[1], n \gets 0$
 \FOR {$i = 1$ to $k$}
 \FOR {$j = 1$ to $p$}
 \STATE sparse code 
 \STATE $n \gets n+1$
 \ENDFOR
 \ENDFOR
-\RETURN $D$
+\RETURN $\mat{D}$
 \end{algorithmic}
 \end{algorithm}
 
@@ -224,12 +230,6 @@ classes of images can be utilized for classification tasks. Something that can
 come in handy when applying it to operations like search in large image
 databases.
 
-%\paragraph{1. one dictionary per client}
-% -> merge
-% -> drawback: less idipendent learning
-%\paragraph{2. one chunk of sample per client}
-%  -> merge after evey train iteration
-% drawback: many samples per train step
 
 \subsection{Application to image compression}
 \label{sec:compression}
@@ -242,10 +242,20 @@ $YC_bC_r$ color space, which describes an image in a brightness/luminance (Y)
 and two color/chroma components (Cb and Cr). Then the visual more relevant
 brightness/luminance channel will be coded in the full resolution while the
 color/chroma components can be sub-sampled with only minor loss in perceptual
-quality. This procedure, illustrated in fig. \ref{fig:YCbCr}, is one key element
-in lossy image compression. 
-and good entropy encoding of the data. Both elements led to to the
-following main steps in lossy image compression algorithms:
+quality. This procedure
+%, illustrated in fig. \ref{fig:YCbCr},
+is one key element in lossy image compression. 
+Afterwards 
+Quantization and good entropy encoding of the data.
+\begin{figure}[h]
+\centering
+%\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
+\includegraphics[scale = 0.25]{images/segmentation.png}
+\label{fig:YCbCr}
+\caption{RGB $\rightarrow$ YCbCr}
+\end{figure}
+These steps can also be applied to sparse coding. Both elements
+led to to the following main steps in lossy image compression algorithms:
 \begin{itemize}
  \item lossy color space conversion
  \item sub-sampling and spatial separation
@@ -254,14 +264,6 @@ following main steps in lossy image compression algorithms:
  \item lossless entropy coding of the coefficient 
 \end{itemize}
 
-\begin{figure}[h]
-\centering
-%\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
-\includegraphics[scale = 0.25]{images/segmentation.png}
-\label{fig:YCbCr}
-\caption{RGB $\rightarrow$ YCbCr}
-\end{figure}
-These steps can also be applied to sparse coding.
 
 Experiment on sparse coding as a tool for compression have been done
 before\cite{Lewicki1999,?} but mainly in theory with learned dictionaries and
@@ -280,12 +282,13 @@ algorithm for sparse coding images.
 
 
 \paragraph{Signal coding}
-The actual coding step of the prepared signals. The signal vectors of $X$
-consists of $8\times 8$ non overlapping blocks from the image. The same block
-size and separation strategy as used in JPEG compression. After the signal
-separation we apply one of the sparse coding algorithms present in our framework
-to all blocks. This step is lossy as the number of coefficients for
-regularization chosen is lower than the dimension of the signal. 
+The actual coding step of the prepared signals. The signal vectors $\vec{x}_i$
+of $\mat{X}$ consists of $n \times n$ non overlapping blocks from the image.
+With $n$ in the range of $n=8,..,12$. A similar block size and separation
+strategy as used in JPEG compression. After the signal separation we apply one
+of the sparse coding algorithms present in our framework to all blocks. This
+step is lossy as the number of coefficients for regularization chosen is lower
+than the dimension of the signal. 
 % an impact on reconstruction quality.
 
 
@@ -355,8 +358,6 @@ and learning dictionaries, a command line interface to the library and
 miscellaneous scripts for distribution of coding and learning jobs and
 some a test suite.
 
-
-
 The whole sparse coding and training library is written in C++ with
 additional use of the OpenCV, Eigen and OpenMP libs. All operations use double
 precision. 
@@ -425,8 +426,8 @@ necessary to introduce some additional terms. Such as metrics to measure
 their performance.
 
 \paragraph{Mean squared error (MSE)} is an error measurement that
-describes the error between an given or measured reference signal $x$
-and and the reconstruction(noisy approximation) $\tilde{x}$ of it.
+describes the error between an given or measured reference signal $\vec{x}$
+and and the reconstruction(noisy approximation) $\vec{\tilde{x}}$ of it.
 Mathematically it is defined as the average of the squared error between two
 signals.
 %The mean squared error is defined as:
@@ -543,6 +544,8 @@ bigger variety of signals to learn from.  We have a closer look at differences
 of learned elements from specific sets of images. These sets include sketches,
 still images of animations from Disney and post-impressionistic images from
 Vincent van Gogh.  
+
+
 
 \subsection{Tests}
 One of the main questions is the OLD paper $\ell_1$ regularization is used does

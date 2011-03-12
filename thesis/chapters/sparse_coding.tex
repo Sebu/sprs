@@ -4,49 +4,59 @@
 
 The Cambridge Advanced Learner defines a code as
 \begin{quotation}
- ``..a system of numbers, letters or signals which is used to represent
-something in a shorter or more convenient form''
+``... a system of numbers, letters or signals which is used to represent
+something in a shorter or more convenient form.''
 \end{quotation}
-A sparse code is a sparse coefficients vector that is used to linear combine a
-few basis elements from a dictionary of many of them.
+A \emph{sparse code} is a vector with only a few non-zero coefficients
+which is used to represent another vector by linear combine only few atom
+vectors from a dictionary of many of them.
 
-Consider $X \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each
-column $x_{i}$ representing a signal described by a single vector of
-signal length $m$. The dictionary $D\in\mathbb{R}^{m \times p}$ is another
-matrix with $p$ columns where each column represents an atom signal with the
-same dimension as a single signal $x_{i}$ from $X$. The number of 
-atoms $p$ in the dictionary is higher then the dimension $m$ of the signals
-$p > m$ making the dictionary over-complete. The sparse vector $\alpha$ consists
-of coefficients that can describe a linear combination of only a few
-non-orthogonal atoms from $D$ that is close to the signal $X$. 
+\Todo{move}
+\paragraph{Historic bachground}
+The idea of sparse coding of image signals has its origin in neural science. 
+Research in this field found that the cells in the visual cortex, also known as
+\emph{V1}, have properties similar to those localized filtering of wavelets
+functions. Several approaches were made to create systems that resemble this
+phenomena but did not lead to the desired structures. In 1996 Olshausen and
+Field\cite{Olshausen1996} noticed that when adding a sparsity constraint to
+these learning algorithms they can regenerate those characteristic elements.
+%Following this discovery constraints were added to the least-squares problem.
+
+\newpage % aragraph{}
+Consider $\mat{X} \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each
+column $i$ representing a signal described by a single vector $\vec{x}_{i}$ of
+signal length $m$. The dictionary $\mat{D}\in\mathbb{R}^{m \times p}$ is another
+matrix with $p$ columns where each column $j$ represents an atom signal
+$\vec{d}_j$ with the same dimension $m$ as a single signal $\vec{x}_{i}$ from
+$\mat{X}$. The number of atoms $p$ in the dictionary is higher then the
+dimension $m$ of the signals $p > m$ making the dictionary over-complete. The
+sparse vector $\vec{\alpha}$ consists of coefficients $\alpha_i$ that can
+describe a linear
+combination of only a few non-orthogonal atoms from $\mat{D}$ that is close to
+the signal $\vec{x}_i $ in $\mat{X}$. 
 
 %Sparse coding is the 
 \begin{align}
-X = \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n
+\vec{x}_i = \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n
 \end{pmatrix}}_{signal}
-\approx \underbrace{\begin{pmatrix} d_1  d_2 \cdots d_n
+\approx \underbrace{\begin{pmatrix} \vec{d}_1  \vec{d}_2 \cdots \vec{d}_n
 \end{pmatrix}}_{\textrm{dictionary atoms}}
 \underbrace{\begin{pmatrix} \alpha_1 \\ 0 \\ \vdots \\ \alpha_n
-\end{pmatrix}}_{\textrm{sparse vector}}
+\end{pmatrix}}_{\textrm{sparse vector }}
 \end{align}
 
-%Or in other words ...
-%\begin{equation}
-%x = D\alpha+\epsilon \notag\\
-%\end{equation}
-
-The solution to this problem is a least-squares solve of an under-determined
-linear system.
+When signal $\vec{x}$ and dictionary $\mat{D}$ are known 
+and $\vec{\alpha}$ is unkown the solution to this problem is a solve of an
+under-determined linear system.
 \begin{equation}
-\min_{\alpha\in\mathbb{R}^{p}} \underbrace{\lVert x - D\alpha
-\rVert^{2}_{2}}_{error} \label{eq:problem}
+ \vec{\alpha} = \mat{D}^{-1}\vec{x} 
 \end{equation}
 The problem is not well-posed because there is more than one
 solution to it. %Such a problem is called a ill-posed problem.
 But we only need one of them. We want to find the sparsest
 solution making the problem well-posed. To archive this it is necessary to keep
-the coefficient vector $\alpha$ sparse. Which means that only a few coefficients
-of $\alpha$ are non-zero. 
+the coefficient vector $\vec{\alpha}$ sparse. 
+%Which means that only a few coefficients of $\vec{\alpha}$ are non-zero. 
 \begin{figure}[h]
 \centering
 \includegraphics[width = 0.20\textwidth]{images/sparse.pdf}
@@ -54,22 +64,15 @@ of $\alpha$ are non-zero.
 \label{fig:sparse}
 \end{figure}
 
-\begin{figure}[h]
-\centering
-%\includegraphics[width = 1.0\textwidth]{images/sparse_selection.pdf}
-\includegraphics[scale = 0.25]{images/segmentation.png}
-\caption{}
-\label{fig:sparse}
-\end{figure}
+%\begin{figure}[h]
+%\centering
+%%\includegraphics[width = 1.0\textwidth]{images/sparse_selection.pdf}
+%\includegraphics[scale = 0.25]{images/segmentation.png}
+%\caption{}
+%\label{fig:sparse}
+%\end{figure}
 \Todo{fix text inclusion}
-The idea of sparse coding image signals has its origin in neural science. 
-Research in this field found that the cells in the visual cortex, also known as
-\emph{V1}, have properties similar to those localized filtering of wavelets
-functions. Several approaches were made to create system that resemble this
-phenomena but did not lead to the desired structures. In 1996 Olshausen and
-Field\cite{Olshausen1996} noticed that when adding a sparsity constraint to
-these learning algorithms they can regenerate those characteristic elements.
-Following this discovery constraints were added to the least-squares problem.
+
 
 
 \section{Regularization}
@@ -77,20 +80,24 @@ A regularization adds additional information to a problem in order to solve an
 ill-posed problem or to prevent over-fitting.\footnote{\url{
 http://en.wikipedia.org/wiki/Regularization_(mathematics)}}
 To find the sparsest solution the sparse coding approach adds such
-regularization to the the least-squares problem \ref{eq:problem}. 
+regularization to the the problem \ref{eq:problem}. 
 %.. over-fitting .. Such a constraint is the regularization.
 \begin{equation}
-\min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} +
-\underbrace{\psi(\alpha)}_{regularization}
+\min_{\vec{\alpha}\in\mathbb{R}^{p}}
+\underbrace{\psi(\vec{\alpha})}_{regularization} \text{ s.t. }
+\vec{x} = \mat{D}\vec{\alpha}\label{eq:problem}
+%\min_{\vec{\alpha}\in\mathbb{R}^{p}} \lVert \vec{x} - \mat{D}\vec{\alpha}
+%\rVert^{2}_{2}
 \end{equation}
-The regularization acts as a constraint to the structure of $\alpha$. It should
-be choosen in a way which keeps the number of non-zero coefficient of $\alpha$
-low. This sparsity constraint can be achieved with the help of the
-$\ell_0$-norm. The $\ell_0$-norm is a pseudo-norm that virtually counts the
+The regularization acts as a constraint to the structure of $\vec{\alpha}$. It
+should be choosen in a way which keeps the number of non-zero coefficient of
+$\vec{\alpha}$ low. 
+This sparsity constraint can be achieved with the help of
+the $\ell_0$-norm. The $\ell_0$-norm is a pseudo-norm that virtually counts the
 number of non-zero elements in the vector in the form of:
 \begin{equation}
-\lVert x\rVert_{0} = \#\{i:x_i \neq 
-0,i=1,...,n, x\in\mathbb{R}^n\} 
+\lVert \vec{x} \rVert_{0} = \#\{i:x_i \neq 
+0; i=1,...,n; \vec{x}\in\mathbb{R}^n\} 
 \end{equation}
 There is one significant problem in using $\ell_0$-norm. This particular
 regularization makes the initial problem \ref{eq:problem} NP-hard. To get the
@@ -99,10 +106,10 @@ does not imply that there is no way to efficiently find a solution that is good
 enough to keep $\alpha$ sparse. There exist several greedy algorithms that can
 solve the problem in a not perfect but good enough way. 
 
-Another regularization that can keep $\alpha$ sparse is the use of the
+Another regularization that can keep $\vec{\alpha}$ sparse is the use of the
 $\ell_p$-norm.
 \begin{equation*}
-\lVert x\rVert_p = \sum_{i=1}^n\left(\lVert x_i \lVert^p\right)^{1/p}
+\lVert \vec{x}\rVert_p = \sum_{i=1}^n\left(\lVert x_i \lVert^p\right)^{1/p}
 \end{equation*}
 With either the $\ell_1$-norm ($p=1$) or $\ell_2$-norm ($p=2$) as a
 convex relaxation of the $\ell_0$-norm. Even though that the $\ell_1$-norm is
@@ -148,17 +155,20 @@ more in depth look on those algorithms.
 %under a $\ell_0$ regularization.
 We now have a more in depth look at two very popular algorithms. 
 The matching-pursuit and its successor the orthogonal-matching-pursuit.
-Both use a greedy strategy to calculate the coefficient vector $\alpha$ to find
-a solution to the following NP-hard problem.
+Both use a greedy strategy to calculate the coefficient vector $\vec{\alpha}$ to
+find
+a solution to the following NP-hard problem. By solving for
 \begin{equation}
-\min_{\alpha\in\mathbb{R}^{p}}   \lVert \alpha \rVert_{0}   \textrm{ s.t. }
-\lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon
+\min_{\vec{\alpha}\in\mathbb{R}^{p}}   \lVert \vec{\alpha} \rVert_{0}   \textrm{
+s.t. }
+\lVert \vec{x} - \mat{D}\vec{\alpha} \rVert^{2}_{2} \leq \epsilon
 \end{equation}
 respectively
 \begin{equation}
-\min_{\alpha\in\mathbb{R}^{p}}  \lVert x - D\alpha \rVert^{2}_{2} \textrm{ s.t.
-} \lVert \alpha \rVert_{0} \leq L
-\end{equation}
+\min_{\vec{\alpha}\in\mathbb{R}^{p}}  \lVert \vec{x} - \mat{D}\vec{\alpha}
+\rVert^{2}_{2} \textrm{ s.t.
+} \lVert \vec{\alpha}	1 \rVert_{0} \leq L
+\end{equation}.
 
 \subsection{Matching-Pursuit}
 \label{sec:mp}
@@ -168,34 +178,39 @@ and Bergeaud in\cite{Mallat1995}.
 The algorithm starts with the coefficient vector $\alpha$ set
 to zero. Then finds the atom in the dictionary with the best reduction of the
 error. This is done by selecting the coefficient that has the maximum
-correlation with the current residual. This step is repeated $L$ times
-or until the error $\lVert x - D\alpha \rVert^{2}_{2}$ for the current $\alpha$
-reaches $\lVert x - D\alpha \rVert^{2}_{2} \leq \epsilon$ respectively the
-residual fulfills $\lVert r \rVert_2 \leq \epsilon$.
+correlation with the current remaining error (residual). This step is repeated
+$L$ times or until the error $\epsilon$
+% $\lVert \vec{x} - \mat{D}\vec{\alpha} \rVert^{2}_{2}$ 
+for the current $\vec{\alpha}$ fullfills $\lVert \vec{x} - \mat{D}\vec{\alpha}
+\rVert^{2}_{2} \leq \epsilon$.
+%respectively the residual fulfills $\lVert \vec{r} \rVert_2 \leq \epsilon$.
 Algorithm \prettyref{alg:mp} illustrates this procedure.
 \begin{algorithm}[H]
-\caption{Matching Pursuit}
+\caption{Matching-Pursuit}
 \label{alg:mp}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N},
-\epsilon \in \mathbb{R}$
-\STATE $\alpha_0 \gets 0$ (start with zero vector)
-\STATE $r_0 \gets x-D\alpha_0 = x$ (residual) 
-\WHILE {$\lVert \alpha \rVert_{0} \leq L$ $\lVert r \rVert_2 \leq \epsilon$}
+\REQUIRE $\vec{x} \in \mathbb{R}^m, \mat{D} \in \mathbb{R}^{m\times p}, L \in
+\mathbb{N}, \epsilon \in \mathbb{R}$
+\STATE $\vec{\alpha} \gets 0$ (start with zero vector)
+\STATE $\vec{r} \gets \vec{x}-\mat{D}\vec{\alpha} = \vec{x}$ (residual) 
+\WHILE {$\lVert \vec{\alpha} \rVert_{0} \leq L$ \AND $\lVert \vec{r} \rVert_2
+\leq
+\epsilon$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
-i \gets \argmax_{i=1,...,p} \lvert \left<d_i,r\right> \rvert
+i \gets \argmax_{i=1,...,p} \lvert \left<\vec{d}_i,\vec{r}\right> \rvert
 \end{equation*}
 \STATE update coefficients: 
 \begin{align}
-a[i]  \gets a[i] + \left<d_i,r\right> \label{eq:mp_update}
+\vec{\alpha[i]}  \gets \vec{\alpha[i]} + \left<\vec{d_i},\vec{r}\right>
+\label{eq:mp_update}
 \end{align}
 \STATE update residual:
 \begin{equation*}
- r \gets r - \left<d_i,r\right>d_i
+ \vec{r} \gets \vec{r} - \left<\vec{d_i},\vec{r}\right>\vec{d_i}
 \end{equation*}
 \ENDWHILE
-\RETURN $\alpha$
+\RETURN $\vec{\alpha}$
 \end{algorithmic}
 \end{algorithm}
 
@@ -203,29 +218,29 @@ a[i]  \gets a[i] + \left<d_i,r\right> \label{eq:mp_update}
 \label{sec:omp}
 The Orthogonal-Matching-Pursuit, an improved version of
 the Matching-Pursuit (\ref{sec:mp}), was first presented by Pati et al.
-in 1993\cite{Pati1993}. Rather than just updating the coefficient of
-$\alpha$, that is currently selected (\ref{eq:mp_update}), the algorithm
-re-evaluates
-all coefficient in the current set $A$ of active atoms 
-$\alpha_A$ by solving a full least-squares solution in every iteration
-(\ref{eq:omp_update}). This improves the quality of the
-solution\cite{Pati1993}. The Orthogonal-Matching-Pursuit gets its name from
-the fact that the residual $r$ is orthogonal to the previously selected atoms
-in dictionary $D$. This orthogonality property leads to the effect that every
-coefficient is only selected once. Algorithm \ref{alg:omp} shows a description
-in pseudo-code.
-.
+in 1993\cite{Pati1993}. Rather than just updating the currently selected
+coefficient of $\vec{\alpha}$ (\ref{eq:mp_update}). The algorithm re-evaluates
+all coefficients in the current set $A$ of active atoms $\vec{\alpha}_A$ by
+solving a full least-squares solution in every iteration (\ref{eq:omp_update}).
+This improves the quality of the solution\cite{Pati1993}. The
+Orthogonal-Matching-Pursuit gets its name from the fact that the residual
+$\vec{r}$ is orthogonal to the previously selected atoms in dictionary
+$\mat{D}$. This orthogonality property leads to the effect that every
+coefficient is only selected once. Algorithm \ref{alg:omp} shows a
+description in pseudocode.
+
 \begin{algorithm}[H]
 \caption{Orthogonal Matching Pursuit}
 \label{alg:omp}
 \begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, D \in \mathbb{R}^{m\times p}, L \in \mathbb{N},
-\epsilon \in \mathbb{R}$
-\STATE $\alpha \gets 0, r \gets x $ (residual) $, A \gets \emptyset$
+\REQUIRE $\vec{x} \in \mathbb{R}^m, \mat{D} \in \mathbb{R}^{m\times p}, L \in
+\mathbb{N}, \epsilon \in \mathbb{R}$
+\STATE $\vec{\alpha} \gets 0, \vec{r} \gets \vec{x} $ (residual) $, A \gets
+\emptyset$
 \FOR {$j = 0$ to $L$}
 \STATE Select inactive variable with maximum correlation with residual: 
 \begin{equation*}
-i \gets \argmax_{i \in A^C} \lvert \left<d_i,r\right> \rvert
+i \gets \argmax_{i \in A^C} \lvert \left<\vec{d_i},\vec{r}\right> \rvert
 \end{equation*}
 \STATE update active set:
 \begin{equation*}
@@ -233,14 +248,12 @@ i \gets \argmax_{i \in A^C} \lvert \left<d_i,r\right> \rvert
 \end{equation*}
 \STATE update coefficients: 
 \begin{align}
-a_A \gets \left( D_A^T D_A \right)^{-1} D_A^T x  \label{eq:omp_update}
+\vec{\alpha}_A \gets \left( \mat{D}_A^T \mat{D}_A \right)^{-1} \mat{D}_A^T x 
+\label{eq:omp_update}
 \end{align}\label{alg:OMP_DTD}
-\STATE update residual:
-\begin{equation*}
- r \gets x-D_Aa_A
-\end{equation*}
+\STATE update residual: $\vec{r} \gets \vec{x}-\mat{D}_A\vec{\alpha}_A$
 \ENDFOR
-\RETURN $\alpha$
+\RETURN $\vec{\alpha}$
 \end{algorithmic}
 \end{algorithm}
 %Section \ref{sec:batch-omp} provides a depper look into the Batch-OMP.
@@ -248,35 +261,38 @@ a_A \gets \left( D_A^T D_A \right)^{-1} D_A^T x  \label{eq:omp_update}
 All these greedy approaches tend to find suitable solutions but
 because of the non-convex problem they can get stuck in a local minimum. As
 shown before an $\ell_1$ regularization version of \ref{eq:problem} also keeps
-the coefficient vector $\alpha$ sparse but eliminates the problem of a local
-minimum. The next section presents algorithms which solve  a $\ell_1$
+the coefficient vector $\vec{\alpha}$ sparse but eliminates the problem of a
+local minimum. The next section presents algorithms which solve  a $\ell_1$
 regularization version of \ref{eq:problem}.
 
 
-\section { $\ell_1$asso regularization}
+\section { $\ell_1$ regularization with the Lasso}
 The $\ell_1$ regularization of our initial problem is also known as the
 \emph{Lasso}. The name stands for \emph{least absolute shrinkage and
-selection operator} and is a regularized version of a least squares
+selection operator} and is a regularized version of a least-squares
 solution. The sparsity is achieved by adding a constraint that induces
-the $\ell_1$-norm of the solution to be small. It was first presented by
+the $\ell_1$-norm of $\vec{\alpha}$ to be small. It was first
+presented by
 Tibshirani
 in 1996\cite{Tibshirani1996}. Under this constraint our initial problem becomes:
 \begin{equation}
-\min_{\alpha\in\mathbb{R}^{p}} \lVert x - D\alpha \rVert^{2}_{2} \textrm{
-s.t. } \lVert \alpha \rVert_{1} \leq L \label{eq:l1}
+\min_{\vec{\alpha}\in\mathbb{R}^{p}} \lVert \vec{x} - \vec{D}\vec{\alpha}
+\rVert^{2}_{2} \textrm{
+s.t. } \lVert \vec{\alpha} \rVert_{1} \leq L \label{eq:l1}
 \end{equation}
 Algorithms dealing with this problem often require to formulate the
 constrained function into a single expression. The lagrange multiplier is a
-method to construct such an expression from a function and the constraint. With
+method to construct such an expression from a function and a constraint. With
 the  lagrange multiplier applied the regularized problem \ref{eq:l1} becomes:
 \begin{equation}
-\min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} +
-\lambda \lVert \alpha \rVert_{1}\label{eq:l1lagrange}
+\min_{\vec{\alpha}\in\mathbb{R}^{p}}  \frac{1}{2} \lVert \vec{x} -
+\vec{D}\vec{\alpha} \rVert^{2}_{2} +
+\lambda \lVert \vec{\alpha} \rVert_{1}\label{eq:l1lagrange}
 \end{equation}
 Where the coefficient $\lambda$ controls the sparsity in equivalent to $L$.
 In the last two decades several algorithms were proposed to compute the
 Lasso. The basis pursuit by Chen et al.\cite{Chen1995}, the FOCUSS\cite{FOCUSS}
-the LARS by Efron et al.\cite{Efron2004} among others. We have a more in-depth
+, the LARS by Efron et al.\cite{Efron2004} among others. We have a more in-depth
 look at the LARS-Lasso.
 
 
@@ -293,22 +309,23 @@ al.\cite{Efron2004}.
 
 
 \paragraph{Least-angle regression}
-The main idea of the least angle regression is to start with all coefficient
-zero $\alpha = 0$. Then find the variable $x_i$ with the maximum correlation
-with the residual $r$ and move linear into the direction of the ordinary least
-squares solution until a new variable has a higher correlation with the
+The main idea of the least angle regression is to start with all coefficients
+of $\vec{\alpha}$ set to zero. Then find the variable $x_i$ with the maximum
+correlation
+with the residual $\vec{r}$ and move linear into the direction of the ordinary
+least-squares solution until a new variable has a higher correlation with the
 residual.  
 %The complete regularization path based on\cite{Efron2004}
 \begin{align}
-\min_{\alpha\in\mathbb{R}^{p}}  \frac{1}{2} \lVert x - D\alpha \rVert^{2}_{2} +
-\lambda \lVert \alpha \rVert_{1}
+\min_{\vec{\alpha}\in\mathbb{R}^{p}}  \frac{1}{2} \lVert \vec{x} -
+\vec{D}\vec{\alpha} \rVert^{2}_{2} + \lambda \lVert \vec{\alpha} \rVert_{1}
 \end{align}
 
 \paragraph{Lasso modification}
 The LAR algorithm can be easily modified to solve the Lasso. 
 The modification consists of removing variables from the active set
-when their coefficient become zero. A pseudocode implementation can be found in
-\prettyref{alg:lars}.
+when their coefficient becomes zero. A pseudocode implementation can be found
+in \prettyref{alg:lars}.
 \begin{algorithm}
 \caption{LARS-Lasso}
 \label{alg:lars}
@@ -343,12 +360,12 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \right> }{1-\left< d_a,d_i \right> }, \frac{c_{max}+\left< x,d_i \right>
 }{1+\left< d_a,d_i \right> } \right\rbrace
 \end{equation*}
-\STATE drop coefficient from active that change sign: 
+\STATE drop coefficient from active set that change sign: 
 \STATE $ \tilde{\gamma} \gets -\alpha/s_A^Tw_A  $
 \STATE $ i \gets \min_{i\in A}^{+} \left( \tilde{\gamma}_i \right) $
 %\STATE $ i \gets \alpha_{i} = 0, i \in A $
 \IF {$\tilde{\gamma}_i>0$ and $\tilde{\gamma}_i<\gamma$}
-\STATE remove $i$ from active set: $ A \gets A \backslash \{i\} $
+\STATE remove $i$ from active  set: $ A \gets A \backslash \{i\} $
 \STATE update movement: $ \gamma \gets \tilde{\gamma} $  
 \ENDIF
 %\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $
@@ -359,12 +376,12 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \end{algorithm}
 
 
-\paragraph{Limitations}
-We have to admit that the LARS-Lasso algorithm has some limitations.
+\paragraph{}
+We have to admit that the LARS-Lasso algorithm has some limitations concerning:
 \begin{description}
- \item[Dimension] When the dimension $p$ of the signal $X$ is much higher than
-the the dimension $m$ of the dictionary $D$ the algorithm can only select $m$
-columns.
+ \item[Dimension] When the dimension $p$ of the signals in $\mat{X}$ is much
+higher than the the dimension $m$ of the dictionary $\mat{D}$ the algorithm can
+only select $m$ columns.
   \item[Correlation] When the columns of the dictionary are highly correlated
 the algorithm selects only one column.
 \end{description}
@@ -373,11 +390,11 @@ are over-complete, with respect to the dimension $m$ of signal $X$, and thus
 satisfy $p\leq n$. 
 
 \section{Application and Related Work}
-In the most applications and papers related to sparse coding,the coding
+In the most applications and papers related to sparse coding, the coding
 step and the dictionary learning step are often close tied together. This
-section concentrates on work where the sparse coding step is dominating. Section
-\ref{sec:related_dictionarie} show related work where the learning of
-dictionaries is the dominating part of the work.
+section concentrates on work with the main focus on sparse coding. Section
+\ref{sec:related_dictionarie} shows related work where the learning of
+dictionaries is the dominating part.
 
 %\begin{description}
 \paragraph{Noise reduction}
@@ -390,7 +407,7 @@ y = x + w
 \end{align*}
 
 \paragraph{In-painting}
-fill missing parts by removing rows from the dictionary
+Fill missing parts by removing rows from the dictionary.
 Train with the original image
 \begin{align*}
 x \approx D\alpha\\
@@ -402,10 +419,10 @@ Wx \approx WD\alpha\text{select subset}\\
 
 %Task driven dictionaries
 
-\paragraph{Inverse half-toning} Half-toning, as used in printing ,is a process
-where binary raster simulates continuous tone images. Small dots of different
+\paragraph{Inverse half-toning} Half-toning, as used in printing, is a process
+where a binary raster simulates continuous tone images. Small dots of different
 size and shape create the optical illusion of continuous tones. In 2010 research
-by Mairal et al.\cite{Mairal2010b} presented 
+by Mairal et al.\cite{Mairal2010b} presented ...
 
 
 \paragraph{Super resolution} \cite{Wright2008,Yang2010, Yang2010}  

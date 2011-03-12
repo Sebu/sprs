@@ -1,16 +1,16 @@
 \chapter{Results}
 This chapter shows the results for the following experiments.
-
+% Reconstruction quality is mean of PSNR of images inside and outside of
+% the training sets.
 \begin{enumerate}
-Reconstruction quality is mean of PSNR of images inside and outside of the
-training sets.
- \item Convergence of reconstruction quality for different training parameters.
+ \item Convergence of reconstruction quality for different training parameters
+(block size, dictionary size, learning coefficients).
+ \item Comparision of reconstruction quality of dictionaries
+in single and in cluster runs. 
  \item Inspection of the structures of dictionary atoms from different
-groups of images and block size and win size.
- \item Comparision of reconstruction quality of different sizes of dictionaries
-in single and in cluster. 
- \item Compression quality of natural images and sketches dict. vs.
-JPEG/JPEG2000 of images.
+groups of images and block sizes.
+ \item Comparision of compression quality between learned dictionaries, JPEG and
+JPEG2000  on natural images and sketches.
 \end{enumerate}
 
 We discuss the results in the next chapter.
@@ -117,7 +117,7 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 
 \section{Compression}
 
-\subsection{Natural image database}
+\subsection{Natural images}
 
 
 \begin{figure}[H]
@@ -158,9 +158,7 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \label{fig:16_1000_lasso}
 \end{figure}
 
-
-
-%\subsection{Specific image groups}
+\subsection{Sketches}
 
 
 
