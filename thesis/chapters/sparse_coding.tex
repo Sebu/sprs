@@ -11,6 +11,7 @@ A \emph{sparse code} is a vector with only a few non-zero coefficients
 which is used to represent another vector by linear combine only few atom
 vectors from a dictionary of many of them.
 
+
 \Todo{move}
 \paragraph{Historic bachground}
 The idea of sparse coding of image signals has its origin in neural science. 
@@ -56,13 +57,20 @@ solution to it. %Such a problem is called a ill-posed problem.
 But we only need one of them. We want to find the sparsest
 solution making the problem well-posed. To archive this it is necessary to keep
 the coefficient vector $\vec{\alpha}$ sparse. 
-%Which means that only a few coefficients of $\vec{\alpha}$ are non-zero. 
+
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.20\textwidth]{images/sparse.pdf}
+\subfloat[over-complete]{\includegraphics[width =
+0.20\textwidth]{images/sparse_2.pdf}}
+\hspace{5mm}
+\subfloat[over-complete and sparse]{\includegraphics[width =
+0.20\textwidth]{images/sparse.pdf}}
 \caption{over-complete and sparse}
 \label{fig:sparse}
 \end{figure}
+
+%Which means that only a few coefficients of $\vec{\alpha}$ are non-zero. 
+
 
 %\begin{figure}[h]
 %\centering
@@ -118,7 +126,7 @@ equivalent to the $\ell_0$-norm in the effect of inducing sparsity.
 \Todo{image/description of different regularizations}
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.44\textwidth]{images/regularization.pdf}
+\includegraphics[width = 1.0\textwidth]{images/regularization.pdf}
 \caption{sparse solution is approaching ordinary-least-squares solution}
 \label{fig:sparse}
 \end{figure}
@@ -398,24 +406,24 @@ dictionaries is the dominating part.
 
 %\begin{description}
 \paragraph{Noise reduction}
-Elad and Aharon\cite{Elad2006}
-Remove noise from a signal. 
+Is the process of remove noise $\vec{w}$ from a signal $\vec{y}$ gaining the
+de-noised signal $\vec{x}$.
+\begin{align*}
+\vec{y} = \vec{x} + \vec{w}
+\end{align*}
 Using the fact that sparse coding is an approximation of signal that loses ...
 noise? ... in its encoding process. 
-\begin{align*}
-y = x + w
-\end{align*}
+Elad and Aharon showed in 2006\cite{Elad2006}.
 
 \paragraph{In-painting}
 Fill missing parts by removing rows from the dictionary.
 Train with the original image
 \begin{align*}
-x \approx D\alpha\\
-x_s \approx D_s\alpha\\
+\vec{x} \approx \mat{D}\vec{\alpha}\\
+\vec{x}_S \approx \mat{D}_S\vec{\alpha}\\
 Wx \approx WD\alpha\text{select subset}\\
 \end{align*}
-\cite{mairal08sparse}
-
+Examples for this can be found in\cite{mairal08sparse}.
 
 %Task driven dictionaries
 
@@ -430,13 +438,12 @@ Or the ongoing work by Couzinie-Devy et al., 2010 called digital zooming.
 
 \paragraph{Background subtraction}\cite{}
 
-\paragraph{Edge detection}\cite{Mairal2008c}
+\paragraph{Structured sparsity}
+similar patches should admit similar patterns \cite{Mairal2009} 
+\cite{group sparsity}
+\Todo{picture with distribution difference}
 
-\paragraph{Sense sparse signals}\cite{Duarte2009}
-%\item[noise reduction]
-%\item[in-painting]
-%\item[classification] \Todo{usage:classification}
-%\end{description}
+%\paragraph{Sense sparse signals}\cite{Duarte2009}
 
 
 

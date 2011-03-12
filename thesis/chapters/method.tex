@@ -289,8 +289,6 @@ strategy as used in JPEG compression. After the signal separation we apply one
 of the sparse coding algorithms present in our framework to all blocks. This
 step is lossy as the number of coefficients for regularization chosen is lower
 than the dimension of the signal. 
-% an impact on reconstruction quality.
-
 
 \paragraph{Quantization}
 Quantized is the process of reducing informations from continuous set to a
@@ -526,10 +524,10 @@ evaluation of compression algorithms.
 \end{figure}
 
 \subsection{Hardware setup} 
-Computations were made on Apple MacPro with ... \Todo{mac config}
-and a cluster consisting of 100 nodes with each AMD Athlon X2 \Todo{athlon
-config} running Debian 32-bit. Each client in the cluster calculated batches of
-100 till 10,000 images based on the size of the training sets.
+Computations were made a cluster consisting of 100 nodes with each AMD Athlon 64
+X2 (2x2.6GHz) and 3GB RAM running Debian Linux with 32-bit kernel. Each client
+in the cluster calculated batches of 100 till 10,000 images based on the size of
+the training sets.
 
 \subsection{Training sets}
 %\subsection{Learning specific dictionaries}
