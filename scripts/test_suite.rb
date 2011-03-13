@@ -37,8 +37,10 @@ jobs.zip(clients).each_with_index do |(job, client), index|
     dict = test["params"]["dict"] || "../../output/dicts_c31/#{test_name}_#{index}.dict"
   end
   
-  if test["params"]["input"]
-    logfile = "../output/dicts/#{test_name}_#{index}_#{test["params"]["input"]}.log"
+  if test["params"]["inputs"]
+    st = test["params"]["inputs"].rindex("/")+1
+    nd = test["params"]["inputs"].rindex(".")-1
+    logfile = "../output/dicts/results/#{test_name}_#{index}_#{test["params"]["inputs"][st..nd]}.log"
   else
     logfile = "../output/dicts/#{test_name}_#{index}.log"
   end
