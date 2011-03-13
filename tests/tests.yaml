@@ -67,7 +67,7 @@ coeffsConverg1Test:
   clients: ['c21', 'c22', 'c23', 'c24', 'c11']
   jobs: 5
   params:
-    coeffs: 6
+    coeffs: 10 
     samples: 512  
     dictSize: 512
     blockSize: 8  
@@ -80,17 +80,16 @@ coeffsConverg1Test:
 
 coeffsConverg1: 
   desc: convergence of dict coefficients
-  clients: ['c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c32']
+  clients: ['c21', 'c22', 'c23', 'c24', 'c11', 'c26', 'c27', 'c32']
   jobs: 5
   params:
     coeffs: [2, 4, 6, 8, 10, 12, 14, 16]
-    error: [0.2, 0.4, 0.8, 1.6, 3.2]
     samples: 512  
     dictSize: 512
     blockSize: 8  
     winSize: 5  
     channels: 3 
-    mode: 2 
+    mode: 1 
     train: ../../input/imagedb_100_chunk_1000/2.list
     input: ../../tests/images/4.2.03.tiff
     
@@ -101,11 +100,11 @@ blockSizeConverg1Test:
   jobs: 6
   params:  
     blockSize: [8, 10, 12, 14, 16, 20]
-    coeffs: [4, 6, 9, 12, 16, 25] 
+    coeffs: [8, 12, 18, 24, 32, 50] 
     samples: 2000  
     dictSize: [128, 200, 288, 392, 512, 800]
     winSize: 4
-    channels: 3 
+    channels: 1 
     mode: 1  
     inputs: ../../input/list2/28952841.jpg
     output: ../../output/dicts/dictSizeTest_0.jpg
@@ -117,12 +116,12 @@ blockSizeConverg1:
   jobs: 6
   params:  
     blockSize: [8, 10, 12, 14, 16, 20]
-    coeffs: 8 
+    error: 0.8 
     samples: 2000  
     dictSize: [128, 200, 288, 392, 512, 800]
     winSize: 4
-    channels: 3 
-    mode: 1  
+    channels: 1
+    mode: 2  
     train: ../../input/imagedb_100_chunk_1000/2.list
 
 lena:

@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
 //        std::string nameStr;
 //        ifs >> nameStr;
 //        while( !ifs.eof() ) {
-        for(int i=1; i<110; i++) {
+        for(int i=1; i<1000; i++) {
             std::ostringstream o;
             o << dictFile << i << ".dict";
             dict.load( o.str().c_str() );
