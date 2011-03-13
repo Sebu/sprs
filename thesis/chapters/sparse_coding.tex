@@ -200,8 +200,7 @@ Algorithm \prettyref{alg:mp} illustrates this procedure.
 \STATE $\vec{\alpha} \gets 0$ (start with zero vector)
 \STATE $\vec{r} \gets \vec{x}-\mat{D}\vec{\alpha} = \vec{x}$ (residual) 
 \WHILE {$\lVert \vec{\alpha} \rVert_{0} \leq L$ \AND $\lVert \vec{r} \rVert_2^2
-\leq
-\epsilon$}
+\leq \epsilon$}
 \STATE Select atom with maximum correlation with residual: 
 \begin{equation*}
 i \gets \argmax_{i=1,...,p} \lvert \left<\vec{d}_i,\vec{r}\right> \rvert
@@ -316,71 +315,27 @@ al.\cite{Efron2004}.
 
 \paragraph{Least-angle regression}
 The main idea of the least angle regression is to start with all coefficients
-of $\vec{\alpha}$ set to zero. Then find the variable $x_i$ with the maximum
-correlation
-with the residual $\vec{r}$ and move linear into the direction of the ordinary
-least-squares solution until a new variable has a higher correlation with the
-residual.  
+of $\vec{\alpha}$ set to zero and the residual gets $\vec{r}=\vec{x}$. Then
+find the atom $\vec{d}_i$ of $\mat{D}$ with the maximum correlation
+with the residual $\argmax_i\mat{d}_i\vec{r}$ and move $\alpha_i$ 
+into the direction of the least-squares solution until a new atom
+$\vec{d}_j$ has the same or higher correlation with the residual. Now move
+$\alpha_i$ and $\alpha_j$ into the joint direction of the least-squares
+solution until another atom same or higher correlation with $\vec{r}$. Repeat
+this until the desired number of atoms are selected.
+
 %The complete regularization path based on\cite{Efron2004}
-\begin{align}
-\min_{\vec{\alpha}\in\mathbb{R}^{p}}  \frac{1}{2} \lVert \vec{x} -
-\vec{D}\vec{\alpha} \rVert^{2}_{2} + \lambda \lVert \vec{\alpha} \rVert_{1}
-\end{align}
+%\begin{align}
+%\min_{\vec{\alpha}\in\mathbb{R}^{p}}  \frac{1}{2} \lVert \vec{x} -
+%\vec{D}\vec{\alpha} \rVert^{2}_{2} + \lambda \lVert \vec{\alpha} \rVert_{1}
+%\end{align}
+
 
 \paragraph{Lasso modification}
 The LAR algorithm can be easily modified to solve the Lasso. 
-The modification consists of removing variables from the active set
-when their coefficient becomes zero. A pseudocode implementation can be found
-in \prettyref{alg:lars}.
-\begin{algorithm}
-\caption{LARS-Lasso}
-\label{alg:lars}
-\begin{algorithmic}[1]
-\REQUIRE $x \in \mathbb{R}^m, D =[d_1,...,d_p] \in \mathbb{R}^{m\times p}, L \in
-\mathbb{N}, \epsilon \in \mathbb{R}$
-% xD normalized and centered
-\STATE $\alpha \gets 0, \mu_{0} \gets 0, A \gets \emptyset$
-\FOR {$j = 0$ to $L$}
-\STATE calculate correlations with residual: $c \gets D^t\left( x-\mu_j \right)
-$
-\STATE Select atom with maximum correlation: 
-\begin{equation*}
-i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
-\end{equation*}
-\STATE maximum correlation: $c_{max} \gets c_i $ %\left<d_a,r\right> $
-\STATE update active set: $A \gets A \cup \left\{i\right\} $
-\STATE calculate movement into OLS direction:
-\STATE signs of the correlations: $s_A \gets  sign\left(c_A\right)$
-\STATE $\tilde{D_A} \gets D_A\left(\ldots s_id_i \ldots\right)_{i\in A}$
-\STATE $G_A \gets \tilde{D_A}^T\tilde{D_A}$
-\STATE calculate angle: $A_A \gets \sqrt{ 1_A^{-1} G_A^{-1} 1_A
-}$
-\STATE apply weights: $w_A \gets A_AG_A^{-1}1_A$
-\STATE equiangular direction: $u_A \gets D_Aw_A$
-\STATE correlation between direction and variables: $a \gets D_tu_A$
-\STATE minimal movement:
-\begin{equation*}
-\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-c_i }{A_A-a_i },
-\frac{c_{max}+c_i }{A_A+a_i } \right\rbrace
-\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-\left< x,d_i
-\right> }{1-\left< d_a,d_i \right> }, \frac{c_{max}+\left< x,d_i \right>
-}{1+\left< d_a,d_i \right> } \right\rbrace
-\end{equation*}
-\STATE drop coefficient from active set that change sign: 
-\STATE $ \tilde{\gamma} \gets -\alpha/s_A^Tw_A  $
-\STATE $ i \gets \min_{i\in A}^{+} \left( \tilde{\gamma}_i \right) $
-%\STATE $ i \gets \alpha_{i} = 0, i \in A $
-\IF {$\tilde{\gamma}_i>0$ and $\tilde{\gamma}_i<\gamma$}
-\STATE remove $i$ from active  set: $ A \gets A \backslash \{i\} $
-\STATE update movement: $ \gamma \gets \tilde{\gamma} $  
-\ENDIF
-%\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $
-\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma u_a $
-\STATE $ \alpha \gets \alpha - \gamma s_A^Tw_A $
-\ENDFOR
-\end{algorithmic}
-\end{algorithm}
-
+The modification consists of removing an atom $\vec{d}_i$ from the active set
+when their coefficient $\alpha_i$ becomes zero. A pseudocode implementation can
+be found in \prettyref{alg:lars}.
 
 \paragraph{}
 We have to admit that the LARS-Lasso algorithm has some limitations concerning:
@@ -394,6 +349,71 @@ the algorithm selects only one column.
 The first limitation is not relevant for our experiments as our dictionaries
 are over-complete, with respect to the dimension $m$ of signal $X$, and thus
 satisfy $p\leq n$. 
+
+
+
+\begin{algorithm}[H]
+\caption{LARS-Lasso}
+\label{alg:lars}
+\begin{algorithmic}[1]
+\REQUIRE $\vec{x} \in \mathbb{R}^m, \mat{D} =[\vec{d}_1,...,\vec{d}_p] \in
+\mathbb{R}^{m\times p} \text{normalized and centered},\lambda \in \mathbb{R}$
+\STATE $\vec{\alpha}_0 \gets 0, \vec{r}_0 \gets \vec{x}, A \gets \emptyset, n
+\gets 0$
+
+\WHILE {$\lVert\vec{\alpha}_n\rVert_2 < \lambda$}
+\STATE calculate correlations with residual: $\vec{c} \gets
+\mat{D}^T\vec{r}_n$
+\STATE Select atom with maximum correlation: 
+\begin{equation*}
+i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
+\end{equation*}
+\STATE maximum correlation: $c_{max} \gets c_i $ %\left<d_a,r\right> $
+\STATE update active set: $A \gets A \cup \left\{i\right\} $
+\STATE\COMMENT {calculate movement into least-squares direction}
+\STATE signs of the correlations: $\vec{s} \gets  sign\left(\vec{c}_A\right)$
+\STATE $\tilde{\mat{D}_A} \gets \mat{D}_A\left(\ldots s_i\vec{d}_i
+\ldots\right)_{i\in A}$
+\STATE $\mat{G}_A \gets \tilde{\mat{D}_A}^T\tilde{\mat{D}_A}$
+\STATE calculate angle: $\beta \gets \sqrt{ \vec{1}_A^{-1} \mat{G}_A^{-1}
+\vec{1}_A
+}$
+\STATE calculate weights: $\vec{w} \gets \beta\mat{G}_A^{-1}\vec{1}_A$
+\STATE equiangular direction: $\vec{u} \gets \mat{D}_A\vec{w}$
+%\STATE correlation between direction and variables: $\vec{a} \gets
+%\mat{D}_t\vec{u}_A$
+\STATE calculate movement:
+\begin{equation*}
+%\gamma \gets \min_{i\in A^C}^{+} \left\lbrace \frac{c_{max}-c_i }{A_A-a_i },
+%\frac{c_{max}+c_i }{A_A+a_i } \right\rbrace
+\gamma \gets \min_{j\in A^C}^{+} \left\lbrace \frac{c_{max}-\left<
+\vec{x},\vec{d}_j \right> }{1-\left< \vec{d}_i,\vec{d}_j \right> },
+\frac{c_{max}+\left< \vec{x},\vec{d}_j \right>}{1+\left< \vec{d}_i,\vec{d}_j
+\right> } \right\rbrace
+\end{equation*}
+
+\IF {\COMMENT {Lasso modification}} 
+%drop coefficient from active set that change sign
+\STATE $ \tilde{\gamma} \gets -\vec{\alpha}_n/\vec{s}^T\vec{w}  $
+\STATE $ i \gets \min_{i\in A}^{+} \left( \tilde{\gamma}_i \right) $
+%\STATE $ i \gets \alpha_{i} = 0, i \in A $
+\IF {$\tilde{\gamma}_i>0$ and $\tilde{\gamma}_i<\gamma$}
+\STATE remove $i$ from active  set: $ A \gets A \backslash \{i\} $
+\STATE update movement: $ \gamma \gets \tilde{\gamma} $  
+\ENDIF
+\ENDIF
+%\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $
+\STATE update residual: $ \vec{r}_{n+1} \gets \vec{r}_{n} - \gamma \vec{u}
+$
+\STATE update coefficients: $ \vec{\alpha}_{n+1} \gets \vec{\alpha}_n - \gamma
+\vec{s}^T\vec{w} $
+\STATE $n \gets n + 1$ 
+\ENDWHILE
+\RETURN $\vec{\alpha}$
+\end{algorithmic}
+\end{algorithm}
+
+
 
 \section{Application and Related Work}
 In the most applications and papers related to sparse coding, the coding

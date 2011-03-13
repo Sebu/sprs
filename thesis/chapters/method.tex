@@ -35,11 +35,18 @@ represent our 2-D image data in a set of 1-D vectors with size $m$. We extract
 blocks of size $n \times n=m$ from the images. Typically dealing with block
 sizes of $n=8,..,20$. The blocks get extracted in a raster either with
 overlapping content or disjoint from each other. Figure \ref{fig:separation}
-illustrates this separation step.
+illustrates this separation step. How the each strategy can effect learning
+show our experiments.
 \begin{figure}[h]
 \centering
-\includegraphics[scale = 0.25]{images/segmentation.png}
-\caption{spatial separation}
+\subfloat[]{\includegraphics[scale = 0.30]{images/segmentation.jpg}}
+\hspace{5mm}
+\subfloat[]{\includegraphics[scale =
+0.50]{images/segmentation1.jpg}}
+\hspace{5mm}
+\subfloat[]{\includegraphics[scale =
+0.50]{images/segmentation2.jpg}}
+\caption{spatial separation of(a) with (b) and without (c) overlapping}
 \label{fig:separation}
 \end{figure}
 
@@ -217,12 +224,6 @@ samples.
 \end{algorithmic}
 \end{algorithm}
 
-Taking strategy two even further is to learn smaller dictionaries from different
-sets of images or characteristics. Such as paintings, gray-scale sketches and
-smooth images animation. For example learning dictionaries for very specific
-classes of images can be utilized for classification tasks. Something that can
-come in handy when applying it to operations like search in large image
-databases.
 
 
 \subsection{Application to image compression}
@@ -241,13 +242,13 @@ quality. This procedure
 is one key element in lossy image compression. 
 Afterwards 
 Quantization and good entropy encoding of the data.
-\begin{figure}[h]
-\centering
-%\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
-\includegraphics[scale = 0.25]{images/segmentation.png}
-\label{fig:YCbCr}
-\caption{RGB $\rightarrow$ YCbCr}
-\end{figure}
+% \begin{figure}[h]
+% \centering
+% %\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
+% \includegraphics[scale = 0.25]{images/segmentation.png}
+% \label{fig:YCbCr}
+% \caption{RGB $\rightarrow$ YCbCr}
+% \end{figure}
 These steps can also be applied to sparse coding. Both elements
 led to to the following main steps in lossy image compression algorithms:
 \begin{itemize}
@@ -324,8 +325,11 @@ of to reduce the amount of data that needs to be stored.
 %\cite{Murray2006}
 \begin{description}
  \item[Run-length encoding (RLE)] Is the process of encoding data in blocks of
-data value and corresponding run-length of data with the same value. The main
-requirement to work well is that the data consists of larger groups of the same
+data value and corresponding run-length of data with the same value. 
+For example the sequence {\bf dddddddbbbddddd} becomes {\bf7d3b5d}.
+
+The main requirement to work well is that the data consists of larger groups of
+the same
 data.
   \item[Huffman coding] Is an algorithm that uses the knowledge about the
 entropy of elements of data. Elements that occur often in the data set are
@@ -409,7 +413,7 @@ Also he ImageMagick\footnote{\url{http://www.imagemagick.org/}} toolkit was used
 for image conversion into JPEG and JPEG 2000 and for some image comparison
 tasks.
 
-
+%\newpage
 \section{Experiments}
 
 \subsection{Performance measurement}
