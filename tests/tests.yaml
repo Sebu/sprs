@@ -31,6 +31,21 @@ dictSizeTest:
     output: [../../output/dicts/dictSizeTest_0.jpg, ../../output/dicts/dictSizeTest_1.jpg, ../../output/dicts/dictSizeTest_2.jpg, ../../output/dicts/dictSizeTest_3.jpg, ../../output/dicts/dictSizeTest_4.jpg, ../../output/dicts/dictSizeTest_5.jpg, ../../output/dicts/dictSizeTest_6.jpg, ../../output/dicts/dictSizeTest_7.jpg]
     dict: [../../output/dicts/dictSizeLearn_0.dict, ../../output/dicts/dictSizeLearn_1.dict, ../../output/dicts/dictSizeLearn_2.dict, ../../output/dicts/dictSizeLearn_3.dict, ../../output/dicts/dictSizeLearn_4.dict, ../../output/dicts/dictSizeLearn_5.dict, ../../output/dicts/dictSizeLearn_6.dict, ../../output/dicts/dictSizeLearn_7.dict]
     
+    
+dictSizeOMPTest: 
+  desc: test images with block sizes
+  clients: [c61, c62, c63, c64, c65, c66, c67, c51]
+  jobs: 8
+  params:
+    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
+    mode: dictSize
+    coeffs: 8 
+    blockSize: 10 
+    channels: 3 
+    mode: 1
+    inputs: ../../input/list2/28952841.jpg
+    dict: [../../output/dicts/dictSizeOMP1_0.dict, ../../output/dicts/dictSizeOMP1_1.dict, ../../output/dicts/dictSizeOMP1_2.dict, ../../output/dicts/dictSizeOMP1_3.dict, ../../output/dicts/dictSizeOMP1_4.dict, ../../output/dicts/dictSizeOMP1_5.dict, ../../output/dicts/dictSizeOMP1_6.dict, ../../output/dicts/dictSizeOMP1_7.dict]
+    
 dictSizeOMP1: 
   desc: learn different dict sizes
   clients: [c61, c62, c63, c64, c65, c66, c67, c51]
@@ -46,7 +61,21 @@ dictSizeOMP1:
     mode: 1  
     train: ../../input/imagedb_100_chunk_1000/2.list
     input: ../../tests/images/4.2.03.tiff
- 
+
+dictSizeLassoTest: 
+  desc: test images with block sizes
+  clients: [c41, c42, c43, c44, c45, c46, c47, c52]
+  jobs: 8
+  params:
+    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
+    mode: dictSize
+    coeffs: 8 
+    blockSize: 10 
+    channels: 3 
+    mode: 1
+    inputs: ../../input/list2/28952841.jpg
+    dict: [../../output/dicts/dictSizeLasso1_0.dict, ../../output/dicts/dictSizeLasso1_1.dict, ../../output/dicts/dictSizeLasso1_2.dict, ../../output/dicts/dictSizeLasso1_3.dict, ../../output/dicts/dictSizeLasso1_4.dict, ../../output/dicts/dictSizeLasso1_5.dict, ../../output/dicts/dictSizeLasso1_6.dict, ../../output/dicts/dictSizeLasso1_7.dict]
+    
 dictSizeLasso1: 
   desc: learn different dict sizes
   clients: [c41, c42, c43, c44, c45, c46, c47, c52]
