@@ -33,11 +33,16 @@ end
 jobs.zip(clients).each_with_index do |(job, client), index|
   if test["params"]["dict"].kind_of?(Array)
     dict = test["params"]["dict"][index]
-  elsif test["params"]["input"]
-    dict = test["params"]["dict"] || "../../output/dicts_c31/#{test_name}_#{index}_#{test["params"]["input"]}.dict"
   else
     dict = test["params"]["dict"] || "../../output/dicts_c31/#{test_name}_#{index}.dict"
   end
+  
+  if test["params"]["input"]
+    logfile = "../output/dicts/#{test_name}_#{index}_#{test["params"]["input"]}.log"
+  else
+    logfile = "../output/dicts/#{test_name}_#{index}.log"
+  end
+   
   base_cmd = "ssh #{client} -f -- "
   other_args = "--dict #{dict}"
   # consume chains
@@ -50,7 +55,7 @@ jobs.zip(clients).each_with_index do |(job, client), index|
   	end
   	other_args = "#{other_args} --#{param} #{value}"
   end
-  client_cmd = "#{base_cmd}~/git/diplom/scripts/sprs_client.rb #{other_args} > ../output/dicts/#{test_name}_#{index}.log" if (cmd=="start")
+  client_cmd = "#{base_cmd}~/git/diplom/scripts/sprs_client.rb #{other_args} > #{logfile}" if (cmd=="start")
   client_cmd = "#{base_cmd}killall sparsecli" if (cmd=="stop")
   client_cmd = "#{base_cmd}killall -9 sparsecli" if (cmd=="kill")
   puts "submitting job #{job} to #{client} .. #{client_cmd}"
