@@ -7,10 +7,10 @@ This chapter shows the results for the following experiments.
 (block size, dictionary size, learning coefficients).
  \item Comparision of reconstruction quality of dictionaries
 in single and in cluster runs. 
- \item Inspection of the structures of dictionary atoms from different
-groups of images and block sizes.
  \item Comparision of compression quality between learned dictionaries, JPEG and
 JPEG2000  on natural images and sketches.
+ \item Observations of structures of dictionary atoms from different
+groups of images and block sizes.
 \end{enumerate}
 
 We discuss the results in the next chapter.
@@ -25,7 +25,7 @@ We discuss the results in the next chapter.
 %  dict size: 256, 1000, 4000, 8000
 %  coeffs: 5, 10, 20
 
-\section{Dictionary size}
+\section{Training parameters}
 \begin{table}[h]
 \caption{dictionary size}
 \centering
@@ -54,7 +54,8 @@ Image & 1 & 2 & 3 & 4 & 5 \\
 \label{fig:dict size}
 \end{figure}
 
-\section{Single vs. Cluster}
+\newpage
+\section{Dictionary size}
 \begin{table}[H]
 \caption{single vs. cluster}
 \centering
@@ -69,37 +70,74 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \end{tabular}
 \end{table}
 
+\newpage
+\section{Compression}
+\subsection{Natural images}
+
 \begin{figure}[H]
 \centering
-\subfloat[low pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\subfloat[sprs]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
 \hspace{5mm}
-\subfloat[high pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\caption{low pass}
-\label{fig:16_1000_lasso}
-\end{figure}
-\begin{figure}
-\centering
-\subfloat[low pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
+\subfloat[JPEG]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
 \hspace{5mm}
-\subfloat[high pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\caption{low pass}
-\label{fig:16_1000_lasso}
-\end{figure}
-\begin{figure}
-\centering
-\subfloat[low pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[high pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\caption{low pass}
-\label{fig:16_1000_lasso}
+\subfloat[JPEG2000]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+%\caption{}
+%\label{fig:16_1000_lasso}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\subfloat[sprs]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[JPEG]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[JPEG2000]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+%\caption{}
+%\label{fig:16_1000_lasso}
+\end{figure}
+
+
+
+\newpage
+\subsection{Sketches}
+
+\begin{figure}[H]
+\centering
+\subfloat[sprs]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[JPEG]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[JPEG2000]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+%\caption{}
+%\label{fig:16_1000_lasso}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\subfloat[sprs]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[JPEG]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+\hspace{5mm}
+\subfloat[JPEG2000]{\includegraphics[width =
+0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+%\caption{}
+%\label{fig:16_1000_lasso}
+\end{figure}
+
+
+
+\newpage
 \section{Dictionary elements}
 \begin{figure}[H]
 \centering
@@ -115,56 +153,6 @@ image 3 & 30 & 30 & 30 & 30 & 30 \\
 \caption{image from database}
 \label{fig:USC-SIPI}
 \end{figure}
-
-\section{Compression}
-
-\subsection{Natural images}
-
-
-\begin{figure}[H]
-\centering
-\includegraphics[width = 0.44\textwidth]{images/16_1000_1000_10_lasso.png}
-\caption{16x16 LARS-lasso with 1000 elements}
-\label{fig:16_1000_lasso}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\subfloat[low pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[high pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\caption{low pass}
-\label{fig:16_1000_lasso}
-\end{figure}
-\begin{figure}[H]
-\centering
-\subfloat[low pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[high pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\caption{low pass}
-\label{fig:16_1000_lasso}
-\end{figure}
-\begin{figure}[H]
-\centering
-\subfloat[low pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[high pass]{\includegraphics[width =
-0.4\textwidth]{images/16_1000_1000_10_lasso.png}}
-\caption{low pass}
-\label{fig:16_1000_lasso}
-\end{figure}
-
-\subsection{Sketches}
-
-
-
-
-
 
 
 
