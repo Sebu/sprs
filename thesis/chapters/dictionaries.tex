@@ -37,7 +37,7 @@ locality in time and frequency domain like wavelets. Figure
 \hspace{5mm}
 \subfloat[gabor wavelets]{\includegraphics[width =
 0.3\textwidth]{images/gabor.png}}
-\caption{generated bases}
+\caption{generated bases}\footnote{from Lewicki et al.} 
 
 \label{fig:generated_atoms}
 \end{figure}
@@ -101,7 +101,7 @@ $\mat{X}=[\vec{x}_1,...,\vec{x}_n]$.
 D \equiv \argmin_{\mat{D}} \sum_{i=1}^n \ell(\vec{x}_i,\mat{D})
 \end{align}
 
-With a typical apperance of the loss function $\ell$ of:
+With a typical sparsity constraining loss function of:
 
 \begin{align} 
 \ell(x,D) \equiv \min_{\vec{\alpha}} \sum_{i=1}^n
@@ -122,10 +122,10 @@ algorithm. We now introduce algorithms for both ways of learning.
 \subsection{Batch algorithms}
 Batch algorithms learn over-complete dictionaries from fixed batches of
 training data. Besides the initial idea of Olshausen and Field in
-1997\cite{Olshausen1997} in 1999 Engan et al.\cite{Engan1999a} presented one of
-the first of these algorithms was the \emph{Method of optimal directions (MOD)}
-and recently the \emph{Iterative least-square dictionary learning algorithm
-(ILS-DLA)}\cite{Engan2007} presented in 2007. 
+1997\cite{Olshausen1997} Engan et al.\cite{Engan1999a} presented 
+in 1999 another algorithms the \emph{Method of optimal directions
+(MOD)} and recently the \emph{Iterative least-square dictionary learning
+algorithm (ILS-DLA)}\cite{Engan2007}. 
 
 
 \subsubsection{K-SVD}
@@ -188,21 +188,21 @@ Value Decomposition (SVD)}.
 \end{algorithm}
 \Todo{optional: k-svd modifications}
 
-\subsection{On-line algorithms}
-In 2009 new training algorithms were presented that enabled on-line learning of
+\subsection{Online algorithms}
+In 2009 new training algorithms were presented that enabled online learning of
 dictionaries. In contrast to batch learning algorithms with a fixed training set
 the new approaches enable learning with a constant flow of training data. This
 is good for very large training sets or training data that is unknown at the
 start of the training process.
 
-\paragraph{Recursive least-square dictionary learning algorithm (RLS-DLA)}
-The algorithm was presented by Engan et al. in 2010\cite{Engan2010} and is a
-recursive modified version of the ILS-DLA algorithm.
-
+One online algorithms is the \emph{Recursive least-square dictionary
+learning algorithm (RLS-DLA)} The algorithm was presented by Engan et al. in
+2010\cite{Engan2010} and is a recursive modified version of the ILS-DLA
+algorithm.
 
 \subsubsection{Online dictionary learning}
 \label{sec:mairal}
-In 2009 Mairal et. al.\cite{Mairal2009} presented an on-line approach which from
+In 2009 Mairal et. al.\cite{Mairal2009} presented an online approach which from
 now on we will call \trainDL.
 
 The algorithm uses stochastic approximations 
@@ -214,11 +214,10 @@ training samples $\mat{X}$ and starts with a dictionary $\mat{D}$ with random
 data or a random selection of elements from the training set. 
 First sparse code a signal  1
 
-Solving $ $ 
-only store $\mat{A}$ and $\mat{B}$ 
+Solving $ $  only store $\mat{A}$ and $\mat{B}$ 
 As it pretends to scale up to large datasets of millions of training samples
 and being suitable for a large range of learning problems.
-Does it scale up to big dictionaries?
+%Does it scale up to big dictionaries?
 
 \begin{algorithm}[H]
 \caption[\trainDL]{Online dictionary learning}
@@ -304,12 +303,18 @@ becoming:
 \subsection{Learning for the Task}
 \label{sec:learnForTheTask}
 ``Please do not use the wrong dictionaries ...''
-mentions Guillermo Sapiro in his talk at the \emph{MIT CSAIL}.
+warns Guillermo Sapiro in his talk at the \emph{MIT CSAIL}.
 It has been shown that learning specific for certain tasks can lead to the
 best results. Based on this finding we will concentrate on a
 specific class. We will focus on natural images from large image databases.
 This means typicaly 1+ mega-pixel images with 3-channel RGB data found on image
 hosting services such as flickr.com, twitpic.com, picasa.com among others.
+
+Section \ref{sec:signal_representation} already describes that the learning
+process is not limited to gray-scale oder RGB image signals. The presented
+algorithms can be applied to different kinds of signals. Such as images in
+other color spaces, low/high pass filtered sub-images or signals from another
+domain like audio or text. 
 
 
 \section{Related work}

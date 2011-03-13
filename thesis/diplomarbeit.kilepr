@@ -162,20 +162,20 @@ order=-1
 
 [item:chapters/conclusion.tex]
 archive=true
-column=0
+column=16
 encoding=UTF-8
 highlight=LaTeX
-line=88
+line=113
 mode=LaTeX
-open=false
+open=true
 order=2
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=37
+column=56
 encoding=UTF-8
 highlight=LaTeX
-line=341
+line=39
 mode=LaTeX
 open=true
 order=4
@@ -195,17 +195,17 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=291
+line=160
 mode=LaTeX
 open=true
-order=3
+order=5
 
 [item:chapters/overview.tex]
 archive=true
-column=12
+column=34
 encoding=UTF-8
 highlight=LaTeX
-line=13
+line=155
 mode=LaTeX
 open=true
 order=1
@@ -222,13 +222,13 @@ order=0
 
 [item:chapters/sparse_coding.tex]
 archive=true
-column=48
+column=54
 encoding=UTF-8
 highlight=LaTeX
-line=441
+line=89
 mode=LaTeX
 open=true
-order=2
+order=3
 
 [item:chapters/title.tex]
 archive=true
@@ -262,13 +262,13 @@ order=5
 
 [item:thesis.tex]
 archive=true
-column=35
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=15
+line=25
 mode=LaTeX
-open=false
-order=0
+open=true
+order=6
 
 [item:todo.txt]
 archive=true
@@ -289,12 +289,12 @@ CursorColumn=13
 CursorLine=23
 
 [view-settings,view=0,item:chapters/conclusion.tex]
-CursorColumn=0
-CursorLine=88
+CursorColumn=16
+CursorLine=113
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=37
-CursorLine=341
+CursorColumn=56
+CursorLine=39
 
 [view-settings,view=0,item:chapters/introduction.tex]
 CursorColumn=20
@@ -302,19 +302,19 @@ CursorLine=63
 
 [view-settings,view=0,item:chapters/method.tex]
 CursorColumn=0
-CursorLine=291
+CursorLine=160
 
 [view-settings,view=0,item:chapters/overview.tex]
-CursorColumn=12
-CursorLine=13
+CursorColumn=34
+CursorLine=155
 
 [view-settings,view=0,item:chapters/results.tex]
 CursorColumn=0
 CursorLine=31
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
-CursorColumn=48
-CursorLine=441
+CursorColumn=54
+CursorLine=89
 
 [view-settings,view=0,item:chapters/title.tex]
 CursorColumn=16
@@ -325,8 +325,8 @@ CursorColumn=22
 CursorLine=142
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=35
-CursorLine=15
+CursorColumn=0
+CursorLine=25
 
 [view-settings,view=0,item:todo.txt]
 CursorColumn=19

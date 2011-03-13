@@ -11,9 +11,6 @@ A \emph{sparse code} is a vector with only a few non-zero coefficients
 which is used to represent another vector by linear combine only few atom
 vectors from a dictionary of many of them.
 
-
-\Todo{move}
-\paragraph{Historic bachground}
 The idea of sparse coding of image signals has its origin in neural science. 
 Research in this field found that the cells in the visual cortex, also known as
 \emph{V1}, have properties similar to those localized filtering of wavelets
@@ -60,17 +57,14 @@ the coefficient vector $\vec{\alpha}$ sparse.
 
 \begin{figure}[h]
 \centering
-\subfloat[over-complete]{\includegraphics[width =
-0.20\textwidth]{images/sparse_2.pdf}}
+%\subfloat[over-complete]{\includegraphics[width =
+%0.20\textwidth]{images/sparse_2.pdf}}
 \hspace{5mm}
 \subfloat[over-complete and sparse]{\includegraphics[width =
 0.20\textwidth]{images/sparse.pdf}}
 \caption{over-complete and sparse}
 \label{fig:sparse}
 \end{figure}
-
-%Which means that only a few coefficients of $\vec{\alpha}$ are non-zero. 
-
 
 %\begin{figure}[h]
 %\centering
@@ -79,7 +73,6 @@ the coefficient vector $\vec{\alpha}$ sparse.
 %\caption{}
 %\label{fig:sparse}
 %\end{figure}
-\Todo{fix text inclusion}
 
 
 
@@ -92,8 +85,9 @@ regularization to the the problem \ref{eq:problem}.
 %.. over-fitting .. Such a constraint is the regularization.
 \begin{equation}
 \min_{\vec{\alpha}\in\mathbb{R}^{p}}
-\underbrace{\psi(\vec{\alpha})}_{regularization} \text{ s.t. }
-\vec{x} = \mat{D}\vec{\alpha}\label{eq:problem}
+\underbrace{\lVert \vec{x} -
+\mat{D}\vec{\alpha}\rVert^{2}_{2}}_{error} \text{ s.t. }
+\underbrace{\psi(\vec{\alpha})}_{regularization}\leq L \label{eq:problem}
 %\min_{\vec{\alpha}\in\mathbb{R}^{p}} \lVert \vec{x} - \mat{D}\vec{\alpha}
 %\rVert^{2}_{2}
 \end{equation}
@@ -122,7 +116,11 @@ $\ell_p$-norm.
 With either the $\ell_1$-norm ($p=1$) or $\ell_2$-norm ($p=2$) as a
 convex relaxation of the $\ell_0$-norm. Even though that the $\ell_1$-norm is
 not the same as the $\ell_0$ it can be demonstrated that the $\ell_1$-norm is
-equivalent to the $\ell_0$-norm in the effect of inducing sparsity.
+equivalent to the $\ell_0$-norm in the effect of inducing sparsity. 
+Figure \ref{fig:sparse} shows an example of regularization with two coefficients
+of $\vec{\alpha}$ and the $\ell_p$-norm with $p=1$ and $p=2$. While the
+$\ell_1$-norm creates an tagent along the ordinary least-squares(ols) solution
+an $\ell_p$-norm with $p>1$ 
 \Todo{image/description of different regularizations}
 \begin{figure}[h]
 \centering
@@ -190,7 +188,7 @@ correlation with the current remaining error (residual). This step is repeated
 $L$ times or until the error $\epsilon$
 % $\lVert \vec{x} - \mat{D}\vec{\alpha} \rVert^{2}_{2}$ 
 for the current $\vec{\alpha}$ fullfills $\lVert \vec{x} - \mat{D}\vec{\alpha}
-\rVert^{2}_{2} \leq \epsilon$.
+\rVert^{2}_{2} = \lVert \vec{r} \rVert_2^2 \leq \epsilon$.
 %respectively the residual fulfills $\lVert \vec{r} \rVert_2 \leq \epsilon$.
 Algorithm \prettyref{alg:mp} illustrates this procedure.
 \begin{algorithm}[H]
@@ -201,7 +199,7 @@ Algorithm \prettyref{alg:mp} illustrates this procedure.
 \mathbb{N}, \epsilon \in \mathbb{R}$
 \STATE $\vec{\alpha} \gets 0$ (start with zero vector)
 \STATE $\vec{r} \gets \vec{x}-\mat{D}\vec{\alpha} = \vec{x}$ (residual) 
-\WHILE {$\lVert \vec{\alpha} \rVert_{0} \leq L$ \AND $\lVert \vec{r} \rVert_2
+\WHILE {$\lVert \vec{\alpha} \rVert_{0} \leq L$ \AND $\lVert \vec{r} \rVert_2^2
 \leq
 \epsilon$}
 \STATE Select atom with maximum correlation with residual: 
