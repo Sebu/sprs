@@ -10,8 +10,6 @@
 \chapter*{Abstract}
 \thispagestyle{empty}
 
-%Learning the most significant basis elements, that make up an
-%signal, is a popular task in signal processing.
 Images can be decomposed into a sparse linear combination of basis
 elements. This process is known as sparse coding. Learning dictionaries of
 those basis elements rather than desiging them can lead to quality improvements
@@ -19,14 +17,14 @@ of operations on images. Such as noise removal, classification or compression.
 In the last decade several algorithms for learning such basis elements were
 proposed.
 
-This thesis develops a framework that uses those sparse learning algorithms to
-learn big dictionaries that can be used for large image databases in tasks
-such as reconstruction and compression. One challenge is to overcome speed and
-convergence limitation of the learning algorithm. To address this issues a
-clustering approach is applied. 
+This thesis develops a framework that uses a new online learning
+algorithms to learn big dictionaries that can be used for large image databases
+in tasks such as reconstruction and compression. One challenge is to overcome
+speed and convergence limitation of the learning algorithm. To address this
+issues a clustering approach is applied. 
 
 For evaluation, the framework is then used to learn big dictionaries from a
-large set of images. The learned dictionaries are then tested on reconstruction
+large set of images. The learned dictionaries are tested on reconstruction
 tasks on images from the large image database and a simple compression algorihm
 is compared to JPEG and JPEG 2000 compression strategies.
 
