@@ -26,49 +26,65 @@ We discuss the results in the next chapter.
 %  coeffs: 5, 10, 20
 
 \section{Training parameters}
-\begin{table}[h]
-\caption{dictionary size}
-\centering
-\begin{tabular}{l  c  c  c  c  c}
-\toprule
-Image & 1 & 2 & 3 & 4 & 5 \\
-\hline
-300 & 30 & 30 & 30 & 30 & 30 \\
-600 & 30 & 30 & 30 & 30 & 30 \\
-900 & 30 & 30 & 30 & 30 & 30 \\
-1800 & 30 & 30 & 30 & 30 & 30 \\
-3000 & 30 & 30 & 30 & 30 & 30 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\Todo{small image sample comparision}
 \begin{figure}[h]
 \centering
-\subfloat[300]{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-\hspace{5mm}
-\subfloat[900]{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-\hspace{5mm}
-\subfloat[3000]{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-\caption{dict size differences on sub region of image}
+\includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
+\caption{reconstruction quality for different coeffs}
+\label{fig:dict size}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
+\caption{reconstruction quality for different coeffs}
 \label{fig:dict size}
 \end{figure}
 
+% \begin{table}[h]
+% \caption{dictionary size}
+% \centering
+% \begin{tabular}{l  c  c  c  c  c}
+% \toprule
+% Image & 1 & 2 & 3 & 4 & 5 \\
+% \hline
+% 300 & 30 & 30 & 30 & 30 & 30 \\
+% 600 & 30 & 30 & 30 & 30 & 30 \\
+% 900 & 30 & 30 & 30 & 30 & 30 \\
+% 1800 & 30 & 30 & 30 & 30 & 30 \\
+% 3000 & 30 & 30 & 30 & 30 & 30 \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
 \newpage
 \section{Dictionary size}
-\begin{table}[H]
-\caption{single vs. cluster}
+
+\begin{figure}[h]
 \centering
-\begin{tabular}{l c c c c c}
-\hline\hline
-Image & 300 & 600 & 900 & 1800 & 3000 \\
-\hline
-image 1 & 30 & 30 & 30 & 30 & 30 \\
-image 2 & 30 & 30 & 30 & 30 & 30 \\
-image 3 & 30 & 30 & 30 & 30 & 30 \\
-\hline
-\end{tabular}
-\end{table}
+\includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
+\caption{reconstruction quality for different coeffs}
+\label{fig:dict size}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
+\caption{reconstruction quality for different coeffs}
+\label{fig:dict size}
+\end{figure}
+
+% \begin{table}[H]
+% \caption{single vs. cluster}
+% \centering
+% \begin{tabular}{l c c c c c}
+% \hline\hline
+% Image & 300 & 600 & 900 & 1800 & 3000 \\
+% \hline
+% image 1 & 30 & 30 & 30 & 30 & 30 \\
+% image 2 & 30 & 30 & 30 & 30 & 30 \\
+% image 3 & 30 & 30 & 30 & 30 & 30 \\
+% \hline
+% \end{tabular}
+% \end{table}
 
 \newpage
 \section{Compression}
