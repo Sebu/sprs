@@ -17,7 +17,7 @@ typedef struct {
     unsigned char blockSize_;
     unsigned char quant_;
     unsigned char coeffs_;
-    unsigned short count_;
+    unsigned long count_;
 
 } SprsHeader;
 

@@ -29,13 +29,13 @@ We discuss the results in the next chapter.
 \begin{figure}[h]
 \centering
 \includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
-\caption{reconstruction quality for different coeffs}
+\caption{reconstruction quality for different training coefficients}
 \label{fig:dict size}
 \end{figure}
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
-\caption{reconstruction quality for different coeffs}
+\includegraphics[width = 0.8\textwidth]{../tests/results/blockSizeConverg.pdf}
+\caption{reconstruction quality for different block sizes}
 \label{fig:dict size}
 \end{figure}
 
@@ -60,15 +60,15 @@ We discuss the results in the next chapter.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
-\caption{reconstruction quality for different coeffs}
+\includegraphics[width = 0.8\textwidth]{../tests/results/dictSizeOMP.pdf}
+\caption{reconstruction quality for different dictionary sizes (OMP)}
 \label{fig:dict size}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
-\caption{reconstruction quality for different coeffs}
+\includegraphics[width = 0.8\textwidth]{../tests/results/dictSizeLasso.pdf}
+\caption{reconstruction quality for different dictionary sizes (Lasso)}
 \label{fig:dict size}
 \end{figure}
 
@@ -90,9 +90,28 @@ We discuss the results in the next chapter.
 \section{Compression}
 \subsection{Natural images}
 
+
+32.3438
+
+\begin{table}[H]
+%\caption{single vs. cluster}
+\centering
+\begin{tabular}{| l c | c | c | c|}
+\hline\hline
+Image & bpp & SPRS & JPEG & JPEG2000 \\
+\hline
+image 1 & 1.12 & 31.2205 & 32.3289 & 36.613 \\
+image 2 & 1.01 & 34.7735 & 35.0671 & 40.3299 \\
+image 3 & 1.8  & 29.0597 & 27.2556 & 31.7412 \\
+image 4 & 0.74  & 35.9499 & 35.5104 & 39.4195 \\
+
+\hline
+\end{tabular}
+\end{table}
+
 \begin{figure}[H]
 \centering
-\subfloat[sprs]{\includegraphics[width =
+\subfloat[sprs ]{\includegraphics[width =
 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
 \hspace{5mm}
 \subfloat[JPEG]{\includegraphics[width =
@@ -122,6 +141,20 @@ We discuss the results in the next chapter.
 
 \newpage
 \subsection{Sketches}
+
+\begin{table}[H]
+%\caption{single vs. cluster}
+\centering
+\begin{tabular}{| l c | c | c | c|}
+\hline\hline
+Image & bpp & SPRS & JPEG & JPEG2000 \\
+\hline
+sketch 1 & 0.084 & 33.9594 & 28.9578 & 38.3258  \\
+sketch 2 & 0.13 & 32.9 & 34.5546 &  40.0159 \\
+sketch 3 & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[H]
 \centering

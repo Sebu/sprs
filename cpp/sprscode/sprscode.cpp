@@ -76,7 +76,7 @@ void Sprscode::save(std::string& fileName) {
 
     unsigned char* outBuf = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
     unsigned char* outBuf2 = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
-    int fullSize = 0;
+    long fullSize = 0;
     int outSize = 0;
     int inSize = 0;
 
@@ -130,10 +130,10 @@ void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
         lastpos = pos;
         int col = pos / A.rows();
         int row = pos - col*A.rows();
-//        std::cout << pos << " " << row << " " << col << " ";
+//        std::cout << pos << " " << indicesNum_ << " " << row << " " << col << " "  << std::endl;
         if(coeffs_[i]) {
 //            std::cout <<  A.coeffRef(row,col) << " "  << (double)coeffs_[i] << std::endl;
-            A.coeffRef(row,col) = (double)coeffs_[i]*30.0; //+(double)row/10.0;
+            A.coeffRef(row,col) = (double)coeffs_[i]*40.0+(double)row/100.0;
         }
     }
 //    for(int col=0; col<A.cols(); ++col) {
@@ -163,7 +163,7 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 
 
 //    int count=0;
-    int lastpos=0;
+    long lastpos=0;
     //    for(int k=0; k<A.cols(); ++k) {
     //        for(int j=0; j<A.rows(); ++j) {
     for (int k=0; k<A.outerSize(); ++k) {
@@ -175,7 +175,7 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 //            pos = (unsigned short)it.row();
             pos = (int)it.col()*A.rows()+it.row();
 
-            double quant = 20.0+(double)it.row()/20.0;
+            double quant = 40.0+(double)it.row()/100.0;
             char data=0;
             data = (char)round(it.value()/quant);
 //            std::cout << it.row() << " " << it.col() << " " << A.coeffRef(it.row(),it.col()) << " " <<(double)data*quant << std::endl;
@@ -183,6 +183,7 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 //            if(!data) pos = -1;
             if(data) {
                 unsigned short delta = pos - lastpos;
+//                std::cout << delta << std::endl;
                 lastpos = pos;
 //                std::cout << delta << std::endl;
                 indices_[header_.count_] = delta;
