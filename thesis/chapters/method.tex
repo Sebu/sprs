@@ -66,14 +66,16 @@ version of the orthogonal-matching-pursuit(\ref{sec:omp}) called
 \emph{Batch-OMP}. The speed gain of \prettyref{alg:batchOMP} is achieved
 by modifying the OMP in a way that can effectively sparse code
 multiple signals in parallel. One key element of the optimizations is the
-pre-computation of the gram matrix $G=D^TD$ which can efficiently be reused
-for each signal. Another optimization to a single signal coding step itself
-(\prettyref{alg:batchOMP}) is the cholesky factorization of $\left( D_A^T D_A
-\right)^{-1}$ (line \ref{alg:OMP_DTD} of \prettyref{alg:mp}). $D_A^T
-D_A$ is a symmetric and positive-definite matrix and can be cholesky decomposed
-into $LL^T$. Even better, due to the nature of the algorithm composing $D_A$
-by adding additional row and columns to it, $L$ can be build up during the
-computation. This reduces the computational cost of the algorithm drastically.
+pre-computation of the gram matrix $\mat{G}=\mat{D}^T\mat{D}$ which can
+efficiently be reused for each signal. Another optimization to a single signal
+coding step itself (\prettyref{alg:batchOMP}) is the cholesky factorization of
+$\left( \mat{D}_A^T \mat{D}_A \right)^{-1}$ (line \ref{alg:OMP_DTD} of
+\prettyref{alg:mp}). $\mat{D}_A^T \mat{D}_A$ is a symmetric and
+positive-definite matrix and can be cholesky decomposed
+into $\mat{L}\mat{L}^T$. Even better, due to the nature of the algorithm
+composing $\mat{D}_A$ by adding additional row and columns to it, $\mat{L}$ can
+be build up during the computation. This reduces the computational cost of the
+algorithm drastically.
 
 \begin{algorithm}[H]
 \caption{Parallel coding}
@@ -86,10 +88,10 @@ computation. This reduces the computational cost of the algorithm drastically.
 \STATE pre-compute $\mat{G} \gets \mat{D}^T\mat{D}$
 \STATE pre-compute $\mat{DtX} \gets \mat{D}^T\mat{X}$
 \FOR {$i = 1$ to $k$}
-\STATE Compute $\vec{\alpha}_i$ using \prettyref{alg:batchOMP} or
+\STATE Compute $\vec{\alpha}_i$ of $\mat{A}$ using \prettyref{alg:batchOMP} or
 \ref{alg:lars} for all $\vec{x}_i$ in $\mat{X}$
 \ENDFOR
-\RETURN $\vec{\alpha}$
+\RETURN $\mat{A}$
 \end{algorithmic}
 \end{algorithm}
 
@@ -100,12 +102,12 @@ computation. This reduces the computational cost of the algorithm drastically.
 \REQUIRE $\vec{x} \in \mathbb{R}^{m}, \mat{G}  \in
 \mathbb{R}^{m\times m}, \epsilon \in \mathbb{R}$
 \STATE $A \gets \emptyset,\vec{\alpha} \gets 0,\vec{\gamma} \gets
-\mat{D}^T\vec{x},\vec{\delta}^0 \gets
-0, \epsilon^0\gets \vec{x}^T\vec{x},\mat{L}\gets[1],n\gets1$
-\WHILE {$ n<L$ \AND $\epsilon^{n-1} > \epsilon $}
-\STATE $k \gets \argmax_k\lvert \vec{\alpha}_k \rvert$
+\mat{D}^T\vec{x},\vec{\delta}_0 \gets
+0, \epsilon_0\gets \vec{x}^T\vec{x},\mat{L}\gets[1],n\gets1$
+\WHILE {$ n<L$ \AND $\epsilon_{n-1} > \epsilon $}
+\STATE $k \gets \argmax_i\lvert \vec{\alpha}[i] \rvert$
 \IF {$n>1$}
-\STATE $\vec{w} \gets \mat{L}^{-1}\mat{G}_{A,k}$
+\STATE $\vec{w} \gets \mat{L}^{-1}\mat{G}_{A,i}$
 \STATE
 \begin{align}
 \mat{L} \gets \left[
@@ -116,12 +118,12 @@ computation. This reduces the computational cost of the algorithm drastically.
 \right]
 \end{align}
 \ENDIF
-\STATE add variable to active set: $A \gets A \cup \{ k\}$
-\STATE $\vec{\alpha}_A \gets (\mat{L}^T)^{-1}\mat{L}^{-1}\vec{\gamma}_A^0$
+\STATE add variable to active set: $A \gets A \cup \{ i\}$
+\STATE $\vec{\alpha}_A \gets (\mat{L}^T)^{-1}\mat{L}^{-1}\vec{\gamma}_A$
 \STATE $\vec{\beta} \gets \mat{G}_A\vec{\alpha}_A$
-\STATE $\vec{\gamma} \gets \vec{\gamma}^0-\vec{\beta}$
-\STATE $\delta \gets \vec{\alpha}_A^T\vec{\beta}_A$
-\STATE $\epsilon^n \gets \epsilon^{n-1} - \delta^n + \delta^{n-1}$
+\STATE $\vec{\gamma} \gets \vec{\gamma}-\vec{\beta}$
+\STATE $\delta_{n} \gets \vec{\alpha}_A^T\vec{\beta}_A$
+\STATE $\epsilon_n \gets \epsilon_{n-1} - \delta_n + \delta_{n-1}$
 \STATE $n \gets n+1$
 \ENDWHILE
 \RETURN $\vec{\alpha}$
@@ -187,7 +189,7 @@ To address these problems we investigate strategies to distribute the workload
 of the learning step onto multiple clients with a clustering approach similar to
 MapReduce. 
 
-One strategy would be to utilize the mini-batch
+One strategy would be to use the mini-batch
 modification of the LARS-Lasso algorithm \ref{sec:lars}. But rather
 than just coding a small batch of signals in one iteration of the training
 step (\prettyref{alg:trainDL}) we code one batch on each client of the cluster
@@ -215,7 +217,7 @@ samples.
 \REQUIRE $ S = (\mat{D}_1, ..., \mat{D}_k) \text{ set of dictionaries } \mat{D}
 \in \mathbb{R}^{m\times p}$
 
-\STATE $\mat{D}_{new} \gets \mat{D}_{1}[1], n \gets 0$
+\STATE $\mat{D}_{new} \gets 0, n \gets 0$
 \FOR {$i = 1$ to $k$}
 \FOR {$j = 1$ to $p$}
 \STATE sparse code 

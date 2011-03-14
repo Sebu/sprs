@@ -97,18 +97,16 @@ $\mat{X}=[\vec{x}_1,...,\vec{x}_n]$.
 %can sparsely reconstruct a set of training data $\mat{X}$ with
 %minimal error.
 
-\begin{align} 
+\begin{equation}
 D \equiv \argmin_{\mat{D}} \sum_{i=1}^n \ell(\vec{x}_i,\mat{D})
-\end{align}
-
+\end{equation}
 With a typical sparsity constraining loss function of:
-
-\begin{align} 
-\ell(x,D) \equiv \min_{\vec{\alpha}} \sum_{i=1}^n
-\lVert \vec{x} - \mat{D}\vec{\alpha}_i \rVert^{2}_{2}  +  \lambda \lVert
-\vec{\alpha}_i
-\rVert_{0,1,2}
-\end{align}
+\begin{equation}
+\ell(x,D) \equiv \min_{\vec{\alpha}} \lVert \vec{x} - \mat{D}\vec{\alpha}
+\rVert^{2}_{2}  +  \lambda \lVert
+\vec{\alpha}
+\rVert_{0,1,2} 
+\end{equation}
 %There are two major groups of algorithms for learning redundant dictionaries
 %for sparse coding. 
 There are two major groups of algorithms to achieve the desired optimization.
@@ -204,23 +202,34 @@ algorithm.
 \label{sec:mairal}
 In 2009 Mairal et. al.\cite{Mairal2009} presented an online approach which from
 now on we will call \trainDL.
-
-The algorithm uses stochastic approximations 
-It is a minimization that uses block-coordinate descent with warm restart for
-the dictionary update step.
-
+The algorithm uses stochastic gradient descent to optimize $\mat{D}$ for: 
+\begin{equation*}
+\ell(x,D) \equiv \min_{\vec{\alpha}} \frac{1}{2}\lVert \vec{x} -
+\mat{D}\vec{\alpha}_i \rVert^{2}_{2}  +  \lambda \lVert
+\vec{\alpha}
+\rVert_{1} 
+\end{equation*} 
+%It is a minimization that uses
 Like the K-SVD the algorithm learns a dictionary $\mat{D}$ from a set of
 training samples $\mat{X}$ and starts with a dictionary $\mat{D}$ with random
 data or a random selection of elements from the training set. 
-First sparse code a signal  1
 
-Solving $ $  only store $\mat{A}$ and $\mat{B}$ 
-As it pretends to scale up to large datasets of millions of training samples
+At each iteration $t$ \prettyref{alg:trainDL} draws a random sample $\vec{x}_t$
+from the training set $\mat{X}$ through a function $p(\vec{x})$.
+Then $\vec{x}_t$ gets sparse coded with $\mat{D}_{t-1}$ yilding
+$\vec{\alpha}_t$. In each iteration \prettyref{alg:update} updates the
+dictionary $\mat{D}$ with block-coordinate descent with $\mat{D}_{t-1}$ as warm
+restart.
+
+The algorithm only requires to to store 
+$\mat{A}=\sum_{t=1}^T\vec{\alpha}_t\vec{\alpha}_t^T$ and
+$\mat{B}=\sum_{t=1}^T\vec{x}_t\vec{\alpha}_t^T$ over all iterations.
+This enables to scale up to large datasets of millions of training samples
 and being suitable for a large range of learning problems.
 %Does it scale up to big dictionaries?
 
-\begin{algorithm}[H]
-\caption[\trainDL]{Online dictionary learning}
+\begin{algorithm}[h]
+\caption{Online dictionary learning}
 \label{alg:trainDL}
 \begin{algorithmic}[1]
 \REQUIRE $\vec{x} \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in
@@ -253,15 +262,12 @@ warm restart
 \left( \frac{1}{2} Tr(\mat{D}^T\mat{D}\mat{A}_t) - Tr(\mat{D}^T\mat{B}_t)\right)
 \label{eq:update}
 \end{split}
-\end{equation}
- 
+\end{equation} 
 \ENDFOR
 \RETURN $\mat{D}_T$
 \end{algorithmic}
 \end{algorithm}
-
-
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Dictionary Update}
 \label{alg:update}
 \begin{algorithmic}[1]
@@ -276,7 +282,6 @@ warm restart
 \frac{1}{\mat{A}[j,j]}\left(\vec{b}_j-\mat{D}\vec{a}_j\right)+\vec{d}_j \\
 \vec{d}_j \gets \frac{1}{\max\left(\lVert \vec{u}_j \rVert_2,1\right)} \vec{u}_j
 \end{align*}
-
 \ENDFOR
 \UNTIL convergence 
 \RETURN $\mat{D}$
@@ -294,11 +299,6 @@ becoming:
 \mat{B}_t \gets \mat{B}_{t-1} +
 \frac{1}{n}\sum_{i=1}^{n}\vec{x}_{t,i}\vec{\alpha}_{t,i}^T
 \end{align*}
-
-%$A_0  \gets tI$ and $B_0 \gets tD$
-
-
-
 
 \subsection{Learning for the Task}
 \label{sec:learnForTheTask}
@@ -372,7 +372,7 @@ a sparse matrix $\vec{A}$.
 
 %\paragraph{Edge detection}\cite{Mairal2008c}
 
-\paragraph{Hierarchy}
+\paragraph{Hierarchy}%$A_0  \gets tI$ and $B_0 \gets tD$
 Jenatton et al. showed in 2010\cite{Jenatton2010} that adding hierarchy to
 dictionaries can lead to faster coding of signals and capture additional
 information about the learned dictionaries. 

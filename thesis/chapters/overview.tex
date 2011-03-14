@@ -15,7 +15,7 @@ a signal in order to remove noise or recover missing information.
 Consider $\vec{\tilde{x}}$ a signal that is represent by a function $f(x)$ that
 approximates the signal $\vec{x}$ in a simplified sparse way.
 \begin{equation*}
-\vec{x} \sim \vec{\tilde{x}} = f\left(\vec{x}\right)
+\vec{\tilde{x}} = f\left(\vec{x}\right)
 \end{equation*}
 We can split $f(x)$ into a selection of elements from a large set of
 basis functions. In a sparse way, as the signal gets either represented with
@@ -52,18 +52,19 @@ of sparse sensing in digital signal processing.
 %\cite{Rubinstein2010}
 The field of signal processing reaches far back in the early 60s.
 Starting with combinations of sine and cosine transformations to approximate
-analog signals. For example the signal could be represented by combinations of
-connected oscilloscopes with different frequency configurations. Later on
-approximation of signals via combinations of limited signal samples became a
-major task in signal analysis.
-This led to the Fourier transform as one of the most widely
-used tools. Signals get split into basis functions that represent the
-signals different signal frequencies. 
-\Todo{fix}
-Resulting in a function of frequency $v$ that represents signals an integral
-of time $t$ over  
+analog signals. 
+%For example the signal could be represented by combinations of
+%connected oscilloscopes with different frequency configurations. 
+Later on approximation of signals via combinations of limited signal samples
+became a major task in signal analysis. This led to the Fourier transform as one
+of the most widely used tools. A function $x(t)$ representing a signal depended
+on time $t$ is transformed into a function   $\alpha(v)$  depended on frequency
+$v$. Describing the signal as a sum of sinoids. 
+%Resulting in a functionof frequency $v$ that represents $x(t)$ as the integral
+%of basis function over time $t$.   
 \begin{equation*}
-\mathcal{F}\left(v\right) = \int_{-\infty}^{\infty} \! f(t)e^{-i2\pi vt} \,
+\alpha\left(v\right) = \int_{-\infty}^{\infty} \! x(t)e^{-i2\pi
+v t} \,
 \mathrm{d}t
 \end{equation*}
 
@@ -75,37 +76,37 @@ powers, happend. Based on this move, to digital signal processing, new
 approaches for basis transforms of discrete signals were required. The
 \emph{discrete Fourier transform (DFT)} emerged as as special discrete version
 of the continuous
-Fourier transform. Where the integral of time becomes the sum of the dimension
-of the signal. 
-  \begin{equation*}
- x_k = \sum_{n=0}^{N-1}\alpha_ne^{\frac{-i2\pi kn}{N}}
-\end{equation*}
+Fourier transform. Where the integral over time becomes the sum of the dimension
+of the signal $\vec{x}$ with length $N$. 
+\begin{equation}
+ \alpha_k = \sum_{n=0}^{N-1}x_ne^{\frac{-i2\pi kn}{N}}
+\end{equation}
 In 1965 Cooley and Tukey presented\cite{Cooley1965} the \emph{fast Fourier
 transform (FFT)} an fast algorithmic approach to calculate the discrete
-Fourier transform.
-The FFT was a major leap forward in the field of digital signal processing.
-
+Fourier transform. The FFT was a major leap forward in the field of digital
+signal processing. 
 In the following decades two other major players in discrete basis
 transformations emerged. The \emph{discrete cosine transform (DCT)} and the
 \emph{discrete wavelet transform (DWT)}. 
 
 The DCT is a special case of the discrete Fourier transform which only uses the
-real part of the equation. The idea is to make $f$ an odd function with $\forall
-x \in \mathbb{R} : f(x) = f(-x)$ which leads to the imaginary part of the
-equation becoming zero.
+real part of the equation. Leading from \prettyref{eq:dft} to:
+%The idea is to make $f$ an odd function with $\forall x \in \mathbb{R} : f(x)
+%= f(-x)$ which leads to the imaginary part of the equation becoming zero. 
 \begin{equation*}
-x_k = \sum_{n=0}^{N-1}\alpha_n\cos \left[ \frac{\pi}{N} \left(
+\alpha_k = \sum_{n=0}^{N-1}x_n\cos \left[ \frac{\pi}{N} \left(
 n+\frac{1}{2}\right) k\right]
 \end{equation*}
-An example for the usage of DCT is the coding of the image blocks in the
-JPEG image compression algorithm.
+An example for the usage of DCT is the coding of the $N\times N$ image blocks in
+the JPEG image compression algorithm.
 
-\Todo{fix}
-Other than the DFT and the DCT the DWT
-Localized in frequency and time. 
-(DWT) captures both frequency and location information. 
- Property of the basis functions ...
-$\int_{-\infty}^{\infty} \! f(t) \, \mathrm{d}t = 0$
+Other than the DFT and the DCT the DWT describes a signal as a series of
+filter functions called wavelets, which are not only localized in time (like the
+sinoids of the Fourier transform) but also localized in frequency. 
+%Localized in frequency and time. 
+%(DWT) captures both frequency and location information. 
+% Property of the basis functions ...
+%$\int_{-\infty}^{\infty} \! f(t) \, \mathrm{d}t = 0$
 For example this locality property is used in JPEG 2000 image compression to
 remove the block artifacts that occur in with DCT blocks in JPEG images
 compression. 
@@ -127,7 +128,7 @@ problem into two distinct problems made the search for efficient coding of
 signals $\vec{x}$ and construction of task specific dictionaries $\mat{D}$ more
 flexible. The initial problem becomes:
 \begin{equation}
- \vec{x} \sim \vec{\tilde{x}}  = \mat{D}\vec{\alpha}
+ \vec{x} \sim \vec{\tilde{x}}  = \mat{D}\vec{\alpha}\label{eq:dft}
 \end{equation}
 %Or for better understanding in relation to the previously presented
 %equations.
@@ -178,19 +179,21 @@ from a large set of training data
 \end{itemize}
 
 This includes topics like 
-``When do dictionaries different sizes and learning configurations show
+``When do dictionaries of different sizes and learning configurations show
 convergence?'' 
 ``How many atoms do we need for a 'good' sparse representation of large image
 databases?''  and 
-``How does this affect quality and usability for certain application?''. 
+``How can we utilize these unisersal dictionaries for applications like
+image compression?''. 
 
 All these topics are addressed in several experiments.
 Evaluation of the quality and size of learned big redundant dictionaries
 for optimal sparse coding of large image databases. Search for a universal
 dictionary for databases of hundredths of thousands of images. Evaluation of
 clustering of learning algorithms. Experiments with small sets of specific
-images from sketches, still images of animations from Disney and art styles like
-post-impressionistic images from Vincent van Gogh.
+images from sketches. 
+%, still images of animations from Disney and art styles like
+%post-impressionistic images from Vincent van Gogh.
 Application of sparse coding for image compression and observation of problems.
 Such as encoding time and quality benefit. Comparison of compression with
 discrete cosine transformation approaches in JPEG and discrete wavelets

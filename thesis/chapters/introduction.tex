@@ -10,32 +10,28 @@
 %few decades it has been
 %a major <> to develop and find new bases for the signals. In the last 15 years 
 %\Todo{get the reader}
-Compressed sensing bla bla ...
-Data networks, data transfer, error correction. For example experiments by
-\cite{} have shown that just the right basis directly learned from images can
-yield much better results in reconstruction than those based on mathematical
-functions such as cosine transforms or wavelet\cite{Elad2006,Mairal2010}
-transforms. These learned basis elements can lead to better reconstruction
-quality of images in large image databases and assist tasks such as
-classification, noise removal, image enhancement, organization and compression. 
+Compressed sensing .. Data networks, data transfer, error correction. 
 
-Machine learning .. from empirical data.
-Show improvments in task such as ....
-For 
+Experiments \cite{Chen1998,Elad2006} have shown that just the right basis
+directly learned from images can yield much better results in reconstruction
+than those based on mathematical functions such as cosine transforms or
+wavelet transforms. These learned basis elements can lead to better
+reconstruction quality of images in large image databases and assist tasks such
+as classification, noise removal, image enhancement, organization and
+compression.
+
+Learning such basis is often limited to small training sets of 100.000 to
+1.000.000 samples. But large databases have training sets of millions and more.
+In 2009 Mairal et al.\cite{Mairal2009} presented an new online learning
+algorithm that can constantly consume new samples rather than just a fixed
+batch.  We evaluate this algorithm to 
 Can large databases benefit from that? Can we effectivly learn dictionaries for
 large databases? What else can we learn from these dictionaries?
 
-
-
-Learning such basis is often limited to small training sets of 100.000s. Large
-database have training sets of millions and more.
-In 2009 Mairal et al.\cite{Mairal2009} presented an new online learning
-algorithm that can consume  rather than just a fixed batch. 
-
-As an application example we will show compression. We evaluation sparse coding
-and basis learning algorithms and strategies for large image databases and
-transport recent discoveries in sparse coding and basis learning into a real
-world example of image compression.
+As an example application to use these dictionaries we present a simple 
+compression algorithm. We evaluation sparse coding and basis learning algorithms
+and strategies for large image databases and transport recent discoveries in
+sparse coding and basis learning into a real world example of image compression.
 
 \section{Structure of thesis}
 The next chapter gives an overview on the idea of sparse signal
@@ -46,12 +42,12 @@ fourth chapter introduces algorithms for the design of over-complete
 dictionaries of basis elements and presents current related work in this field.
 The fifth chapter describes the applied methods for sparse
 coding, the generation of dictionaries via clustered training with a large image
-database of 1,000,000 images collected from \url{flickr.com}. Presents
-experiments regarding the structure of dictionary elements, convergence of the
-training process, comparison of signal representation quality and adaptability
-of sparse coding for image compression. The two final chapters present the
-results of the experiments, discuss these results and new findings and show
-potential improvements in future work. 
+database of 100,000 to 1,000,000 images collected from \url{flickr.com}.
+Presents experiments regarding the structure of dictionary elements, convergence
+of the training process, comparison of signal representation quality and
+adaptability of sparse coding for image compression. The two final chapters
+present the results of the experiments, discuss these results and new findings
+and show potential improvements in future work. 
 
 \section*{Notation}
 \begin{tabular}{c l}
@@ -60,10 +56,11 @@ $T$ & constant\\
 $\vec{x}$ & vector\\
 $\vec{1}$ & vector with all elements 1\\
 $\vec{x}[i]$ & $i$-th element of vector $\vec{x}$\\
+$\mat{M}$ & matrix\\
 $A$ & set\\
 $A^C$ & complment of set $A$ in relation to universal set $U$\\ 
-$\mat{M}$ & matrix\\
-$\mat{M}_A$ & matrix $M$ reduced to rows and columns of set $A$ \\
+$\vec{x}_A$ & vector $\vec{x}$ reduced to rows of set $A$ \\
+$\mat{M}_A$ & matrix $\mat{M}$ reduced to rows and columns of set $A$ \\
 
 \end{tabular}
 

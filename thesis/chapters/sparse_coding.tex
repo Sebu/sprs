@@ -57,8 +57,8 @@ the coefficient vector $\vec{\alpha}$ sparse.
 
 \begin{figure}[h]
 \centering
-\subfloat[over-complete]{\includegraphics[width =
-0.20\textwidth]{images/sparse_2.pdf}}
+%\subfloat[over-complete]{\includegraphics[width =
+%0.20\textwidth]{images/sparse_2.pdf}}
 \hspace{5mm}
 \subfloat[over-complete and sparse]{\includegraphics[width =
 0.20\textwidth]{images/sparse.pdf}}
@@ -98,7 +98,7 @@ This sparsity constraint can be achieved with the help of
 the $\ell_0$-norm. The $\ell_0$-norm is a pseudo-norm that virtually counts the
 number of non-zero elements in the vector in the form of:
 \begin{equation}
-\lVert \vec{x} \rVert_{0} = \#\{i:x_i \neq 
+\lVert \vec{x} \rVert_{0} = \#\{i:\vec{x}[i] \neq 
 0; i=1,...,n; \vec{x}\in\mathbb{R}^n\} 
 \end{equation}
 There is one significant problem in using $\ell_0$-norm. This particular
@@ -111,16 +111,15 @@ solve the problem in a not perfect but good enough way.
 Another regularization that can keep $\vec{\alpha}$ sparse is the use of the
 $\ell_p$-norm.
 \begin{equation*}
-\lVert \vec{x}\rVert_p = \sum_{i=1}^n\left(\lVert x_i \lVert^p\right)^{1/p}
+\lVert \vec{x}\rVert_p = \sum_{i=1}^n\left(\lVert \vec{x}[i]
+\lVert^p\right)^{1/p}
 \end{equation*}
 With either the $\ell_1$-norm ($p=1$) or $\ell_2$-norm ($p=2$) as a
 convex relaxation of the $\ell_0$-norm. Even though that the $\ell_1$-norm is
 not the same as the $\ell_0$ it can be demonstrated that the $\ell_1$-norm is
 equivalent to the $\ell_0$-norm in the effect of inducing sparsity. 
 Figure \ref{fig:sparse} shows an example of regularization with two coefficients
-of $\vec{\alpha}$ and the $\ell_p$-norm with $p=1$ and $p=2$. While the
-$\ell_1$-norm creates an tagent along the ordinary least-squares(ols) solution
-an $\ell_p$-norm with $p>1$ 
+of $\vec{\alpha}$ and the $\ell_p$-norm with $p=1$ and $p=2$.
 %\Todo{image/description of different regularizations}
 \begin{figure}[h]
 \centering
@@ -129,6 +128,9 @@ an $\ell_p$-norm with $p>1$
 solution}
 \label{fig:sparse}
 \end{figure}
+When $\alpha_1$ of the ordinary least-squares(ols) solution hits zero the
+$\ell_1$-norm will find a sparse solution while a $\ell_p$-norm with $p>1$ does
+not necessarily procude sparsity.
 
 In the past 15 years several sparse coding algorithms have been proposed. Some
 that solve the initial $\ell_0$ regularized problem greedily, like
@@ -321,9 +323,10 @@ find the atom $\vec{d}_i$ of $\mat{D}$ with the maximum correlation
 with the residual $\argmax_i\mat{d}_i\vec{r}$ and move $\alpha_i$ 
 into the direction of the least-squares solution until a new atom
 $\vec{d}_j$ has the same or higher correlation with the residual. Now move
-$\alpha_i$ and $\alpha_j$ into the joint direction of the least-squares
-solution until another atom same or higher correlation with $\vec{r}$. Repeat
-this until the desired number of atoms are selected.
+$\vec{\alpha}[i]$ and $\vec{\alpha}[j]$ into the joint direction of the
+least-squares
+solution until another atom has the same or higher correlation with $\vec{r}$.
+Repeat this procedure until the desired number of atoms are selected.
 
 %The complete regularization path based on\cite{Efron2004}
 %\begin{align}
@@ -341,15 +344,15 @@ be found in \prettyref{alg:lars}.
 \paragraph{}
 We have to admit that the LARS-Lasso algorithm has some limitations concerning:
 \begin{description}
- \item[Dimension] When the dimension $p$ of the signals in $\mat{X}$ is much
-higher than the the dimension $m$ of the dictionary $\mat{D}$ the algorithm can
-only select $m$ columns.
+ \item[Dimension] When the dimension $m$ of a signal $\vec{x}$ is much
+higher than the number of atoms $p$ of the dictionary $\mat{D}$ the algorithm
+can only select $p$ columns.
   \item[Correlation] When the columns of the dictionary are highly correlated
 the algorithm selects only one column.
 \end{description}
 The first limitation is not relevant for our experiments as our dictionaries
-are over-complete, with respect to the dimension $m$ of signal $X$, and thus
-satisfy $p\leq n$. 
+are over-complete, with respect to the dimension $m$ of signal $\vec{x}$, and
+thus satisfy $m \leq p$. 
 
 
 
@@ -398,9 +401,9 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \STATE $ \tilde{\gamma} \gets -\vec{\alpha}_n/\vec{s}^T\vec{w}  $
 \STATE $ i \gets \min_{i\in A}^{+} \left( \tilde{\gamma}_i \right) $
 %\STATE $ i \gets \alpha_{i} = 0, i \in A $
-\IF {$\tilde{\gamma}_i>0$ and $\tilde{\gamma}_i<\gamma$}
+\IF {$\tilde{\gamma}_i>0$ \AND $\tilde{\gamma}_i<\gamma$}
 \STATE remove $i$ from active  set: $ A \gets A \backslash \{i\} $
-\STATE update movement: $ \gamma \gets \tilde{\gamma} $  
+\STATE update movement: $ \gamma \gets \tilde{\gamma}_i $  
 \ENDIF
 \ENDIF
 %\STATE $ \mu_{j+1} \gets \mu_{j} - \gamma x_i $

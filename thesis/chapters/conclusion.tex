@@ -24,9 +24,6 @@ LARS-lasso:
   high quality dictionary
   Most common atoms in the dictionary 
 
-
-
-
 %\subsection{Observations}
 Difference in the selection strategy.
 Very noisy vs. smooth. 
@@ -60,7 +57,6 @@ quality but still lack ...
 The experiemnts are just a first glimpse of that can de done to utilize sparse
 coding and dictionary learning for large image databases.
 
-
 Clustering learning strategies can help to learn faster and overcome
 convergence in the reconstuction quality of big dictionaries.
 
@@ -72,20 +68,21 @@ for reconstruction quality.
 When extracting samples from JPEG images for learning don't use
 non-overlapping $8 \times 8$ unless you want to learn DCT atoms. 
 
-The $\ell_1$ regularization of Lasso has a selection strategy
+The $\ell_1$ regularization of LARS has a selection strategy
 which learns very smooth atoms. Good for reconstruction tasks 
 But you need a certain amount of coefficients of about $L \ge 10$.
 
 The $\ell_0$ regulariozation of the OMP, with its greedy nature, has a very
 aggressive selection strategy. 
-This very noisy selection strategy is very impractical
-for the ODL learning step under certain conditions. Such as a high number of
-learning coefficients and 
+This very noisy selection strategy is less practical
+than LARS for the ODL learning step under certain conditions. Such as a high
+number of learning coefficients and bad initialization.
 
 But when it comes to compression tasks the greedy OMP yields better results
 than the Lasso with requirement for less coefficients. 
 
-But allover JPEG and JPEG 2000 yield 
+Our compression algorithm yields leads to similar compression ratio as JPEG
+and surpasses it in certain situations.
 Both are highly optimized lossy image compression algorithms. 
 Years of research went into observation human vision.  Especially the
 quantization and and the entropy encoding step are highly optimized for specific
@@ -102,10 +99,12 @@ acceptance of JPEG.
 Over the course of this thesis we build a framework to sparse code and learn
 dictionaries from big sets of different samples as found in large image
 databases. We implemented the Batch-OMP and the LARS-Lasso sparse coding
-algorithms for $\ell_0$ and $\ell_1$ regularization and the OLD by Mairal et
+algorithms for $\ell_0$ and $\ell_1$ regularization and the ODL by Mairal et
 al. for learning dictionaries. 
-In addition to this we added a dictionary merging strategy to the framework to
-enable clustered learning.
+In addition to this we added a cluster learning and merging strategy to the
+framework to speed up learning of large dictionaries.
+We propse a simple sparse coding based compression algorithm that can compete
+with and surpass JPEG compression in certain situations.
 
 
 \section{Future work}
@@ -148,6 +147,7 @@ ones.
 
 \subsection{Compression improvements}
 
+\paragraph{Multi-scale approach}
 \paragraph{Reducing block borders} The presented compression experiment
 takes a very simple approach without taking correlation between adjancended
 blocks into account. Similar to the JPEG block strategy. But other than
@@ -156,7 +156,7 @@ domain but also in the time domain.
 The framework can be easyly extended to learn and code different
 kinds of sub-images.
 
-\paragraph{Multi-scale approach}
+
 
 
 
