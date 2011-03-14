@@ -34,21 +34,21 @@ combination of only a few non-orthogonal atoms from $\mat{D}$ that is close to
 the signal $\vec{x}_i $ in $\mat{X}$. 
 
 %Sparse coding is the 
-\begin{align}
+\begin{align*}
 \vec{x}_i = \underbrace{\begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n
 \end{pmatrix}}_{signal}
 \approx \underbrace{\begin{pmatrix} \vec{d}_1  \vec{d}_2 \cdots \vec{d}_n
 \end{pmatrix}}_{\textrm{dictionary atoms}}
 \underbrace{\begin{pmatrix} \alpha_1 \\ 0 \\ \vdots \\ \alpha_n
 \end{pmatrix}}_{\textrm{sparse vector }}
-\end{align}
+\end{align*}
 
 When signal $\vec{x}$ and dictionary $\mat{D}$ are known 
 and $\vec{\alpha}$ is unkown the solution to this problem is a solve of an
 under-determined linear system.
-\begin{equation}
+\begin{equation*}
  \vec{\alpha} = \mat{D}^{-1}\vec{x} 
-\end{equation}
+\end{equation*}
 The problem is not well-posed because there is more than one
 solution to it. %Such a problem is called a ill-posed problem.
 But we only need one of them. We want to find the sparsest
@@ -97,10 +97,10 @@ $\vec{\alpha}$ low.
 This sparsity constraint can be achieved with the help of
 the $\ell_0$-norm. The $\ell_0$-norm is a pseudo-norm that virtually counts the
 number of non-zero elements in the vector in the form of:
-\begin{equation}
+\begin{equation*}
 \lVert \vec{x} \rVert_{0} = \#\{i:\vec{x}[i] \neq 
 0; i=1,...,n; \vec{x}\in\mathbb{R}^n\} 
-\end{equation}
+\end{equation*}
 There is one significant problem in using $\ell_0$-norm. This particular
 regularization makes the initial problem \ref{eq:problem} NP-hard. To get the
 ideal solution it is necessary to test every combination of atoms. But this
@@ -167,17 +167,17 @@ The matching-pursuit and its successor the orthogonal-matching-pursuit.
 Both use a greedy strategy to calculate the coefficient vector $\vec{\alpha}$ to
 find
 a solution to the following NP-hard problem. By solving for
-\begin{equation}
+\begin{equation*}
 \min_{\vec{\alpha}\in\mathbb{R}^{p}}   \lVert \vec{\alpha} \rVert_{0}   \textrm{
 s.t. }
 \lVert \vec{x} - \mat{D}\vec{\alpha} \rVert^{2}_{2} \leq \epsilon
-\end{equation}
+\end{equation*}
 respectively
-\begin{equation}
+\begin{equation*}
 \min_{\vec{\alpha}\in\mathbb{R}^{p}}  \lVert \vec{x} - \mat{D}\vec{\alpha}
 \rVert^{2}_{2} \textrm{ s.t.
 } \lVert \vec{\alpha}	1 \rVert_{0} \leq L
-\end{equation}.
+\end{equation*}.
 
 \subsection{Matching-Pursuit}
 \label{sec:mp}

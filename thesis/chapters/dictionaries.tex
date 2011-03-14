@@ -97,16 +97,16 @@ $\mat{X}=[\vec{x}_1,...,\vec{x}_n]$.
 %can sparsely reconstruct a set of training data $\mat{X}$ with
 %minimal error.
 
-\begin{equation}
+\begin{equation*}
 D \equiv \argmin_{\mat{D}} \sum_{i=1}^n \ell(\vec{x}_i,\mat{D})
-\end{equation}
+\end{equation*}
 With a typical sparsity constraining loss function of:
-\begin{equation}
+\begin{equation*}
 \ell(x,D) \equiv \min_{\vec{\alpha}} \lVert \vec{x} - \mat{D}\vec{\alpha}
 \rVert^{2}_{2}  +  \lambda \lVert
 \vec{\alpha}
 \rVert_{0,1,2} 
-\end{equation}
+\end{equation*}
 %There are two major groups of algorithms for learning redundant dictionaries
 %for sparse coding. 
 There are two major groups of algorithms to achieve the desired optimization.
