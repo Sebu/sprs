@@ -407,7 +407,7 @@ The dictionary learning step is a straight forward C++ implementation of the
 ODL algorithm from \prettyref{sec:mairal}. It is an
 implementation of the
 basic version of the algorithm with the mini-batch optimization applied.
-Batch-OMP and the LARS-Lasso coding method can be utilized for the coding part.
+Batch-OMP and the LARS-Lasso coding method can be used for the coding part.
 Dictionary size and the number training signals for each iteration can be
 speficied.
 
@@ -476,9 +476,9 @@ account. Such as de-noising or in-painting dictionaries directly learned from
 the initial signal that gets de-noised or restored from in-painting. If the task
 gets bigger it sounds logical to increase the size of training data and take a
 bigger variety of signals to learn from.  We have a closer look at differences
-of learned elements from specific sets of images. These sets include sketches,
-still images of animations from Disney and post-impressionistic images from
-Vincent van Gogh.  
+of learned elements from a specific set of sketch images.
+% These sets include sketches, still images of animations from Disney and
+% post-impressionistic images from Vincent van Gogh.  
 
 \subsection{Performance measurement}
 Before we go further and present the results it is necessary to introduce some
@@ -585,7 +585,7 @@ evaluation of compression algorithms.
 \subsection{Hardware setup} 
 Computations were made a cluster consisting of 100 nodes with each AMD Athlon 64
 X2 (2x2.6GHz) and 3GB RAM running Debian Linux with 32-bit kernel. Each client
-in the cluster calculated batches of 100 till 10,000 images based on the size of
+in the cluster calculated batches of 100--10,000 images based on the size of
 the training sets.
 
 
