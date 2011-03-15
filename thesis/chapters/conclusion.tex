@@ -54,15 +54,15 @@ For the short time available the results show promising results in visual
 quality but still lack ...
 
 \section{Conclusion}
-The experiemnts are just a first glimpse of that can de done to utilize sparse
+The experiments are just a first glimpse of that can de done to utilize sparse
 coding and dictionary learning for large image databases.
 
 Clustering learning strategies can help to learn faster and overcome
-convergence in the reconstuction quality of big dictionaries.
+convergence in the reconstruction quality of big dictionaries.
 
 
 It turn out that the training data and the right 
-regularization play a big role for learning the right dictionaris and
+regularization play a big role for learning the right dictionaries and
 for reconstruction quality. When extracting samples from JPEG images for
 learning don't use non-overlapping $8 \times 8$ unless you want to learn DCT
 atoms. 
@@ -70,7 +70,7 @@ atoms.
 The $\ell_1$ regularization of LARS has a selection strategy
 which learns very smooth atoms. Good for reconstruction tasks 
 But you need a certain amount of coefficients of about $L \ge 10$.
-The $\ell_0$ regulariozation of the OMP, with its greedy nature, has a very
+The $\ell_0$ regularization of the OMP, with its greedy nature, has a very
 aggressive selection strategy. 
 This very noisy selection strategy is less practical
 than LARS for the ODL learning step under certain conditions. Such as a high
@@ -91,7 +91,7 @@ acceptance of JPEG.
 
 
 
-\section{Sumary}
+\section{Summary}
 Over the course of this thesis we build a framework to sparse code and learn
 dictionaries from big sets of different samples as found in large image
 databases. We implemented the Batch-OMP and the LARS-Lasso sparse coding
@@ -99,7 +99,7 @@ algorithms for $\ell_0$ and $\ell_1$ regularization and the ODL by Mairal et
 al. for learning dictionaries. 
 In addition to this we added a cluster learning and merging strategy to the
 framework to speed up learning of large dictionaries.
-We propse a simple sparse coding based compression algorithm that can compete
+We proposed a simple sparse coding based compression algorithm that can compete
 with and surpass JPEG compression in certain situations.
 
 
@@ -145,11 +145,11 @@ ones.
 
 \paragraph{Multi-scale approach}
 \paragraph{Reducing block borders} The presented compression experiment
-takes a very simple approach without taking correlation between adjancended
+takes a very simple approach without taking correlation between adjacent
 blocks into account. Similar to the JPEG block strategy. But other than
 the JPEG basis transforms the learned atoms are not locality in the frequency
 domain but also in the time domain.
-The framework can be easyly extended to learn and code different
+The framework can be easily extended to learn and code different
 kinds of sub-images.
 
 

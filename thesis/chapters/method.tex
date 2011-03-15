@@ -4,8 +4,7 @@
 \section{Framework}
 To sparse code images and learn big dictionaries we designed a software
 framework called emph{SPRS}. This section describes the functionality and
-dicisions made while
-developing it from idea to implementation.
+decisions made while developing it from idea to implementation.
 
 \subsection{Signal representation}
 \label{sec:signal_representation}
@@ -77,7 +76,7 @@ composing $\mat{D}_A$ by adding additional row and columns to it, $\mat{L}$ can
 be build up during the computation. This reduces the computational cost of the
 algorithm drastically.
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Parallel coding}
 \label{alg:parallel}
 \begin{algorithmic}[1]
@@ -89,13 +88,13 @@ algorithm drastically.
 \STATE pre-compute $\mat{DtX} \gets \mat{D}^T\mat{X}$
 \FOR {$i = 1$ to $k$}
 \STATE Compute $\vec{\alpha}_i$ of $\mat{A}$ using \prettyref{alg:batchOMP} or
-\ref{alg:lars} for all $\vec{x}_i$ in $\mat{X}$
+\prettyref{alg:lars} for all $\vec{x}_i$ in $\mat{X}$
 \ENDFOR
 \RETURN $\mat{A}$
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Batch-OMP}
 \label{alg:batchOMP}
 \begin{algorithmic}[1]
@@ -148,12 +147,12 @@ regularization and and it leads to good results for signals of low dimension and
 with high correlation of dictionary elements.\cite{Mairal2010} Both conditions
 are satisfied when coding small image blocks.
 
-The same pre-computation of the gram matrix $\mat{D}^T\mat{D}$ and
+The same pre-computation of the matrix $\mat{D}^T\mat{D}$ and
 $\mat{D}^T\mat{X}$ used in the Batch-OMP can also be applied to the LARS-Lasso
 algorithm. This also helps to reduce the number of big matrix multiplications
 when coding multiple signals in parallel. The framework implements a simple
-combination of parallel coding\ref{alg:parallel} and the LARS\ref{alg:lars}
-presented in\ref{sec:lars}.
+combination of parallel coding (\prettyref{alg:parallel}) and the
+LARS (\prettyref{alg:lars}) presented in \prettyref{sec:lars}.
 
 \subsection{Learning step}
 The majority of learning experiments in literature were made on
@@ -165,7 +164,7 @@ correlation to the image content.  When looking at large sets of images and many
 different blocks we start to talk about a different game. Now each dictionary
 elements tends to captures more general structure of the signals.
 
-For the learning step we use the ODL algorithm from section \ref{sec:mairal}. As
+For the learning step we use the ODL algorithm from \prettyref{sec:mairal}. As
 an online learning algorithm it is able to learn dictionaries from very large
 sets of training data $n\ge 10.000.000$.
 
@@ -190,7 +189,7 @@ of the learning step onto multiple clients with a clustering approach similar to
 MapReduce. 
 
 One strategy would be to use the mini-batch
-modification of the LARS-Lasso algorithm \ref{sec:lars}. But rather
+modification of the LARS-Lasso \prettyref{sec:lars}. But rather
 than just coding a small batch of signals in one iteration of the training
 step (\prettyref{alg:trainDL}) we code one batch on each client of the cluster
 and merge all of them before applying (\prettyref{alg:update}). Keeping the
@@ -201,11 +200,11 @@ to thousands samples. Impractical for our desired size of millions of samples.
 Another strategy is to learn a set of smaller dictionaries $S =
 (\mat{D}_1, ..., \mat{D}_k)$ on disjoint sets of training samples and when
 the learning step ended, merge the dictionaries $\mat{D}_i$ into a bigger one
-$\mat{D}_{new}$ . The merge process starts with an empty dictionary
-$\mat{D}_{new}$  and successively adds atoms from the dictionaries of the
-learning step to the new dictionary $\mat{D}_{new}$  unless the atom can be
+$\mat{D}_{s}$ . The merge process starts with an empty dictionary
+$\mat{D}_{s}$  and successively adds atoms from the dictionaries of the
+learning step to the new dictionary $\mat{D}_{s}$  unless the atom can be
 reconstructed with only few atoms (e.g., 2) of the current state of
-$\mat{D}_{new}$ . The drawback of this approach is fact that 
+$\mat{D}_{s}$ . The drawback of this approach is fact that 
 each atom will be less correlated to whole training set. But this will happen
 anyway as we learn dictionaries from large sets of possibly very different
 samples. 
@@ -220,11 +219,14 @@ samples.
 \STATE $\mat{D}_{new} \gets 0, n \gets 0$
 \FOR {$i = 1$ to $k$}
 \FOR {$j = 1$ to $p$}
-\STATE sparse code 
+\STATE sparse code: $\vec{d}_j$ of $\mat{D}_i$ with $\mat{D}_{s}$
+\IF {$\lVert\mat{D}_{s}\alpha-\vec{d}_j\rVert_2^2 < \epsilon$}
+\STATE add $\vec{d}_j$: $\mat{D}_{s}[n] \gets \vec{d}_{j}$
 \STATE $n \gets n+1$
+\ENDIF
 \ENDFOR
 \ENDFOR
-\RETURN $\mat{D}$
+\RETURN $\mat{D}_s$
 \end{algorithmic}
 \end{algorithm}
 
@@ -306,10 +308,10 @@ Afterwards each coefficient gets rounded and zero coefficients can be removed.
 
 We adopt the idea of a quantization matrix to our sparse coding approach and
 weight our element by their frequencies. Learning dictionaries with the
-algorithm we present in \ref{sec:mairal} leads to a random distribution of atoms
-with yet unknown information of their structure and frequency. We analysis the
-dictionary elements and sort them by their frequencies. Figure 
-\ref{fig:sorted} illustrates an example of this.
+algorithm we present in \prettyref{sec:mairal} leads to a random distribution of
+atoms with yet unknown information of their structure and frequency. We analysis
+the dictionary elements and sort them by their frequencies.
+\prettyref{fig:sorted} illustrates an example of this.
 
 
 \begin{figure}[h]
@@ -347,9 +349,12 @@ matrices as a series of distances between coefficients and the actual
 coefficients. We use the fact that it is more likely that the next value in our
 matrix is zero. Afterwards the remaining data gets huffman coded.
 
-As mentioned in \ref{sec:headers} we are aware of the fact that besides
-the actual sparse matrix data we also have other file informations and meta
-data but ignore them for simplification.
+Besides the raw pixel data, images formats usually contain a certain amount
+of extra data from file headers and meta data. Fortunately we can ignore this
+for simplification as it is only a few bytes and not being actual pixel data.
+%As mentioned in \prettyref{sec:headers} we are aware of the fact that besides
+%the actual sparse matrix data we also have other file informations and meta
+%data but ignore them for simplification.
   
 \subsection{Implementation}
 %\subsection*{Software}
@@ -387,7 +392,7 @@ situations where it is applicable OpenMP is used to utilize multi-core CPUs.
 \paragraph{Coding}
 The sparse coding step can be configured to use either the Batch-OMP and 
 set a limitation to the maximum number of coefficients or the LARS-Lasso 
-and set the regularization(\ref{eq:l1}) factor $\lambda$.
+and set the regularization(\prettyref{eq:l1}) factor $\lambda$.
 The Batch-OMP implementation is based on the implementation
 of OMPBox by Ron
  Rubinstein\footnote{\url{http://www.cs.technion.ac.il/~ronrubin/}} with
@@ -399,7 +404,7 @@ for coding of multiple signals in parallel.
 
 \paragraph{Learning}
 The dictionary learning step is a straight forward C++ implementation of the
-ODL algorithm from section \ref{sec:mairal}. It is an
+ODL algorithm from \prettyref{sec:mairal}. It is an
 implementation of the
 basic version of the algorithm with the mini-batch optimization applied.
 Batch-OMP and the LARS-Lasso coding method can be utilized for the coding part.
@@ -446,7 +451,7 @@ comparisons to a dictionary learned in single.
 
 \paragraph{Compression}
 Besides the ability of learned dictionaries 
-we use the simple compression algorithm from section\ref{sec:compression} .
+we use the simple compression algorithm from \prettyref{sec:compression} .
 and compare it to a collection of JPEG and JPEG 2000 compressed images with the
 same file size. The objective is to investigate the compression ratio and if the
 extra amount of index data is a big hit on the overall load.
@@ -463,7 +468,7 @@ What structure show samples from other groups of images?
 
 \subsection{Training sets}
 %\subsection{Learning specific dictionaries}
-Section \ref{sec:learnForTheTask} mentions that one of the key
+\prettyref{sec:learnForTheTask} mentions that one of the key
 elements of the learning algorithms is the learning of specialization
 dictionaries. Task specific training data is a common way to solve the problem
 of finding  the right dictionary. Here learning for the task comes into
@@ -522,10 +527,6 @@ JPEG 2000 a common ratio is about $\sim1.8$ bits-per-pixel for average
 quality compression( JPEG quality of 50) of an natural image. 
 
 \Todo{example image?, lower bit rates, Lewicki estimate for sparse coding}
-
-Besides the raw pixel data, images formats usually contain a certain amount
-of extra data from file headers and meta data. Fortunately we can ignore this
-for simplification as it is only a few bytes and not being actual pixel data.
 
 \paragraph{Test data}
 In addition to the introduced metrics it is common practice to use some image

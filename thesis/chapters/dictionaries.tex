@@ -1,6 +1,6 @@
 \chapter{Dictionaries}
 %\thispagestyle{empty}
-In section \ref{sec:dicts} we give a general definition of dictionaries 
+In \prettyref{sec:dicts} we give a general definition of dictionaries 
 as indexed sets of signal atoms with a unknown structure of the atoms.
 Dictionaries for sparse coding of images are indexed collections of vectors with
 discrete pixel data. A linear combination of a sparse selection of those
@@ -16,11 +16,12 @@ Two main strategies for generation of dictionaries are design and
 learning.
 
 \subsection{Designed atoms}
-The basis transformations first presented in section \ref{sec:history} can also
+The basis transformations first presented in \prettyref{sec:history} can also
 be interpreted as atoms of discrete pixel data. This can be atoms with only
 locality in the frequency domain like cosine from DCT or atoms with both
-locality in time and frequency domain like wavelets. Figure
-\ref{fig:generated_atoms} shows some examples for such dictionaries. 
+locality in time and frequency domain like wavelets.
+\prettyref{fig:generated_atoms} shows some examples for such
+dictionaries. 
 
 %\paragraph{cosine}
 %\paragraph{wavelets}
@@ -120,7 +121,7 @@ algorithm. We now introduce algorithms for both ways of learning.
 \subsection{Batch algorithms}
 Batch algorithms learn over-complete dictionaries from fixed batches of
 training data. Besides the initial idea of Olshausen and Field in
-1997\cite{Olshausen1997} Engan et al.\cite{Engan1999a} presented 
+1996\cite{Olshausen1996} Engan et al.\cite{Engan1999a} presented 
 in 1999 another algorithms the \emph{Method of optimal directions
 (MOD)} and recently the \emph{Iterative least-square dictionary learning
 algorithm (ILS-DLA)}\cite{Engan2007}. 
@@ -156,7 +157,7 @@ Value Decomposition (SVD)}.
 %\ref{alg:k-svd}).
 \prettyref{alg:k-svd} illustrates this procedure. 
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{K-SVD}
 \label{alg:k-svd}
 \begin{algorithmic}[1]
@@ -244,7 +245,6 @@ and being suitable for a large range of learning problems.
 - \mat{D}_t\vec{\alpha} \rVert^{2}_{2}  +  \lambda \lVert \vec{\alpha}
 \rVert_{1}
 \end{align*}
-
 \STATE $\mat{A}_t \gets \mat{A}_{t-1} +
 \vec{\alpha}_t\vec{\alpha}_t^T$\label{alg:Aupdate}
 \STATE $\mat{B}_t \gets \mat{B}_{t-1} +
@@ -307,10 +307,10 @@ warns Guillermo Sapiro in his talk at the \emph{MIT CSAIL}.
 It has been shown that learning specific for certain tasks can lead to the
 best results. Based on this finding we will concentrate on a
 specific class. We will focus on natural images from large image databases.
-This means typicaly 1+ mega-pixel images with 3-channel RGB data found on image
+This means typically 1+ mega-pixel images with 3-channel RGB data found on image
 hosting services such as flickr.com, twitpic.com, picasa.com among others.
 
-Section \ref{sec:signal_representation} already describes that the learning
+\prettyref{sec:signal_representation} already describes that the learning
 process is not limited to gray-scale oder RGB image signals. The presented
 algorithms can be applied to different kinds of signals. Such as images in
 other color spaces, low/high pass filtered sub-images or signals from another
@@ -323,35 +323,33 @@ domain like audio or text.
 %\paragraph{Texture synthesis}\cite{Peyre2008}
 %\paragraph{Vector quantization}
 
+\paragraph{Training with a neural network} In his masters thesis 
+Krizhevsky \cite{Krizhevsky2009} is using an neural network to learn image basis
+from a large set of tiny images. The resulting basis elements are similar to
+wavelet filters.
+
 \paragraph{Epitomes} In 2008 Wang et al.\cite{Wang2008a} presented
 an approach that factors repeated content in images. The algorithm generates 
-a map of affine transformations and an atlas textire with with overlapping
-regions of image content. This altas is called epitome. The epitomes are also a
+a map of affine transformations and an atlas texture with with overlapping
+regions of image content. This atlas is called epitome. The epitomes are also a
 sort of dictionary and the affine transformation matrices 
 the corresponding sparse vector. The technique is used for real-time synthesis
 of textures with low memory consumption and  fast reconstruction in hardware via
 pixel shaders. They also presented some experiments for unified epitomes for
 collections of images and possible application for larger sets of images. 
 
-
-\paragraph{Training with a neural network} In his masters thesis 
-Krizhevsky \cite{Krizhevsky2009} is using an neural network to learn image basis
-from a large set of tiny images. The resulting basis elements are similar to
-wavelet filters.
-
 \paragraph{Compression} \cite{Lewicki1999,Murray2006}  
 Another example of a more specific compression task is the
 work on facial image compression by Bryt and Elad \cite{Bryt2008}. 
 They took a collection of black and white facial images. The images were aligned
 the split into non-overlapping blocks. Then they used all images to learn 
-dictionaries for each sparate block. 
+dictionaries for each separate block. 
 
 \paragraph{Multi-scale dictionaries}
 Rather than encoding uniform segments of a bigger signal this technique
-encodes different sized blocks (multiple times of the default block size). The
+encodes different sized blocks (a multiple of the default block size). The
 idea is that aligned smooth regions with low variance can be combined
-and encoded as one signal rather than for example four.\cite{Mairal2007}
-
+and encoded as one signal rather than with four smaller ones.\cite{Mairal2007}
 \Todo{picture with different scales}
 
 \paragraph{Classification} \cite{?} validation of fake paintings. 
@@ -375,7 +373,7 @@ a sparse matrix $\vec{A}$.
 \paragraph{Hierarchy}%$A_0  \gets tI$ and $B_0 \gets tD$
 Jenatton et al. showed in 2010\cite{Jenatton2010} that adding hierarchy to
 dictionaries can lead to faster coding of signals and capture additional
-information about the learned dictionaries. 
+information about the learned dictionaries. While Dictionaries get are learned 
 % Like in the use for structure analysis of text documents. 
 \Todo{picture with hierarchy }
 
