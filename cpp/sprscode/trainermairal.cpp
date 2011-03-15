@@ -79,8 +79,8 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
         center(D.getData());
         D.normalize();
         //        divVariance(D.getData());
-        A_ = new MatrixXd(0.0001*MatrixXd::Identity(D.getElementCount(), D.getElementCount()) );
-        B_ = new MatrixXd(0.0001*D.getData()); //new MatrixXd(D.getSignalSize(), D.getElementCount());
+        A_ = new MatrixXd(0.0000*MatrixXd::Identity(D.getElementCount(), D.getElementCount()) );
+        B_ = new MatrixXd(0.0000*D.getData()); //new MatrixXd(D.getSignalSize(), D.getElementCount());
         //    std::cout << "train start" << std::endl;
     }
 
@@ -174,7 +174,7 @@ void TrainerMairal::train(Samples& samples, Dictionary& D, int iterations, int b
 
         //        std::cout<< D.meta_->samples_ << " : " << r/D.meta_->samples_ << " : " << mse(Dold,D.getData()) << "   " << a.nonZeros()/a.outerSize() << std::endl;
         static int allOver = 0;
-        int current = D.meta_->samples_/100000;
+        int current = D.meta_->samples_/50000;
         if(current>allOver) {
             allOver = current;
 //            std::cout << allOver << " " << D.meta_->samples_   << std::endl;

@@ -39,7 +39,6 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
         G = D.getData().transpose()*D.getData();
     }
 
-//    std::cout << "precalc done" << std::endl;
 
     Eigen::SparseMatrix<double> GammaVector[L];
 
@@ -48,7 +47,7 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
 
 //    std::cout  << "prep done" << std::endl;
     /**********************   perform omp for each signal   **********************/
-    #pragma omp parallel for
+//    #pragma omp parallel for
     for (signum=0; signum<L; ++signum) {
         int i, j, pos;
         double eps2, resnorm, delta, deltaprev;
@@ -92,6 +91,7 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
 
             /* initialize alpha := DtX */
             alpha = DtX.col(signum);
+//            std::cout << D.getData().cols() << std::endl;
 
             /* mark all atoms as unselected */
             for (i=0; i<m; ++i) {

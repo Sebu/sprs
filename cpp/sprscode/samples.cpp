@@ -68,8 +68,8 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     //reconstruct :)
 //    std::cout << "uncopressssssssssssssssssssssssssss" << std::endl;
     //TODO: fill a new A
-//    spc.load(fileName);
-//    spc.uncompress(shift,A);
+    spc.load(fileName);
+    spc.uncompress(shift,A);
 
 
     MatrixXd recon_vigra = dict.getData()*A;

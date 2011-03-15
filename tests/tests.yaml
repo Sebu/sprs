@@ -35,9 +35,9 @@ dictSizeTest:
 dictSizeOMPTest: 
   desc: test images with block sizes
   clients: [c61, c62, c63, c64, c65, c66, c67, c51]
-  jobs: 8
+  jobs: 6
   params:
-    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
+    dictSize: [300, 600, 1200, 1800, 2400, 3200]
     mode: dictSize
     coeffs: 8
     blockSize: 8 
@@ -49,9 +49,9 @@ dictSizeOMPTest:
 dictSizeOMP1: 
   desc: learn different dict sizes
   clients: [c61, c62, c63, c64, c65, c66, c67, c51]
-  jobs: 8
+  jobs: 6
   params:
-    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
+    dictSize: [300, 600, 1200, 1800, 2400, 3200]
     mode: dictSize
     coeffs: 4 
     samples: 4000  
@@ -65,9 +65,9 @@ dictSizeOMP1:
 dictSizeLassoTest: 
   desc: test images with block sizes
   clients: [c41, c42, c43, c44, c45, c46, c47, c52]
-  jobs: 8
+  jobs: 6
   params:
-    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
+    dictSize: [300, 600, 1200, 1800, 2400, 3200]
     mode: dictSize
     coeffs: 8 
     blockSize: 8 
@@ -79,9 +79,9 @@ dictSizeLassoTest:
 dictSizeLasso1: 
   desc: learn different dict sizes
   clients: [c41, c42, c43, c44, c45, c46, c47, c52]
-  jobs: 8
+  jobs: 6
   params:
-    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
+    dictSize: [300, 600, 1200, 1800, 2400, 3200]
     mode: dictSize
     error: 0.4
     samples: 4000  
@@ -112,13 +112,13 @@ coeffsConverg1:
   clients: ['c21', 'c22', 'c23', 'c24', 'c11', 'c26', 'c27', 'c32']
   jobs: 5
   params:
-    coeffs: [2, 4, 6, 8, 10, 12, 14, 16]
-    samples: 512  
-    dictSize: 512
+    error: [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6]
+    samples: 2048  
+    dictSize: 1024
     blockSize: 8  
     winSize: 5  
     channels: 3 
-    mode: 1 
+    mode: 2 
     train: ../../input/imagedb_100_chunk_1000/2.list
     input: ../../tests/images/4.2.03.tiff
     
@@ -145,7 +145,7 @@ blockSizeConverg1:
   jobs: 6
   params:  
     blockSize: [8, 10, 12, 14, 16, 20]
-    error: 0.8 
+    error: 0.4 
     samples: 2000  
     dictSize: [128, 200, 288, 392, 512, 800]
     winSize: 4

@@ -70,7 +70,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& X, Dictionary& Dict) //
         stop = -this->coeffs;
 
 
-    //    std::cout << "precalc done " << stop << std::endl;
+//        std::cout << "precalc done " << stop << std::endl;
 
     //    #pragma omp parallel for
     for (int signum=0; signum<L; ++signum) {

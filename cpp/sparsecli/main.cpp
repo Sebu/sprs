@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
         int counter=0;
         while( !ifs.eof() ) {
             if(!running) break;
-            //            std::cout << nameStr << " " << counter++ << std::endl;
+                        std::cout << nameStr << " " << counter++ << std::endl;
             samples.loadImage(nameStr, blockSize, channels, winSize);
 
             //            if(!resume && counter==0){ center(samples.getData()); dict.initFromData(samples); dict.debugSaveImage( (dictFile + ".png").c_str() );}

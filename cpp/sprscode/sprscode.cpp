@@ -128,12 +128,12 @@ void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
     for(int i=0; i<header_.count_; ++i) {
         long pos = lastpos + indices_[i];
         lastpos = pos;
-        int col = pos / A.rows();
+        int col = std::ceil(pos / A.rows());
         int row = pos - col*A.rows();
-//        std::cout << pos << " " << indicesNum_ << " " << row << " " << col << " "  << std::endl;
+//        std::cout << pos << " " << (double)coeffs_[i] << " " << row << " " << col << " " << indices_[i] << std::endl;
         if(coeffs_[i]) {
 //            std::cout <<  A.coeffRef(row,col) << " "  << (double)coeffs_[i] << std::endl;
-            A.coeffRef(row,col) = (double)coeffs_[i]*40.0+(double)row/100.0;
+            A.coeffRef(row,col) = (double)coeffs_[i]*(40.0+(double)row/100.0);
         }
     }
 //    for(int col=0; col<A.cols(); ++col) {
@@ -150,7 +150,6 @@ void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 
 void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
     char prev = 127;
-
 
     for (int k=0; k<shift.size(); ++k) {
         int shiftVal = round(shift(k));
@@ -178,7 +177,7 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
             double quant = 40.0+(double)it.row()/100.0;
             char data=0;
             data = (char)round(it.value()/quant);
-//            std::cout << it.row() << " " << it.col() << " " << A.coeffRef(it.row(),it.col()) << " " <<(double)data*quant << std::endl;
+//if(it.col()>561 && it.col()<570)  std::cout << it.row() << " " << it.col() << " " << A.coeffRef(it.row(),it.col()) << " " <<(double)data*quant << std::endl;
             A.coeffRef(it.row(),it.col()) = (double)data*quant;
 //            if(!data) pos = -1;
             if(data) {
@@ -190,12 +189,13 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
                 coeffs_[header_.count_] = data;
 
                 header_.count_++;
+                write =true;
 
             }
-            write =true;
         }
         // fill up
         if(!write) {
+//                std::cout << "padding @ " << k << std::endl;
 //            for(int i=0; i<header_.coeffs_; ++i)
                 int pos = (int)k*A.rows()+A.rows();
                 unsigned short delta = pos - lastpos;
