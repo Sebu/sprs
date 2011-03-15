@@ -19,17 +19,17 @@ winSizeDifference:
 dictSizeTest: 
   desc: test images with block sizes
   clients: [c61, c62, c63, c64, c65, c66, c67, c51]
-  jobs: 8
+  jobs: 5
   params:
-    dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
+    dictSize: [300, 600, 900, 1800, 3000]
     mode: dictSize
-    coeffs: 4 
+    coeffs: 8 
     blockSize: 10 
     channels: 3 
     mode: 1
-    input: ../../input/list2/28952841.jpg
+    input: ../../input/list2/28894495.jpg
     output: [../../output/dicts/dictSizeTest_0.jpg, ../../output/dicts/dictSizeTest_1.jpg, ../../output/dicts/dictSizeTest_2.jpg, ../../output/dicts/dictSizeTest_3.jpg, ../../output/dicts/dictSizeTest_4.jpg, ../../output/dicts/dictSizeTest_5.jpg, ../../output/dicts/dictSizeTest_6.jpg, ../../output/dicts/dictSizeTest_7.jpg]
-    dict: [../../output/dicts/dictSizeLearn_0.dict, ../../output/dicts/dictSizeLearn_1.dict, ../../output/dicts/dictSizeLearn_2.dict, ../../output/dicts/dictSizeLearn_3.dict, ../../output/dicts/dictSizeLearn_4.dict, ../../output/dicts/dictSizeLearn_5.dict, ../../output/dicts/dictSizeLearn_6.dict, ../../output/dicts/dictSizeLearn_7.dict]
+    dict: [../../output/dicts/dictSizeConverg_0.dict, ../../output/dicts/dictSizeConverg_1.dict, ../../output/dicts/dictSizeConverg_2.dict, ../../output/dicts/dictSizeConverg_3.dict, ../../output/dicts/dictSizeConverg_4.dict, ../../output/dicts/dictSizeLearn_5.dict, ../../output/dicts/dictSizeLearn_6.dict, ../../output/dicts/dictSizeLearn_7.dict]
     
     
 dictSizeOMPTest: 
@@ -39,12 +39,12 @@ dictSizeOMPTest:
   params:
     dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
     mode: dictSize
-    coeffs: 8 
-    blockSize: 10 
+    coeffs: 8
+    blockSize: 8 
     channels: 3 
     mode: 1
-    inputs: ../../input/list2/28952841.jpg
-    dict: [../../output/dicts/dictSizeOMP1_0.dict, ../../output/dicts/dictSizeOMP1_1.dict, ../../output/dicts/dictSizeOMP1_2.dict, ../../output/dicts/dictSizeOMP1_3.dict, ../../output/dicts/dictSizeOMP1_4.dict, ../../output/dicts/dictSizeOMP1_5.dict, ../../output/dicts/dictSizeOMP1_6.dict, ../../output/dicts/dictSizeOMP1_7.dict]
+    inputs: ../../input/list2/28894495.jpg
+    dict: [../../output/dicts_c31/dictSizeOMP1_0.dict, ../../output/dicts_c31/dictSizeOMP1_1.dict, ../../output/dicts_c31/dictSizeOMP1_2.dict, ../../output/dicts_c31/dictSizeOMP1_3.dict, ../../output/dicts_c31/dictSizeOMP1_4.dict, ../../output/dicts_c31/dictSizeOMP1_5.dict, ../../output/dicts_c31/dictSizeOMP1_6.dict, ../../output/dicts_c31/dictSizeOMP1_7.dict]
     
 dictSizeOMP1: 
   desc: learn different dict sizes
@@ -53,9 +53,9 @@ dictSizeOMP1:
   params:
     dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
     mode: dictSize
-    coeffs: 8 
+    coeffs: 4 
     samples: 4000  
-    blockSize: 10
+    blockSize: 8
     winSize: 10  
     channels: 3 
     mode: 1  
@@ -70,11 +70,11 @@ dictSizeLassoTest:
     dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
     mode: dictSize
     coeffs: 8 
-    blockSize: 10 
+    blockSize: 8 
     channels: 3 
     mode: 1
-    inputs: ../../input/list2/28952841.jpg
-    dict: [../../output/dicts/dictSizeLasso1_0.dict, ../../output/dicts/dictSizeLasso1_1.dict, ../../output/dicts/dictSizeLasso1_2.dict, ../../output/dicts/dictSizeLasso1_3.dict, ../../output/dicts/dictSizeLasso1_4.dict, ../../output/dicts/dictSizeLasso1_5.dict, ../../output/dicts/dictSizeLasso1_6.dict, ../../output/dicts/dictSizeLasso1_7.dict]
+    inputs: ../../input/list2/28894495.jpg
+    dict: [../../output/dicts_c31/dictSizeLasso1_0.dict, ../../output/dicts_c31/dictSizeLasso1_1.dict, ../../output/dicts_c31/dictSizeLasso1_2.dict, ../../output/dicts_c31/dictSizeLasso1_3.dict, ../../output/dicts_c31/dictSizeLasso1_4.dict, ../../output/dicts_c31/dictSizeLasso1_5.dict, ../../output/dicts_c31/dictSizeLasso1_6.dict, ../../output/dicts_c31/dictSizeLasso1_7.dict]
     
 dictSizeLasso1: 
   desc: learn different dict sizes
@@ -83,9 +83,9 @@ dictSizeLasso1:
   params:
     dictSize: [300, 600, 900, 1200, 1500, 1800, 2100, 2400]
     mode: dictSize
-    error: 0.8
+    error: 0.4
     samples: 4000  
-    blockSize: 10
+    blockSize: 8
     winSize: 10  
     channels: 3 
     mode: 2
@@ -103,7 +103,7 @@ coeffsConverg1Test:
     winSize: 5  
     channels: 3 
     mode: 1 
-    inputs: ../../input/list2/28952841.jpg
+    inputs: ../../input/list2/28894495.jpg
     output: ../../output/dicts/dictSizeTest_0.jpg
     dict: [../../output/dicts_c31/coeffsConverg1_0.dict, ../../output/dicts_c31/coeffsConverg1_1.dict, ../../output/dicts_c31/coeffsConverg1_2.dict, ../../output/dicts_c31/coeffsConverg1_3.dict, ../../output/dicts_c31/coeffsConverg1_4.dict, ../../output/dicts_c31/coeffsConverg1_5.dict, ../../output/dicts_c31/coeffsConverg1_6.dict, ../../output/dicts_c31/coeffsConverg1_7.dict]    
 
@@ -135,7 +135,7 @@ blockSizeConverg1Test:
     winSize: 4
     channels: 1 
     mode: 1  
-    inputs: ../../input/list2/28952841.jpg
+    inputs: ../../input/list2/28894495.jpg
     output: ../../output/dicts/dictSizeTest_0.jpg
     dict: [../../output/dicts_c31/blockSizeConverg1_0.dict, ../../output/dicts_c31/blockSizeConverg1_1.dict, ../../output/dicts_c31/blockSizeConverg1_2.dict, ../../output/dicts_c31/blockSizeConverg1_3.dict, ../../output/dicts_c31/blockSizeConverg1_4.dict, ../../output/dicts_c31/blockSizeConverg1_5.dict, ../../output/dicts_c31/blockSizeConverg1_6.dict, ../../output/dicts_c31/blockSizeConverg1_7.dict] 
 
