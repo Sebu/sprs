@@ -153,7 +153,7 @@ The trick of the update step is to consider only the signals in $\mat{X}$ which
 use the atom $\vec{d}_j$. The problem gets then solved with a \emph{Singular
 Value Decomposition (SVD)}. 
 %The name K-SVD comes from $k$ times application of SVD in the update process
-%(line \label{alg:k-svd_start} till line \ref{alg:k-svd_end} in algorithm
+%(line \label{alg:k-svd_start} untill line \ref{alg:k-svd_end} in algorithm
 %\ref{alg:k-svd}).
 \prettyref{alg:k-svd} illustrates this procedure. 
 
@@ -276,7 +276,7 @@ warm restart
 \mat{B}=[\vec{b}_1,...,\vec{b}_p] \in \mathbb{R}^{m \times p}$
 \REPEAT
 \FOR {$j = 1$ to $p$}
-\STATE update j-th column to optimize for \prettyref{eq:update}:
+\STATE update the $j$-th column to optimize for \prettyref{eq:update}:
 \begin{align*}
 \vec{u}_j \gets
 \frac{1}{\mat{A}[j,j]}\left(\vec{b}_j-\mat{D}\vec{a}_j\right)+\vec{d}_j \\
