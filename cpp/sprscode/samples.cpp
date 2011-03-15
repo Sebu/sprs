@@ -62,14 +62,14 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
        (*data_).col(i)*= scale(i);
     }
 
-    spc.compress(shift,A);
-    spc.save(fileName);
+//    spc.compress(shift,A);
+//    spc.save(fileName);
 
     //reconstruct :)
 //    std::cout << "uncopressssssssssssssssssssssssssss" << std::endl;
     //TODO: fill a new A
-    spc.load(fileName);
-    spc.uncompress(shift,A);
+//    spc.load(fileName);
+//    spc.uncompress(shift,A);
 
 
     MatrixXd recon_vigra = dict.getData()*A;
@@ -128,9 +128,9 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
 //    cv::cvtColor(im, im, CV_YCrCb2RGB);
 
-    cv::imshow("sprscode", im);
-    cv::waitKey();
-    cv::imwrite(fileName, im);
+//    cv::imshow("sprscode", im);
+//    cv::waitKey();
+//    cv::imwrite(fileName, im);
 }
 
 bool Samples::loadImage(std::string& fileName, int winSize, int channels, int step) {
