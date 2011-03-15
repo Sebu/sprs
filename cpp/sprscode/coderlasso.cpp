@@ -72,7 +72,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& X, Dictionary& Dict) //
 
 //        std::cout << "precalc done " << stop << std::endl;
 
-    //    #pragma omp parallel for
+        #pragma omp parallel for
     for (int signum=0; signum<L; ++signum) {
 
         MatrixXd x = DtX.col(signum);

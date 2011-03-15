@@ -259,8 +259,8 @@ int main(int argc, char *argv[])
         dict.sort();
         std::cout << "input:" << inputFile << std::endl;
         Samples samples;
-        samples.loadImage(inputFile, blockSize, channels, blockSize);
-        samples.saveImage(outputFile, dict, *coder, blockSize);
+        samples.loadImage(inputFile, blockSize, channels, 2);
+        samples.saveImage(outputFile, dict, *coder, 2);
 
 
     }

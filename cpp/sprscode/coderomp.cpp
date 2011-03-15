@@ -47,7 +47,7 @@ Eigen::SparseMatrix<double> CoderOMP::encode(MatrixXd& X, Dictionary& D)
 
 //    std::cout  << "prep done" << std::endl;
     /**********************   perform omp for each signal   **********************/
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for (signum=0; signum<L; ++signum) {
         int i, j, pos;
         double eps2, resnorm, delta, deltaprev;

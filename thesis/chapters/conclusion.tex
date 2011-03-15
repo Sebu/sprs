@@ -1,65 +1,14 @@
-\chapter{Discussion}
+\chapter{Conclusion}
 %\thispagestyle{empty}
 
-Convergence of the dictionary learning step.
-Keeping the training sparse vectors too sparse can lead to dictionaries with
-only low frequency elements. 
-
-Using LARS-Lasso for training generates a good dictionary for LARS and OMP. 
-\Todo{ Training with OMP leads to a dictionary more with a lot of noise that
-leads better coding results when using OMP.}
-
-Quality
-With single images learning, initialization with elements from training sets
-improbes quality. but with large training set random data is works fine.
-
-OMP:
-  start looks like DCT (random init)
-  noisy
-  only practical for OMP
-  In the beginning OMP is very random
-
-LARS-lasso:
-  slow 
-  high quality dictionary
-  Most common atoms in the dictionary 
-
-%\subsection{Observations}
-Difference in the selection strategy.
-Very noisy vs. smooth. 
-How this different selection strategies affect the learning step will be
-presented in the next section.
-
-Big training sets tend to get to general.
-If the images fit into the same category it is insignificant which images you
-chose. The results will not much differ.
-
-Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
-increasing block size. Use to verify if it is a jpeg image?
-Similar to natural images.
-compression dicts
-Dictionaries to universal ... improved results to DCT .. but varying with field
-of application. possible no universal solution but a good way for better
-understanding of the key elements
-  four major types of elements
-  gradient, checkerboard (low color more b/w), spot, edge
-
-
-Better understanding the selection strategies of the algorithm and their
-meaning for perceptional image quality. And evolution of the structure of
-learned dictionaries. 
-
-Compression
-For the short time available the results show promising results in visual
-quality but still lack ...
-
-\section{Conclusion}
 The experiments are just a first glimpse of that can de done to use sparse
 coding and dictionary learning for large image databases.
 
 Clustering learning strategies can help to learn faster and overcome
 convergence in the reconstruction quality of big dictionaries.
 
+Big training sets tend to get general. If the images fit into the same category
+it is insignificant which images you chose. The results will not much differ.
 
 It turn out that the training data and the right 
 regularization play a big role for learning the right dictionaries and
@@ -106,51 +55,55 @@ with and surpass JPEG compression in certain situations.
 \section{Future work}
 The amount of publications regarding sparse coding and machine learning in the
 last decade indicate strong ongoing research in this field. Especially
-brining structure to the learning stage is one of the most active topics in this
-field of research. Be
-
-
+brining structure to the learning stage is one of the most active topics.
 
 \subsection{Framework improvements}
-More speed and sparse coding algorithms.
+To make further and more flexible experiments. The framework needs be be
+extended in terms of speed and new dictionary learning strategies.
+
 \paragraph{Speed}
-The implementation of the Batch-OMP and the OLD are already very fast while the
-LARS-Lasso implementation is quiet slow compared to the KLT implmentation in the
-SPAMS framework. In the near future the SPAMS framework will provide a C++
+While the implementation of the Batch-OMP and the OLD are already very fast
+the LARS-Lasso implementation is quiet slow compared to the KLT implmentation in
+the SPAMS framework. In the near future the SPAMS framework will provide a C++
 interface\footnote{\url{http://www.di.ens.fr/willow/SPAMS/faq.html}}. Adding
 support for this interface could lead to speed improvements.
 
 \paragraph{Clustering}
-Taking the clustering strategy two even further is to learn smaller dictionaries
-from different sets of images or characteristics. Such as paintings, gray-scale
-sketches and smooth images animation. For example learning dictionaries for very
-specific classes of images can be used for classification tasks. Something
-that can come in handy when applying it to operations like search in large image
-databases.
+Also taking the clustering strategy two even further is to learn smaller
+dictionaries from different sets of images or characteristics. Such as
+paintings, gray-scale sketches and smooth images animation. For example learning
+dictionaries for very specific classes of images can be used for classification
+tasks. Something that can come in handy when applying it to operations like
+search in large image databases.
 %We have shown that clustering can also lead to good dictionaries when the
 %training samples are 
 %With the current development in computer technologie to more
 %parallization in form of multi-core CPUs and cloud computing online learning. 
 
-\paragraph{Adaptive learning}
-Thanks to the online approach of the training step an adaptive approach can be
-used. 
-
 \paragraph{Structure}
-The results gained on the structure of the atoms can be used to generate new
-ones.
+The results gained on the appearance of the atoms can be used to think
+about more advanced ways to structure these atoms or generation of atoms.
+
+%\paragraph{Adaptive learning}
+%Thanks to the online approach of the training step an adaptive approach can be
+%used. 
 
 
 \subsection{Compression improvements}
 
-\paragraph{Multi-scale approach}
 \paragraph{Reducing block borders} The presented compression experiment
 takes a very simple approach without taking correlation between adjacent
 blocks into account. Similar to the JPEG block strategy. But other than
 the JPEG basis transforms the learned atoms are not locality in the frequency
-domain but also in the time domain.
-The framework can be easily extended to learn and code different
-kinds of sub-images.
+domain but also in the time domain. 
+The framework can be easily extended to
+learn and code different kinds of sub-images.
+
+\paragraph{Better entropy coding}
+The coding of the coefficients already works quiet good. 
+
+
+
 
 
 

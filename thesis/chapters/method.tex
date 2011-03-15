@@ -265,15 +265,15 @@ led to to the following main steps in lossy image compression algorithms:
  \item lossless entropy coding of the coefficient 
 \end{itemize}
 
-
 Experiment on sparse coding as a tool for compression have been done
-before\cite{Lewicki1999,?} but mainly in theory with learned dictionaries and
-generated generated dictionaries of wavelets bases. Leading to better density
-with learned dictionaries over designed. But no real entropy encoding was
-applied. For comparison of compression quality only approximations for
-resulting bits-per-pixel were made. We add quantization and entropy encoding
-after the sparse coding step to develop a simple real world compression
-algorithm for sparse coding images.
+before\cite{Lewicki1999,Murray2006} but mainly in theory with learned
+dictionaries and generated generated dictionaries of wavelets bases. Leading to
+better density with learned dictionaries over designed. For comparison of
+compression quality only approximations for resulting bits-per-pixel were
+made. Real entropy encoding was only applied by Bryt et al.\cite{Bryt2008} in
+a very specific algorithm for facial compression. We add quantization and
+entropy encoding after the sparse coding step to develop a simple real world
+compression algorithm for sparse coding images.
 
 %We already describe the first two steps in
 %section\ref{sec:signal_representation}. So we will concentrate on the last
@@ -355,7 +355,21 @@ for simplification as it is only a few bytes and not being actual pixel data.
 %As mentioned in \prettyref{sec:headers} we are aware of the fact that besides
 %the actual sparse matrix data we also have other file informations and meta
 %data but ignore them for simplification.
-  
+
+
+\subsection{Training sets}
+\prettyref{sec:learnForTheTask} mentions that one of the key
+elements of the learning algorithms is the learning of specialization
+dictionaries. Task specific training data is a common way to solve the problem
+of finding  the right dictionary. Here learning for the task comes into
+account. Such as de-noising or in-painting dictionaries directly learned from
+the initial signal that gets de-noised or restored from in-painting. If the task
+gets bigger it sounds logical to increase the size of training data and take a
+bigger variety of signals to learn from.  We have a closer look at differences
+of learned elements from a specific set of sketch images.
+% These sets include sketches, still images of animations from Disney and
+% post-impressionistic images from Vincent van Gogh.  
+
 \subsection{Implementation}
 %\subsection*{Software}
 The sofware framework consists of a library for sparse coding image signals 
@@ -423,22 +437,35 @@ for image conversion into JPEG and JPEG 2000 and for some image comparison
 tasks.
 
 %\newpage
+
 \section{Experiments}
 
-One of the main questions is if the ODL paper $\ell_1$ regularization is used
-does $\ell_0$ also performe good.
-Test will be made with OMP and Lasso runs. We also want to know if we can
-reconstruct images outsize of the training sets.
-
-\paragraph{Convergence}
-Mairal et al. already propose some learning parameters.
-For training sets of $1.25\cdot 10^6$ and average of 10 coefficients.
-But as most other learn only dictionaries with redundancy of $4\times$.
-We want to known if they also apply to big number of samples and bigger
-dictionaries. We compare the reconstruction quality dependency on block size
-and average number of coefficients in the learning process.
-We want to find good start settings for further experiments with large set of
+\paragraph{Learning parameters}
+We want to find good start settings for experiments with large set of
 different samples and big dictionaries.
+
+Mairal et al. already propose some learning parameters for their online
+learning algorithm. But as most other they only learn dictionaries with
+a small redundancy of up to four times and compact training sets with 100,000
+to 1,000,000 samples that get randomly evaluated until convergence of the
+dictionary.
+
+We want to find good start settings for experiments with large sets of
+different samples with no reevaluation of the samples and dictionaries
+with much bigger redundancy of 10 to 50 times.
+
+For the small training sets Mairal et al. suggest mini-batch size of two to four
+times the size of the the dictionary. We will stick to these sizes. 
+
+An average of 10 learning coefficients 
+We want to known if this also applies to big numbers of samples and bigger
+dictionaries. We compare the reconstruction quality dependency on the average
+number of coefficients in the learning process. Both OMP and LARS-Lasso runs
+will be made.
+
+We compare the reconstruction quality dependency on block size
+and average number of coefficients in the learning process.
+
 
 \paragraph{Dictionary size}
 After we find good settings to learn from large sets of different images we
@@ -446,8 +473,9 @@ want to know how big we can make the dictionaries and still profit from them.
 We want to know if reconstruction quality increases with dictionaries
 size and when convergence is reached.
 In addition we want to know how good the cluster approach performs in
-comparisons to a dictionary learned in single.
-
+comparisons to a dictionary learned in single. Each client in the cluster
+calculated batches of 100--10,000 images based on the
+size of the training sets.
 
 \paragraph{Compression}
 Besides the ability of learned dictionaries 
@@ -466,23 +494,9 @@ images looks like. Do they resemble known structures from designed dictionaries?
 How do these learned structures change with the block size of the atoms?
 What structure show samples from other groups of images?
 
-\subsection{Training sets}
-%\subsection{Learning specific dictionaries}
-\prettyref{sec:learnForTheTask} mentions that one of the key
-elements of the learning algorithms is the learning of specialization
-dictionaries. Task specific training data is a common way to solve the problem
-of finding  the right dictionary. Here learning for the task comes into
-account. Such as de-noising or in-painting dictionaries directly learned from
-the initial signal that gets de-noised or restored from in-painting. If the task
-gets bigger it sounds logical to increase the size of training data and take a
-bigger variety of signals to learn from.  We have a closer look at differences
-of learned elements from a specific set of sketch images.
-% These sets include sketches, still images of animations from Disney and
-% post-impressionistic images from Vincent van Gogh.  
-
 \subsection{Performance measurement}
-Before we go further and present the results it is necessary to introduce some
-additional terms. Such as metrics to measure their performance.
+Before we go further and present the experiments and results it is necessary to
+introduce some additional terms. Such as metrics to measure their performance.
 
 \paragraph{Mean squared error (MSE)} is an error measurement that
 describes the error between an given or measured reference signal $\vec{x}$
@@ -532,61 +546,65 @@ quality compression( JPEG quality of 50) of an natural image.
 In addition to the introduced metrics it is common practice to use some image
 sets to compare test results of the different algorithms and parameter
 configurations. As the dictionaries are specificaly trained for
-reconstruction of the data in the training sets it is mandatory to also use
-these image to test the reconstruction and compression quality
-(\prettyref{fig:database_images}).
+reconstruction of the data in the training sets
+(\prettyref{fig:database_images}) it is mandatory to also use
+these image to test the reconstruction and
+compression quality. 
 \begin{figure}[h]
 \centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
-\hspace{5mm}
-%\subfloat{\includegraphics[width = 0.3\textwidth]{images/28848380.jpg}}
-%\hspace{5mm}
-%\subfloat{\includegraphics[width = 0.3\textwidth]{images/28859439.jpg}}
-%\hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+% \hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+% \hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+% \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
-\caption{test images from training set}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch3.jpg}}
+\hspace{5mm}
+\caption{example images from natural image and sketch training sets}
 \label{fig:database_images}
 \end{figure}
+
+
 In addition to this we want to know how good the dictionaries can reconstruct
 and compress images outside of the database respectifly the training set. For
-those comparisons we use a well known set of standard test images from the
-\emph{USC-SIPI Image
+those comparisons we use a selection (\prettyref{fig:USC-SIPI}) from a
+well known set of standard test images from the \emph{USC-SIPI Image
 Database}\footnote{\url{http://sipi.usc.edu/database/}}
-(\prettyref{fig:USC-SIPI}). They are often used in image processing for
-evaluation of compression algorithms. 
+(\prettyref{fig:USC-SIPI}). 
 %Including pictures such as Lena, Mandrill and Peppers.
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_1_05.jpg}}
-\hspace{5mm}
+%\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_1_05.jpg}}
+%\hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_03.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_04.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_05.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_06.jpg}}
-\hspace{5mm}
+%\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_05.jpg}}
+%\hspace{5mm}
+%\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_06.jpg}}
+%\hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_07.jpg}}
 \caption{test images from USC-SIPI Image Database}
 \label{fig:USC-SIPI}
 \end{figure}
 
 
-
 \subsection{Hardware setup} 
-Computations were made a cluster consisting of 100 nodes with each AMD Athlon 64
-X2 (2x2.6GHz) and 3GB RAM running Debian Linux with 32-bit kernel. Each client
-in the cluster calculated batches of 100--10,000 images based on the size of
-the training sets.
+Computations were made on a cluster of 100 clients. Each 
+configured with a AMD Athlon 64 X2 (2x2.6GHz) and 3GB RAM.
+The operating system running Debian Linux with 32-bit kernel. 
+
 
 
 

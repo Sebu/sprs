@@ -119,8 +119,8 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
             //            cv::Mat tmp = inshape(recon_cv, winSize_,  channels_);
 
             cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_, blockSize_) );
-            region += tmp;
-//            region = region/2.0 + tmp/2.0;
+//            region += tmp;
+            region = region/2.0 + tmp/2.0;
             //tmp.copyTo(region);
             index++;
         }
@@ -128,9 +128,9 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
 //    cv::cvtColor(im, im, CV_YCrCb2RGB);
 
-//    cv::imshow("sprscode", im);
-//    cv::waitKey();
-//    cv::imwrite(fileName, im);
+    cv::imshow("sprscode", im);
+    cv::waitKey();
+    cv::imwrite(fileName, im);
 }
 
 bool Samples::loadImage(std::string& fileName, int winSize, int channels, int step) {

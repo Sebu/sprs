@@ -31,13 +31,13 @@ dictionaries.
 \begin{figure}
 \centering
 \subfloat[cosine]{\includegraphics[width =
-0.3\textwidth]{images/dct.png}}
+0.3\textwidth]{images/dct.jpg}}
 \hspace{5mm}
-\subfloat[haar wavelets]{\includegraphics[width =
-0.3\textwidth]{images/haar.png}}
+\subfloat[haar wavelet]{\includegraphics[width =
+0.3\textwidth]{images/haar.jpg}}
 \hspace{5mm}
-\subfloat[gabor wavelets]{\includegraphics[width =
-0.3\textwidth]{images/gabor.png}}
+\subfloat[gabor wavelet]{\includegraphics[width =
+0.3\textwidth]{images/gabor.jpg}}
 \caption{generated bases}\footnote{from Lewicki et al.} 
 
 \label{fig:generated_atoms}
@@ -320,13 +320,11 @@ domain like audio or text.
 \section{Related work}
 \label{sec:related_dictionarie}
 
-%\paragraph{Texture synthesis}\cite{Peyre2008}
-%\paragraph{Vector quantization}
 
 \paragraph{Training with a neural network} In his masters thesis 
-Krizhevsky \cite{Krizhevsky2009} is using an neural network to learn image basis
-from a large set of tiny images. The resulting basis elements are similar to
-wavelet filters.
+Krizhevsky \cite{Krizhevsky2009} is using an neural network to learn image
+basis from a large set of tiny images. The resulting basis elements are similar
+to wavelet filters.
 
 \paragraph{Epitomes} In 2008 Wang et al.\cite{Wang2008a} presented
 an approach that factors repeated content in images. The algorithm generates 
@@ -338,25 +336,12 @@ of textures with low memory consumption and  fast reconstruction in hardware via
 pixel shaders. They also presented some experiments for unified epitomes for
 collections of images and possible application for larger sets of images. 
 
-\paragraph{Compression} \cite{Lewicki1999,Murray2006}  
-Another example of a more specific compression task is the
-work on facial image compression by Bryt and Elad \cite{Bryt2008}. 
-They took a collection of black and white facial images. The images were aligned
-the split into non-overlapping blocks. Then they used all images to learn 
-dictionaries for each separate block. 
-
 \paragraph{Multi-scale dictionaries}
 Rather than encoding uniform segments of a bigger signal this technique
 encodes different sized blocks (a multiple of the default block size). The
 idea is that aligned smooth regions with low variance can be combined
 and encoded as one signal rather than with four smaller ones.\cite{Mairal2007}
 \Todo{picture with different scales}
-
-\paragraph{Classification} \cite{?} validation of fake paintings. 
-\cite{?} classification of object by learning individual dictionaries for each
-object group. Additional examples for sparse coding  being used for
-classification tasks can be found in
-\cite{Grosse2007,Mairal2008,Mairal2008b,Bar2009}.
 
 \paragraph{Double sparsity}
 In 2009 Rubinstein et al.\cite{Rubinstein2009} presented the idea of double
@@ -368,14 +353,22 @@ a sparse matrix $\vec{A}$.
 \mat{D}=\mat{B}\mat{A}
 \end{align*}
 
-%\paragraph{Edge detection}\cite{Mairal2008c}
 
 \paragraph{Hierarchy}%$A_0  \gets tI$ and $B_0 \gets tD$
 Jenatton et al. showed in 2010\cite{Jenatton2010} that adding hierarchy to
 dictionaries can lead to faster coding of signals and capture additional
 information about the learned dictionaries. While Dictionaries get are learned 
-% Like in the use for structure analysis of text documents. 
-\Todo{picture with hierarchy }
+
+
+\paragraph{Classification} of object can be achieved by learning
+individual dictionaries for each object group. Then  
+Examples for sparse coding being used for classification tasks can
+be found in \cite{Grosse2007,Mairal2008,Mairal2008b,Bar2009}.
+%\cite{?} validation of fake paintings. 
+
+%\paragraph{Edge detection}\cite{Mairal2008c}
+
+
 
 
 
