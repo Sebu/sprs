@@ -372,10 +372,10 @@ of learned elements from a specific set of sketch images.
 
 \section{Implementation}
 %\subsection*{Software}
-The sofware framework consists of a library for sparse coding image signals 
-and learning dictionaries, a command line interface to the library and
-miscellaneous scripts for distribution of coding and learning jobs and
-some a test suite.
+The sofware framework consists of a library (sprscode) for sparse coding image
+signals and learning dictionaries, a command line interface (sparsecli) to the
+library and miscellaneous scripts for distribution of coding and learning jobs
+and some a test suite.
 
 The whole sparse coding and training library is written in C++ with
 additional use of the OpenCV, Eigen and OpenMP libs. All operations use double
@@ -398,7 +398,7 @@ the user to distribute code blocks and loops to multiple CPU cores. In
 situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
 
 
-\Todo{add diagram}
+% \Todo{add diagram}
 %Split image into sub images, convert sub image to samples from image blocks, 
 %train dict with samples or just code samples - save dictionary/image
 %Image block size, block selection strategy can be specified.
@@ -426,7 +426,26 @@ Dictionary size and the number training signals for each iteration can be
 speficied.
 
 \paragraph{Command line interface}
+The framework\\
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
+\begin{table}[H]
+\centering
+\begin{tabular}{ |l | l |}
+\hline
+--dict <file> & save or load dictionary to \emph{file}\\
+--dictSize <n> & size \emph{n} of the dictionary  \\
+--train <file> & use images listed in \emph{file} as training set\\
+--blockSize <n> & size \emph{n} of the image blocks \\
+--winSize <n> & distance \emph{n} of selection window \\
+--coeffs <n> & size \emph{n} of coefficients \\
+--error <n> & \\
+--resume & resume an interrupted learning process \\
+--input <file> & input \emph{file} for reconstruction \\
+--output & output \emph{file} of reconstruction \\ 
+
+\hline
+\end{tabular}
+\end{table}
 
 \paragraph{Miscellaneous}
 Besides the actual coding software some other tools for

@@ -1,27 +1,28 @@
 \chapter{Conclusion}
-The experiments are just a first glimpse of that can de done to use sparse
-coding and dictionary learning for large image databases.
+It turn out that the right regularization and the the right training data
+play  a big role for learning the right dictionaries and for reconstruction
+quality. 
 
-Clustering learning strategies can help to learn faster and overcome
-convergence in the reconstruction quality of big dictionaries.
+The $\ell_1$ regularization of LARS-Lasso has a selection strategy
+which is very good at learning dictionary atoms. And also good for
+reconstruction tasks.  The $\ell_0$ regularization of the OMP, with its greedy
+nature, has a very aggressive selection strategy.  This very noisy selection
+strategy is less practical than LARS for the ODL learning step under certain
+conditions. Such as a high number of learning coefficients and bad
+initialization.
+
+When extracting samples from JPEG images for
+learning don't use non-overlapping $8 \times 8$ unless you want to learn DCT
+atoms. 
 
 Big training sets tend to get general. If the images fit into the same category
 it is insignificant which images you chose. The results will not much differ.
 
-It turn out that the training data and the right 
-regularization play a big role for learning the right dictionaries and
-for reconstruction quality. When extracting samples from JPEG images for
-learning don't use non-overlapping $8 \times 8$ unless you want to learn DCT
-atoms. 
+Clustering learning strategies can help to learn faster and overcome
+convergence in the reconstruction quality of big dictionaries.
 
-The $\ell_1$ regularization of LARS has a selection strategy
-which learns very smooth atoms. Good for reconstruction tasks 
+
 But you need a certain amount of coefficients of about $L \ge 10$.
-The $\ell_0$ regularization of the OMP, with its greedy nature, has a very
-aggressive selection strategy. 
-This very noisy selection strategy is less practical
-than LARS for the ODL learning step under certain conditions. Such as a high
-number of learning coefficients and bad initialization.
 
 But when it comes to compression tasks the greedy OMP yields better results
 than the Lasso with requirement for less coefficients. 
@@ -36,6 +37,9 @@ JPEG.  The reason lies in the potential patent issues and higher computational
 requirements of the algorithm compared to the quality benefits annd the wide
 acceptance of JPEG.
 
+
+The experiments are just a first glimpse of that can de done to use sparse
+coding and dictionary learning for large image databases.
 
 
 \section{Summary}

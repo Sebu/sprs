@@ -47,7 +47,8 @@ Looking at other well known compression algorithms such as JPEG or
 JPEG 2000 a common ratio is about $\sim1.8$ bits-per-pixel for average
 quality compression( JPEG quality of 50) of an natural image. 
 
-\Todo{example image?, lower bit rates, Lewicki estimate for sparse coding}
+\Todo{optinal: example image?, lower bit rates, Lewicki estimate for sparse
+coding}
 
 \paragraph{Test data}
 In addition to the introduced metrics it is common practice to use some image
@@ -128,6 +129,8 @@ We wanted to find start settings for experiments with large sets of
 different samples with no reevaluation of the samples and dictionaries
 with much bigger redundancy of 10 to 50 times.
 
+
+\paragraph{Learning coefficents}
 An average of 10 learning coefficients is suggested as it produces enougth
 sparseness and leads to good and fast convergence of the dictionaries.
 We tested if this also applies to big numbers of samples and bigger
@@ -153,14 +156,14 @@ With high number of learning coefficents convergence is reached faster than
 with a low number of coefficents but for large dicts fewer coefficents lead to
 better reconstruction quality with larger training sets.
 
-
+\paragraph{Block size}
 Afterwards compared the reconstruction quality dependency on block size in the
 learning process.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width =
-0.8\textwidth]{../tests/results/old/blockSizeConverg.pdf}
+0.8\textwidth]{../tests/results/blockSizeConverg.pdf}
 \caption{reconstruction quality for different block sizes}
 \label{fig:dict size}
 \end{figure}
@@ -168,7 +171,12 @@ learning process.
 Convergence of quality of different block sizes.
 But large blocks 
 
-\subsection{Structure}
+Allover LARS-Lasso produces dictionaries with better reconstruction quality
+than the OMP. 
+%The OMP also tends to 
+
+\paragraph{Structure}
+While testing with alle the different parameter
 At then end we want to know how the structure of the learned atoms from natural
 images looks like. Do they resemble known structures from designed dictionaries?
 How do these learned structures change with the block size of the atoms?
@@ -203,11 +211,12 @@ learned dictionaries.
 \label{fig:USC-SIPI}
 \end{figure}
 
+\paragraph{Mini-batch size}
 For the small training sets Mairal et al. suggest mini-batch size of two to four
 times the size of the the dictionary. No significant oberservations were made
 and we stuck to these sizes. 
 
-
+\newpage
 \section{Dictionary size}
 After we found good settings to learn from large sets of different images we
 wanted to know how big we can make the dictionaries and still profit from them.
@@ -236,7 +245,7 @@ size of the training sets.
 
 
 
-
+\newpage
 \section{Compression}
 Besides the ability of learned dictionaries 
 we used the simple compression algorithm from \prettyref{sec:compression} .
@@ -253,9 +262,7 @@ Compression
 For the short time available the results show promising results in visual
 quality but still lack ...
 
-Using LARS-Lasso for training generates a good dictionary for LARS and OMP. 
-\Todo{ Training with OMP leads to a dictionary more with a lot of noise that
-leads better coding results when using OMP.}
+Using LARS-Lasso for training generates a good dictionary for LARS and OMP.
 
 
 % Difference in the selection strategy.
