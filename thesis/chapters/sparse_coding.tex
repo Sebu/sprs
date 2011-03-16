@@ -328,7 +328,7 @@ al.\cite{Efron2004}.
 The main idea of the least angle regression is to start with all coefficients
 of $\vec{\alpha}$ set to zero and the residual gets $\vec{r}=\vec{x}$. Then
 find the atom $\vec{d}_i$ of $\mat{D}$ with the maximum correlation
-with the residual $\argmax_i\mat{d}_i\vec{r}$ and move $\alpha_i$ 
+with the residual $\argmax_i\mat{d}_i^T\vec{r}$ and move $\alpha_i$ 
 into the direction of the least-squares solution until a new atom
 $\vec{d}_j$ has the same or higher correlation with the residual. Now move
 $\alpha_i$ and $\alpha_j$ into the joint direction of the
@@ -419,6 +419,7 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \end{algorithm}
 
 \section{Application and Related Work}
+\label{sec:sparse_related}
 In the most applications and papers related to sparse coding, the coding
 step and the dictionary learning step are often close tied together. This
 section concentrates on work with the main focus on sparse coding. Section
@@ -464,7 +465,7 @@ from their half-tone sources.
 
 \paragraph{Structured sparsity} Similar patches should have similar sparse
 codes. Rather than only constraining a single signal $\vec{x}$ to sparsity
-\cite{group sparsity} codes groups of signals $\vec{x}$ with similar appearance
+\cite{group_sparsity} codes groups of signals $\vec{x}$ with similar appearance
 and constraints a whole matrix of coefficients to be sparse.
 \Todo{optional: picture with distribution difference}
 %\paragraph{Background subtraction}\cite{}

@@ -9,8 +9,11 @@ of finding  the right dictionary. Here learning for the task comes into
 account. Such as de-noising or in-painting dictionaries directly learned from
 the initial signal that gets de-noised or restored from in-painting. If the task
 gets bigger it sounds logical to increase the size of training data and take a
-bigger variety of signals to learn from.  We have a closer look at differences
-of learned elements from a specific set of sketch images.
+bigger variety of signals to learn from.  We use da database of 100,000
+to 1,000,000 natural images collected from \url{flickr.com}. And we have a
+closer look at differences of learned elements from a smaller specific set of
+sketch images.
+%via clustered training with a large image
 % These sets include sketches, still images of animations from Disney and
 % post-impressionistic images from Vincent van Gogh.  
 
@@ -148,15 +151,23 @@ An average of 10 learning coefficients is suggested as it produces enougth
 sparseness and leads to good and fast convergence of the dictionaries.
 We tested if this also applies to big numbers of samples and bigger
 dictionaries. We compared the reconstruction quality dependency on the average
-number of coefficients in the learning process. Both OMP
-(\prettyref{fig:coeffsOMP}) and LARS-Lasso (\prettyref{fig:coeffsLasso}) runs
-were made.
-\begin{figure}[H]
+number of coefficients in the learning process. Graphs show the avarage of a
+set of test images from the training set. Both OMP (\prettyref{fig:coeffsOMP})
+and LARS-Lasso (\prettyref{fig:coeffsLasso}) runs were made with the following
+configuration.
+\begin{table}[H]
+%\caption{Configuration}
 \centering
-\includegraphics[width = 0.8\textwidth]{../tests/results/old/coeffsConverg.pdf}
-\caption{reconstruction quality for different training coefficients (OMP)}
-\label{fig:coeffsOMP}
-\end{figure}
+\begin{tabular}{| c | c | c |}
+\hline
+\multicolumn{3}{|c|}{configuration}\\
+\hline
+dict. size & block size & batch size \\
+\hline
+1000 & $8\times 8$ & 4000  \\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[h]
 \centering
@@ -165,25 +176,34 @@ were made.
 \label{fig:coeffsLasso}
 \end{figure}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.8\textwidth]{../tests/results/old/coeffsConverg.pdf}
+\caption{reconstruction quality for different training coefficients (OMP)}
+\label{fig:coeffsOMP}
+\end{figure}
+
+
+
 \begin{figure}[H]
 \centering
-\subfloat[50,000]{\includegraphics[width =
+\subfloat[2]{\includegraphics[width =
 0.2\textwidth]{images/coeffsConvergOMP_0_1.jpg}}
 \hspace{15mm}
-\subfloat[1,000,000]{\includegraphics[width =
-0.2\textwidth]{images/coeffsConvergOMP_0_2.jpg}}
-\caption{evolution with 2 coefficents}
-\label{fig:coeffsOMPsamples}
+\subfloat[10]{\includegraphics[width =
+0.2\textwidth]{images/coeffsConvergOMP_4_1.jpg}}
+\caption{after 50,000 samples}
+\label{fig:coeffsOMP50}
 \end{figure}
 \begin{figure}[H]
 \centering
-\subfloat[50,000]{\includegraphics[width =
-0.2\textwidth]{images/coeffsConvergOMP_4_1.jpg}}
+\subfloat[2]{\includegraphics[width =
+0.2\textwidth]{images/coeffsConvergOMP_0_2.jpg}}
 \hspace{15mm}
-\subfloat[1,000,000]{\includegraphics[width =
+\subfloat[10]{\includegraphics[width =
 0.2\textwidth]{images/coeffsConvergOMP_4_2.jpg}}
-\caption{evolution with 10 coefficents}
-\label{fig:coeffsOMPsamples}
+\caption{after 2,000,000 samples}
+\label{fig:coeffsOMP2000}
 \end{figure}
 
 
@@ -193,9 +213,14 @@ With high number of learning coefficents convergence is reached faster than
 with a low number of coefficents but for large dicts fewer coefficents lead to
 better reconstruction quality with larger training sets.
 
+Allover LARS-Lasso produces dictionaries with better reconstruction quality
+than the OMP. 
+
 \paragraph{Block size}
-Afterwards compared the reconstruction quality dependency on block size in the
-learning process.
+Afterwards we compared the reconstruction quality dependency on block size in
+the learning process of natural images. A LARS-Lasso run with block sizes of
+$n=8,..,20$ were made. The dictionary size for each experiment was two times the
+size of the coresponding signal $m=n\times n$. 
 
 \begin{figure}[h]
 \centering
@@ -206,13 +231,10 @@ learning process.
 \end{figure}
 
 Convergence of quality of different block sizes.
-But large blocks 
-
-Allover LARS-Lasso produces dictionaries with better reconstruction quality
-than the OMP. 
-%The OMP also tends to 
+The $8\times8$ block size when we look at the structure.
 
 \paragraph{Structure}
+Our training sets consists of JPEG images.
 While testing with alle the different parameter
 At then end we want to know how the structure of the learned atoms from natural
 images looks like. Do they resemble known structures from designed dictionaries?
@@ -233,7 +255,7 @@ Better understanding the selection strategies of the algorithm and their
 meaning for perceptional image quality. And evolution of the structure of
 learned dictionaries. 
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/gradient.png}}
 \hspace{5mm}
@@ -244,8 +266,8 @@ learned dictionaries.
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/edges.png}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/wavelet.png}}
-\caption{image from database}
-\label{fig:USC-SIPI}
+\caption{common atoms}
+%\label{fig:}
 \end{figure}
 
 \paragraph{Mini-batch size}
@@ -262,28 +284,44 @@ convergence is reached.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.8\textwidth]{../tests/results/old/dictSizeOMP.pdf}
+\includegraphics[width = 0.8\textwidth]{../tests/results/dictSizeOMP.pdf}
 \caption{reconstruction quality for different dictionary sizes (OMP)}
 \label{fig:dictSizeOMP}
 \end{figure}
 
-We see two major things in this graph. First increasing dictionary size 
-And second convergence is almost reached after 1,000,000 - 2,000,000 training
-samples. 
-
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.8\textwidth]{../tests/results/old/dictSizeLasso.pdf}
+\includegraphics[width = 0.8\textwidth]{../tests/results/dictSizeLasso.pdf}
 \caption{reconstruction quality for different dictionary sizes (Lasso)}
 \label{fig:dict size}
 \end{figure}
 
-Ok 
+We see two things in this graphs. First convergence is almost reached
+after 1,000,000 - 2,000,000 training samples. Second even this is a
+logarithmical scale increasing dictionary size tends to a reach a maximum. The
+problem is that big dictionaries do not learn enougth atoms leaving a lot of
+them unused. This can be addressed with tweaks to the learning parameters or by
+replacing unused atoms with elements from the training set. We addresed this
+issues with a new clustering approach from \prettyref{sec:clustering}.
+
+\paragraph{Clustering}
 In addition we compared the cluster approach performs in
 comparisons to a dictionary learned in single. Each client in the cluster
 calculated batches of 100--10,000 images based on the
 size of the training sets.
 
+\begin{table}[h]
+\centering
+\begin{tabular}{| l | c | c |}
+\hline\hline
+Images & single & cluster \\
+\hline
+inside & $35.5104 \pm 0.0$ & $35.5104 \pm 0.0$  \\
+outside & $35.5104 \pm 0.0$ & $35.5104 \pm 0.0$ \\
+\hline
+\end{tabular}
+\caption{single vs. cluster}
+\end{table}
 
 
 \newpage
@@ -297,24 +335,25 @@ One benefit of the learned dictionary approach that plays well in our
 hands is the ability to to learn and use specific dictionaries for each group of
 images. We tested this by learning a dictionary from a set of sketch images and
 used it to compress sketches. A domain in which the JPEG compression performs
-bad.
+bad. As discovered before the natural images like block sizes of $8\times 8$
+this is not necessarily true for the sketch images. They work fine with
+$16\times 16$ blocks and enable us to reduce the amount of blocks.
+\prettyref{fig:compressionDicts} shows the dictionaries. 
+Compression coding was done with the OMP as it turned out to work better with
+the quantization step of our algorithm. 
 
-
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
-\subfloat[natural dict]{\includegraphics[width =
+\subfloat[natural images]{\includegraphics[width =
 0.5\textwidth]{images/natural_dict.jpg}}
-\hspace{5mm}
-\subfloat[sketch dict]{\includegraphics[width =
-0.5\textwidth]{images/sketch_dict.jpg}}
-\caption{evolution with 2 coefficents}
-\label{fig:coeffsOMPsamples}
+\hspace{5mm}\label{fig:naturalDict}
+\subfloat[sketches]{\includegraphics[width =
+0.5\textwidth]{images/sketch_dict.jpg}}\label{fig:sketchDict}
+\caption{Dictionaries used for compression}
+\label{fig:compressionDicts}
 \end{figure}
 
 
-Compression
-For the short time available the results show promising results in visual
-quality but still lack ...
 
 
 % Difference in the selection strategy.
@@ -325,69 +364,80 @@ quality but still lack ...
 
 \begin{figure}[h]
 \centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
-\hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+% \hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+% \hspace{5mm}
+
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
-\caption{test images from training set}
-\label{fig:database_images}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+\caption{natural images}
+%\label{fig:database_images}
 \end{figure}
 
-\begin{table}[H]
+For the short time available the results show promising results. Compression of
+natural images produces similar quality as the JPEG algorithm
+\prettyref{tab:compression1}.
+
+\begin{table}[h]
 %\caption{single vs. cluster}
 \centering
-\begin{tabular}{| l c | c | c | c|}
+
+\begin{tabular}{| l l | c | c | c|}
 \hline\hline
 Image & bpp & SPRS & JPEG & JPEG2000 \\
 \hline
-image 1 & 1.12 & 31.2205 & 32.3289 & 36.613 \\
-image 2 & 1.01 & 34.7735 & 35.0671 & 40.3299 \\
-image 3 & 1.8  & 29.0597 & 27.2556 & 31.7412 \\
-image 4 & 0.74  & 35.9499 & 35.5104 & 39.4195 \\
-
+a & 1.12 & 31.2205 & 32.3289 & 36.6103 \\
+b & 1.01 & 34.7735 & 35.0671 & 40.3299 \\
+c & 1.8  & 29.0597 & 27.2556 & 31.7412 \\
+d & 0.74  & 35.9499 & 35.5104 & 39.4195 \\
 \hline
 \end{tabular}
+\caption{natural image compression results}
+\label{tab:compression1}.
 \end{table}
 
-\begin{figure}[H]
-\centering
-\subfloat[sprs ]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[JPEG]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[JPEG2000]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-%\caption{}
-%\label{fig:16_1000_lasso}
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfloat[sprs ]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% \hspace{5mm}
+% \subfloat[JPEG]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% \hspace{5mm}
+% \subfloat[JPEG2000]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% %\caption{}
+% %\label{fig:16_1000_lasso}
+% \end{figure}
 
-\begin{figure}[H]
-\centering
-\subfloat[sprs]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[JPEG]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[JPEG2000]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-%\caption{}
-%\label{fig:16_1000_lasso}
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfloat[sprs]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% \hspace{5mm}
+% \subfloat[JPEG]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% \hspace{5mm}
+% \subfloat[JPEG2000]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% %\caption{}
+% %\label{fig:16_1000_lasso}
+% \end{figure}
 
 
 
 \newpage
 \subsection{Sketches}
+The results get even better when looking at the sketch images
+(\prettyref{fig:sketches}). Our algorithm can surpass the JPEG compression
+(\prettyref{tab:compression}). \prettyref{fig:magnified} show some magnified
+segments of the images to ilustrate the reconstruction features.
 
 \begin{figure}[h]
 \centering
@@ -404,18 +454,20 @@ image 4 & 0.74  & 35.9499 & 35.5104 & 39.4195 \\
 \end{figure}
 
 
-\begin{table}[H]
+\begin{table}[h]
 %\caption{single vs. cluster}
 \centering
-\begin{tabular}{| c c | c | c | c|}
+\begin{tabular}{| c l | c | c | c|}
 \hline\hline
 Image & bpp & SPRS & JPEG & JPEG2000 \\
 \hline
 a & 0.084 & 33.9594 & 28.9578 & 38.3258  \\
-b & 0.13 & 32.9 & 34.5546 &  40.0159 \\
+b & 0.13 & 32.9002 & 34.5546 &  40.0159 \\
 c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 \hline
 \end{tabular}
+\caption{sketch compression results}
+\label{tab:compression2}
 \end{table}
 
 \begin{figure}[H]
@@ -428,23 +480,23 @@ c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 \hspace{5mm}
 \subfloat[JPEG2000]{\includegraphics[width =
 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-%\caption{}
-%\label{fig:16_1000_lasso}
+\caption{}
+\label{fig:magnified}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\subfloat[sprs]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[JPEG]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-\hspace{5mm}
-\subfloat[JPEG2000]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-%\caption{}
-%\label{fig:16_1000_lasso}
-\end{figure}
+% \begin{figure}[H]
+% \centering
+% \subfloat[sprs]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% \hspace{5mm}
+% \subfloat[JPEG]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% \hspace{5mm}
+% \subfloat[JPEG2000]{\includegraphics[width =
+% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+% %\caption{}
+% %\label{fig:16_1000_lasso}
+% \end{figure}
 
 % This chapter shows the results and discussion for the following experiments.
 % % Reconstruction quality is mean of PSNR of images inside and outside of

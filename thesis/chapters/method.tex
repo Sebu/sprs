@@ -182,6 +182,7 @@ both ways of dictionary initialization. \Todo{optional: image}
 
 
 \subsection{Clustering}
+\label{sec:clustering}
 One reason not to learn big dictionaries in a single step is the fact that
 learning such big dictionaries leads to huge memory consumption and coding time.
 To address these problems we investigate strategies to distribute the workload
@@ -413,22 +414,28 @@ Dictionary size and the number training signals for each iteration can be
 speficied.
 
 \paragraph{Command line interface}
-The framework\\
+The framework provides a command line interface to the library to unleash its
+power.
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
 \begin{table}[H]
 \centering
 \begin{tabular}{ |l | l |}
+\hline
+\multicolumn{2}{|c|}{sparsecli}\\
+\hline
+parameter & description \\
 \hline
 --dict <file> & save or load dictionary to \emph{file}\\
 --dictSize <n> & size \emph{n} of the dictionary  \\
 --train <file> & use images listed in \emph{file} as training set\\
 --blockSize <n> & size \emph{n} of the image blocks \\
 --winSize <n> & distance \emph{n} of selection window \\
---coeffs <n> & size \emph{n} of coefficients \\
---error <n> & \\
 --resume & resume an interrupted learning process \\
+--merge <n> & merge dictionaries listed in \emph{file}  \\
 --input <file> & input \emph{file} for reconstruction \\
 --output & output \emph{file} of reconstruction \\ 
+--coeffs <n> & maximum of coefficients \emph{n} \\
+--error <n> & reconstruction or merge error \\
 
 \hline
 \end{tabular}

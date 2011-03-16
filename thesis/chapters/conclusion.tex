@@ -16,7 +16,7 @@ initialization.
 
 When extracting samples from JPEG images for
 learning don't use non-overlapping $8 \times 8$ unless you want to learn DCT
-atoms. 
+atoms. You can only learn what your data provides.
 
 Big training sets tend to get general. If the images fit into the same category
 it is insignificant which images you chose. The results will not much differ.
@@ -45,22 +45,16 @@ The experiments are just a first glimpse of that can de done to use sparse
 coding and dictionary learning for large image databases.
 
 
-\section{Summary}
-Over the course of this thesis we build a framework to sparse code and learn
-dictionaries from big sets of different samples as found in large image
-databases. We implemented the Batch-OMP and the LARS-Lasso sparse coding
-algorithms for $\ell_0$ and $\ell_1$ regularization and the ODL by Mairal et
-al. for learning dictionaries. 
-In addition to this we added a cluster learning and merging strategy to the
-framework to speed up learning of large dictionaries.
-We proposed a simple sparse coding based compression algorithm that can compete
-with and surpass JPEG compression in certain situations.
-
-
 \section{Future work}
 The amount of publications regarding sparse coding and machine learning in the
 last decade indicate strong ongoing research in this field. Especially
 brining structure to the learning stage is one of the most active topics.
+
+\subsection{Different training sets}
+One of our findings is the fact that we tend to learn from natural JPEG images.
+Testing with larger sets of images that did not go througth a JPEG compression
+is one major topic to adress in the future. Raw camera images or tiff images
+are a possible source. 
 
 \subsection{Framework improvements}
 To make further and more flexible experiments. The framework needs be be
@@ -88,20 +82,33 @@ about more advanced ways to structure these atoms or generation of atoms.
 
 \subsection{Compression improvements}
 
-
 \paragraph{Reducing block borders} The presented compression experiment
 takes a very simple approach without taking correlation between adjacent
 blocks into account. Similar to the JPEG block strategy. But other than
-the JPEG basis transforms the learned atoms are not locality in the frequency
-domain but also in the time domain. 
-The framework can be easily extended to
-learn and code different kinds of sub-images.
+the JPEG basis transforms the learned atoms are not limited to locality in the
+frequency domain. We also learned also in the time domain. 
+Splitting images in high and low pass sub images and learning multi-scale
+dictionaries for each sub image could improve image quality. The framework can
+be easily extended to learn and code different kinds of sub-images.
 
 \paragraph{Better entropy coding}
-The coding of the coefficients already works quiet good. 
+The coding of the coefficients already works quiet good. But the coding of the
+indicies is currently limited as the sparse coding algorithm tends to select a
+lot of different atoms. A structured sparse coding approach as mentioned in
+\prettyref{sec:sparse_related} could lead to less selected atoms and a better
+entropy encoding. Also the required bits for each index are not optimized yet.
 
 
-
+\section{Summary}
+Over the course of this thesis we build a framework to sparse code and learn
+dictionaries from big sets of different samples as found in large image
+databases. We implemented the Batch-OMP and the LARS-Lasso sparse coding
+algorithms for $\ell_0$ and $\ell_1$ regularization and the ODL by Mairal et
+al. for learning dictionaries. 
+In addition to this we added a cluster learning and merging strategy to the
+framework to speed up learning of large dictionaries.
+We proposed a simple sparse coding based compression algorithm that can compete
+with and surpass JPEG compression in certain situations.
 
 
 
