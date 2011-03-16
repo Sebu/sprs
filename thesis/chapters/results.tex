@@ -1,6 +1,19 @@
 \chapter{Experiements}
 %\section{Experiments}
 
+\section{Training sets}
+\prettyref{sec:learnForTheTask} mentions that one of the key
+elements of the learning algorithms is the learning of specialization
+dictionaries. Task specific training data is a common way to solve the problem
+of finding  the right dictionary. Here learning for the task comes into
+account. Such as de-noising or in-painting dictionaries directly learned from
+the initial signal that gets de-noised or restored from in-painting. If the task
+gets bigger it sounds logical to increase the size of training data and take a
+bigger variety of signals to learn from.  We have a closer look at differences
+of learned elements from a specific set of sketch images.
+% These sets include sketches, still images of animations from Disney and
+% post-impressionistic images from Vincent van Gogh.  
+
 \section{Performance measurement}
 Before we go further and present the experiments and results it is necessary to
 introduce some additional terms. Such as metrics to measure their performance.
@@ -138,18 +151,42 @@ dictionaries. We compared the reconstruction quality dependency on the average
 number of coefficients in the learning process. Both OMP
 (\prettyref{fig:coeffsOMP}) and LARS-Lasso (\prettyref{fig:coeffsLasso}) runs
 were made.
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width = 0.8\textwidth]{../tests/results/old/coeffsConverg.pdf}
 \caption{reconstruction quality for different training coefficients (OMP)}
 \label{fig:coeffsOMP}
 \end{figure}
+
 \begin{figure}[h]
 \centering
 \includegraphics[width = 0.8\textwidth]{../tests/results/coeffsConverg.pdf}
 \caption{reconstruction quality for different training coefficients (LARS)}
 \label{fig:coeffsLasso}
 \end{figure}
+
+\begin{figure}[H]
+\centering
+\subfloat[50,000]{\includegraphics[width =
+0.2\textwidth]{images/coeffsConvergOMP_0_1.jpg}}
+\hspace{15mm}
+\subfloat[1,000,000]{\includegraphics[width =
+0.2\textwidth]{images/coeffsConvergOMP_0_2.jpg}}
+\caption{evolution with 2 coefficents}
+\label{fig:coeffsOMPsamples}
+\end{figure}
+\begin{figure}[H]
+\centering
+\subfloat[50,000]{\includegraphics[width =
+0.2\textwidth]{images/coeffsConvergOMP_4_1.jpg}}
+\hspace{15mm}
+\subfloat[1,000,000]{\includegraphics[width =
+0.2\textwidth]{images/coeffsConvergOMP_4_2.jpg}}
+\caption{evolution with 10 coefficents}
+\label{fig:coeffsOMPsamples}
+\end{figure}
+
+
 
 Convergence of quality of different number of learning coefficients.
 With high number of learning coefficents convergence is reached faster than
@@ -230,6 +267,9 @@ convergence is reached.
 \label{fig:dictSizeOMP}
 \end{figure}
 
+We see two major things in this graph. First increasing dictionary size 
+And second convergence is almost reached after 1,000,000 - 2,000,000 training
+samples. 
 
 \begin{figure}[h]
 \centering
@@ -238,6 +278,7 @@ convergence is reached.
 \label{fig:dict size}
 \end{figure}
 
+Ok 
 In addition we compared the cluster approach performs in
 comparisons to a dictionary learned in single. Each client in the cluster
 calculated batches of 100--10,000 images based on the
@@ -258,11 +299,22 @@ images. We tested this by learning a dictionary from a set of sketch images and
 used it to compress sketches. A domain in which the JPEG compression performs
 bad.
 
+
+\begin{figure}[H]
+\centering
+\subfloat[natural dict]{\includegraphics[width =
+0.5\textwidth]{images/natural_dict.jpg}}
+\hspace{5mm}
+\subfloat[sketch dict]{\includegraphics[width =
+0.5\textwidth]{images/sketch_dict.jpg}}
+\caption{evolution with 2 coefficents}
+\label{fig:coeffsOMPsamples}
+\end{figure}
+
+
 Compression
 For the short time available the results show promising results in visual
 quality but still lack ...
-
-Using LARS-Lasso for training generates a good dictionary for LARS and OMP.
 
 
 % Difference in the selection strategy.
