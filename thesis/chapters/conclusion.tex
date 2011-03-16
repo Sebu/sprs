@@ -1,6 +1,4 @@
 \chapter{Conclusion}
-%\thispagestyle{empty}
-
 The experiments are just a first glimpse of that can de done to use sparse
 coding and dictionary learning for large image databases.
 
@@ -62,7 +60,7 @@ To make further and more flexible experiments. The framework needs be be
 extended in terms of speed and new dictionary learning strategies.
 
 \paragraph{Speed}
-While the implementation of the Batch-OMP and the OLD are already very fast
+While the implementation of the Batch-OMP and the ODL are already very fast
 the LARS-Lasso implementation is quiet slow compared to the KLT implmentation in
 the SPAMS framework. In the near future the SPAMS framework will provide a C++
 interface\footnote{\url{http://www.di.ens.fr/willow/SPAMS/faq.html}}. Adding
@@ -75,21 +73,14 @@ paintings, gray-scale sketches and smooth images animation. For example learning
 dictionaries for very specific classes of images can be used for classification
 tasks. Something that can come in handy when applying it to operations like
 search in large image databases.
-%We have shown that clustering can also lead to good dictionaries when the
-%training samples are 
-%With the current development in computer technologie to more
-%parallization in form of multi-core CPUs and cloud computing online learning. 
 
 \paragraph{Structure}
 The results gained on the appearance of the atoms can be used to think
 about more advanced ways to structure these atoms or generation of atoms.
-
-%\paragraph{Adaptive learning}
-%Thanks to the online approach of the training step an adaptive approach can be
-%used. 
-
+ 
 
 \subsection{Compression improvements}
+
 
 \paragraph{Reducing block borders} The presented compression experiment
 takes a very simple approach without taking correlation between adjacent
