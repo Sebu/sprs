@@ -10,12 +10,36 @@ account. Such as de-noising or in-painting dictionaries directly learned from
 the initial signal that gets de-noised or restored from in-painting. If the task
 gets bigger it sounds logical to increase the size of training data and take a
 bigger variety of signals to learn from.  We use da database of 100,000
-to 1,000,000 natural images collected from \url{flickr.com}. And we have a
+to 1,000,000 natural JPEG images collected from \url{flickr.com}. And we have a
 closer look at differences of learned elements from a smaller specific set of
-sketch images.
+sketch images in PNG format. (\prettyref{fig:database_images})
 %via clustered training with a large image
 % These sets include sketches, still images of animations from Disney and
 % post-impressionistic images from Vincent van Gogh.  
+
+\begin{figure}[h]
+\centering
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+% \hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+% \hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+% \hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch3.jpg}}
+\hspace{5mm}
+\caption{example images from natural image and sketch training sets}
+\label{fig:database_images}
+\end{figure}
 
 \section{Performance measurement}
 Before we go further and present the experiments and results it is necessary to
@@ -31,8 +55,8 @@ signals.
  MSE = \frac{1}{n} \sum_{i=0}^{n} \left( {\lVert x_i -
 \tilde{x}_i\rVert^{2}}\right)
 \end{equation*}
-We primarily use it for testing dictionary learning convergence and as a
-sub term for the measurement described in the next paragraph.
+%We primarily use it for testing dictionary learning convergence and as a
+%sub term for the measurement described in the next paragraph.
 
 \paragraph{Peak signal-to-noise ration (PSNR)} describes the ratio between the
 noise affecting a signal and the maximum possible signal amplitude. It is
@@ -74,29 +98,7 @@ reconstruction of the data in the training sets
 (\prettyref{fig:database_images}) it is mandatory to also use
 these image to test the reconstruction and
 compression quality. 
-\begin{figure}[h]
-\centering
-% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-% \hspace{5mm}
-% \subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
-% \hspace{5mm}
-% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
-% \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch3.jpg}}
-\hspace{5mm}
-\caption{example images from natural image and sketch training sets}
-\label{fig:database_images}
-\end{figure}
+
 
 
 In addition to this we want to know how good the dictionaries can reconstruct
@@ -123,7 +125,6 @@ Database}\footnote{\url{http://sipi.usc.edu/database/}}
 \label{fig:USC-SIPI}
 \end{figure}
 
-
 \section{Hardware setup} 
 Computations were made on a cluster of 100 clients. Each 
 configured with a AMD Athlon 64 X2 (2x2.6GHz) and 3GB RAM.
@@ -146,7 +147,7 @@ different samples with no reevaluation of the samples and dictionaries
 with much bigger redundancy of 10 to 50 times.
 
 
-\paragraph{Learning coefficents}
+\paragraph{Coefficents}
 An average of 10 learning coefficients is suggested as it produces enougth
 sparseness and leads to good and fast convergence of the dictionaries.
 We tested if this also applies to big numbers of samples and bigger
@@ -301,27 +302,30 @@ after 1,000,000 - 2,000,000 training samples. Second even this is a
 logarithmical scale increasing dictionary size tends to a reach a maximum. The
 problem is that big dictionaries do not learn enougth atoms leaving a lot of
 them unused. This can be addressed with tweaks to the learning parameters or by
-replacing unused atoms with elements from the training set. We addresed this
-issues with a new clustering approach from \prettyref{sec:clustering}.
+replacing unused atoms with elements from the training set. We tried a
+diffrent strategy and addresed this issues with a the clustering approach from
+\prettyref{sec:clustering}.
 
 \paragraph{Clustering}
 In addition we compared the cluster approach performs in
 comparisons to a dictionary learned in single. Each client in the cluster
-calculated batches of 100--10,000 images based on the
-size of the training sets.
+learned a dictionary from batches of 1,000 images.
+%based on the size of the training sets.
 
 \begin{table}[h]
 \centering
 \begin{tabular}{| l | c | c |}
 \hline\hline
-Images & single & cluster \\
+Images & single & merged \\
 \hline
 inside & $35.5104 \pm 0.0$ & $35.5104 \pm 0.0$  \\
-outside & $35.5104 \pm 0.0$ & $35.5104 \pm 0.0$ \\
+%outside & $35.5104 \pm 0.0$ & $35.5104 \pm 0.0$ \\
 \hline
 \end{tabular}
 \caption{single vs. cluster}
 \end{table}
+The merged dictionary can reconstruct images with equal quality as the big
+dictionary But consists of multiple smaller dictionaries learned in clusters.
 
 
 \newpage
@@ -339,8 +343,7 @@ bad. As discovered before the natural images like block sizes of $8\times 8$
 this is not necessarily true for the sketch images. They work fine with
 $16\times 16$ blocks and enable us to reduce the amount of blocks.
 \prettyref{fig:compressionDicts} shows the dictionaries. 
-Compression coding was done with the OMP as it turned out to work better with
-the quantization step of our algorithm. 
+
 
 \begin{figure}[h]
 \centering
@@ -382,7 +385,9 @@ the quantization step of our algorithm.
 
 For the short time available the results show promising results. Compression of
 natural images produces similar quality as the JPEG algorithm
-\prettyref{tab:compression1}.
+\prettyref{tab:compression1} but does not reach the JPEG 2000 quality. 
+Compression coding was done with the OMP as it turned out to work better with
+the quantization step of our algorithm. 
 
 \begin{table}[h]
 %\caption{single vs. cluster}
@@ -436,18 +441,20 @@ d & 0.74  & 35.9499 & 35.5104 & 39.4195 \\
 \subsection{Sketches}
 The results get even better when looking at the sketch images
 (\prettyref{fig:sketches}). Our algorithm can surpass the JPEG compression
-(\prettyref{tab:compression}). \prettyref{fig:magnified} show some magnified
-segments of the images to ilustrate the reconstruction features.
+(\prettyref{tab:compression2}). \prettyref{fig:magnified} show some magnified
+segments of image \ref{fig:sketch3} to ilustrate the reconstruction features.
+There are less artifacts than in the JPEG images. The line segment atoms from
+the dictionary show similarities to the wavelet based JPEG 2000 compression.
 
 \begin{figure}[h]
 \centering
 \setcounter{subfigure}{0}
-\subfloat[]{\includegraphics[width =
-0.3\textwidth]{images/sketch1.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
 \hspace{5mm}
 \subfloat[]{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
 \hspace{5mm}
-\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/sketch3.jpg}}
+\subfloat[]{\includegraphics[width =
+0.3\textwidth]{images/sketch3.jpg}\label{fig:sketch3}}
 \hspace{5mm}
 \caption{sketches}
 \label{fig:sketches}
@@ -472,14 +479,17 @@ c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 
 \begin{figure}[H]
 \centering
-\subfloat[sprs]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+\subfloat[original]{\includegraphics[width =
+0.3\textwidth]{images/sketch_png.png}}
 \hspace{5mm}
+\subfloat[SPRS]{\includegraphics[width =
+0.3\textwidth]{images/sketch_sprs.png}}
+\hspace{25mm}
 \subfloat[JPEG]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+0.3\textwidth]{images/sketch_jpeg.png}}
 \hspace{5mm}
 \subfloat[JPEG2000]{\includegraphics[width =
-0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
+0.3\textwidth]{images/sketch_2000.png}}
 \caption{}
 \label{fig:magnified}
 \end{figure}

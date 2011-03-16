@@ -235,37 +235,6 @@ samples.
 
 \section{Application to image compression}
 \label{sec:compression}
-Todays lossy image compression algorithms are primary based on scientific
-findings about visual perception reaching far back in the 1970s\cite{?}
-The human eye is good at sensing small difference in brightness but lacks the
-ability exactly differentiate small changes in color. \emph{Chroma sub-sampling}
-takes advantage of this human flaw. First the image gets converted into the
-$YC_bC_r$ color space, which describes an image in a brightness/luminance (Y)
-and two color/chroma components (Cb and Cr). Then the visual more relevant
-brightness/luminance channel will be coded in the full resolution while the
-color/chroma components can be sub-sampled with only minor loss in perceptual
-quality. This procedure
-%, illustrated in fig. \ref{fig:YCbCr},
-is one key element in lossy image compression. 
-Afterwards 
-Quantization and good entropy encoding of the data.
-% \begin{figure}[h]
-% \centering
-% %\includegraphics[scale = 0.25]{images/chroma_subsample.pdf}
-% \includegraphics[scale = 0.25]{images/segmentation.png}
-% \label{fig:YCbCr}
-% \caption{RGB $\rightarrow$ YCbCr}
-% \end{figure}
-These steps can also be applied to sparse coding. Both elements
-led to to the following main steps in lossy image compression algorithms:
-\begin{itemize}
- \item lossy color space conversion
- \item sub-sampling and spatial separation
- \item transformation of image signals
- \item quantization to reduce of the number of non-zero coefficient 
- \item lossless entropy coding of the coefficient 
-\end{itemize}
-
 Experiment on sparse coding as a tool for compression have been done
 before\cite{Lewicki1999,Murray2006} but mainly in theory with learned
 dictionaries and generated generated dictionaries of wavelets bases. Leading to
@@ -276,14 +245,32 @@ a very specific algorithm for facial compression. We add quantization and
 entropy encoding after the sparse coding step to develop a simple real world
 compression algorithm for sparse coding images.
 
-%We already describe the first two steps in
-%section\ref{sec:signal_representation}. So we will concentrate on the last
-%three.
-%As learned dictionary elements show also locality in time like , 
-%But real practical application is an open question
+Todays lossy image compression algorithms are primary based on scientific
+findings about visual perception reaching far back in the 1970s.
+They consits of the following main steps:
+% in lossy image compression algorithms:
+\begin{itemize}
+ \item lossy color space conversion
+ \item sub-sampling and spatial separation
+ \item transformation of image signals
+ \item quantization to reduce of the number of non-zero coefficient 
+ \item lossless entropy coding of the coefficient 
+\end{itemize}
 
+\paragraph{Color conversion and sub-sampling} The human eye is good at sensing
+difference in brightness but lacks the ability exactly differentiate small
+changes in color. \emph{Chroma sub-sampling} takes advantage of this human flaw.
+First the image gets converted into the $YC_bC_r$ color space, which describes
+an image in a brightness/luminance (Y) and two color/chroma components (Cb and
+Cr). Then the visual more relevant brightness/luminance channel will be coded in
+the full resolution while the color/chroma components can be sub-sampled with
+only minor loss in perceptual quality. This procedure is one key element of JPEG
+and JPEG 2000 image compression to reduce the number of coefficients for each
+color channel. But our atoms already capture color information. So we are
+skipping this step. 
+%Splitting the image
 
-\paragraph{Signal coding}
+\paragraph{Spartial separation and cignal coding}
 The actual coding step of the prepared signals. The signal vectors $\vec{x}_i$
 of $\mat{X}$ consists of $n \times n$ non overlapping blocks from the image.
 With $n$ in the range of $n=8,..,12$. A similar block size and separation
@@ -312,8 +299,8 @@ weight our element by their frequencies. Learning dictionaries with the
 algorithm we present in \prettyref{sec:mairal} leads to a random distribution of
 atoms with yet unknown information of their structure and frequency. We analysis
 the dictionary elements and sort them by their frequencies.
-\prettyref{fig:sorted} illustrates an example of this.
-
+\prettyref{fig:sorted} illustrates an example of this. Weigths are applied
+in a simple linear way over the number of elements.
 
 \begin{figure}[h]
 \centering
@@ -325,16 +312,11 @@ the dictionary elements and sort them by their frequencies.
 \paragraph{Data encoding}
 Compression of the remaining coefficient after quantization is the next step
 of to reduce the amount of data that needs to be stored.
-%In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
-%the bpp required for encoding of the sparse matrix data. Besides the estimation
-%of the compression we also really applied some coding schemes to compare real
-%world compression data.
-%\cite{Murray2006}
+
 \begin{description}
  \item[Run-length encoding (RLE)] Is the process of encoding data in blocks of
 data value and corresponding run-length of data with the same value. 
 For example the sequence {\bf dddddddbbbddddd} becomes {\bf7d3b5d}.
-
 The main requirement to work well is that the data consists of larger groups of
 the same
 data.
@@ -353,9 +335,12 @@ matrix is zero. Afterwards the remaining data gets huffman coded.
 Besides the raw pixel data, images formats usually contain a certain amount
 of extra data from file headers and meta data. Fortunately we can ignore this
 for simplification as it is only a few bytes and not being actual pixel data.
-%As mentioned in \prettyref{sec:headers} we are aware of the fact that besides
-%the actual sparse matrix data we also have other file informations and meta
-%data but ignore them for simplification.
+
+%In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
+%the bpp required for encoding of the sparse matrix data. Besides the estimation
+%of the compression we also really applied some coding schemes to compare real
+%world compression data.
+%\cite{Murray2006}
 
 
 \section{Implementation}

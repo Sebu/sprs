@@ -38,7 +38,7 @@ dictionaries.
 \hspace{5mm}
 \subfloat[gabor wavelet]{\includegraphics[width =
 0.3\textwidth]{images/gabor.jpg}}
-\caption{generated bases (Lewicki et al.\cite{Lewicki1999})}
+\caption{generated atoms (Lewicki et al.\cite{Lewicki1999})}
 \label{fig:generated_atoms}
 \end{figure}
 
@@ -345,27 +345,24 @@ and encoded as one signal rather than with four smaller ones.\cite{Mairal2007}
 \paragraph{Double sparsity}
 In 2009 Rubinstein et al.\cite{Rubinstein2009} presented the idea of double
 sparsity. Instead of directly using a collection of learned atoms as element for
-dictionary $\vec{D}$. This approach uses sparse coding to encode the atoms of a
-bigger $\vec{D}$ dictionary with the help of a smaller dictionary $\vec{B}$ and
-a sparse matrix $\vec{A}$. 
-\begin{align*}
-\mat{D}=\mat{B}\mat{A}
-\end{align*}
-
-
-\paragraph{Hierarchy}%$A_0  \gets tI$ and $B_0 \gets tD$
-Jenatton et al. showed in 2010\cite{Jenatton2010} that adding hierarchy to
-dictionaries can lead to faster coding of signals and capture additional
-information about the learned dictionaries. While Dictionaries get are learned 
-
+dictionary $\vec{D}$. This approach uses a second sparse coding step to encode
+the atoms of a bigger $\vec{D}$ dictionary with the help of a smaller dictionary
+$\vec{B}$ and a sparse matrix $\vec{A}$. Leading to a reconstruction of
+$\mat{D}=\mat{B}\mat{A}$.
 
 \paragraph{Classification} of object can be achieved by learning
-individual dictionaries for each object group. Then  
-Examples for sparse coding being used for classification tasks can
-be found in \cite{Grosse2007,Mairal2008,Mairal2008b,Bar2009}.
-%\cite{?} validation of fake paintings. 
+individual dictionaries $(\mat{D}_{-},\mat{D}_{+})$ and for each group of
+signal $(\mat{S}_{-},\mat{S}_{+})$. A signal $\vec{x}$ can then be classified
+by $\min \left( \ell(\vec{x}\mat{D}_{-}),\ell(\vec{x}.\mat{D}_{+}) \right)$.
+Examples for sparse coding being used for classification tasks can be found in
+\cite{Grosse2007,Mairal2008,Mairal2008b,Bar2009}.
 
-%\paragraph{Edge detection}\cite{Mairal2008c}
+\paragraph{Hierarchy} Jenatton et al. showed in 2010\cite{Jenatton2010} that
+adding hierarchy to dictionaries can lead to faster coding of signals and
+capture additional information about the learned dictionaries. While
+dictionaries are learned the atoms are organized in a tree structure.
+Under the constraint that child atoms require that their parents are part of
+a sparse selection. 
 
 
 

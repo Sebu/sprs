@@ -30,8 +30,9 @@ But you need a certain amount of coefficients of about $L \ge 10$.
 But when it comes to compression tasks the greedy OMP yields better results
 than the Lasso with requirement for less coefficients. 
 Our compression algorithm yields leads to similar compression ratio as JPEG
-and surpasses it in certain situations. Both are highly optimized lossy image
-compression algorithms.  Years of research went into observation human vision. 
+and surpasses it in certain situations. But currently a lot of tweeking to the
+quantization step is required. Both are highly optimized lossy image
+compression algorithms. Years of research went into observation human vision. 
 Especially the quantization and and the entropy encoding step are highly
 optimized for specific data. It is hard to compete with JPEG, the market leader
 in this field.  Even JPEG 2000, which leads to better results than JPEG
@@ -39,7 +40,6 @@ especially in the area block artifacts, did not catch up with the success of
 JPEG.  The reason lies in the potential patent issues and higher computational
 requirements of the algorithm compared to the quality benefits annd the wide
 acceptance of JPEG.
-
 
 The experiments are just a first glimpse of that can de done to use sparse
 coding and dictionary learning for large image databases.
@@ -81,6 +81,7 @@ about more advanced ways to structure these atoms or generation of atoms.
  
 
 \subsection{Compression improvements}
+
 
 \paragraph{Reducing block borders} The presented compression experiment
 takes a very simple approach without taking correlation between adjacent
