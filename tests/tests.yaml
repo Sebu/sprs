@@ -34,12 +34,12 @@ dictSizeTest:
     
 dictSizeOMPTest: 
   desc: test images with block sizes
-  clients: [c61, c62, c63, c64, c65, c66, c67, c51]
+  clients: [c13, c14, c15, c16, c17, c51, c67, c51]
   jobs: 6
   params:
     dictSize: [300, 600, 1200, 1800, 2400, 3200]
     mode: dictSize
-    coeffs: 8
+    coeffs: 2
     blockSize: 8 
     channels: 3 
     mode: 1
@@ -64,12 +64,12 @@ dictSizeOMP1:
 
 dictSizeLassoTest: 
   desc: test images with block sizes
-  clients: [c41, c42, c43, c44, c45, c46, c47, c52]
+  clients: [c13, c14, c15, c16, c17, c51, c47, c52]
   jobs: 6
   params:
     dictSize: [300, 600, 1200, 1800, 2400, 3200]
     mode: dictSize
-    coeffs: 8 
+    coeffs: 2 
     blockSize: 8 
     channels: 3 
     mode: 1
@@ -93,7 +93,7 @@ dictSizeLasso1:
 
 coeffsConverg1Test: 
   desc: convergence of dict coefficients
-  clients: ['c21', 'c22', 'c23', 'c24', 'c11']
+  clients: ['c13', 'c14', 'c15', 'c16', 'c17']
   jobs: 5
   params:
     coeffs: 10 
@@ -125,7 +125,7 @@ coeffsConverg1:
     
 blockSizeConverg1Test: 
   desc: convergence of block sizes
-  clients: ['c12', 'c32', 'c33', 'c34', 'c35', 'c36']
+  clients: ['c13', 'c14', 'c15', 'c16', 'c17', 'c51']
   jobs: 6
   params:  
     blockSize: [8, 10, 12, 14, 16, 20]
