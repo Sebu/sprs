@@ -22,7 +22,7 @@ When dealing with multi-channel data (e.g. RGB images) each channel can be coded
 separate or as a concatenation of each signal into a single one. These
 approaches can lead to color bleeding \cite{mairal08sparse}. \Todo{add picture}
 %Nevertheless 
-A solution would be to add a constraint to the sparse coding that pays
+A solution is to add a constraint to the sparse coding that pays
 attention to correlation of the channels. \Todo{add formula from paper} 
 Fortunately Mairal et al. also noticed that this problem vanishes with big
 dictionaries and large training sets as present in our experiments.
@@ -299,7 +299,7 @@ weight our element by their frequencies. Learning dictionaries with the
 algorithm we present in \prettyref{sec:mairal} leads to a random distribution of
 atoms with yet unknown information of their structure and frequency. We analysis
 the dictionary elements and sort them by their frequencies.
-\prettyref{fig:sorted} illustrates an example of this. Weigths are applied
+\prettyref{fig:sorted} illustrates an example of this. Weights are applied
 in a simple linear way over the number of elements.
 
 \begin{figure}[h]

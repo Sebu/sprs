@@ -162,20 +162,20 @@ order=-1
 
 [item:chapters/conclusion.tex]
 archive=true
-column=0
+column=2
 encoding=UTF-8
 highlight=LaTeX
-line=43
+line=26
 mode=LaTeX
-open=false
-order=2
+open=true
+order=1
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=18
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=364
+line=357
 mode=LaTeX
 open=false
 order=0
@@ -192,30 +192,30 @@ order=4
 
 [item:chapters/method.tex]
 archive=true
-column=50
+column=13
 encoding=UTF-8
 highlight=LaTeX
-line=302
+line=24
 mode=LaTeX
-open=true
+open=false
 order=1
 
 [item:chapters/overview.tex]
 archive=true
-column=6
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=117
+line=81
 mode=LaTeX
 open=false
 order=2
 
 [item:chapters/results.tex]
 archive=true
-column=14
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=484
+line=233
 mode=LaTeX
 open=true
 order=0
@@ -262,10 +262,10 @@ order=5
 
 [item:thesis.tex]
 archive=true
-column=31
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=1
+line=0
 mode=LaTeX
 open=false
 order=3
@@ -289,28 +289,28 @@ CursorColumn=10
 CursorLine=26
 
 [view-settings,view=0,item:chapters/conclusion.tex]
-CursorColumn=0
-CursorLine=43
+CursorColumn=2
+CursorLine=26
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=18
-CursorLine=364
+CursorColumn=0
+CursorLine=357
 
 [view-settings,view=0,item:chapters/introduction.tex]
 CursorColumn=49
 CursorLine=38
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=50
-CursorLine=302
+CursorColumn=13
+CursorLine=24
 
 [view-settings,view=0,item:chapters/overview.tex]
-CursorColumn=6
-CursorLine=117
+CursorColumn=0
+CursorLine=81
 
 [view-settings,view=0,item:chapters/results.tex]
-CursorColumn=14
-CursorLine=484
+CursorColumn=0
+CursorLine=233
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
 CursorColumn=66
@@ -325,8 +325,8 @@ CursorColumn=0
 CursorLine=34
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=31
-CursorLine=1
+CursorColumn=0
+CursorLine=0
 
 [view-settings,view=0,item:todo.txt]
 CursorColumn=19

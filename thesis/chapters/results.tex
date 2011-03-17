@@ -99,8 +99,6 @@ reconstruction of the data in the training sets
 these image to test the reconstruction and
 compression quality. 
 
-
-
 In addition to this we want to know how good the dictionaries can reconstruct
 and compress images outside of the database respectifly the training set. For
 those comparisons we use a selection (\prettyref{fig:USC-SIPI}) from a
@@ -207,21 +205,22 @@ dict. size & block size & batch size \\
 \label{fig:coeffsOMP2000}
 \end{figure}
 
-
-
-Convergence of quality of different number of learning coefficients.
+%Convergence of quality of different number of learning coefficients.
 With high number of learning coefficents convergence is reached faster than
 with a low number of coefficents but for large dicts fewer coefficents lead to
 better reconstruction quality with larger training sets.
 
-Allover LARS-Lasso produces dictionaries with better reconstruction quality
-than the OMP. 
+Allover we noticed that the LARS-Lasso produces dictionaries with better
+reconstruction quality than the OMP. We concentrated our futher learning
+experiments on the LARS-Lasso. 
 
 \paragraph{Block size}
-Afterwards we compared the reconstruction quality dependency on block size in
-the learning process of natural images. A LARS-Lasso run with block sizes of
-$n=8,..,20$ were made. The dictionary size for each experiment was two times the
-size of the coresponding signal $m=n\times n$. 
+After the coefficents tests we compared the reconstruction quality dependency on
+block size in the learning process of natural images. A LARS-Lasso run with
+block sizes of $n=8,..,20$ were made. The dictionary size for each run was two
+times the size of each signal $2m=2n^2$. And for the convergence test the
+reconstruction coefficents were adjusted with an avarage of 8 coefficents for 64
+pixels.
 
 \begin{figure}[h]
 \centering
@@ -231,30 +230,22 @@ size of the coresponding signal $m=n\times n$.
 \label{fig:dict size}
 \end{figure}
 
-Convergence of quality of different block sizes.
-The $8\times8$ block size when we look at the structure.
+Difference of quality of different block sizes.
+
+The $8\times8$ block size has a significant better reconstruction quality. 
+When we have a closer look at the structure of the atoms we will start to
+understand why.
 
 \paragraph{Structure}
-Our training sets consists of JPEG images.
-While testing with alle the different parameter
-At then end we want to know how the structure of the learned atoms from natural
-images looks like. Do they resemble known structures from designed dictionaries?
-How do these learned structures change with the block size of the atoms?
-What structure show samples from other groups of images?
-
-Appearance 
+Our training sets consists of JPEG images. 
+%Do they resemble known structures from designed dictionaries? 
+%How do these learned structures change with the block size of the atoms?
+%What structure show samples from other groups of images?
 Learn basis similar to DCT and wavelets/bandelets(time and freq locality) with
-increasing block size. Use to verify if it is a jpeg image?
-Similar to natural images.
-compression dicts
-Dictionaries to universal ... improved results to DCT .. but varying with field
-of application. possible no universal solution but a good way for better
-understanding of the key elements
-  four major types of elements
-  gradient, checkerboard (low color more b/w), spot, edge
-Better understanding the selection strategies of the algorithm and their
-meaning for perceptional image quality. And evolution of the structure of
-learned dictionaries. 
+increasing block size.
+
+For the natural images we tend to learn four major types of elements gradient,
+checkerboard (low color more b/w), spot, edge.
 
 \begin{figure}[h]
 \centering
@@ -268,8 +259,9 @@ learned dictionaries.
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/wavelet.png}}
 \caption{common atoms}
-%\label{fig:}
 \end{figure}
+
+While looking at this we investigate some atoms of the sketch dictionary.
 
 \paragraph{Mini-batch size}
 For the small training sets Mairal et al. suggest mini-batch size of two to four
@@ -281,7 +273,21 @@ and we stuck to these sizes.
 After we found good settings to learn from large sets of different images we
 wanted to know how big we can make the dictionaries and still profit from them.
 And if reconstruction quality increases with dictionaries size and when
-convergence is reached.
+convergence is reached. 
+
+\begin{table}[H]
+%\caption{Configuration}
+\centering
+\begin{tabular}{| c | c | c |}
+\hline
+\multicolumn{3}{|c|}{configuration}\\
+\hline
+coefficents & block size & batch size \\
+\hline
+10 & $8\times 8$ & 4000  \\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[h]
 \centering
@@ -301,10 +307,10 @@ We see two things in this graphs. First convergence is almost reached
 after 1,000,000 - 2,000,000 training samples. Second even this is a
 logarithmical scale increasing dictionary size tends to a reach a maximum. The
 problem is that big dictionaries do not learn enougth atoms leaving a lot of
-them unused. This can be addressed with tweaks to the learning parameters or by
-replacing unused atoms with elements from the training set. We tried a
-diffrent strategy and addresed this issues with a the clustering approach from
-\prettyref{sec:clustering}.
+them unused. This can be addressed with tweaks to the learning parameters like
+increased number of learning coefficents. Or by replacing unused atoms with
+elements from the training set. We tried a diffrent strategy and addresed this
+issues with a the clustering approach from \prettyref{sec:clustering}.
 
 \paragraph{Clustering}
 In addition we compared the cluster approach performs in
@@ -325,16 +331,17 @@ inside & $35.5104 \pm 0.0$ & $35.5104 \pm 0.0$  \\
 \caption{single vs. cluster}
 \end{table}
 The merged dictionary can reconstruct images with equal quality as the big
-dictionary But consists of multiple smaller dictionaries learned in clusters.
+dictionary. But consists of multiple smaller dictionaries learned in clusters.
 
 
 \newpage
 \section{Compression}
 Besides the ability of learned dictionaries 
-we used the simple compression algorithm from \prettyref{sec:compression} .
+we used the simple compression algorithm from \prettyref{sec:compression}.
 and compared it to a collection of JPEG and JPEG 2000 compressed images with the
 same file size. The objective was to investigate the compression ratio and if
 the extra amount of index data is a big hit on the overall load.
+
 One benefit of the learned dictionary approach that plays well in our
 hands is the ability to to learn and use specific dictionaries for each group of
 images. We tested this by learning a dictionary from a set of sketch images and
@@ -387,7 +394,7 @@ For the short time available the results show promising results. Compression of
 natural images produces similar quality as the JPEG algorithm
 \prettyref{tab:compression1} but does not reach the JPEG 2000 quality. 
 Compression coding was done with the OMP as it turned out to work better with
-the quantization step of our algorithm. 
+the quantization step of our algorithm and requires less coefficents. 
 
 \begin{table}[h]
 %\caption{single vs. cluster}
@@ -405,42 +412,12 @@ d & 0.74  & 35.9499 & 35.5104 & 39.4195 \\
 \end{tabular}
 \caption{natural image compression results}
 \label{tab:compression1}.
-\end{table}
-
-% \begin{figure}[H]
-% \centering
-% \subfloat[sprs ]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% \hspace{5mm}
-% \subfloat[JPEG]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% \hspace{5mm}
-% \subfloat[JPEG2000]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% %\caption{}
-% %\label{fig:16_1000_lasso}
-% \end{figure}
-
-% \begin{figure}[H]
-% \centering
-% \subfloat[sprs]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% \hspace{5mm}
-% \subfloat[JPEG]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% \hspace{5mm}
-% \subfloat[JPEG2000]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% %\caption{}
-% %\label{fig:16_1000_lasso}
-% \end{figure}
-
-
+\end{table} 
 
 \newpage
 \subsection{Sketches}
 The results get even better when looking at the sketch images
-(\prettyref{fig:sketches}). Our algorithm can surpass the JPEG compression
+(\prettyref{fig:sketches}). Our algorithm can surpasses the JPEG compression
 (\prettyref{tab:compression2}). \prettyref{fig:magnified} show some magnified
 segments of image \ref{fig:sketch3} to ilustrate the reconstruction features.
 There are less artifacts than in the JPEG images. The line segment atoms from
@@ -494,19 +471,6 @@ c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 \label{fig:magnified}
 \end{figure}
 
-% \begin{figure}[H]
-% \centering
-% \subfloat[sprs]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% \hspace{5mm}
-% \subfloat[JPEG]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% \hspace{5mm}
-% \subfloat[JPEG2000]{\includegraphics[width =
-% 0.3\textwidth]{images/16_1000_1000_10_lasso.png}}
-% %\caption{}
-% %\label{fig:16_1000_lasso}
-% \end{figure}
 
 % This chapter shows the results and discussion for the following experiments.
 % % Reconstruction quality is mean of PSNR of images inside and outside of

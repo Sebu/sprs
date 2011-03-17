@@ -16,10 +16,21 @@ initialization.
 
 When extracting samples from JPEG images for
 learning don't use non-overlapping $8 \times 8$ unless you want to learn DCT
-atoms. You can only learn what your data provides.
+atoms or want to verify if it is a jpeg image. 
 
-Big training sets tend to get general. If the images fit into the same category
-it is insignificant which images you chose. The results will not much differ.
+Big training sets tend to get universal. If the images fit into the same
+category it is insignificant which images you chose. The results will not much
+differ.
+%Dictionaries to universal ... improved results to DCT .. but varying with field
+%of application. possible no universal solution but a good way for better
+%understanding of the key elements
+% Better understanding the selection strategies of the algorithm and their
+% meaning for perceptional image quality. And evolution of the structure of
+% learned dictionaries.
+% Similar to natural images.
+% compression dicts
+
+You can only learn what your data provides.
 
 Clustering learning strategies can help to learn faster and overcome
 convergence in the reconstruction quality of big dictionaries.
