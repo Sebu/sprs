@@ -241,8 +241,8 @@ int main(int argc, char *argv[])
         std::string nameStr;
         for(int i=1; i<150; i++) {
             std::ostringstream o;
-//            o << dictFile << i << ".dict";
-            o << dictFile;
+            o << dictFile << i << ".dict";
+//            o << dictFile;
             dict.load( o.str().c_str() );
             std::ifstream ifs( (inputFiles).c_str() );
             std::cout << dict.meta_->samples_;
