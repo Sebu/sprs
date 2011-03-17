@@ -238,17 +238,24 @@ int main(int argc, char *argv[])
     }
 
     if(inputFiles!="") {
-//        std::string nameStr;
-//        ifs >> nameStr;
-//        while( !ifs.eof() ) {
-        for(int i=1; i<100; i++) {
+        std::string nameStr;
+        for(int i=1; i<150; i++) {
             std::ostringstream o;
             o << dictFile << i << ".dict";
+//            o << dictFile;
             dict.load( o.str().c_str() );
-            Samples samples;
-            samples.loadImage(inputFiles, blockSize, channels, blockSize);
-            samples.saveImage(outputFile, dict, *coder, blockSize);
-//            ifs >> nameStr;
+            std::ifstream ifs( (inputFiles).c_str() );
+            std::cout << dict.meta_->samples_;
+            std::string nameStr;
+            ifs >> nameStr;
+            while( !ifs.eof() ) {
+                Samples samples;
+//                std::cout << nameStr << std::endl;
+                samples.loadImage(nameStr, blockSize, channels, blockSize);
+                samples.saveImage(outputFile, dict, *coder, blockSize);
+                ifs >> nameStr;
+            }
+            std::cout << std::endl;
 
         }
     }
@@ -257,10 +264,12 @@ int main(int argc, char *argv[])
 
         dict.load( dictFile.c_str() );
         dict.sort();
+//        dict.debugSaveImage( (dictFile + ".png").c_str() );
+//        dict.save( dictFile.c_str() );
         std::cout << "input:" << inputFile << std::endl;
         Samples samples;
-        samples.loadImage(inputFile, blockSize, channels, 2);
-        samples.saveImage(outputFile, dict, *coder, 2);
+        samples.loadImage(inputFile, blockSize, channels, blockSize);
+        samples.saveImage(outputFile, dict, *coder, blockSize);
 
 
     }

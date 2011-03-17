@@ -1,0 +1,4 @@
+../../tests/4.2.03.tiff
+../../tests/4.2.04.tiff
+../../tests/4.2.05.tiff
+../../tests/4.2.07.tiff
