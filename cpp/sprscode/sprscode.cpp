@@ -133,7 +133,7 @@ void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 //        std::cout << pos << " " << (double)coeffs_[i] << " " << row << " " << col << " " << indices_[i] << std::endl;
         if(coeffs_[i]) {
 //            std::cout <<  A.coeffRef(row,col) << " "  << (double)coeffs_[i] << std::endl;
-            A.coeffRef(row,col) = (double)coeffs_[i]*(40.0+(double)row/100.0);
+            A.coeffRef(row,col) = (double)coeffs_[i]*(15.0+(double)row/100.0);
         }
     }
 //    for(int col=0; col<A.cols(); ++col) {

@@ -1,4 +1,4 @@
-\chapter{Sparse coding}
+\chapter{Sparse Coding}
 \label{chap:sparse_coding}
 %Back to our initial problem of\ref{sec:dicts} $x = D\alpha$
 
@@ -262,7 +262,8 @@ i \gets \argmax_{i \in A^C} \lvert \left<\vec{d_i},\vec{r}\right> \rvert
 \end{equation*}
 \STATE update coefficients: 
 \begin{align}
-\vec{\alpha}_A \gets \left( \mat{D}_A^T \mat{D}_A \right)^{-1} \mat{D}_A^T x 
+\vec{\alpha}_A \gets \left( \mat{D}_A^T \mat{D}_A \right)^{-1}
+\mat{D}_A^T\vec{x} 
 \label{eq:omp_update}
 \end{align}\label{alg:OMP_DTD}
 \STATE update residual: $\vec{r} \gets \vec{x}-\mat{D}_A\vec{\alpha}_A$
@@ -361,7 +362,8 @@ the algorithm selects only one column.
 The first limitation is not relevant for our experiments as our dictionaries
 are over-complete, with respect to the dimension $m$ of signal $\vec{x}$ and
 thus, satisfy $m \leq p$. 
-\begin{algorithm}[h]
+\newpage
+\begin{algorithm}[H]
 \caption{LARS-Lasso}
 \label{alg:lars}
 \begin{algorithmic}[1]
@@ -378,11 +380,13 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \end{equation*}
 \STATE maximum correlation: $c_{max} \gets c_i $ %\left<d_a,r\right> $
 \STATE update active set: $A \gets A \cup \left\{i\right\} $
-\STATE\COMMENT {calculate movement into least-squares direction}
-\STATE signs of the correlations: $\vec{s} \gets  sign\left(\vec{c}_A\right)$
-\STATE $\tilde{\mat{D}_A} \gets \mat{D}_A\left(\ldots s_i\vec{d}_i
+%\STATE\COMMENT {calculate movement into least-squares direction}
+\STATE get signs of the correlations: $\vec{s} \gets 
+sign\left(\vec{c}_A\right)$
+\STATE apply signs to columsn: $\tilde{\mat{D}_A} \gets \mat{D}_A\left(\ldots
+s_i\vec{d}_i
 \ldots\right)_{i\in A}$
-\STATE $\mat{G}_A \gets \tilde{\mat{D}_A}^T\tilde{\mat{D}_A}$
+\STATE pre-calculate: $\mat{G}_A \gets \tilde{\mat{D}_A}^T\tilde{\mat{D}_A}$
 \STATE calculate angle: $\beta \gets \sqrt{ \vec{1}_A^{-1} \mat{G}_A^{-1}
 \vec{1}_A}$
 \STATE calculate weights: $\vec{w} \gets \beta\mat{G}_A^{-1}\vec{1}_A$
@@ -398,7 +402,7 @@ i \gets \argmax_{i \in A^C} \lvert c_i  \rvert % \left<d_i,x-\mu_{j}\right>
 \frac{c_{max}+\left< \vec{x},\vec{d}_j \right>}{1+\left< \vec{d}_i,\vec{d}_j
 \right> } \right\rbrace
 \end{equation*}
-\IF {\COMMENT {Lasso modification}} 
+\IF {(Lasso modification)} 
 %drop coefficient from active set that change sign
 \STATE $ \tilde{\gamma} \gets -\vec{\alpha}_n/\vec{s}^T\vec{w}  $
 \STATE $ i \gets \min_{i\in A}^{+} \left( \tilde{\gamma}_i \right) $

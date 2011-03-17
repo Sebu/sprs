@@ -32,6 +32,14 @@ Indentation Mode=
 Mode=LaTeX
 ReadWrite=true
 
+[document-settings,item:chapters/acknowledgements.tex]
+Bookmarks=
+Encoding=UTF-8
+Highlighting=LaTeX
+Indentation Mode=
+Mode=LaTeX
+ReadWrite=true
+
 [document-settings,item:chapters/conclusion.tex]
 Bookmarks=
 Encoding=UTF-8
@@ -132,21 +140,21 @@ order=5
 
 [item:chapters/abstract.tex]
 archive=true
-column=10
+column=20
 encoding=UTF-8
 highlight=LaTeX
-line=26
+line=28
 mode=LaTeX
 open=false
 order=3
 
 [item:chapters/acknowledgements.tex]
 archive=true
-column=0
-encoding=
-highlight=
-line=0
-mode=
+column=1
+encoding=UTF-8
+highlight=LaTeX
+line=15
+mode=LaTeX
 open=false
 order=-1
 
@@ -162,40 +170,40 @@ order=-1
 
 [item:chapters/conclusion.tex]
 archive=true
-column=2
+column=29
 encoding=UTF-8
 highlight=LaTeX
-line=26
+line=55
 mode=LaTeX
-open=true
+open=false
 order=1
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=0
+column=30
 encoding=UTF-8
 highlight=LaTeX
-line=357
+line=301
 mode=LaTeX
-open=false
-order=0
+open=true
+order=1
 
 [item:chapters/introduction.tex]
 archive=true
-column=49
+column=26
 encoding=UTF-8
 highlight=LaTeX
-line=38
+line=27
 mode=LaTeX
 open=false
 order=4
 
 [item:chapters/method.tex]
 archive=true
-column=13
+column=32
 encoding=UTF-8
 highlight=LaTeX
-line=24
+line=111
 mode=LaTeX
 open=false
 order=1
@@ -205,7 +213,7 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=81
+line=10
 mode=LaTeX
 open=false
 order=2
@@ -215,27 +223,27 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=233
+line=341
 mode=LaTeX
 open=true
 order=0
 
 [item:chapters/sparse_coding.tex]
 archive=true
-column=66
+column=8
 encoding=UTF-8
 highlight=LaTeX
-line=466
+line=364
 mode=LaTeX
 open=false
 order=5
 
 [item:chapters/title.tex]
 archive=true
-column=16
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=29
+line=36
 mode=LaTeX
 open=false
 order=2
@@ -262,10 +270,10 @@ order=5
 
 [item:thesis.tex]
 archive=true
-column=0
+column=44
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=37
 mode=LaTeX
 open=false
 order=3
@@ -285,48 +293,52 @@ CursorColumn=11
 CursorLine=10
 
 [view-settings,view=0,item:chapters/abstract.tex]
-CursorColumn=10
-CursorLine=26
+CursorColumn=20
+CursorLine=28
+
+[view-settings,view=0,item:chapters/acknowledgements.tex]
+CursorColumn=1
+CursorLine=15
 
 [view-settings,view=0,item:chapters/conclusion.tex]
-CursorColumn=2
-CursorLine=26
+CursorColumn=29
+CursorLine=55
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=0
-CursorLine=357
+CursorColumn=30
+CursorLine=301
 
 [view-settings,view=0,item:chapters/introduction.tex]
-CursorColumn=49
-CursorLine=38
+CursorColumn=26
+CursorLine=27
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=13
-CursorLine=24
+CursorColumn=32
+CursorLine=111
 
 [view-settings,view=0,item:chapters/overview.tex]
 CursorColumn=0
-CursorLine=81
+CursorLine=10
 
 [view-settings,view=0,item:chapters/results.tex]
 CursorColumn=0
-CursorLine=233
+CursorLine=341
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
-CursorColumn=66
-CursorLine=466
+CursorColumn=8
+CursorLine=364
 
 [view-settings,view=0,item:chapters/title.tex]
-CursorColumn=16
-CursorLine=29
+CursorColumn=0
+CursorLine=36
 
 [view-settings,view=0,item:header.tex]
 CursorColumn=0
 CursorLine=34
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=0
-CursorLine=0
+CursorColumn=44
+CursorLine=37
 
 [view-settings,view=0,item:todo.txt]
 CursorColumn=19

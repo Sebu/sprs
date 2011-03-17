@@ -19,13 +19,18 @@ image data. The signal preparation mainly consists of two sub steps.
 and graphics we require to work with multi-channel data. Commonly presented in
 the three channel RGB color space.
 When dealing with multi-channel data (e.g. RGB images) each channel can be coded
-separate or as a concatenation of each signal into a single one. These
-approaches can lead to color bleeding \cite{mairal08sparse}. \Todo{add picture}
+separate or as a concatenation of each signal into a single one. Mairal et
+al.\cite{mairal08sparse} noticed that the concatenation of the channels leads
+better reconstruction quality. This strategy pays more attention to the fact
+that color channels are often highly correlated. But they also notices that both
+approaches can lead to color bleeding.  
+%\Todo{add picture}
 %Nevertheless 
-A solution is to add a constraint to the sparse coding that pays
-attention to correlation of the channels. \Todo{add formula from paper} 
+They propose a solution that adds a constraint to the sparse coding that pays
+attention to correlation of the channels. 
+%\Todo{add formula from paper} 
 Fortunately Mairal et al. also noticed that this problem vanishes with big
-dictionaries and large training sets as present in our experiments.
+dictionaries and large training sets as present in our experiments. 
 \cite{mairal08sparse}
 
 
@@ -35,11 +40,11 @@ represent our 2-D image data in a set of 1-D vectors with size $m$. We extract
 blocks of size $n \times n=m$ from the images. Typically dealing with block
 sizes of $n=8,..,20$. The blocks get extracted in a raster either with
 overlapping content or disjoint from each other. Figure \ref{fig:separation}
-illustrates this separation step. How the each strategy can effect learning
+illustrates this separation step. How the  strategy can effect learning
 show our experiments.
 \begin{figure}[h]
 \centering
-\subfloat[]{\includegraphics[scale = 0.30]{images/segmentation.jpg}}
+\subfloat[]{\includegraphics[scale = 0.30]{images/segmentation_new.jpg}}
 \hspace{5mm}
 \subfloat[]{\includegraphics[scale =
 0.50]{images/segmentation1.jpg}}
@@ -87,8 +92,8 @@ algorithm drastically.
 \STATE pre-compute $\mat{G} \gets \mat{D}^T\mat{D}$
 \STATE pre-compute $\mat{DtX} \gets \mat{D}^T\mat{X}$
 \FOR {$i = 1$ to $k$}
-\STATE Compute $\vec{\alpha}_i$ of $\mat{A}$ using \prettyref{alg:batchOMP} or
-\prettyref{alg:lars} for all $\vec{x}_i$ in $\mat{X}$
+\STATE Compute $\vec{\alpha}_i$ of $\mat{A}$ using \prettyref{alg:lars} or
+\prettyref{alg:batchOMP} for all $\vec{x}_i$ in $\mat{X}$
 \ENDFOR
 \RETURN $\mat{A}$
 \end{algorithmic}
@@ -100,11 +105,11 @@ algorithm drastically.
 \begin{algorithmic}[1]
 \REQUIRE $\vec{x} \in \mathbb{R}^{m}, \mat{G}  \in
 \mathbb{R}^{m\times m}, \epsilon \in \mathbb{R}$
-\STATE $A \gets \emptyset,\vec{\alpha} \gets 0,\vec{\gamma} \gets
+\STATE $A \gets \emptyset,\vec{\alpha} \gets 0,\vec{r} \gets
 \mat{D}^T\vec{x},\vec{\delta}_0 \gets
 0, \epsilon_0\gets \vec{x}^T\vec{x},\mat{L}\gets[1],n\gets1$
 \WHILE {$ n<L$ \AND $\epsilon_{n-1} > \epsilon $}
-\STATE $k \gets \argmax_i\lvert \vec{\alpha}[i] \rvert$
+\STATE $i \gets \argmax_i\lvert r_i \rvert$
 \IF {$n>1$}
 \STATE $\vec{w} \gets \mat{L}^{-1}\mat{G}_{A,i}$
 \STATE
@@ -120,7 +125,7 @@ algorithm drastically.
 \STATE add variable to active set: $A \gets A \cup \{ i\}$
 \STATE $\vec{\alpha}_A \gets (\mat{L}^T)^{-1}\mat{L}^{-1}\vec{\gamma}_A$
 \STATE $\vec{\beta} \gets \mat{G}_A\vec{\alpha}_A$
-\STATE $\vec{\gamma} \gets \vec{\gamma}-\vec{\beta}$
+\STATE $\vec{r} \gets \vec{r}-\vec{\beta}$
 \STATE $\delta_{n} \gets \vec{\alpha}_A^T\vec{\beta}_A$
 \STATE $\epsilon_n \gets \epsilon_{n-1} - \delta_n + \delta_{n-1}$
 \STATE $n \gets n+1$
@@ -270,7 +275,7 @@ color channel. But our atoms already capture color information. So we are
 skipping this step. 
 %Splitting the image
 
-\paragraph{Spartial separation and cignal coding}
+\paragraph{Spatial separation and signal coding}
 The actual coding step of the prepared signals. The signal vectors $\vec{x}_i$
 of $\mat{X}$ consists of $n \times n$ non overlapping blocks from the image.
 With $n$ in the range of $n=8,..,12$. A similar block size and separation
@@ -327,14 +332,11 @@ symbol to represent this element and a block of symbols.
 \end{description}
 
 We apply something similar to RLE to the sparse matrices. We know that the
-majority of coefficient of the spars matrices are zero. We code the sparse
+majority of coefficient of the sparse matrices are zero. We code the sparse
 matrices as a series of distances between coefficients and the actual
 coefficients. We use the fact that it is more likely that the next value in our
 matrix is zero. Afterwards the remaining data gets huffman coded.
 
-Besides the raw pixel data, images formats usually contain a certain amount
-of extra data from file headers and meta data. Fortunately we can ignore this
-for simplification as it is only a few bytes and not being actual pixel data.
 
 %In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
 %the bpp required for encoding of the sparse matrix data. Besides the estimation
@@ -345,20 +347,20 @@ for simplification as it is only a few bytes and not being actual pixel data.
 
 \section{Implementation}
 %\subsection*{Software}
-The sofware framework consists of a library (sprscode) for sparse coding image
+The software framework consists of a library (sprscode) for sparse coding image
 signals and learning dictionaries, a command line interface (sparsecli) to the
 library and miscellaneous scripts for distribution of coding and learning jobs
-and some a test suite.
+and a test suite.
 
-The whole sparse coding and training library is written in C++ with
-additional use of the OpenCV, Eigen and OpenMP libs. All operations use double
-precision. 
+The whole sparse coding and training library is written in C++ and system with
+additional use of the OpenCV, Eigen and OpenMP libs. And QMake as the build
+system. 
 
 Eigen\footnote{\url{http://eigen.tuxfamily.org/}}
 is a template library for fast vector and matrix operations with vector
 optimizations and includes some linear algebra algorithms. It is mainly used for
 operations on dense and sparse matrices, cholesky factorization and solving of
-linear equation systems. 
+linear equation systems. All math operations use double precision. 
 
 OpenCV\footnote{\url{http://opencv.willowgarage.com/}} as
 in \emph{Open Computer Vision Library} is mainly used for
@@ -396,34 +398,35 @@ implementation of the
 basic version of the algorithm with the mini-batch optimization applied.
 Batch-OMP and the LARS-Lasso coding method can be used for the coding part.
 Dictionary size and the number training signals for each iteration can be
-speficied.
+specified.
 
 \paragraph{Command line interface}
 The framework provides a command line interface to the library to unleash its
-power.
+power. The command line parameters are listed in \prettyref{tab:cli}.
 %\lstinputlisting[language=C++,caption=Training]{listings/test.cpp}
-\begin{table}[H]
+\begin{table}[h]
 \centering
 \begin{tabular}{ |l | l |}
-\hline
-\multicolumn{2}{|c|}{sparsecli}\\
+%\hline
+%\multicolumn{2}{|c|}{sparsecli}\\
 \hline
 parameter & description \\
 \hline
---dict <file> & save or load dictionary to \emph{file}\\
---dictSize <n> & size \emph{n} of the dictionary  \\
---train <file> & use images listed in \emph{file} as training set\\
---blockSize <n> & size \emph{n} of the image blocks \\
---winSize <n> & distance \emph{n} of selection window \\
---resume & resume an interrupted learning process \\
---merge <n> & merge dictionaries listed in \emph{file}  \\
---input <file> & input \emph{file} for reconstruction \\
---output & output \emph{file} of reconstruction \\ 
---coeffs <n> & maximum of coefficients \emph{n} \\
---error <n> & reconstruction or merge error \\
-
+\verb+--dict <file>+ & save or load dictionary to \emph{file}\\
+\verb+--dictSize <n>+ & size \emph{n} of the dictionary  \\
+\verb+--train <file>+ & use images listed in \emph{file} as training set\\
+\verb+--blockSize <n>+ & size \emph{n} of the image blocks \\
+\verb+--winSize <n>+ & size \emph{n} of selection window \\
+\verb+--resume+ & resume an interrupted learning process \\
+\verb+--merge <n>+ & merge dictionaries listed in \emph{file}  \\
+\verb+--input <file>+ & input \emph{file} for reconstruction \\
+\verb+--output <file+ & output \emph{file} of reconstruction \\ 
+\verb+--coeffs <n>+ & maximum of coefficients \emph{n} \\
+\verb+--error <n>+ & reconstruction or merge error \\
+\verb+--mode <n>+ & chose \emph{n} either 1 for LARS or 2 for OMP \\
 \hline
 \end{tabular}
+\caption{sparsecli parameters}\label{tab:cli}
 \end{table}
 
 \paragraph{Miscellaneous}

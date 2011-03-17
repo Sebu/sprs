@@ -64,10 +64,10 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& X, Dictionary& Dict) //
     // A = [] ; % active set
     std::vector<int> A[L];
     double stop = 0;
-    if(this->eps)
-        stop = this->eps;
-    else
-        stop = -this->coeffs;
+//    if(this->eps)
+        stop = this->coeffs/10.0;
+//    else
+//        stop = -this->coeffs;
 
 
 //        std::cout << "precalc done " << stop << std::endl;

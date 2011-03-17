@@ -1,4 +1,4 @@
-\chapter{Dictionaries}
+\chapter{Dictionary Learning}
 %\thispagestyle{empty}
 In \prettyref{sec:dicts} we give a general definition of dictionaries 
 as indexed sets of signal atoms with a unknown structure of the atoms.
@@ -267,7 +267,7 @@ warm restart
 \end{algorithmic}
 \end{algorithm}
 \begin{algorithm}[h]
-\caption{Dictionary Update}
+\caption{Dictionary update}
 \label{alg:update}
 \begin{algorithmic}[1]
 \REQUIRE $\mat{D}=[\vec{d}_1,...,\vec{d}_p] \in \mathbb{R}^{m \times p},
@@ -299,7 +299,7 @@ becoming:
 \frac{1}{n}\sum_{i=1}^{n}\vec{x}_{t,i}\vec{\alpha}_{t,i}^T
 \end{align*}
 
-\subsection{Learning for the Task}
+\subsection{Learning for the task}
 \label{sec:learnForTheTask}
 ``Please do not use the wrong dictionaries ...''
 warns Guillermo Sapiro in his talk at the \emph{MIT CSAIL}.
@@ -344,11 +344,11 @@ and encoded as one signal rather than with four smaller ones.\cite{Mairal2007}
 
 \paragraph{Double sparsity}
 In 2009 Rubinstein et al.\cite{Rubinstein2009} presented the idea of double
-sparsity. Instead of directly using a collection of learned atoms as element for
-dictionary $\vec{D}$. This approach uses a second sparse coding step to encode
-the atoms of a bigger $\vec{D}$ dictionary with the help of a smaller dictionary
-$\vec{B}$ and a sparse matrix $\vec{A}$. Leading to a reconstruction of
-$\mat{D}=\mat{B}\mat{A}$.
+sparsity. Instead of dictionary consisting  of a collection of
+learned atoms. This approach uses a second sparse coding step to encode
+the atoms of a bigger dictionary $\vec{D}$ with the help of a smaller
+dictionary $\vec{B}$ and a sparse matrix $\vec{A}$. Leading to a reconstruction
+of $\mat{D}=\mat{B}\mat{A}$. 
 
 \paragraph{Classification} of object can be achieved by learning
 individual dictionaries $(\mat{D}_{-},\mat{D}_{+})$ and for each group of

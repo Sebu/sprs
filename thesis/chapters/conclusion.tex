@@ -1,26 +1,28 @@
-\chapter{Conclusion}
-It turn out that the right regularization and the the right training data
-play  a big role for learning the right dictionaries and for reconstruction
-quality. 
+\chapter{Conclusion and Future Work}
 
-The $\ell_1$ regularization of LARS-Lasso has a selection strategy
-which is very good at learning dictionary atoms. And also good for
-reconstruction tasks.  The $\ell_0$ regularization of the OMP, with its greedy
-nature, has a very aggressive selection strategy.  This very noisy selection
-strategy is less practical than LARS for the ODL learning step under certain
-conditions. Such as a high number of learning coefficients and bad
-initialization.
+\section{Conclusion}
+The right regularization and the the right training data
+play a big role for learning the right dictionaries and gaining
+good reconstruction quality. 
+
+It turn out that that the $\ell_1$ regularization of LARS-Lasso has a selection
+strategy which is very good at learning dictionary atoms.  And also good for
+reconstruction tasks. Using LARS-Lasso for training generates a good dictionary
+for LARS and OMP sparse coding tasks.
+
+While the $\ell_0$ regularization of the OMP, with its greedy nature, has a very
+aggressive selection strategy.  This very noisy selection strategy is less
+practical than LARS for the ODL learning step. Such as a high number of learning
+coefficients and bad initialization. 
 
 
-%Using LARS-Lasso for training generates a good dictionary for LARS and OMP.
+Using  sets for to learn very universal dictionaries. If the images fit into the
+same category it is insignificant which images you chose. The results will not
+much differ. When extracting samples from JPEG images for learning keep in mind 
+that we can only learn what the data provides. Samples from JPEG especially
+non-overlapping $8 \times 8$ blocks will help to learn DCT atoms.
 
-When extracting samples from JPEG images for
-learning don't use non-overlapping $8 \times 8$ unless you want to learn DCT
-atoms or want to verify if it is a jpeg image. 
-
-Big training sets tend to get universal. If the images fit into the same
-category it is insignificant which images you chose. The results will not much
-differ.
+%or want to verify if it is a JPEG image.
 %Dictionaries to universal ... improved results to DCT .. but varying with field
 %of application. possible no universal solution but a good way for better
 %understanding of the key elements
@@ -30,29 +32,27 @@ differ.
 % Similar to natural images.
 % compression dicts
 
-You can only learn what your data provides.
+Dictionaries can be made much bigger than but the increased quality come with
+the price of computational complexity. Clustering learning strategies can help
+to learn faster and overcome convergence in the reconstruction quality of big
+dictionaries.
 
-Clustering learning strategies can help to learn faster and overcome
-convergence in the reconstruction quality of big dictionaries.
+When it comes to compression tasks the greedy OMP performs better
+than the LARS-Lasso. As it sheers for less coefficients. Sparse coding 
+compression algorithms can lead to similar compression ratio as JPEG com
+for low bit rates. And they can surpasses it in certain situations. But
+currently a lot of tweaking to the quantization step is required. 
 
+Besides that JPEG and JPEG 2000 are highly optimized lossy image compression
+algorithms. Years of research went into observation human vision. Especially the
+quantization and and the entropy encoding step are highly optimized for specific
+data. It is hard to compete with JPEG, the market leader in this field.  Even
+JPEG 2000, which leads to better results than JPEG especially in the area block
+artifacts, did not catch up with the success of JPEG. The reason lies in the
+potential patent issues and higher computational requirements of the algorithm
+compared to the quality benefits and the wide acceptance of JPEG.
 
-But you need a certain amount of coefficients of about $L \ge 10$.
-
-But when it comes to compression tasks the greedy OMP yields better results
-than the Lasso with requirement for less coefficients. 
-Our compression algorithm yields leads to similar compression ratio as JPEG
-and surpasses it in certain situations. But currently a lot of tweeking to the
-quantization step is required. Both are highly optimized lossy image
-compression algorithms. Years of research went into observation human vision. 
-Especially the quantization and and the entropy encoding step are highly
-optimized for specific data. It is hard to compete with JPEG, the market leader
-in this field.  Even JPEG 2000, which leads to better results than JPEG
-especially in the area block artifacts, did not catch up with the success of
-JPEG.  The reason lies in the potential patent issues and higher computational
-requirements of the algorithm compared to the quality benefits annd the wide
-acceptance of JPEG.
-
-The experiments are just a first glimpse of that can de done to use sparse
+Our experiments are just a first glimpse of that can be done to use sparse
 coding and dictionary learning for large image databases.
 
 
@@ -61,10 +61,14 @@ The amount of publications regarding sparse coding and machine learning in the
 last decade indicate strong ongoing research in this field. Especially
 brining structure to the learning stage is one of the most active topics.
 
+\paragraph{Structure}
+The results gained on the appearance of the atoms can be used to think
+about more advanced ways to structure these atoms or generation of atoms.
+
 \subsection{Different training sets}
 One of our findings is the fact that we tend to learn from natural JPEG images.
-Testing with larger sets of images that did not go througth a JPEG compression
-is one major topic to adress in the future. Raw camera images or tiff images
+Testing with larger sets of images that did not go through a JPEG compression
+is one major topic to address in the future. Raw camera images or tiff images
 are a possible source. 
 
 \subsection{Framework improvements}
@@ -73,7 +77,8 @@ extended in terms of speed and new dictionary learning strategies.
 
 \paragraph{Speed}
 While the implementation of the Batch-OMP and the ODL are already very fast
-the LARS-Lasso implementation is quiet slow compared to the KLT implmentation in
+the LARS-Lasso implementation is quiet slow compared to the KLT implementation
+in
 the SPAMS framework. In the near future the SPAMS framework will provide a C++
 interface\footnote{\url{http://www.di.ens.fr/willow/SPAMS/faq.html}}. Adding
 support for this interface could lead to speed improvements.
@@ -86,14 +91,8 @@ dictionaries for very specific classes of images can be used for classification
 tasks. Something that can come in handy when applying it to operations like
 search in large image databases.
 
-\paragraph{Structure}
-The results gained on the appearance of the atoms can be used to think
-about more advanced ways to structure these atoms or generation of atoms.
- 
 
 \subsection{Compression improvements}
-
-
 \paragraph{Reducing block borders} The presented compression experiment
 takes a very simple approach without taking correlation between adjacent
 blocks into account. Similar to the JPEG block strategy. But other than
@@ -105,7 +104,7 @@ be easily extended to learn and code different kinds of sub-images.
 
 \paragraph{Better entropy coding}
 The coding of the coefficients already works quiet good. But the coding of the
-indicies is currently limited as the sparse coding algorithm tends to select a
+indices is currently limited as the sparse coding algorithm tends to select a
 lot of different atoms. A structured sparse coding approach as mentioned in
 \prettyref{sec:sparse_related} could lead to less selected atoms and a better
 entropy encoding. Also the required bits for each index are not optimized yet.
