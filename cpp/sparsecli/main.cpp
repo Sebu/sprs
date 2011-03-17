@@ -241,15 +241,15 @@ int main(int argc, char *argv[])
         std::string nameStr;
         for(int i=1; i<150; i++) {
             std::ostringstream o;
-            o << dictFile << i << ".dict";
-//            o << dictFile;
+//            o << dictFile << i << ".dict";
+            o << dictFile;
             dict.load( o.str().c_str() );
             std::ifstream ifs( (inputFiles).c_str() );
             std::cout << dict.meta_->samples_;
             std::string nameStr;
             ifs >> nameStr;
+            Samples samples;
             while( !ifs.eof() ) {
-                Samples samples;
 //                std::cout << nameStr << std::endl;
                 samples.loadImage(nameStr, blockSize, channels, blockSize);
                 samples.saveImage(outputFile, dict, *coder, blockSize);
