@@ -4,20 +4,20 @@
 
 \section{Sparse signal representation}
 \label{sec:dicts}
-Simplification of signals such as images, audio, video or EEG data is a major
-field of signal processing. It can help to speed up operations on signals. Like
-transformation or classification, and allows us to capture the most
-significant basis elements that make up a signal. Elements that are
-used in MP3 audio, JPEG image and MPEG4 video compression or to reconstruct
-a signal in order to remove noise or recover missing information.
+Simplification of signals such as images, audio or video is a major
+field of signal processing. It can help to speed up operations on signals and
+allows us to capture the most significant basis elements that make up a signal.
+Elements that are used in MP3 audio, JPEG image and MPEG4 video compression or
+to reconstruct a signal in order to remove noise or recover missing information.
 
 \paragraph{}
-Consider $\vec{\tilde{x}}$ a signal that is represent by a function $f(x)$ that
+Consider $\vec{\tilde{x}}$ a signal that is represent by a function $f(\vec{x})$
+that
 approximates the signal $\vec{x}$ in a simplified sparse way.
 \begin{equation*}
 \vec{\tilde{x}} = f\left(\vec{x}\right)
 \end{equation*}
-We can split $f(x)$ into a selection of elements from a large set of
+We can split $f(vec{x})$ into a selection of elements from a large set of
 basis functions. In a sparse way, as the signal gets either represented with
 a small selection of basis functions or as a series of many basis
 functions where the majority of coefficients, that weight the function, are
@@ -31,9 +31,9 @@ indexed set called a \emph{dictionary} analog to a dictionary of words, where
 the indices are the words and the atoms the description of them. 
 
 Such dictionaries capture the essence of the signals that they represent.
-This fact calls for good dictionary to achieve good signal representation.
+This fact calls for good dictionaries to achieve good signal representation.
 
-There exists two major distinct ways to construct the desired dictionaries. 
+There exist two major distinct ways to construct the desired dictionaries. 
 First the construction of a model based on basis functions found by harmonic
 analysis that can represent our signal in a sparse way. Second with
 algorithms that find or learn the atoms through a training process from a set of
@@ -55,35 +55,33 @@ analog signals.
 %connected oscilloscopes with different frequency configurations. 
 Later on approximation of signals via combinations of limited signal samples
 became a major task in signal analysis. This led to the Fourier transform as one
-of the most widely used tools. A function $x(t)$ representing a signal depended
-on time $t$ is transformed into a function   $\alpha(v)$  depended on frequency
+of the most widely used tools. A function $x(t)$ representing a signal depending
+on time $t$ is transformed into a function $\alpha(v)$ depending on frequency
 $v$. Describing the signal as a sum of sinusoids. 
 %Resulting in a functionof frequency $v$ that represents $x(t)$ as the integral
 %of basis function over time $t$.   
 \begin{equation*}
 \alpha\left(v\right) = \int_{-\infty}^{\infty} \! x(t)e^{-i2\pi
 v t} \,
-\mathrm{d}t
+\mathrm{d}t\label{eq:ft}
 \end{equation*}
 
 \paragraph{Getting discrete}
 With the rise of the computer the term \emph{digital} entered the
-game of signal processing. A move from continues signals of analog systems to
-the discrete representation, common in the digital world to utilize these new
-powers, happened. Based on this move, to digital signal processing, new
-approaches for basis transforms of discrete signals were required. The
-\emph{discrete Fourier transform (DFT)} emerged as as special discrete version
-of the continuous
-Fourier transform. Where the integral over time becomes the sum of the dimension
-of the signal $\vec{x}$ with length $N$. 
+game of signal processing. To utilize these new powers a move from continues
+to discrete signal representation was mandatory. This paradigm change called
+for discrete basis transforms. The \emph{discrete Fourier transform (DFT)}
+emerged as a special discrete version of the continuous Fourier transform. The
+integral over time becomes a sum of the signal $\vec{x}$
+with dimension $N$. 
 \begin{equation}
- \alpha_k = \sum_{n=0}^{N-1}x_ne^{\frac{-i2\pi kn}{N}}
+ \alpha_k = \sum_{n=0}^{N-1}x_ne^{\frac{-i2\pi kn}{N}}\label{eq:dft}
 \end{equation}
 In 1965 Cooley and Tukey presented\cite{Cooley1965} the \emph{fast Fourier
-transform (FFT)} an fast algorithmic approach to calculate the discrete
+transform (FFT)} a fast algorithmic approach to calculate the discrete
 Fourier transform. The FFT was a major leap forward in the field of digital
 signal processing. 
-In the following decades two other major players in discrete basis
+In the following decades two new major players in discrete basis
 transformations emerged. The \emph{discrete cosine transform (DCT)} and the
 \emph{discrete wavelet transform (DWT)}. 
 
@@ -98,20 +96,19 @@ n+\frac{1}{2}\right) k\right]
 An example for the usage of DCT is the coding of the $N\times N$ image blocks in
 the JPEG image compression algorithm.
 
-Other than the DFT and the DCT the DWT describes a signal as a series of
-filter functions called wavelets, which are not only localized in time (like the
-sinoids of the Fourier transform) but also localized in frequency. 
+Other than the Fourier transform the DWT describes a signal as a series of
+filter functions called wavelets, which are not only localized in frequency
+(like the sinusoids of the Fourier transform) but also localized in time. 
 %Localized in frequency and time. 
 %(DWT) captures both frequency and location information. 
 % Property of the basis functions ...
 %$\int_{-\infty}^{\infty} \! f(t) \, \mathrm{d}t = 0$
 For example this locality property is used in JPEG 2000 image compression to
-remove the block artifacts that occur in with DCT blocks in JPEG images
-compression. 
+remove the block artifacts that occur in JPEG. 
 
 In the 80s the search for better transformation basis started to become a major
-role in the field of signal representation. Leading to basis functions such as
-Bandelets, Curvelets, Contourlets, Wedgelets among others.
+role in the field of signal representation. Leading to others such as Bandelets,
+Curvelets, Contourlets, Wedgelets among others.
 
 \paragraph{Splitting the problem}
 %\cite{Rubinstein2010}
@@ -126,7 +123,7 @@ problem into two distinct problems made the search for efficient coding of
 signals $\vec{x}$ and construction of task specific dictionaries $\mat{D}$ more
 flexible. The initial problem becomes:
 \begin{equation}
- \vec{x} \sim \vec{\tilde{x}}  = \mat{D}\vec{\alpha}\label{eq:dft}
+ \vec{x} \sim \vec{\tilde{x}}  = \mat{D}\vec{\alpha}
 \end{equation}
 %Or for better understanding in relation to the previously presented
 %equations.

@@ -244,9 +244,12 @@ int main(int argc, char *argv[])
             //            o << dictFile << i << ".dict";
             o << dictFile;
             dict.load( o.str().c_str() );
+                    dict.sort();
+                    dict.debugSaveImage( (dictFile + ".png").c_str() );
+                    dict.save( dictFile.c_str() );
             std::cout << dict.meta_->samples_;
             Samples samples;
-            for (int j=1; j<50; ++j){
+            for (int j=1; j<40; ++j){
                 coder->coeffs = j;
                 std::cout << " " << j;
                 std::ifstream ifs( (inputFiles).c_str() );

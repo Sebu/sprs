@@ -4,20 +4,20 @@ In \prettyref{sec:dicts} we give a general definition of dictionaries
 as indexed sets of signal atoms with a unknown structure of the atoms.
 Dictionaries for sparse coding of images are indexed collections of vectors with
 discrete pixel data. A linear combination of a sparse selection of those
-discrete pixel atoms are used to reconstruct signals. 
+discrete pixel atoms is used to reconstruct signals. 
 
 \section{Structure}
-Atoms are not just made up of random pixel data. Dictionary atoms should
-capture structures that are useful for sparse coding. Just picking a few atoms
-should lead to a good reconstruction. 
+Atoms not just consist of random pixel data. Dictionary atoms also capture
+structures that are useful for sparse coding. Just picking a few atoms should
+lead to a good reconstruction. 
 
 Finding the right structures for a specific signal is a complex task.
-Two main strategies for generation of dictionaries are design and
+Two main strategies for generation of dictionaries are design or
 learning.
 
 \subsection{Designed atoms}
 The basis transformations first presented in \prettyref{sec:history} can also
-be interpreted as atoms of discrete pixel data. This can be atoms with only
+be interpreted as atoms of discrete pixel data. Atoms with only
 locality in the frequency domain like cosine from DCT or atoms with both
 locality in time and frequency domain like wavelets.
 \prettyref{fig:generated_atoms} shows some examples for such

@@ -106,7 +106,6 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& X, Dictionary& Dict) //
             k[signum]++;
 
             // find highest corelation
-            // slow
 //            VectorXd tmp = D.transpose()*mu;
             VectorXd c = x-Dtmu;
 
@@ -187,7 +186,6 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& X, Dictionary& Dict) //
 
             // slow
             VectorXd a = D.transpose()*u;
-
             double erg3 = DBL_MAX;
             if (vars != nvars) {
 
@@ -201,6 +199,7 @@ Eigen::SparseMatrix<double> CoderLasso::encode(MatrixXd& X, Dictionary& Dict) //
             } else {
                 gamma = C/AA;
             }
+
             //VectorXd betasub(vars);
             //for(int i=0; i<A[signum].size(); i++) {
             //  betasub(i) = beta[signum](0,A[signum][i]);

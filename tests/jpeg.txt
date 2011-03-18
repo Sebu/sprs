@@ -1,9 +1,5 @@
 ../../tests/28803842.jpg
 ../../tests/28848380.jpg
-../../tests/28859439.jpg
 ../../tests/28874882.jpg
 ../../tests/28894495.jpg
 ../../tests/28952841.jpg
-../../tests/28979823.jpg
-../../tests/29018276.jpg
-../../tests/29018694.jpg
