@@ -54,18 +54,19 @@ void Dictionary::merge(Dictionary& input, double eps) {
         // code with minimal settings
         MatrixXd samplesChunk = input.getData().block(0,i,getSignalSize(),1);
         std::cout << "submatrix" << std::endl;
-        Eigen::SparseMatrix<double> A = coder.encode(samplesChunk, (*this));
-        std::cout << "encode" << std::endl;
-        MatrixXd recon = getData()*A;
-        std::cout << "reconstruct " << std::endl;
+//        Eigen::SparseMatrix<double> A = coder.encode(samplesChunk, (*this));
+//        std::cout << "encode" << std::endl;
+//        MatrixXd recon = getData()*A;
+//        std::cout << "reconstruct " << std::endl;
 
-        //compare
-        //for(int j=0; j<=index; ++j)
+//        //compare
+//        //for(int j=0; j<=index; ++j)
 
-        std::cout << (samplesChunk-recon).squaredNorm() << std::endl;
-        if( (samplesChunk-recon).squaredNorm() < eps )
-                addCol = false;
+//        std::cout << (samplesChunk-recon).squaredNorm() << std::endl;
+//        if( (samplesChunk-recon).squaredNorm() < eps )
+//                addCol = false;
 
+        addCol = true;
         if(addCol) {
             std::cout << "merge " << i << std::endl;
             meta_->col_[index].usage_ = input.meta_->col_[i].usage_;

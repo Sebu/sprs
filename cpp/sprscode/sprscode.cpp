@@ -18,51 +18,50 @@ Sprscode::Sprscode(int width, int height, int depth, int blockSize, int coeffsNu
     header_.coeffs_ = coeffsNum;
     header_.count_ = 0;
 
-    shiftNum_ = (ceil((float)width/(float)blockSize) * ceil((float)height/(float)blockSize));
-    indicesNum_ = coeffsNum_ = shiftNum_*coeffsNum;
-
-
-    shift_ = new char[shiftNum_];
-    indices_ = new unsigned short[indicesNum_];
-    coeffs_ = new char[coeffsNum_];
-
+    init();
 
 }
 
+
+void Sprscode::init() {
+    shiftNum_ = (ceil((float)header_.width_/(float)header_.blockSize_) * ceil((float)header_.height_/(float)header_.blockSize_));
+    indicesNum_ = shiftNum_*header_.coeffs_;
+    coeffsNum_ = indicesNum_;
+    shift_ = new char[shiftNum_];
+    indices_ = new unsigned short[indicesNum_];
+    coeffs_ = new char[coeffsNum_];
+}
+
+
 void Sprscode::load(std::string& fileName) {
     FILE * pFile;
-    pFile = fopen((fileName + ".sprs").c_str(),"r");
+    pFile = fopen(fileName.c_str(),"r");
 
     fread(&header_,sizeof(SprsHeader), 1, pFile);
 
-    unsigned char* outBuf = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
-    unsigned char* outBuf2 = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
+    init();
 
+    unsigned char* outBuf = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
     int outSize = 0;
     int inSize = 0;
 
     inSize = shiftNum_*sizeof(char);
     fread(&outSize,sizeof(int),1, pFile);
     fread((char*)outBuf, sizeof(char),outSize, pFile );
-    std::cout <<  inSize << " " << outSize << std::endl;
+//    std::cout <<  inSize << " " << outSize << std::endl;
     Huffman_Uncompress((unsigned char*)outBuf,(unsigned char*)shift_, outSize, inSize);
 
-//    inSize = indicesNum_*sizeof(unsigned short);
     inSize = header_.count_*sizeof(unsigned short);
     fread(&outSize,sizeof(int),1, pFile);
     fread((char*)outBuf, sizeof(char),outSize, pFile );
-    std::cout <<  inSize << " " << outSize << std::endl;
+//    std::cout <<  inSize << " " << outSize << std::endl;
     Huffman_Uncompress((unsigned char*)outBuf,(unsigned char*)indices_, outSize, inSize);
 
-    int rleSize = 0;
-//    inSize = coeffsNum_*sizeof(char);
     inSize = header_.count_*sizeof(char);
-    fread(&rleSize,sizeof(int),1, pFile);
-//    fread(&outSize,sizeof(int),1, pFile);
-    fread((char*)outBuf, sizeof(char),rleSize, pFile );
-    std::cout << outSize << std::endl;
-    Huffman_Uncompress((unsigned char*)outBuf,(unsigned char*)coeffs_, outSize, rleSize);
-//    RLE_Uncompress((unsigned char*)outBuf2,(unsigned char*)coeffs_, rleSize);
+    fread(&outSize,sizeof(int),1, pFile);
+    fread((char*)outBuf, sizeof(char),outSize, pFile );
+//    std::cout << inSize << " " << outSize << std::endl;
+    Huffman_Uncompress((unsigned char*)outBuf,(unsigned char*)coeffs_, outSize, inSize);
 
 
     fclose(pFile);
@@ -71,48 +70,43 @@ void Sprscode::load(std::string& fileName) {
 void Sprscode::save(std::string& fileName) {
 
     FILE * pFile;
-    pFile = fopen((fileName + ".sprs").c_str(),"w");
+    pFile = fopen(fileName.c_str(),"w");
     fwrite(&header_,sizeof(SprsHeader), 1, pFile);
 
     unsigned char* outBuf = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
-    unsigned char* outBuf2 = (unsigned char*)malloc(sizeof(char)*coeffsNum_*2);
+
     long fullSize = 0;
     int outSize = 0;
     int inSize = 0;
 
     inSize = shiftNum_*sizeof(char);
-//    inSize = header_.count_*sizeof(char);
     outSize = Huffman_Compress((unsigned char*)shift_,(unsigned char*)outBuf, inSize);
     fullSize += outSize;
-    std::cout <<  inSize << " " << outSize << std::endl;
+//    std::cout <<  inSize << " " << outSize << std::endl;
     fwrite(&outSize, sizeof(int),1, pFile );
     fwrite((char*)outBuf, sizeof(char),outSize, pFile );
 
-//    inSize = indicesNum_*sizeof(unsigned short);
     inSize = header_.count_*sizeof(unsigned short);
     outSize = Huffman_Compress((unsigned char*)indices_,(unsigned char*)outBuf, inSize);
     fullSize += outSize;
-    std::cout <<  inSize << " " << outSize << std::endl;
+//    std::cout <<  inSize << " " << outSize << std::endl;
     fwrite(&outSize, sizeof(int),1, pFile );
     fwrite((char*)outBuf, sizeof(char),outSize, pFile );
 
-//    inSize = coeffsNum_*sizeof(char);
     inSize = header_.count_*sizeof(char);
-//    outSize = RLE_Compress((unsigned char*)coeffs_,(unsigned char*)outBuf2, inSize);
-//    fwrite(&outSize, sizeof(int),1, pFile );
     outSize = Huffman_Compress((unsigned char*)coeffs_,(unsigned char*)outBuf, inSize);
     fullSize += outSize;
-    std::cout <<  inSize << " " << outSize << std::endl;
+//    std::cout <<  inSize << " " << outSize << std::endl;
     fwrite(&outSize, sizeof(int),1, pFile );
     fwrite((char*)outBuf, sizeof(char),outSize, pFile );
 
     std::cout << "BPP: " <<  ((float)fullSize*8.0)/(float)(header_.height_*header_.width_) << std::endl;
-    std::cout << "compression: " <<  (float)(header_.height_*header_.width_)/((float)fullSize) << ":1" << std::endl;
+    std::cout << "compression: " <<  (float)(header_.height_*header_.width_*header_.depth_)/((float)fullSize) << ":1" << std::endl;
 
     fclose(pFile);
 }
 
-void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
+void Sprscode::uncompress(VectorXd& shift, Eigen::DynamicSparseMatrix<double>& A) {
     unsigned char prev = 127;
     for (int k=0; k<shift.size(); ++k) {
 //        shift(k) = shift_[k];
@@ -125,6 +119,7 @@ void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 
     long lastpos=0;
 
+//    A.startFill();
     for(int i=0; i<header_.count_; ++i) {
         long pos = lastpos + indices_[i];
         lastpos = pos;
@@ -133,9 +128,10 @@ void Sprscode::uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
 //        std::cout << pos << " " << (double)coeffs_[i] << " " << row << " " << col << " " << indices_[i] << std::endl;
         if(coeffs_[i]) {
 //            std::cout <<  A.coeffRef(row,col) << " "  << (double)coeffs_[i] << std::endl;
-            A.coeffRef(row,col) = (double)coeffs_[i]*(15.0+(double)row/100.0);
+            A.coeffRef(row,col) = (double)coeffs_[i]*(40.0+(double)row/100.0);
         }
     }
+//    A.endFill();
 //    for(int col=0; col<A.cols(); ++col) {
 //        for(int j=0; j<header_.coeffs_; ++j) {
 //            int pos = col*header_.coeffs_+j;
@@ -156,8 +152,6 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
         shift_[k] = shiftVal-prev;
         prev = shiftVal;
         shift(k) = shiftVal;
-//        std::cout << shift(k)<< " " << shiftVal << " " <<(int)shift_[k] << std::endl;
-        //        shift_[k] = shiftVal;
     }
 
 
@@ -177,7 +171,6 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
             double quant = 40.0+(double)it.row()/100.0;
             char data=0;
             data = (char)round(it.value()/quant);
-//if(it.col()>561 && it.col()<570)  std::cout << it.row() << " " << it.col() << " " << A.coeffRef(it.row(),it.col()) << " " <<(double)data*quant << std::endl;
             A.coeffRef(it.row(),it.col()) = (double)data*quant;
 //            if(!data) pos = -1;
             if(data) {
@@ -195,8 +188,6 @@ void Sprscode::compress(VectorXd& shift, Eigen::SparseMatrix<double>& A) {
         }
         // fill up
         if(!write) {
-//                std::cout << "padding @ " << k << std::endl;
-//            for(int i=0; i<header_.coeffs_; ++i)
                 int pos = (int)k*A.rows()+A.rows();
                 unsigned short delta = pos - lastpos;
                 lastpos = pos;

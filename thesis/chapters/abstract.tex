@@ -4,28 +4,70 @@
 \chapter*{Zusammenfassung}
 \thispagestyle{empty}
 
+Bilder koennen in wenige fundamentale Basislementen zerlegt werden.
+Eine Repr\"asentationsform die bei Bildoperationen wie dem
+Enfernen von Rauschen, Kompression oder Klassifikation genutzt wird.
+%Diese Vorgehensweise ist auch als sparse coding bekannt.
+Sammlungen solcher Basiselemente zu lernen anstatt sie zu konstruieren kann
+zu Qualit\"{a}tsverbesserungen bei Bildoperationen f\"{u}hren. 
+In den letzten Jahrzehnten wurden mehrere Algorithmen vorgestellt um solche 
+Basiselemente zu lernen.
+
+Im Zuge dieser Diplomarbeit wird ein Software entwickelt die einen neuen
+Lernalgorithmus nutzt um Basiselemente f\"ur grosse Bilddatenbanken
+zu lernen. Eine Herrausforderung dabei ist es Beschr\"{a}kungen des
+Lernprozesses bez\"{u}glich Geschwindigkeit und Konvergenz zu bew\"altigen. Ein
+Clusteransatz wird vorgestellt der dieses Probleme .
+
+Die Software wird anschliessend genutzt um zu untersuchen wie gute
+Basiselemente aus grossen Mengen von Bilder lernen werden k\"{o}nnen. 
+
+Die an Die gelernten Basiselemente in einem neuen Kompressionsalgorithmus
+benutzt und mit aktuellen Verfahren mithalten kann.
+
 \newpage
 \phantomsection
 \addcontentsline{toc}{chapter}{Abstract}
 \chapter*{Abstract}
 \thispagestyle{empty}
 
-Images can be decomposed into a sparse linear combination of basis
-elements. This process is known as sparse coding. Learning dictionaries of
-those basis elements rather than designing them can lead to quality improvements
-of operations on images. Such as noise removal, classification or compression.
+Images can be decomposed into few fundamental basis elements. 
+A representation used by image operations such as noise removal,
+compression or classification.
+Learning collections of those basis elements rather than designing them can lead
+to quality improvements of those operations. 
 In the last decade several algorithms for learning such basis elements were
 proposed.
 
-This thesis develops a framework that uses a new online learning
-algorithms to learn big dictionaries that can be used for large image databases
-in tasks such as reconstruction and compression. One challenge is to overcome
-speed and convergence limitation of the learning algorithm. To address these
-issues a clustering approach is applied. 
+This thesis develops a framework that uses a online learning
+algorithms to learn basis elements that can be used for large image
+databases. One challenge is to overcome speed and convergence limitations of the
+learning algorithm. To address these issues a clustering approach is applied. 
 
-For evaluation, the framework is then used to learn big dictionaries from a
-large sets of images. The learned dictionaries are used in a new dictionary
-based compression algorithm that yields similar quality as JPEG.
+The framework is then used to explore good basis elements from
+large sets of images. 
+The learned dictionaries are used in a new dictionary based compression
+algorithm that yields similar quality as JPEG.
+
+
+% Images can be decomposed into few fundamental basis elements. 
+% This procedure is also known as sparse coding. Learning collections of
+% those basis elements rather than designing them can lead to quality
+%improvements
+% of operations on images. Such as noise removal, compression or classification.
+% In the last decade several algorithms for learning such basis elements were
+% proposed.
+% 
+% This thesis develops a framework that uses a new online learning
+% algorithms to learn big basis elements that can be used for large image
+% databases in tasks such as reconstruction and compression. One challenge is to
+% overcome speed and convergence limitation of the learning algorithm. To
+%address % these
+% issues a clustering approach is applied. 
+% 
+% The framework is then used to learn big dictionaries from
+% large sets of images . The learned dictionaries are used in a new dictionary
+% based compression algorithm that yields similar quality as JPEG.
 %#. can surpass it.
 
 \phantomsection

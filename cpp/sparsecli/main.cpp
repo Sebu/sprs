@@ -51,6 +51,8 @@ int main(int argc, char *argv[])
     std::string mergeFile = "";
     std::string inputFile = "";
     std::string inputFiles = "";
+    std::string compressFile = "";
+    std::string uncompressFile = "";
     std::string outputFile = "";
     int sampleCount = 10000;
     int dictSize = 4096;
@@ -74,7 +76,8 @@ int main(int argc, char *argv[])
         {"dict",    required_argument, 0, 'f'},
         {"input",    required_argument, 0, 'i'},
         {"inputs",    required_argument, 0, 'j'},
-        {"output",    required_argument, 0, 'o'},
+        {"compress",    required_argument, 0, 'o'},
+        {"uncompress",    required_argument, 0, 'u'},
         {"mode",  required_argument, 0, 'm'},
         {"merge",  required_argument, 0, 'g'},
         {"train",    required_argument, 0, 't'},
@@ -88,7 +91,7 @@ int main(int argc, char *argv[])
 
     int option_index = 0;
 
-    while ((opt = getopt_long(argc, argv, "b:c:d:e:f:i:j:m:o:rs:t:vw:", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "b:c:d:e:f:i:j:m:o:rs:t:u:vw:", long_options, &option_index)) != -1) {
         switch(opt) {
         case 'l':
             channels = atoi(optarg);
@@ -115,7 +118,10 @@ int main(int argc, char *argv[])
             inputFiles = optarg;
             break;
         case 'o':
-            outputFile = optarg;
+            compressFile = optarg;
+            break;
+        case 'u':
+            uncompressFile = optarg;
             break;
         case 'm':
             mode = atoi(optarg);
@@ -164,9 +170,6 @@ int main(int argc, char *argv[])
 
     Coder* testCoder = new CoderOMP();
     testCoder->coeffs = 10;
-
-    if(outputFile=="")
-        outputFile = inputFile + ".recon.png";
 
     if(trainFile != "") {
         Samples samples;
@@ -224,7 +227,7 @@ int main(int argc, char *argv[])
         while( !ifs.eof() ) {
             if(!running) break;
             std::cout << nameStr << " " << counter++ << std::endl;
-            dictIn.load((nameStr + ".dict").c_str() );
+            dictIn.load((nameStr).c_str() );
             //            dictIn.sort();
             dict.merge(dictIn, eps);
             ifs >> nameStr;
@@ -244,9 +247,9 @@ int main(int argc, char *argv[])
             //            o << dictFile << i << ".dict";
             o << dictFile;
             dict.load( o.str().c_str() );
-                    dict.sort();
-                    dict.debugSaveImage( (dictFile + ".png").c_str() );
-                    dict.save( dictFile.c_str() );
+//                    dict.sort();
+//                    dict.debugSaveImage( (dictFile + ".png").c_str() );
+//                    dict.save( dictFile.c_str() );
             std::cout << dict.meta_->samples_;
             Samples samples;
             for (int j=1; j<40; ++j){
@@ -258,7 +261,7 @@ int main(int argc, char *argv[])
                 while( !ifs.eof() ) {
                     //                std::cout << nameStr << std::endl;
                     samples.loadImage(nameStr, blockSize, channels, blockSize);
-                    samples.saveImage(outputFile, dict, *coder, blockSize);
+                    samples.compress(outputFile, dict, *coder);
                     ifs >> nameStr;
                 }
                 std::cout << std::endl;
@@ -270,15 +273,29 @@ int main(int argc, char *argv[])
     if(inputFile!="") {
 
         dict.load( dictFile.c_str() );
-        dict.sort();
-        //        dict.debugSaveImage( (dictFile + ".png").c_str() );
-        //        dict.save( dictFile.c_str() );
+
         std::cout << "input:" << inputFile << std::endl;
         Samples samples;
         samples.loadImage(inputFile, blockSize, channels, blockSize);
-        samples.saveImage(outputFile, dict, *coder, blockSize);
+        std::string out = (inputFile + ".png");
+        samples.saveReconstruction(out, dict, *coder,blockSize);
 
+    }
 
+    if(compressFile!="") {
+        dict.load( dictFile.c_str() );
+        dict.sort();
+        Samples samples;
+        samples.loadImage(compressFile, blockSize, channels, blockSize);
+        std::string out = (compressFile + ".sprs");
+        samples.compress(out, dict, *coder);
+    }
+
+    if(uncompressFile!="") {
+        dict.load( dictFile.c_str() );
+        dict.sort();
+        Samples samples;
+        samples.uncompress(uncompressFile,dict);
     }
 
 }

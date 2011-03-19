@@ -25,39 +25,122 @@ void Samples::normalize() {
         (*data_).col(i).normalize();
     }
 }
-//void Samples::uncompress(std::string& fileName, Dictionary& dict, Coder& coder, int step) {
-//    Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
-//    spc.load(fileName);
-//    spc.uncompress(shift,A);
 
-//    MatrixXd recon_vigra = dict.getData()*A;
+void Samples::uncompress(std::string& fileName, Dictionary& dict) {
+    Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
 
-//    unshift(recon_vigra,shift);
+    spc.load(fileName);
 
-//    cv::Mat outputImage = cv::Mat::zeros(imageRows_+blockSize_, imageCols_+blockSize_, CV_8UC(channels_));
-//    cv::Mat recon_cv(1,rows_,CV_8U);
-//    int index = 0;
-//    for(int j=0; j<imageRows_; j+=step) {
-//        for(int i=0; i<imageCols_; i+=step) {
+    imageRows_ = spc.header_.width_;
+    imageCols_ = spc.header_.height_;
+    channels_  = spc.header_.depth_;
+    blockSize_ = spc.header_.blockSize_;
+    rows_ = blockSize_*blockSize_*channels_;
+    cols_ = ceil((float)imageRows_/(float)blockSize_) * ceil((float)imageCols_/(float)blockSize_);
 
-//            for(int jj=0; jj<channels_; jj++){
-//                for(int ii=0; ii<rows_/channels_; ii++) {
-//                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(jj*(rows_/channels_)+ii, index));
-//                }
-//            }
+    VectorXd shift2 = VectorXd::Zero(spc.shiftNum_);
+    Eigen::DynamicSparseMatrix<double> A2(dict.getElementCount(), spc.shiftNum_);
 
-//            cv::Mat tmp = recon_cv.reshape(channels_, blockSize_);
+    spc.uncompress(shift2,A2);
 
-//            cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_, blockSize_) );
-//            region += tmp;
-//            index++;
-//        }
-//    }
-//    cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
-//    cv::imwrite(fileName, im);
-//}
+    MatrixXd recon = dict.getData()*A2;
+    unshift(recon,shift2);
 
-void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, int step) {
+    cv::Mat outputImage = cv::Mat::zeros(imageRows_+blockSize_, imageCols_+blockSize_, CV_8UC(channels_));
+    cv::Mat recon_cv(1,rows_,CV_8U);
+    int index = 0;
+    for(int j=0; j<imageRows_; j+=spc.header_.blockSize_) {
+        for(int i=0; i<imageCols_; i+=spc.header_.blockSize_) {
+
+            for(int jj=0; jj<channels_; jj++){
+                for(int ii=0; ii<rows_/channels_; ii++) {
+                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon(jj*(rows_/channels_)+ii, index));
+                }
+            }
+
+            cv::Mat tmp = recon_cv.reshape(channels_, blockSize_);
+
+            cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_, blockSize_) );
+            region += tmp;
+            index++;
+        }
+    }
+    cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
+    cv::imshow("sprscode", im);
+    cv::waitKey();
+    //    cv::imwrite(fileName, im);
+}
+void Samples::compress(std::string& fileName, Dictionary& dict, Coder& coder) {
+
+    Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
+
+    VectorXd shift = center((*data_));
+
+    VectorXd scale((*data_).cols());
+    for(int i=0; i<(*data_).cols(); i++) {
+        scale(i) = 1.0;
+        if((*data_).col(i).squaredNorm()!=0.0) {
+            scale(i) = (*data_).col(i).norm();
+            (*data_).col(i).normalize();
+        }
+    }
+
+    Eigen::SparseMatrix<double> A = coder.encode((*data_), dict);
+
+    // scale back
+    VectorXd select = VectorXd::Zero(A.innerSize());
+    for (int k=0; k<A.outerSize(); ++k) {
+        for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
+            A.coeffRef(it.row(),it.col()) *= scale(it.col());
+            if(it.col()==200) select(it.row()) = A.coeffRef(it.row(),it.col());
+        }
+    }
+    for(int i=0; i<(*data_).cols(); i++) {
+        (*data_).col(i)*= scale(i);
+    }
+
+    spc.compress(shift,A);
+    spc.save(fileName);
+
+    VectorXd shift2 = VectorXd::Zero(spc.shiftNum_);
+    Eigen::DynamicSparseMatrix<double> A2(dict.getElementCount(), spc.shiftNum_);
+    spc.uncompress(shift2,A2);
+
+    MatrixXd recon_vigra = dict.getData()*A2;
+
+    unshift((*data_),shift);
+    unshift(recon_vigra,shift);
+
+    double mseVal = mse((*data_),recon_vigra);
+    std::cout << "PSNR: " << psnr(mseVal) << " dB" << std::endl;
+    std::cout << "MSE: " << mseVal << std::endl;
+    std::cout << "saved: " << fileName << std::endl;
+
+
+    cv::Mat outputImage = cv::Mat::zeros(imageRows_+blockSize_, imageCols_+blockSize_, CV_8UC(channels_));
+    cv::Mat recon_cv(1,rows_,CV_8U);
+    int index = 0;
+    for(int j=0; j<imageRows_; j+=blockSize_) {
+        for(int i=0; i<imageCols_; i+=blockSize_) {
+
+            for(int jj=0; jj<channels_; jj++){
+                for(int ii=0; ii<rows_/channels_; ii++) {
+                    recon_cv.at<uchar>(0,ii*channels_+jj) = cv::saturate_cast<uchar>(recon_vigra(jj*(rows_/channels_)+ii, index));
+                }
+            }
+
+            cv::Mat tmp = recon_cv.reshape(channels_, blockSize_);
+
+            cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_, blockSize_) );
+            region += tmp;
+            index++;
+        }
+    }
+    cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
+    cv::imwrite((fileName+"compress.png").c_str(), im);
+}
+
+void Samples::saveReconstruction(std::string& fileName, Dictionary& dict, Coder& coder, int step) {
 
     coeffs_ = coder.coeffs;
     Sprscode spc(imageCols_, imageRows_, channels_, blockSize_, coeffs_);
@@ -82,19 +165,13 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     VectorXd select = VectorXd::Zero(A.innerSize());
     for (int k=0; k<A.outerSize(); ++k) {
         for (Eigen::SparseMatrix<double>::InnerIterator it(A,k); it; ++it) {
-                    A.coeffRef(it.row(),it.col()) *= scale(it.col());
+            A.coeffRef(it.row(),it.col()) *= scale(it.col());
             if(it.col()==200) select(it.row()) = A.coeffRef(it.row(),it.col());
         }
     }
     for(int i=0; i<(*data_).cols(); i++) {
-               (*data_).col(i)*= scale(i);
+        (*data_).col(i)*= scale(i);
     }
-
-    //    spc.compress(shift,A);
-    //    spc.save(fileName);
-    //reconstruct :)
-    //    spc.load(fileName);
-    //    spc.uncompress(shift,A);
 
 
     MatrixXd recon_vigra = dict.getData()*A;
@@ -124,12 +201,6 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
     //    std::cout << "PSNR: " << psnr(mseVal) << " dB" << std::endl;
     //    std::cout << "MSE: " << mseVal << std::endl;
 
-
-    dict.debugSaveImage("../../output/tmp/dict_tmp.select.png", select);
-
-
-    //    std::cout << "reorder  image" << std::endl;
-
     cv::Mat outputImage = cv::Mat::zeros(imageRows_+blockSize_, imageCols_+blockSize_, CV_8UC(channels_));
     cv::Mat recon_cv(1,rows_,CV_8U);
     int index = 0;
@@ -149,13 +220,12 @@ void Samples::saveImage(std::string& fileName, Dictionary& dict, Coder& coder, i
             cv::Mat region( outputImage,  cv::Rect(i,j,blockSize_, blockSize_) );
             region += tmp;
             //            region = region/2.0 + tmp/2.0;
-            //tmp.copyTo(region);
             index++;
         }
     }
     cv::Mat im(outputImage, cv::Rect(0,0,imageCols_, imageRows_));
-    //    cv::imshow("sprscode", im);
-    //    cv::waitKey();
+    cv::imshow("sprscode", im);
+    cv::waitKey();
     cv::imwrite(fileName, im);
 }
 
@@ -195,7 +265,6 @@ bool Samples::loadImage(std::string& fileName, int winSize, int channels, int st
 
     //    cv::cvtColor(inputImage, inputImage, CV_RGB2YCrCb);
 }
-
 
 bool Samples::sampleImage(cv::Mat inputImage, int step) {
 

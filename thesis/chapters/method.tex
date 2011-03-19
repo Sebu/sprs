@@ -3,45 +3,23 @@
 
 \chapter{Framework}
 To sparse code images and learn big dictionaries we designed a software
-framework called emph{SPRS}. This section describes the functionality and
+framework called \emph{SPRS}. This section describes the functionality and
 decisions made while developing it from idea to implementation.
 
 \section{Signal representation}
 \label{sec:signal_representation}
 To be able efficiently sparse code images it is necessary to prepare the
-image data. The signal preparation mainly consists of two sub steps.
-\begin{itemize}
- \item Color space conversion
- \item Spatial separation
-\end{itemize}
-
-\paragraph{Color space conversion} As we mainly use sets of natural color images
-and graphics we require to work with multi-channel data. Commonly presented in
-the three channel RGB color space.
-When dealing with multi-channel data (e.g. RGB images) each channel can be coded
-separate or as a concatenation of each signal into a single one. Mairal et
-al.\cite{mairal08sparse} noticed that the concatenation of the channels leads
-better reconstruction quality. This strategy pays more attention to the fact
-that color channels are often highly correlated. But they also notices that both
-approaches can lead to color bleeding.  
-%\Todo{add picture}
-%Nevertheless 
-They propose a solution that adds a constraint to the sparse coding that pays
-attention to correlation of the channels. 
-%\Todo{add formula from paper} 
-Fortunately Mairal et al. also noticed that this problem vanishes with big
-dictionaries and large training sets as present in our experiments. 
-\cite{mairal08sparse}
-
+image data. As the sparse coding process is operation on samples of signal
+vectors it is required to transform our 2-D image data in a set of 1-D vectors.
+The signal preparation mainly consists of two sub steps. Spatial separation of
+the image into blocks and transformation of these into sample vectors.
 
 \paragraph{Spatial separation}
-As the sparse coding process is operation on signal vectors it is required to
-represent our 2-D image data in a set of 1-D vectors with size $m$. We extract
-blocks of size $n \times n=m$ from the images. Typically dealing with block
-sizes of $n=8,..,20$. The blocks get extracted in a raster either with
+We extract blocks of size $n \times n=m$ from the images. Typically dealing with
+block sizes of $n=8,..,20$. The blocks are extracted in a raster either with
 overlapping content or disjoint from each other. Figure \ref{fig:separation}
-illustrates this separation step. How the  strategy can effect learning
-show our experiments.
+illustrates this separation step. 
+%How the strategy can effect learning show our experiments.
 \begin{figure}[h]
 \centering
 \subfloat[]{\includegraphics[scale = 0.30]{images/segmentation_new.jpg}}
@@ -56,30 +34,52 @@ overlapping}
 \label{fig:separation}
 \end{figure}
 
+\paragraph{Block transformation} As we are dealing with sets of natural
+color images and graphics we primary work with grayscale or three
+channel RGB data. 
+When dealing with multi-channel data each channel can be coded
+separate or as a concatenation of each signal into a single one. Mairal et
+al.\cite{mairal08sparse} noticed that the concatenation of the channels leads
+to better reconstruction quality. This strategy pays more attention to the fact
+that color channels are often highly correlated. But they also notices that both
+approaches can lead to color bleeding.  
+To address this issue they add a constraint to the sparse coding that pays
+attention to correlation of the channels. 
+%\Todo{add formula from paper} 
+Fortunately Mairal et al. also noticed that this problem vanishes with big
+dictionaries and large training sets as present in our experiments. So we use
+the concatenation of color channels. 
+\cite{mairal08sparse}
+
+
 \section{Sparse coding step}
 When coding a large number of small or medium sized decomposition problems,
-which is the case for small image blocks in large image sets, some
-optimizations can be made on the sparse coding algorithms. 
+which is the case for many samples of small image blocks, some optimizations can
+be made on the sparse coding algorithms. 
 For the framework we chose to include a batch modified versions of the OMP for
-$\ell_0$ regularization and the LARS-Lasso for $\ell_1$ regularization in the
-sparse coding step to address this circumstance. 
+$\ell_0$ regularization and the LARS-Lasso for $\ell_1$ regularization to
+address this circumstance. 
 
 \subsection{Batch-OMP}
 In 2008 Rubinstein et al.\cite{Rubinstein2008} presented a speed improved
-version of the orthogonal-matching-pursuit(\ref{sec:omp}) called
-\emph{Batch-OMP}. The speed gain of \prettyref{alg:batchOMP} is achieved
-by modifying the OMP in a way that can effectively sparse code
-multiple signals in parallel. One key element of the optimizations is the
-pre-computation of the gram matrix $\mat{G}=\mat{D}^T\mat{D}$ which can
-efficiently be reused for each signal. Another optimization to a single signal
-coding step itself (\prettyref{alg:batchOMP}) is the cholesky factorization of
-$\left( \mat{D}_A^T \mat{D}_A \right)^{-1}$ (line \ref{alg:OMP_DTD} of
-\prettyref{alg:mp}). $\mat{D}_A^T \mat{D}_A$ is a symmetric and
-positive-definite matrix and can be cholesky decomposed
-into $\mat{L}\mat{L}^T$. Even better, due to the nature of the algorithm
-composing $\mat{D}_A$ by adding additional row and columns to it, $\mat{L}$ can
-be build up during the computation. This reduces the computational cost of the
-algorithm drastically.
+version of the Orthogonal-Matching-Pursuit(\ref{sec:omp}) named
+\emph{Batch-OMP}. The speed gain is achieved by modifying the OMP in a way that
+can effectively sparse code multiple signals in parallel. One key element of the
+optimizations is the pre-computation of matrix $\mat{G}=\mat{D}^T\mat{D}$ and
+$\mat{D}^T\mat{X}$ which can efficiently be reused for each signal. 
+
+Another optimization to a single signal coding step itself
+(\prettyref{alg:batchOMP}) is the cholesky factorization of
+$\mat{D}_A^T \mat{D}_A$ (line \ref{alg:OMP_DTD} in
+\prettyref{alg:mp}). Cholesky factorization is a process of
+decomposing a symmetric and positive-definite matrix $\mat{A}$ into
+a lower and a upper triangular matrix $\mat{L}$ and $\mat{L}^T$. A triangular
+matrix can be inverted more easily. 
+$\mat{D}_A^T \mat{D}_A$ is a symmetric positive-definite matrix and can be
+cholesky decomposed. Even better, due to the nature of the
+algorithm composing $\mat{D}_A$ by adding additional row and columns to it,
+$\mat{L}$ can be build up during the computation. This reduces the computational
+cost of the algorithm drastically.
 
 \begin{algorithm}[h]
 \caption{Parallel coding}
@@ -135,11 +135,11 @@ algorithm drastically.
 \end{algorithm}
 
 All modification lead to significant speed increase when coding large sets of
-signals. While $L$ is very small the main factor of the computation is
-the multiplication of $\mat{D}$ with a vector. Batch-OMP reduces the number of
-those multiplications compared to the ordinary OMP. Detailed information on the
-complexity and speed gain can be found in the corresponding
-paper\cite{Rubinstein2008} on the Batch-OMP. 
+signals. While the maximum number of coefficients $L$ is very small the main
+factor of the computation is the multiplication of $\mat{D}$ with a vector.
+Batch-OMP reduces the number of those multiplications compared to the ordinary
+OMP. Detailed information on the complexity and speed gain can be found in
+\cite{Rubinstein2008}. 
 
 % with a complexity of $O(mp)$. 
 %This modification reduces the complexity of the OMP from $O\left(L2mp + 2L^2m +
@@ -170,7 +170,7 @@ different blocks we start to talk about a different game. Now each dictionary
 elements tends to captures more general structure of the signals.
 
 For the learning step we use the ODL algorithm from \prettyref{sec:mairal}. As
-an online learning algorithm it is able to learn dictionaries from very large
+an online learning algorithm is able to learn dictionaries from very large
 sets of training data $n\ge 10.000.000$.
 
 
@@ -182,7 +182,8 @@ effect in the learning process.
 
 There are two common ways to initialize the dictionary using random data or
 selecting random elements from the training data. The framework supports 
-both ways of dictionary initialization. \Todo{optional: image}
+both ways of dictionary initialization. 
+\Todo{optional: image}
 %can be tested and the quality will be compared.
 
 
@@ -206,14 +207,15 @@ to thousands samples. Impractical for our desired size of millions of samples.
 Another strategy is to learn a set of smaller dictionaries $S =
 (\mat{D}_1, ..., \mat{D}_k)$ on disjoint sets of training samples and when
 the learning step ended, merge the dictionaries $\mat{D}_i$ into a bigger one
-$\mat{D}_{s}$ . The merge process starts with an empty dictionary
-$\mat{D}_{s}$  and successively adds atoms from the dictionaries of the
-learning step to the new dictionary $\mat{D}_{s}$  unless the atom can be
-reconstructed with only few atoms (e.g., 2) of the current state of
-$\mat{D}_{s}$ . The drawback of this approach is fact that 
-each atom will be less correlated to whole training set. But this will happen
-anyway as we learn dictionaries from large sets of possibly very different
-samples. 
+$\mat{D}_{s}$. 
+
+The merge process starts with an empty dictionary $\mat{D}_{s}$  and
+successively adds atoms from the dictionaries of the learning step to the new
+dictionary $\mat{D}_{s}$  unless the atom can be reconstructed with only few
+atoms (e.g., 2) of the current state of $\mat{D}_{s}$ . The drawback of this
+approach is fact that  each atom will be less correlated to whole training set.
+But this will happen anyway as we learn dictionaries from large sets of possibly
+very different samples. 
 
 \begin{algorithm}[H]
 \caption{Dictionaries merging}
@@ -266,23 +268,22 @@ They consits of the following main steps:
 difference in brightness but lacks the ability exactly differentiate small
 changes in color. \emph{Chroma sub-sampling} takes advantage of this human flaw.
 First the image gets converted into the $YC_bC_r$ color space, which describes
-an image in a brightness/luminance (Y) and two color/chroma components (Cb and
-Cr). Then the visual more relevant brightness/luminance channel will be coded in
-the full resolution while the color/chroma components can be sub-sampled with
+an image in a brightness (Y) and two color components (Cb and
+Cr). Then the visual more relevant brightness channel will be coded in
+the full resolution while the color components can be sub-sampled with
 only minor loss in perceptual quality. This procedure is one key element of JPEG
 and JPEG 2000 image compression to reduce the number of coefficients for each
 color channel. But our atoms already capture color information. So we are
-skipping this step. 
-%Splitting the image
+skipping this step. %Splitting the image
 
 \paragraph{Spatial separation and signal coding}
 The actual coding step of the prepared signals. The signal vectors $\vec{x}_i$
 of $\mat{X}$ consists of $n \times n$ non overlapping blocks from the image.
-With $n$ in the range of $n=8,..,12$. A similar block size and separation
+With $n$ in the range of $n=8,..,16$. A similar block size and separation
 strategy as used in JPEG compression. After the signal separation we apply one
 of the sparse coding algorithms present in our framework to all blocks. This
-step is lossy as the number of coefficients for regularization chosen is lower
-than the dimension of the signal. 
+step is lossy due to the regularization of sparse coding to chose only a small
+number  of coefficients. Much less than the dimension of the signal. 
 
 \paragraph{Quantization}
 Quantized is the process of reducing informations from continuous set to a
@@ -294,16 +295,17 @@ Quantization can either be applied by a fixed factor or by applying different
 factors to each coefficient based on frequency of the basis element.
 
 JPEG quantization uses the fact that the human eye is not good at seeing
-differences in high frequency brightness variations. Each DCT coefficient was
-weighted by their perceptual relevance and weights were stored in quantization
-matrix. This matrix can be applied to the coefficient after the DCT. 
+differences in high frequency brightness variations. In the development
+process of the JPEG alogorithm. Each DCT coefficient was weighted by perceptual
+relevance and weights were stored in quantization matrix. 
+This matrix can be applied to the coefficient after the DCT. 
 Afterwards each coefficient gets rounded and zero coefficients can be removed.
 
 We adopt the idea of a quantization matrix to our sparse coding approach and
 weight our element by their frequencies. Learning dictionaries with the
 algorithm we present in \prettyref{sec:mairal} leads to a random distribution of
-atoms with yet unknown information of their structure and frequency. We analysis
-the dictionary elements and sort them by their frequencies.
+atoms with yet unknown information of their structure and frequency. We analyse
+the dictionary atoms with a DFT and sort them by their frequencies.
 \prettyref{fig:sorted} illustrates an example of this. Weights are applied
 in a simple linear way over the number of elements.
 
@@ -347,9 +349,9 @@ matrix is zero. Afterwards the remaining data gets huffman coded.
 
 \section{Implementation}
 %\subsection*{Software}
-The software framework consists of a library (sprscode) for sparse coding image
+The SPRS framework consists of a library (sprscode) for sparse coding image
 signals and learning dictionaries, a command line interface (sparsecli) to the
-library and miscellaneous scripts for distribution of coding and learning jobs
+library, miscellaneous scripts for distribution of coding and learning jobs
 and a test suite.
 
 The whole sparse coding and training library is written in C++ and system with
@@ -417,10 +419,13 @@ parameter & description \\
 \verb+--train <file>+ & use images listed in \emph{file} as training set\\
 \verb+--blockSize <n>+ & size \emph{n} of the image blocks \\
 \verb+--winSize <n>+ & size \emph{n} of selection window \\
+\verb+--channels <n>+ &number \emph{n} of color channels (1 gray, 3 RGB) \\
+
 \verb+--resume+ & resume an interrupted learning process \\
 \verb+--merge <n>+ & merge dictionaries listed in \emph{file}  \\
 \verb+--input <file>+ & input \emph{file} for reconstruction \\
-\verb+--output <file+ & output \emph{file} of reconstruction \\ 
+\verb+--compress <file>+ & input \emph{file} for compression \\
+\verb+--uncompress <file>+ & input \emph{file} for uncompression \\
 \verb+--coeffs <n>+ & maximum of coefficients \emph{n} \\
 \verb+--error <n>+ & reconstruction or merge error \\
 \verb+--mode <n>+ & chose \emph{n} either 1 for LARS or 2 for OMP \\

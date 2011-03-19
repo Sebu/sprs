@@ -43,11 +43,11 @@ the signal $\vec{x}_i $ in $\mat{X}$.
 \end{pmatrix}}_{\textrm{sparse vector }}
 \end{align*}
 
-When a signal $\vec{x}$ and dictionary $\mat{D}$ are known 
-and $\vec{\alpha}$ is unknown the solution to this problem is a solve of an
-under-determined linear system.
+While signal $\vec{x}$ and dictionary $\mat{D}$ are known we have to solve an  
+under-determined linear system (\prettyref{eq:problem} to obtain the unknown
+$\vec{\alpha}$.
 \begin{equation}
- \vec{\alpha} = \mat{D}^{-1}\vec{x}\label{eq:problem} 
+ \vec{x} = \mat{D}\vec{\alpha}\label{eq:problem} 
 \end{equation}
 The problem is not well-posed because there is more than one
 solution to it. %Such a problem is called a ill-posed problem.
@@ -309,17 +309,19 @@ FOCUSS by Gorodnitsky and Rao\cite{FOCUSS}, the LARS by Efron et
 al.\cite{Efron2004} among others. We will have a more in-depth look at the LARS.
 
 
-\Todo{ueber regression nachdenken}
+
 \subsection{LARS-Lasso}
 \label{sec:lars}
 % \Todo{split into LAR and LARS-lasso, better illustrate than use complex
 %formulas}
 The LARS-Lasso is an algorithm to solve the Lasso with the help of a regression
-algorithm known as \emph{least-angle regression (LAR)}. Regression tries to find
-the correlation between a depended variable, here \prettyref{eq:l1lagrange}, and
-a set of independent variables, our coefficients of $\vec{\alpha}$.
-The LAR and LARS-Lasso were first presented in 2004 by Efron et
-al.\cite{Efron2004}.
+algorithm known as \emph{least-angle regression (LAR)} presented by
+Efron et al.\cite{Efron2004} in 2004. 
+Coming from statistics regression is an analysis technique that
+finds the correlation between a depended variable and a set of
+independent variables. Applying this to our problem (\prettyref{eq:problem})
+then $\vec{\alpha}$ is the correlation between our depended variable $\vec{x}$
+and the independent variables $\vec{d}_i$ of $\max{D}$. 
 
 
 \paragraph{Least-angle regression}
@@ -359,6 +361,8 @@ the algorithm selects only one column.
 The first limitation is not relevant for our experiments as our dictionaries
 are over-complete, with respect to the dimension $m$ of signal $\vec{x}$ and
 thus, satisfy $m \leq p$. 
+
+
 \newpage
 \begin{algorithm}[H]
 \caption{LARS-Lasso}

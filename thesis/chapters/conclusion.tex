@@ -1,5 +1,17 @@
 \chapter{Conclusion and Future Work}
 
+\section{Summary}
+Over the course of this thesis we build a framework to sparse code and learn
+dictionaries from big sets of different samples as found in large image
+databases. We implemented the Batch-OMP and the LARS-Lasso sparse coding
+algorithms for $\ell_0$ and $\ell_1$ regularization and the ODL by Mairal et
+al. for learning dictionaries. 
+In addition to this we added a cluster learning and merging strategy to the
+framework to speed up learning of large dictionaries.
+We proposed a simple sparse coding based compression algorithm that can compete
+with and surpass JPEG compression in certain situations.
+
+
 \section{Conclusion}
 The right regularization and the the right training data
 play a big role for learning the right dictionaries and gaining
@@ -9,18 +21,18 @@ It turn out that that the $\ell_1$ regularization of LARS-Lasso has a selection
 strategy which is very good at learning dictionary atoms.  And also good for
 reconstruction tasks. Using LARS-Lasso for training generates a good dictionary
 for LARS and OMP sparse coding tasks.
-
 While the $\ell_0$ regularization of the OMP, with its greedy nature, has a very
 aggressive selection strategy.  This very noisy selection strategy is less
 practical than LARS for the ODL learning step. Such as a high number of learning
 coefficients and bad initialization. 
 
 
-Using  sets for to learn very universal dictionaries. If the images fit into the
-same category it is insignificant which images you chose. The results will not
-much differ. When extracting samples from JPEG images for learning keep in mind 
-that we can only learn what the data provides. Samples from JPEG especially
-non-overlapping $8 \times 8$ blocks will help to learn DCT atoms.
+Using bit image sets for learning can lead to very universal dictionaries. If
+the images fit into the same category it is insignificant which images you
+chose. The results will not much differ. When extracting samples from JPEG
+images for learning keep in mind that we can only learn what the data provides.
+Samples from JPEG especially non-overlapping $8 \times 8$ blocks will help to
+learn DCT atoms.
 
 %or want to verify if it is a JPEG image.
 %Dictionaries to universal ... improved results to DCT .. but varying with field
@@ -32,14 +44,14 @@ non-overlapping $8 \times 8$ blocks will help to learn DCT atoms.
 % Similar to natural images.
 % compression dicts
 
-Dictionaries can be made much bigger than but the increased quality come with
-the price of computational complexity. Clustering learning strategies can help
-to learn faster and overcome convergence in the reconstruction quality of big
+Dictionaries can be made much bigger than usual but the increased quality
+comes with the price of computational complexity. Clustering learning strategies
+can help to learn faster and lead equal reconstruction quality as single big
 dictionaries.
 
 When it comes to compression tasks the greedy OMP performs better
 than the LARS-Lasso. As it sheers for less coefficients. Sparse coding 
-compression algorithms can lead to similar compression ratio as JPEG com
+compression algorithms can lead to similar compression quality as JPEG 
 for low bit rates. And they can surpasses it in certain situations. But
 currently a lot of tweaking to the quantization step is required. 
 
@@ -54,7 +66,6 @@ compared to the quality benefits and the wide acceptance of JPEG.
 
 Our experiments are just a first glimpse of that can be done to use sparse
 coding and dictionary learning for large image databases.
-
 
 \section{Future work}
 The amount of publications regarding sparse coding and machine learning in the
@@ -78,48 +89,35 @@ extended in terms of speed and new dictionary learning strategies.
 \paragraph{Speed}
 While the implementation of the Batch-OMP and the ODL are already very fast
 the LARS-Lasso implementation is quiet slow compared to the KLT implementation
-in
-the SPAMS framework. In the near future the SPAMS framework will provide a C++
-interface\footnote{\url{http://www.di.ens.fr/willow/SPAMS/faq.html}}. Adding
-support for this interface could lead to speed improvements.
+in the SPAMS framework. In the near future the SPAMS framework will provide a
+C++ interface\footnote{\url{http://www.di.ens.fr/willow/SPAMS/faq.html}}. Adding
+support for this interface could lead to speed improvements. 
 
 \paragraph{Clustering}
 Also taking the clustering strategy two even further is to learn smaller
 dictionaries from different sets of images or characteristics. Such as
-paintings, gray-scale sketches and smooth images animation. For example learning
-dictionaries for very specific classes of images can be used for classification
-tasks. Something that can come in handy when applying it to operations like
-search in large image databases.
+paintings, gray-scale sketches and smooth animation images. For example
+learning dictionaries for very specific classes of images can be used for
+classification tasks. Something that can come in handy when applying it to
+operations like search in large image databases.
 
 
 \subsection{Compression improvements}
 \paragraph{Reducing block borders} The presented compression experiment
 takes a very simple approach without taking correlation between adjacent
 blocks into account. Similar to the JPEG block strategy. But other than
-the JPEG basis transforms the learned atoms are not limited to locality in the
-frequency domain. We also learned also in the time domain. 
-Splitting images in high and low pass sub images and learning multi-scale
-dictionaries for each sub image could improve image quality. The framework can
-be easily extended to learn and code different kinds of sub-images.
+the JPEG basis transforms the learned atoms are not limited to locality in
+frequency. Splitting images in high and low pass sub images and learning
+multi-scale dictionaries for each sub image could improve image quality. The
+framework can be easily extended to learn and code different kinds of
+sub-images.
 
 \paragraph{Better entropy coding}
-The coding of the coefficients already works quiet good. But the coding of the
+The coding of the coefficients already works quiet well. But the coding of the
 indices is currently limited as the sparse coding algorithm tends to select a
 lot of different atoms. A structured sparse coding approach as mentioned in
 \prettyref{sec:sparse_related} could lead to less selected atoms and a better
 entropy encoding. Also the required bits for each index are not optimized yet.
-
-
-\section{Summary}
-Over the course of this thesis we build a framework to sparse code and learn
-dictionaries from big sets of different samples as found in large image
-databases. We implemented the Batch-OMP and the LARS-Lasso sparse coding
-algorithms for $\ell_0$ and $\ell_1$ regularization and the ODL by Mairal et
-al. for learning dictionaries. 
-In addition to this we added a cluster learning and merging strategy to the
-framework to speed up learning of large dictionaries.
-We proposed a simple sparse coding based compression algorithm that can compete
-with and surpass JPEG compression in certain situations.
 
 
 

@@ -35,10 +35,11 @@ public:
 
 
     Sprscode(int width, int height, int depth, int blockSize, int coeffsNum);
+    void init();
     void save(std::string& fileName);
     void load(std::string& fileName);
     void compress(VectorXd& shift, Eigen::SparseMatrix<double>& A);
-    void uncompress(VectorXd& shift, Eigen::SparseMatrix<double>& A);
+    void uncompress(VectorXd& shift, Eigen::DynamicSparseMatrix<double>& A);
 };
 
 #endif // LIBSPARSE_H

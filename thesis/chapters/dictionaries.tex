@@ -72,14 +72,14 @@ dictionary atoms learned with machine learning methods are not necessarily
 orthogonal. In fact one benefit of the machine learning approach is to be able
 to learn over-complete dictionaries with non-orthogonal basis atoms. This is
 where redundancy enters the game of constructing dictionaries. Not in a way
-where multiple instance of the same element are part of the dictionary but in
-form of additional elements that resemble a composition of other elements from
+where multiple instance of the same atom are part of the dictionary but in
+form of additional atoms that resemble a composition of other atoms from
 the dictionary. This can lead to less required atoms and more sparseness of the
 coefficient vector $\vec{\alpha}$ when sparse coding signals. Now a single atom
 can achieve the same reconstruction as a former combination of several
 orthogonal basis elements. 
 Nevertheless redundancy can also be applied to the designed
-dictionaries. For example by adding rotated cosine elements to a dictionary with
+dictionaries. For example by adding rotated cosine atoms to a dictionary with
 a default configuration of DCT basis elements.
 
 
@@ -340,7 +340,7 @@ Rather than encoding uniform segments of a bigger signal this technique
 encodes different sized blocks (a multiple of the default block size). The
 idea is that aligned smooth regions with low variance can be combined
 and encoded as one signal rather than with four smaller ones.\cite{Mairal2007}
-\Todo{optinal: picture with different scales}
+%\Todo{optinal: picture with different scales}
 
 \paragraph{Double sparsity}
 In 2009 Rubinstein et al.\cite{Rubinstein2009} presented the idea of double
