@@ -145,7 +145,7 @@ encoding=UTF-8
 highlight=LaTeX
 line=37
 mode=LaTeX
-open=false
+open=true
 order=3
 
 [item:chapters/acknowledgements.tex]
@@ -180,30 +180,30 @@ order=1
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=30
+column=65
 encoding=UTF-8
 highlight=LaTeX
-line=301
+line=365
 mode=LaTeX
 open=false
 order=1
 
 [item:chapters/introduction.tex]
 archive=true
-column=60
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=21
+line=59
 mode=LaTeX
-open=false
-order=4
+open=true
+order=1
 
 [item:chapters/method.tex]
 archive=true
-column=32
+column=53
 encoding=UTF-8
 highlight=LaTeX
-line=111
+line=197
 mode=LaTeX
 open=true
 order=0
@@ -230,13 +230,13 @@ order=0
 
 [item:chapters/sparse_coding.tex]
 archive=true
-column=8
+column=0
 encoding=UTF-8
 highlight=LaTeX
 line=364
 mode=LaTeX
-open=false
-order=5
+open=true
+order=2
 
 [item:chapters/title.tex]
 archive=true
@@ -305,16 +305,16 @@ CursorColumn=13
 CursorLine=120
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=30
-CursorLine=301
+CursorColumn=65
+CursorLine=365
 
 [view-settings,view=0,item:chapters/introduction.tex]
-CursorColumn=60
-CursorLine=21
+CursorColumn=0
+CursorLine=59
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=32
-CursorLine=111
+CursorColumn=53
+CursorLine=197
 
 [view-settings,view=0,item:chapters/overview.tex]
 CursorColumn=0
@@ -325,7 +325,7 @@ CursorColumn=75
 CursorLine=541
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
-CursorColumn=8
+CursorColumn=0
 CursorLine=364
 
 [view-settings,view=0,item:chapters/title.tex]
