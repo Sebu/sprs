@@ -9,7 +9,7 @@ decisions made while developing it from idea to implementation.
 \section{Signal representation}
 \label{sec:signal_representation}
 To be able efficiently sparse code images it is necessary to prepare the
-image data. As the sparse coding process is operation on samples of signal
+image data. As the sparse coding process operates on samples of signal
 vectors it is required to transform our 2-D image data in a set of 1-D vectors.
 The signal preparation mainly consists of two sub steps. Spatial separation of
 the image into blocks and transformation of these into sample vectors.
@@ -25,11 +25,11 @@ illustrates this separation step.
 \subfloat[]{\includegraphics[scale = 0.30]{images/segmentation_new.jpg}}
 \hspace{5mm}
 \subfloat[]{\includegraphics[scale =
-0.50]{images/segmentation1.jpg}}
+0.50]{images/segmentation2.jpg}}
 \hspace{5mm}
 \subfloat[]{\includegraphics[scale =
-0.50]{images/segmentation2.jpg}}
-\caption[spatial separation]{spatial separation of(a) with (b) and without (c)
+0.50]{images/segmentation1.jpg}}
+\caption[spatial separation]{spatial separation of (a) with (b) and without (c)
 overlapping}
 \label{fig:separation}
 \end{figure}
@@ -49,7 +49,7 @@ attention to correlation of the channels.
 Fortunately Mairal et al. also noticed that this problem vanishes with big
 dictionaries and large training sets as present in our experiments. So we use
 the concatenation of color channels. 
-\cite{mairal08sparse}
+%\cite{mairal08sparse}
 
 
 \section{Sparse coding step}
@@ -62,17 +62,15 @@ address this circumstance.
 
 \subsection{Batch-OMP}
 In 2008 Rubinstein et al.\cite{Rubinstein2008} presented a speed improved
-version of the Orthogonal-Matching-Pursuit(\ref{sec:omp}) named
-\emph{Batch-OMP}. The speed gain is achieved by modifying the OMP in a way that
-can effectively sparse code multiple signals in parallel. One key element of the
+version of the Orthogonal-Matching-Pursuit (\prettyref{sec:omp}) named
+\emph{Batch-OMP}. The speed gain is achieved by modifying the OMP in a way to
+effectively sparse code multiple signals in parallel. One key element of the
 optimizations is the pre-computation of matrix $\mat{G}=\mat{D}^T\mat{D}$ and
 $\mat{D}^T\mat{X}$ which can efficiently be reused for each signal. 
 
-Another optimization to a single signal coding step itself
-(\prettyref{alg:batchOMP}) is the cholesky factorization of
-$\mat{D}_A^T \mat{D}_A$ (line \ref{alg:OMP_DTD} in
-\prettyref{alg:mp}). Cholesky factorization is a process of
-decomposing a symmetric and positive-definite matrix $\mat{A}$ into
+Another optimization is the cholesky factorization of $\mat{D}_A^T \mat{D}_A$
+(line \ref{alg:OMP_DTD} in \prettyref{alg:omp}). Cholesky factorization is a
+process of decomposing a symmetric and positive-definite matrix $\mat{A}$ into
 a lower and a upper triangular matrix $\mat{L}$ and $\mat{L}^T$. A triangular
 matrix can be inverted more easily. 
 $\mat{D}_A^T \mat{D}_A$ is a symmetric positive-definite matrix and can be
@@ -116,7 +114,7 @@ cost of the algorithm drastically.
 \begin{align}
 \mat{L} \gets \left[
 \begin{array}{ccc}
-\mat{L} & 0\\
+\mat{L} & \vec{0}\\
 \vec{w}^T & \sqrt{1-\vec{w}^T\vec{w}}
 \end{array}
 \right]
@@ -134,7 +132,7 @@ cost of the algorithm drastically.
 \end{algorithmic}
 \end{algorithm}
 
-All modification lead to significant speed increase when coding large sets of
+All modifications lead to significant speed increase when coding large sets of
 signals. While the maximum number of coefficients $L$ is very small the main
 factor of the computation is the multiplication of $\mat{D}$ with a vector.
 Batch-OMP reduces the number of those multiplications compared to the ordinary
@@ -148,8 +146,8 @@ OMP. Detailed information on the complexity and speed gain can be found in
 %more signals than dictionary elements.
 
 \paragraph{LARS-Lasso} is chosen as it one of the fastest $\ell_1$
-regularization and and it leads to good results for signals of low dimension and
-with high correlation of dictionary elements.\cite{Mairal2010} Both conditions
+regularization and it leads to good results for signals of low dimension and
+with high correlation of dictionary elements \cite{Mairal2010}. Both conditions
 are satisfied when coding small image blocks.
 
 The same pre-computation of the matrix $\mat{D}^T\mat{D}$ and
@@ -162,20 +160,21 @@ LARS (\prettyref{alg:lars}) presented in \prettyref{sec:lars}.
 \section{Learning step}
 The majority of learning experiments in literature were made on
 samples of sliding blocks from single images or small sets of images.
-With samples of $n \ge 100.000$ and approximately about 10 non-zero coefficient.
-A common strategy when the learned dictionaries are only used for operations on
-those images. The dictionary atoms learned from those image have a high
-correlation to the image content.  When looking at large sets of images and many
-different blocks we start to talk about a different game. Now each dictionary
-elements tends to captures more general structure of the signals.
+With extracted samples of $n \ge 100.000$ and sparsness of about 10 non-zero
+coefficient. A common strategy when learned dictionaries are only used for
+operations on those images. Dictionary atoms learned with this strategy 
+have a high correlation to the image content. 
+When looking at large sets of images and many different blocks we start to talk
+about a different game. Now dictionary atoms tend to capture more
+general information of the signals.
 
 For the learning step we use the ODL algorithm from \prettyref{sec:mairal}. As
-an online learning algorithm is able to learn dictionaries from very large
+an online learning algorithm it is able to learn dictionaries from very large
 sets of training data $n\ge 10.000.000$.
 
 
 \subsection{Initialization}
-At the start of a training process it is requires to initial the
+At the start of a training process it is required to initialize the
 dictionary with start data. Otherwise the sparse coding step will only find
 trivial solutions with all coefficient being zero. Which then will have no
 effect in the learning process.
@@ -183,7 +182,7 @@ effect in the learning process.
 There are two common ways to initialize the dictionary using random data or
 selecting random elements from the training data. The framework supports 
 both ways of dictionary initialization. 
-\Todo{optional: image}
+%\Todo{optional: image}
 %can be tested and the quality will be compared.
 
 
@@ -196,7 +195,7 @@ of the learning step onto multiple clients with a clustering approach similar to
 MapReduce. 
 
 One strategy would be to use the mini-batch
-modification of the LARS-Lasso \prettyref{sec:lars}. But rather
+modification of the LARS-Lasso (\prettyref{sec:lars}). But rather
 than just coding a small batch of signals in one iteration of the training
 step (\prettyref{alg:trainDL}) we code one batch on each client of the cluster
 and merge all of them before applying (\prettyref{alg:update}). Keeping the

@@ -57,9 +57,8 @@ itself.
 %Besides the construction of dictionaries from mathematical functions, machine
 %learning can also be used to to generate dictionaries. 
 Machine learning is such a process that is used to learn essential structures
-from empirical data. In the case of dictionaries for sparse coding these
-empirical data are sets of signals which are feed as training data into machine
-learning algorithms.
+from empirical data. In our case image samples are feed as training data into
+machine learning algorithms.
 
 \emph{Principal component analysis (PCA)} can be used as an approach to find
 such dictionary atoms. As the principal components are orthogonal to each other,
@@ -72,15 +71,14 @@ dictionary atoms learned with machine learning methods are not necessarily
 orthogonal. In fact one benefit of the machine learning approach is to be able
 to learn over-complete dictionaries with non-orthogonal basis atoms. This is
 where redundancy enters the game of constructing dictionaries. Not in a way
-where multiple instance of the same atom are part of the dictionary but in
-form of additional atoms that resemble a composition of other atoms from
-the dictionary. This can lead to less required atoms and more sparseness of the
-coefficient vector $\vec{\alpha}$ when sparse coding signals. Now a single atom
-can achieve the same reconstruction as a former combination of several
-orthogonal basis elements. 
-Nevertheless redundancy can also be applied to the designed
-dictionaries. For example by adding rotated cosine atoms to a dictionary with
-a default configuration of DCT basis elements.
+that multiple instance of the same atom are part of the dictionary but in
+form of additional atoms resembling a combination of other atoms from
+the dictionary. This can lead to less required atoms and more sparseness in the
+coefficient vector $\vec{\alpha}$. Now a single atom can achieve the same
+reconstruction as a former combination of several orthogonal basis elements.
+Nevertheless redundancy can also be applied to designed dictionaries. For
+example by adding rotated cosine atoms to a dictionary with a default
+configuration of DCT basis elements.
 
 
 \section{Learning}
@@ -98,7 +96,7 @@ $\mat{X}=[\vec{x}_1,...,\vec{x}_n]$.
 %minimal error.
 
 \begin{equation*}
-D \equiv \argmin_{\mat{D}} \sum_{i=1}^n \ell(\vec{x}_i,\mat{D})
+D \equiv \argmin_{\mat{D}} \sum_{i=1}^n \ell(\vec{x}_i,\mat{D})\label{eq:learn}
 \end{equation*}
 With a typical sparsity constraining loss function of:
 \begin{equation*}
@@ -119,18 +117,18 @@ algorithm. We now introduce algorithms for both ways of learning.
 
 \subsection{Batch algorithms}
 Batch algorithms learn over-complete dictionaries from fixed batches of
-training data. Besides the initial idea of Olshausen and Field in
+training data. Besides the initial idea by Olshausen and Field in
 1996\cite{Olshausen1996} Engan et al.\cite{Engan1999a} presented 
-in 1999 another algorithms the \emph{Method of optimal directions
-(MOD)} and recently the \emph{Iterative least-square dictionary learning
-algorithm (ILS-DLA)}\cite{Engan2007}. 
+in 1999 the \emph{Method of optimal directions (MOD)} and recently the
+\emph{Iterative least-square dictionary learning algorithm
+(ILS-DLA)}\cite{Engan2007}. 
 
 
 \subsubsection{K-SVD}
 \label{sec:k-svd}
 One of the most popular batch algorithms is the K-SVD presented by
-Aharon et al. in 2006\cite{Aharon2006}. The algorithm learns a dictionary $D$
-from a set of training samples $\mat{X}$ by solving:
+Aharon et al. in 2006\cite{Aharon2006}. The algorithm learns a dictionary
+$\mat{D}$ from a set of training samples $\mat{X}$ by minimizing:
 \begin{equation*}
 \min_{\mat{D},\mat{A}} \lVert \mat{X} - \mat{D}\mat{A} \rVert^{2}_{F} \textrm{
 s.t. }
@@ -140,9 +138,10 @@ At the beginning the dictionary $\mat{D}$ gets initialized with either random
 data or a random selection of elements from the training set. The main part of
 the algorithm consists of two steps which are repeated for a fixed number of $T$
 iterations or until convergence of $\mat{D}$. In the first step all samples of
-training $\mat{X}$ are sparse coded with the current dictionary $\mat{D}$. In
-the second step every dictionary atom $\vec{d}_j$ of $\mat{D}$ is altered in a
-way that the reconstruction error of $\mat{X}$ is minimized. 
+training set $\mat{X}$ are sparse coded with the current dictionary $\mat{D}$
+leading to sparse matrix $\mat{A}$. In the second step every dictionary atom
+$\vec{d}_j$ of $\mat{D}$ is altered in a way that the reconstruction error of
+$\mat{X}$ is minimized. 
 \begin{equation*}
 \min_{\vec{d}_j,\vec{a}_j} \lVert \vec{d}_j\vec{a}_j - \mat{E}_j \rVert^{2}_{F}
 \textrm{ with }
@@ -162,23 +161,23 @@ Value Decomposition (SVD)}.
 \begin{algorithmic}[1]
 \REQUIRE $\mat{X} \in \mathbb{R}^{m \times k}, \mat{D}_0 \in \mathbb{R}^{m
 \times p}, T \in \mathbb{N}, L \in \mathbb{N}$
-\STATE $\mat{A} \gets \mat{D}_0$
+\STATE $\mat{D	} \gets \mat{D}_0$
 \FOR {$t = 1$ to $T$}
 \STATE sparse code every $\vec{x}_t$ in $\mat{X}$ with $\mat{D}$:
 \begin{equation}
-\vec{\alpha} = \argmin_{\vec{\alpha}}\lVert
+\mat{A}[t] = \argmin_{\vec{\alpha}}\lVert
 \vec{x}_t - \mat{D}\vec{\alpha}\rVert_2^2 \text{ s.t.}
 \lVert\vec{\alpha}\rVert_0 \leq L
 \end{equation}
 \FOR {$j = 1$ to $p$}\label{alg:k-svd_start}
-\STATE $\mat{D}_j \gets 0$
-\STATE $I \gets \{ i : \forall i : \mat{A}_{j,i} \neq 0 \}$
+\STATE $\mat{D}[j] \gets 0$
+\STATE $I \gets \{ i : \forall i : \mat{A}[i][j] \neq 0 \}$
 \STATE $\mat{E} \gets \mat{X}_I - \mat{D}\mat{A}_I$
 \STATE $\{\vec{d},\vec{g}\} \gets \argmin_{\vec{d},\vec{g}} \lVert \mat{E}-
 \vec{d}\vec{g}^T \rVert_F^{2}$ s. t. $\lVert
 \vec{d} \rVert_{2} = 1$
-\STATE $\mat{D}_j \gets d$
-\STATE $\mat{A}_{j,I} \gets \vec{g}^T$
+\STATE $\mat{D}[j] \gets \vec{d}$
+\STATE $\mat{A}[j]_{I} \gets \vec{g}^T$
 \ENDFOR\label{alg:k-svd_end}
 \ENDFOR
 \RETURN $\mat{D}$
@@ -187,57 +186,61 @@ Value Decomposition (SVD)}.
 % \Todo{optional: k-svd modifications}
 
 \subsection{Online algorithms}
-In 2009 new training algorithms were presented that enabled online learning of
+In 2009 new training algorithms were presented enabling online learning of
 dictionaries. In contrast to batch learning algorithms with a fixed training set
 the new approaches enable learning with a constant flow of training data. This
 is good for very large training sets or training data that is unknown at the
 start of the training process.
 
-One online algorithms is the \emph{Recursive least-square dictionary
-learning algorithm (RLS-DLA)} The algorithm was presented by Engan et al. in
+One online algorithm is the \emph{Recursive least-square dictionary
+learning algorithm (RLS-DLA)}. The algorithm was presented by Engan et al. in
 2010\cite{Engan2010} and is a recursive modified version of the ILS-DLA
 algorithm.
 
 \subsubsection{Online dictionary learning}
 \label{sec:mairal}
-In 2009 Mairal et. al.\cite{Mairal2009} presented an online approach which from
-now on we will call \trainDL.
-The algorithm uses stochastic gradient descent to optimize $\mat{D}$ for: 
+In 2009 Mairal et. al.\cite{Mairal2009} presented an online approach we will
+call \trainDL. The algorithm uses stochastic gradient descent to optimize
+$\mat{D}$ (\prettyref{eq:learn}) with the loss function: 
 \begin{equation*}
 \ell(x,D) \equiv \min_{\vec{\alpha}} \frac{1}{2}\lVert \vec{x} -
-\mat{D}\vec{\alpha}_i \rVert^{2}_{2}  +  \lambda \lVert
+\mat{D}\vec{\alpha} \rVert^{2}_{2}  +  \lambda \lVert
 \vec{\alpha}
 \rVert_{1} 
 \end{equation*} 
 %It is a minimization that uses
-Like the K-SVD the algorithm learns a dictionary $\mat{D}$ from a set of
+Like K-SVD the algorithm learns a dictionary $\mat{D}$ from a set of
 training samples $\mat{X}$ and starts with a dictionary $\mat{D}$ with random
 data or a random selection of elements from the training set. 
 
-At each iteration $t$ \prettyref{alg:trainDL} draws a random sample $\vec{x}_t$
-from the training set $\mat{X}$ through a function $p(\vec{x})$.
+In each iteration $t$ \prettyref{alg:trainDL} draws a random sample
+$\vec{x}_t$ from the training set $\mat{X}$ through a function $p(\vec{x})$.
 Then $\vec{x}_t$ gets sparse coded with $\mat{D}_{t-1}$ yilding
 $\vec{\alpha}_t$. In each iteration \prettyref{alg:update} updates the
 dictionary $\mat{D}$ with block-coordinate descent with $\mat{D}_{t-1}$ as warm
-restart.
+restart. 
 
-The algorithm only requires to to store 
-$\mat{A}=\sum_{t=1}^T\vec{\alpha}_t\vec{\alpha}_t^T$ and
-$\mat{B}=\sum_{t=1}^T\vec{x}_t\vec{\alpha}_t^T$ over all iterations.
-This enables to scale up to large datasets of millions of training samples
-and being suitable for a large range of learning problems.
+The algorithm only requires to evaluate a single training sample in every
+iteration $t$. Capturing previous coding informations in
+$\mat{A}=\sum_{t=1}^T\vec{\alpha}_t\vec{\alpha}_t^T$, 
+$\mat{B}=\sum_{t=1}^T\vec{x}_t\vec{\alpha}_t^T$ and $\mat{D}$.
+This allows to scale up to large datasets of millions of training
+samples or store $(\mat{A},\mat{B},\mat{D})$ and warm restart learning
+with new samples.
+% and being suitable for a large range of learning problems.
 %Does it scale up to big dictionaries?
 
 \begin{algorithm}[h]
-\caption{Online dictionary learning}
+\caption{ODL}
 \label{alg:trainDL}
 \begin{algorithmic}[1]
-\REQUIRE $\vec{x} \in \mathbb{R}^{m \times k},  p \left( x \right), \lambda \in
+\REQUIRE $\mat{X} \in \mathbb{R}^{m \times k},  p \left( \mat{X} \right),
+\lambda \in
 \mathbb{R}, \mat{D}_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
 \STATE $\mat{A}_0 \in \mathbb{R}^{p \times p} \gets  0, \mat{B}_0 \in
 \mathbb{R}^{m \times p}\gets 0$
 \FOR {$t = 1$ to $T$}
-\STATE Draw $\vec{x}$ from p(x).
+\STATE Draw $\vec{x}$ from $p(\mat{X})$.
 \STATE Sparse code:
 \begin{align*} 
 \vec{\alpha}_t \equiv \argmin_{\vec{\alpha}\in\mathbb{R}^{p}}  \lVert \vec{x}_t
@@ -288,10 +291,9 @@ warm restart
 \end{algorithm}
 In 2010 Mairal et al. \cite{Mairal2010} describe several modification to
 their algorithm to improve speed and convergence. One speed optimization is to
-sparse code mini-batches of $n$ signal samples instead of a single signal sample
+sparse code mini-batches of $n$ samples instead of a single sample
 in each iteration. This modification leads to line \ref{alg:Aupdate} and line
-\ref{alg:Bupdate}
-becoming:
+\ref{alg:Bupdate} of \prettyref{alg:trainDL} becoming:
 \begin{align*}
 \mat{A}_t \gets \mat{A}_{t-1} +
 \frac{1}{n}\sum_{i=1}^{n}\vec{\alpha}_{t,i}\vec{\alpha}_{t,i}^T\\
@@ -320,18 +322,18 @@ domain like audio or text.
 \label{sec:related_dictionarie}
 
 
-\paragraph{Training with a neural network} In his masters thesis 
-Krizhevsky \cite{Krizhevsky2009} is using an neural network to learn image
+\paragraph{Training with a neural network} In his master thesis 
+Krizhevsky\cite{Krizhevsky2009} is using a neural network to learn image
 basis from a large set of tiny images. The resulting basis elements are similar
 to wavelet filters.
 
 \paragraph{Epitomes} In 2008 Wang et al.\cite{Wang2008a} presented
 an approach that factors repeated content in images. The algorithm generates 
-a map of affine transformations and an atlas texture with with overlapping
+a map of affine transformations and an atlas texture with overlapping
 regions of image content. This atlas is called epitome. The epitomes are also a
-sort of dictionary and the affine transformation matrices 
-the corresponding sparse vector. The technique is used for real-time synthesis
-of textures with low memory consumption and  fast reconstruction in hardware via
+sort of dictionary and their affine transformations are
+the corresponding sparse vectors. The technique is used for real-time synthesis
+of textures with low memory consumption and fast reconstruction in hardware via
 pixel shaders. They also presented some experiments for unified epitomes for
 collections of images and possible application for larger sets of images. 
 
@@ -361,8 +363,8 @@ Examples for sparse coding being used for classification tasks can be found in
 adding hierarchy to dictionaries can lead to faster coding of signals and
 capture additional information about the learned dictionaries. While
 dictionaries are learned the atoms are organized in a tree structure.
-Under the constraint that child atoms require that their parents are part of
-a sparse selection. 
+Under the constraint that child atoms require their parents being part of
+the sparse selection. 
 
 
 
