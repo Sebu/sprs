@@ -7,9 +7,9 @@ databases. We implemented the Batch-OMP and the LARS-Lasso sparse coding
 algorithms for $\ell_0$ and $\ell_1$ regularization and the ODL by Mairal et
 al. for learning dictionaries. 
 In addition to this we added a cluster learning and merging strategy to the
-framework to speed up learning of large dictionaries.
-We proposed a simple sparse coding based compression algorithm that can compete
-with and surpass JPEG compression in certain situations.
+framework to speed up learning of large dictionaries. We proposed a simple
+sparse coding based compression algorithm that can compete with and surpass JPEG
+compression in certain situations.
 
 
 \section{Conclusion}
@@ -46,8 +46,8 @@ learn DCT atoms.
 
 Dictionaries can be made much bigger than usual but the increased quality
 comes with the price of computational complexity. Clustering learning strategies
-can help to learn faster and lead equal reconstruction quality as single big
-dictionaries.
+can help to learn more indipendent and still lead to equal reconstruction
+quality as single big dictionaries.
 
 When it comes to compression tasks the greedy OMP performs better
 than the LARS-Lasso. As it sheers for less coefficients. Sparse coding 
@@ -74,13 +74,13 @@ brining structure to the learning stage is one of the most active topics.
 
 \paragraph{Structure}
 The results gained on the appearance of the atoms can be used to think
-about more advanced ways to structure these atoms or generation of atoms.
+about more advanced ways to structure or generate the atoms.
 
 \subsection{Different training sets}
-One of our findings is the fact that we tend to learn from natural JPEG images.
-Testing with larger sets of images that did not go through a JPEG compression
-is one major topic to address in the future. Raw camera images or tiff images
-are a possible source. 
+One of our findings is the fact that we tend to learn DCT atoms from natural
+JPEG images. Testing with larger sets of images that did not go through a JPEG
+compression is one major topic to address in the future. Raw camera images or
+tiff images are a possible source. 
 
 \subsection{Framework improvements}
 To make further and more flexible experiments. The framework needs be be
@@ -107,17 +107,18 @@ operations like search in large image databases.
 takes a very simple approach without taking correlation between adjacent
 blocks into account. Similar to the JPEG block strategy. But other than
 the JPEG basis transforms the learned atoms are not limited to locality in
-frequency. Splitting images in high and low pass sub images and learning
-multi-scale dictionaries for each sub image could improve image quality. The
-framework can be easily extended to learn and code different kinds of
-sub-images.
+the frequency domain. Splitting images in high and low pass sub images and
+learning multi-scale dictionaries for each sub image could improve image
+quality. The framework can be easily extended to learn and code different kinds
+of sub-images.
 
 \paragraph{Better entropy coding}
 The coding of the coefficients already works quiet well. But the coding of the
 indices is currently limited as the sparse coding algorithm tends to select a
 lot of different atoms. A structured sparse coding approach as mentioned in
 \prettyref{sec:sparse_related} could lead to less selected atoms and a better
-entropy encoding. Also the required bits for each index are not optimized yet.
+entropy encoding. Also the required bits for each index nead further
+optimization.
 
 
 

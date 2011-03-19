@@ -4,7 +4,8 @@
 This chapter describes the following experiments and discussion of their
 results.
 \begin{itemize}
- \item Obtaining learning parameter for large training sets and dictionaries.
+ \item Obtaining good learning parameter for large training sets and
+dictionaries.
  %\item Observations of structures of dictionary atoms from different
 %groups of images and block sizes.
  \item Convergence of reconstruction quality for different dictionary sizes.
@@ -20,12 +21,12 @@ elements of the learning algorithms is the learning of specialization
 dictionaries. Task specific training data is a common way to solve the problem
 of finding the right dictionary. Here learning for the task comes into
 account. Such as de-noising or in-painting dictionaries directly learned from
-the initial signal that gets de-noised or restored from in-painting. If the task
-gets bigger it sounds logical to increase the size of training data and take a
-bigger variety of signals to learn from.  We draw training samples from a
-database of 1,000,000 natural JPEG images collected from \url{flickr.com}. And
-we have a closer look at differences of learned atomss from a smaller specific
-set of sketch images in PNG format. (\prettyref{fig:database_images})
+the initial signal that get restored. If the task gets bigger it sounds logical
+to increase the size of training data and take a bigger variety of signals to
+learn from.  We draw training samples from a database of 1,000,000 natural JPEG
+images collected from \url{flickr.com}. And we have a closer look at differences
+of learned atomss from a smaller specific set of sketch images in PNG format.
+(\prettyref{fig:database_images})
 %via clustered training with a large image
 % These sets include sketches, still images of animations from Disney and
 % post-impressionistic images from Vincent van Gogh.  
@@ -98,10 +99,11 @@ pixel, respectively a gray scale image with 8-bit for a single channel requires
 coefficient leading to much lower bpp rates.
 Looking at other well known compression algorithms such as JPEG or
 JPEG 2000 a common ratio is about $\sim1.8$ bits-per-pixel for average
-quality compression( JPEG quality of 50) of an natural image. 
+quality compression(JPEG quality of 50) and $\sim1$ bit-per-pixel for lower
+compression.
 
-\Todo{optinal: example image?, lower bit rates, Lewicki estimate for sparse
-coding}
+%\Todo{optinal: example image?, lower bit rates, Lewicki estimate for sparse
+%coding}
 
 \paragraph{Test data}
 In addition to the introduced metrics it is common practice to use some image
@@ -112,8 +114,8 @@ reconstruction of the data in the training sets
 these image to test the reconstruction and
 compression quality. 
 
-In addition to this we want to know how good the dictionaries can reconstruct
-and compress images outside of the database respectifly the training set. For
+In addition to this we want to know how good the dictionaries can compress
+images outside of the database respectifly the training set. For
 those comparisons we use a selection (\prettyref{fig:USC-SIPI}) from a
 well known set of standard test images from the \emph{USC-SIPI Image
 Database}\footnote{\url{http://sipi.usc.edu/database/}}
@@ -244,7 +246,8 @@ LARS-Lasso with about 4 learning coefficients.
 Notice two things in this graph. First convergence is almost reached
 after 1,000,000 - 2,000,000 training samples. Second even the PSNR is a
 logarithmically scale increasing dictionary size reaches a maximum at
-2,400 atoms. 
+about 2,400 atoms. 
+
 The problem is that both algorithms do not learn enough atoms with to few
 learning coefficients. Leaving a lot of the dictionary untouched. This can be
 addressed with increased number of learning coefficients. But making the OMP
@@ -270,9 +273,9 @@ dependency on block size in the learning process of natural images.
 
 \prettyref{fig:dict size} shows the results of a dictionary
 learning run with block sizes of $n=8,..,20$. The dictionary size for each run
-is two times the size of each signal $2m=2n^2$. coefficients for the
-reconstruction are adjusted with an average of 2 coefficients for 16 pixels of a
-block.
+is two times the size of each signal $2m=2n^2$. Coefficients for learning and
+reconstruction are adjusted with an average of 2 coefficients for 16 pixels of
+the block.
 
 \begin{figure}[h]
 \centering
@@ -304,11 +307,13 @@ more wavelet like atoms show up for big block sizes (\prettyref{fig:16atoms})
 while the $8\times 8$ do not change significant. 
 
 While looking at this we want to know what structures show samples from other
-groups of images. We investigate some atoms of the sketch dictionary.
-The sketch atoms look way different compared to the atoms from the natural
-image set. With a lot of wavelet like atoms. 
+groups of images. We investigate some atoms of the sketch
+dictionary.
+The sketch atoms (\prettyref{fig:sketch_atoms}) look way different compared to
+the atoms from the natural image set. With a lot of wavelet like atoms. 
 
-Both dictionary can only capture the structure the underlining signal provides. 
+We see that both dictionaries primarily capture the structure the underlining
+signal provides. 
 
 \begin{figure}[h]
 \centering
@@ -378,7 +383,7 @@ coefficients & block size & batch size \\
 \prettyref{fig:dictSizeLassoBad}. With the right learning parameters 
 we better learn bigger dictionaries. We learned dictionaries with up to 8,000
 elements and did not reach reconstruction maximum. But while quality increases
-with size computatinal complexity increases too. We want to make the laerning
+with size computatinal complexity increases too. We want to make the learning
 step more idipendent of single machines. Beeing able to learn smaller parts of
 big dictionaries or specific dictionaries.
 
@@ -432,7 +437,7 @@ dictionaries.
 \label{fig:coeffsConvergInc}
 \end{figure}
 
-We can see that the merged dictionary can reconstruct images with equal quality
+We see that the merged dictionary can reconstruct images with equal quality
 as the big dictionary. And while convergence is not reaches yet we want to see
 what we can already acomplish with the current dictionaries.
 
@@ -446,8 +451,8 @@ same file size. Besides the raw pixel data, images formats usually contain a
 certain amount of extra data from a file header and meta data. Fortunately we
 can ignore this for simplification as the header data is only a few bytes and
 large meta data was prevented during target compression. The selection of
-images is limited as the process of obtaining the right settings for the sparse
-coding compression are time consuming.
+images is limited as currently the process of obtaining the right settings for
+the sparse coding compression are time consuming.
 %and not being actual pixel data. 
 The objective is to investigate the compression quality of our algorithm and
 the dictionary and if the extra amount of index data is a big hit on the overall
@@ -463,9 +468,9 @@ $16\times 16$ blocks and enable us to reduce the amount of blocks.
 \prettyref{fig:compressionDicts} shows the used dictionaries. 
 
 The natural dictionary (\prettyref{fig:naturalDict}) consists of 4,000 $8 \times
-8$ atoms merged from 100 sub dictionaries with 1,000 elements. Each sub
+8$ atoms merged from 100 sub dictionaries with 1,000 atoms. Each sub
 dictionary was learned with 1,000 out of 100,000 images. Convergence of the
-training process was already reached after 500 images. Taking less than 10
+training process was already reached after 400 images. Taking less than 5
 hours.
 
 The sketch dictionary (\prettyref{fig:sketchDict}) consists of 1,000
@@ -497,8 +502,8 @@ natural images can achieve similar quality as the JPEG algorithm
 \prettyref{tab:compression1} for high compression rates but do not reach the
 JPEG 2000 quality. Compression coding was done with the OMP as it turned out to
 work better with the quantization step of our algorithm and requires less
-coefficients. Looking a lower compression ration the results are much worse than
-JPEG or JPEG2000. As the dictionaries have limited maximum reconstruction
+coefficients. Looking at a lower compression ratio the results are much worse
+than JPEG or JPEG2000. As the dictionaries have limited maximum reconstruction
 quality.
 
 \begin{table}[h]
