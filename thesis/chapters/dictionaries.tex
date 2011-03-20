@@ -34,7 +34,8 @@ dictionaries.
 \hspace{5mm}
 \subfloat[gabor wavelet]{\includegraphics[width =
 0.3\textwidth]{images/gabor.jpg}}
-\caption[generated atoms]{generated atoms (Lewicki et al.\cite{Lewicki1999})}
+\caption[Generated dictionary atoms]{Generated dictionary atoms (Lewicki et
+al.\cite{Lewicki1999})}
 \label{fig:generated_atoms}
 \end{figure}
 
@@ -65,14 +66,22 @@ are limited to a small range of possible atoms.
 \paragraph{Redundancy} Unlike the PCA approach,
 dictionary atoms learned with machine learning methods are not necessarily
 orthogonal. In fact one benefit of the machine learning approach is to be able
-to learn over-complete dictionaries with non-orthogonal basis atoms. This is
-where redundancy enters the game of constructing dictionaries. Not in a way
-that multiple instance of the same atom are part of the dictionary but in
-form of additional atoms resembling a combination of other atoms from
-the dictionary. This can lead to less required atoms and more sparseness in the
-coefficient vector $\vec{\alpha}$. Now a single atom can achieve the same
-reconstruction as a former combination of several atoms generated from
-orthogonal basis elements.
+to learn over-complete dictionaries with non-orthogonal basis atoms
+(\prettyref{fig:learned_atoms}). This is where redundancy enters the game of
+constructing dictionaries. Not in a way that multiple instance of the same atom
+are part of the dictionary but in form of additional atoms resembling a
+combination of other atoms from the dictionary. This can lead to less required
+atoms and more sparseness in the coefficient vector $\vec{\alpha}$. Now a single
+atom can achieve the same reconstruction as a former combination of several
+atoms generated from orthogonal basis elements.
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.6\textwidth]{images/learned.pdf}
+\caption[Learned redundant dictionary]{Source and learned redundant dictionary}
+\label{fig:learned_atoms}
+\end{figure}
+
 Nevertheless redundancy can also be applied to designed dictionaries. For
 example by adding rotated cosine atoms to a dictionary with a default
 configuration of DCT basis elements.
@@ -356,7 +365,7 @@ by $\min \left( \ell(\vec{x}\mat{D}_{-}),\ell(\vec{x}.\mat{D}_{+}) \right)$.
 Examples for sparse coding being used for classification tasks can be found in
 \cite{Grosse2007,Mairal2008,Mairal2008b,Bar2009}.
 
-\paragraph{Hierarchy} Jenatton et al. showed in 2010\cite{Jenatton2010} that
+\paragraph{Hierarchy} Jenatton et al. showed in 2010\cite{Jenatton2010b} that
 adding hierarchy to dictionaries can lead to faster coding of signals and
 capture additional information about the learned dictionaries. While
 dictionaries are learned the atoms are organized in a tree structure.

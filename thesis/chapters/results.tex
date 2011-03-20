@@ -35,25 +35,23 @@ set of sketch images in PNG format (\prettyref{fig:database_images}).
 
 \begin{figure}[h]
 \centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
-\hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+% \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
 \hspace{5mm}
-% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/other1.jpg}}
 % \hspace{5mm}
-% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
-% \hspace{5mm}
-% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
-% \hspace{5mm}
-% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
-% \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/other2.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/other3.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch3.jpg}}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/0.png}}
 \hspace{5mm}
-\caption{example images of natural image and sketch training sets}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/33.png}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/35.png}}
+\hspace{5mm}
+\caption{Example images of natural image and sketch training sets}
 \label{fig:database_images}
 \end{figure}
 
@@ -134,7 +132,7 @@ Database}\footnote{\url{http://sipi.usc.edu/database/}}.
 %\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_06.jpg}}
 %\hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_07.jpg}}
-\caption{example images from USC-SIPI Image Database}
+\caption{Example images from USC-SIPI Image Database}
 \label{fig:USC-SIPI}
 \end{figure}
 
@@ -159,6 +157,10 @@ We want to find start settings for experiments with large sets of
 different samples with no re-evaluation of samples and dictionaries
 with much bigger redundancy of 10 to 50.
 
+% For the small training sets Mairal et al. suggest mini-batch sizes of two to
+% four times the size of the the dictionary. No significant observations were
+% made  and we stick to these sizes. 
+
 \subsection{Number of learning coefficients}
 An average of 10 learning coefficients is suggested as it produces enough
 sparseness and leads to good and fast convergence of the dictionaries.
@@ -182,25 +184,20 @@ dict. size & block size & batch size \\
 \hline
 \end{tabular}
 \end{table}
-
-
-\newpage
+%\newpage
 \begin{figure}[H]
 \centering
 \includegraphics[width =
 1.0\textwidth]{../tests/results/coeffsConvergOMP.pdf}
-\caption{reconstruction quality for different learning coefficients (OMP)}
+\caption{Reconstruction quality for different learning coefficients (OMP)}
 \label{fig:coeffsOMP}
 \end{figure}
-
 \begin{figure}[H]
 \centering
 \includegraphics[width = 1.0\textwidth]{../tests/results/coeffsConverg.pdf}
-\caption{reconstruction quality for different learning coefficients (LARS)}
+\caption{Reconstruction quality for different learning coefficients (LARS)}
 \label{fig:coeffsLasso}
 \end{figure}
-
-
 % \begin{figure}[H]
 % \centering
 % \subfloat[2]{\includegraphics[width =
@@ -226,23 +223,20 @@ dict. size & block size & batch size \\
 % with a low number of coefficents for OMP and LARS-Lasso.
 % For larger training sets fewer coefficents can lead to better reconstruction
 % quality. 
-
 The first interesting observation is that both algorithms learn good
 dictionaries with only a few coefficients. But while the LARS-Lasso is very
 constant with different numbers of coefficients the quality of the OMP drops
 with increasing number of coefficients. 
 
-
-\Todo{nach dict size verschieben?}
+%\Todo{nach dict size verschieben?}
 Unfortunately using only a few coefficients leads to problems with big
-dictionaries. 
-
-To illustrate this \prettyref{fig:dictSizeLassoBad} shows a learning process of
-LARS-Lasso with about 4 learning coefficients.
-\begin{figure}[H]
+dictionaries. To illustrate this \prettyref{fig:dictSizeLassoBad} shows a
+learning process of LARS-Lasso with about 4 learning coefficients.
+\begin{figure}[h]
 \centering
 \includegraphics[width = 1.0\textwidth]{../tests/results/dictSizeLasso.pdf}
-\caption{Reconstruction quality for different dictionary sizes (LARS). 3,200 is
+\caption[Reconstruction quality for different dictionary sizes
+(LARS)]{Reconstruction quality for different dictionary sizes (LARS). 3,200 is
 overlapping 2,400.}
 \label{fig:dictSizeLassoBad}
 \end{figure}
@@ -259,10 +253,10 @@ But renders OMP useless for learning larger dictionaries. Further learning
 experiments concentrate on the LARS-Lasso with the suggested setting of 10
 learning coefficients.
 
-\Todo{verschieben? zusammenhang nicht klar}
+
+%\Todo{verschieben? zusammenhang nicht klar}
 We also notice that the LARS-Lasso produces dictionaries with better
 reconstruction quality than the OMP.
-
 
 % \begin{figure}[H]
 % \centering
@@ -272,7 +266,7 @@ reconstruction quality than the OMP.
 % \end{figure}
 
 
-
+\newpage
 \subsection{Block size}
 After experiments on coefficients we compare the reconstruction quality
 with different block sizes in the learning process for natural images. 
@@ -287,7 +281,7 @@ of a block.
 \centering
 \includegraphics[width =
 1.0\textwidth]{../tests/results/blockSizeConverg.pdf}
-\caption{reconstruction quality for different block sizes (LARS)}
+\caption{Reconstruction quality for different block sizes (LARS)}
 \label{fig:blockSize}
 \end{figure}
 
@@ -296,31 +290,30 @@ The $8\times8$ block size has a significant better reconstruction quality.
 We start to understand why when we have a closer look at the structure of
 the atoms. 
 
+\newpage
 \subsection{Structure of atoms}
-For the training set from natural JPEG images we tend to learn four major types
-of elements.
-The ODL algorithm learns atoms similar to combinations of DCT atoms
-(\ref{fig:8atoms}a and  \ref{fig:8atoms}b) or similar to wavelet atoms
-(\ref{fig:8atoms}c and \ref{fig:8atoms}d).
+%For the training set from natural JPEG images we tend to learn four major types
+%of elements. 
+From the traning set natural JPEG images the ODL algorithm learns atoms similar
+to combinations of DCT atoms (\ref{fig:8atoms}a and  \ref{fig:8atoms}b) or
+similar to wavelet atoms (\ref{fig:8atoms}c and \ref{fig:8atoms}d).
 
 As our training sets consist of JPEG images it is likely that we actually learn
 the block structure of JPEG images. This happens when extracting
-$8\times 8$ block samples from JPEG images.
-\prettyref{fig:16jpeg_atoms} shows the effect when extracting $16\times 16$
-blocks aligned to the JPEG block structure.
+$8\times 8$ block samples from JPEG images. \prettyref{fig:16jpeg_atoms}a shows
+the effect when extracting $16\times 16$ blocks aligned to the JPEG block
+structure.
 
 When extracting overlapping samples with no alignment to the JPEG
 blocks more wavelet like atoms show up for big block sizes
-(\prettyref{fig:16atoms}) while the $8\times 8$ atoms do not change
+(\prettyref{fig:16jpeg_atoms}b) while the $8\times 8$ atoms do not change
 significant. 
 
 Having a closer Look at atoms learned from sketches we primarily see wavelet
 like line segments (\prettyref{fig:sketch_atoms}) atoms.
 
-Both dictionaries primarily capture the structure the underlining
-signal provides. 
-
-\begin{figure}[h]
+Both dictionaries capture the structure the underlining signal provides. 
+\begin{figure}[H]
 \centering
 \subfloat[]{\includegraphics[width = 0.3\textwidth]{images/gradient.png}}
 \hspace{5mm}
@@ -332,33 +325,24 @@ signal provides.
 \caption{$8\times 8$ atoms of natural images}
 \label{fig:8atoms}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\subfloat{\includegraphics[width = 0.4\textwidth]{images/jpeg_atoms.png}}
-\caption{$16\times 16$ of four $8\times 8$ micro blocks}
+\subfloat[four $8\times 8$ micro
+blocks]{\includegraphics[width = 0.35\textwidth]{images/jpeg_atoms.png}}
+\hspace{5mm}
+\subfloat[$16\times 16$ atoms of natural images]{\includegraphics[width =
+0.35\textwidth]{images/wavelet.png}}
+\caption{$16\times 16$ atoms of natural images}
 \label{fig:16jpeg_atoms}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\subfloat{\includegraphics[width = 0.4\textwidth]{images/wavelet.png}}
-\caption{$16\times 16$ atoms of natural images}
-\label{fig:16atoms}
-\end{figure}
-\begin{figure}[h]
-\centering
-\subfloat{\includegraphics[width = 0.4\textwidth]{images/sketch_atoms.png}}
+\subfloat{\includegraphics[width = 0.35\textwidth]{images/sketch_atoms.png}}
 \caption{$16\times 16$ atoms of sketch images}
 \label{fig:sketch_atoms}
 \end{figure}
 
 
-%The learning algorithm can only what the signal provide than the atom from the
-%natural image dictionary.
-
-% \paragraph{Mini-batch size}
-% For the small training sets Mairal et al. suggest mini-batch sizes of two to
-% four times the size of the the dictionary. No significant observations were
-%made  and we stick to these sizes. 
 
 \clearpage
 
@@ -393,7 +377,7 @@ big dictionaries or specific dictionaries.
 \begin{figure}[h]
 \centering
 \includegraphics[width = 1.0\textwidth]{../tests/results/dictSizeLassoGod.pdf}
-\caption{reconstruction quality for different dictionary sizes (Lasso)}
+\caption{Reconstruction quality for different dictionary sizes (LARS)}
 \label{fig:dictSizeGood}
 \end{figure}
 
@@ -439,7 +423,7 @@ as the big dictionary.
 \begin{figure}[H]
 \centering
 \includegraphics[width = 1.0\textwidth]{../tests/results/coeffsConvergInc.pdf}
-\caption{reconstruction quality}
+\caption{Reconstruction quality of merged and single dictionary}
 \label{fig:coeffsConvergInc}
 \end{figure}
 
@@ -458,7 +442,7 @@ certain amount of extra data from a file header and meta data. Fortunately we
 can ignore this for simplification as the header data is only a few bytes and
 large meta data was prevented during target compression. The selection of
 images is limited by time consuming process of obtaining the right settings
-for the sparse coding compression.
+for the sparse coding compression. 
 %and not being actual pixel data. 
 The objective is to investigate the compression quality of our algorithm and
 the dictionary. 
@@ -479,7 +463,7 @@ training process was already reached after 400 images. Taking less than 5
 hours.
 
 The sketch dictionary (\prettyref{fig:sketchDict}) consists of 1,000
-$16\times 16$ atoms learned from \Todo{?} sketches.
+$16\times 16$ atoms learned from roughtly 900 sketches.
 
 \newpage
 \begin{figure}[H]
@@ -497,7 +481,9 @@ $16\times 16$ atoms learned from \Todo{?} sketches.
 \clearpage
 \subsection{Results}
 This section presents the results of compression experiments with images
-of \prettyref{fig:comp_images}.
+of \prettyref{fig:comp_images}. Compression coding was done with the OMP as it
+turned out to work better with the quantization step of our algorithm and
+requires less coefficients.
 
 \begin{figure}[h]
 \centering
@@ -509,9 +495,9 @@ of \prettyref{fig:comp_images}.
 \hspace{5mm}
 \subfloat[]{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
 \hspace{5mm}
-\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/4_2_03.jpg}}
-\hspace{5mm}
 \subfloat[]{\includegraphics[width = 0.3\textwidth]{images/4_2_04.jpg}}
+\hspace{5mm}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/4_2_03.jpg}}
 \hspace{5mm}
 \subfloat[]{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
 \hspace{5mm}
@@ -520,21 +506,18 @@ of \prettyref{fig:comp_images}.
 \subfloat[]{\includegraphics[width =
 0.3\textwidth]{images/sketch3.jpg}\label{fig:sketch3}}
 \hspace{5mm}
-\caption{images for compression experiments}
+\caption{Images used for compression experiments}
 \label{fig:comp_images}
 \end{figure}
 
 \newpage
 \subsubsection{Natural images}
-
-For the limited time available the results are promising. Compression of
-natural images can achieve similar quality as the JPEG algorithm
+For the limited time available the results are promising.
+Compression of the natural images achieves similar PSNR as the JPEG algorithm
 (\prettyref{tab:compression1}) for high compression rates but does not reach the
-JPEG 2000 quality. Compression coding was done with the OMP as it turned out to
-work better with the quantization step of our algorithm and requires less
-coefficients. Looking at a lower compression ratio the results are much worse
-than JPEG or JPEG 2000 as the dictionaries have a limited maximum reconstruction
-quality.
+JPEG 2000 quality.  Looking at a lower compression ratio the results are much
+worse than JPEG or JPEG 2000 as the dictionaries have a limited maximum
+reconstruction quality.
 
 \begin{table}[h]
 %\caption{single vs. cluster}
@@ -561,7 +544,7 @@ Image & bpp & SPRS & JPEG & JPEG2000 \\
 \ref{fig:comp_images}f & 1.53 & 24.6843  & 24.8492 & 26.2794 \\
 \hline
 \end{tabular}
-\caption{PSNR of compressed images}
+\caption{PSNR of compressed natural images}
 \label{tab:compression1}.
 \end{table} 
 
@@ -584,11 +567,11 @@ Image & bpp & SPRS & JPEG & JPEG2000 \\
 
 \subsubsection{Sketches}
 The high compression ratio results get even better when looking at the sketch
-images. Our algorithm can surpass JPEG
-compression (\prettyref{tab:compression2}) for low bit rates.
+images. Our algorithm can surpass JPEG compression
+(\prettyref{tab:compression2}) for low bits-per-pixel.
 \prettyref{fig:magnified} shows a magnified segment of image
-\ref{fig:sketch3} to illustrate the reconstruction features. There are less
-artifacts than in the JPEG images. 
+\ref{fig:sketch3} to illustrate the reconstruction features. Notice less
+artifacts than in the JPEG images.
 
 %The line segment atoms from the dictionary show similarities to the wavelet
 %based JPEG 2000 compression.
@@ -641,7 +624,7 @@ Image & bpp & SPRS & JPEG & JPEG2000 \\
 \hspace{5mm}
 \subfloat[JPEG2000]{\includegraphics[width =
 0.40\textwidth]{images/sketch_2000_1.png}}
-\caption{Magnified segment of \ref{fig:sketch3}}
+\caption{Magnified segment of image \ref{fig:sketch3}}
 \label{fig:magnified}
 \end{figure}
 

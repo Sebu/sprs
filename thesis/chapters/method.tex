@@ -22,15 +22,15 @@ illustrates this separation step.
 %How the strategy can effect learning show our experiments.
 \begin{figure}[h]
 \centering
-\subfloat[]{\includegraphics[scale = 0.55]{images/segmentation_new1.png}}
+\subfloat[]{\includegraphics[scale = 0.30]{images/4_2_03.jpg}}
 \hspace{5mm}
 \subfloat[]{\includegraphics[scale =
 0.50]{images/segmentation2.jpg}}
 \hspace{5mm}
 \subfloat[]{\includegraphics[scale =
 0.50]{images/segmentation1.jpg}}
-\caption[spatial separation]{spatial separation of (a) with (b) and without (c)
-overlapping}\label{fig:separation}
+\caption[Spatial separation]{Spatial separation of (a) with (b) and without (c)
+overlapping blocks}\label{fig:separation}
 \end{figure}
 
 \paragraph{Block transformation} As we are dealing with sets of natural
@@ -63,7 +63,7 @@ which is the case for many samples of small image blocks, some optimizations can
 be made on the sparse coding algorithms. 
 For the framework we chose to include a batch modified versions of the OMP for
 $\ell_0$ regularization and the LARS-Lasso for $\ell_1$ regularization to
-address this circumstance. 
+address this circumstance.
 
 \subsection{Batch-OMP}
 In 2008 Rubinstein et al.\cite{Rubinstein2008} presented a speed improved
@@ -175,7 +175,8 @@ general information of the signals.
 
 For the learning step we use the ODL algorithm from \prettyref{sec:mairal}. As
 an online learning algorithm it is able to learn dictionaries from very large
-sets of training data $n\ge 10.000.000$.
+sets of training data $n\ge 10.000.000$. Batch-OMP and LARS-Lasso can be used
+for the sparse coding part of the algorithm.
 
 
 \subsection{Initialization}
@@ -318,8 +319,8 @@ in a simple linear way over the number of elements.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width = 0.75\textwidth]{images/sorted.png}
-\caption{sorted atoms and quantization weights}
+\includegraphics[width = 0.90\textwidth]{images/sorted.pdf}
+\caption{Sorted atoms with quantization weights}
 \label{fig:sorted}
 \end{figure}
 
@@ -402,16 +403,16 @@ technical modifications to fit into our
 framework. The LARS-Lasso C++ implementation is based on the Matlab
 implementation by Strand\cite{Strand2005} and the original
 paper\cite{Efron2004} on the algorithm. With additional optimizations
-for coding of multiple signals in parallel. 
+for coding of multiple signals in parallel. The regularization parameter $L$
+respectively $\lambda$ can be specified. 
 
 \paragraph{Learning}
 The dictionary learning step is a straight forward C++ implementation of the
 ODL algorithm from \prettyref{sec:mairal}. It is an
-implementation of the
-basic version of the algorithm with the mini-batch optimization applied.
-Batch-OMP and LARS-Lasso can be used for coding part.
-Dictionary size and the number training signals for each iteration can be
-specified.
+implementation of the basic version of the algorithm with the mini-batch
+optimization applied. Batch-OMP and LARS-Lasso can be used for coding part.
+Dictionary size, block size, training set and the average number of learning
+coefficients can be specified.
 
 \paragraph{Command line interface}
 The framework provides a command line interface to the library to unleash its
@@ -437,7 +438,7 @@ parameter & description \\
 \verb+--input <file>+ & input \emph{file} for reconstruction \\
 \verb+--compress <file>+ & \emph{file} to compress \\
 \verb+--uncompress <file>+ & \emph{file} to uncompress \\
-\verb+--coeffs <n>+ & maximum number of coefficients \emph{n} \\
+\verb+--coeffs <n>+ & average number of coefficients \emph{n} \\
 \verb+--error <n>+ & reconstruction or merge error \\
 \verb+--mode <n>+ & chose \emph{n} either 1 for LARS or 2 for OMP \\
 \hline

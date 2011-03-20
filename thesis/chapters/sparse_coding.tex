@@ -46,7 +46,7 @@ When signal $\vec{x}$ and dictionary $\mat{D}$ are known we have to solve
 an linear system (Eqn. \ref{eq:problem}) to obtain an unknown
 sparse code $\vec{\alpha}$.
 \begin{equation}
- \vec{x} = \mat{D}\vec{\alpha}\label{eq:problem} 
+\vec{x} = \mat{D}\vec{\alpha}\label{eq:problem} 
 \end{equation}
 Because the dictionary is over-complete the linear system is under-determined.
 Making the problem ill-posed as there exists more than one solution. 
@@ -242,7 +242,7 @@ coefficient is only selected once. \prettyref{alg:omp} shows a
 description in pseudocode.
 
 \begin{algorithm}[h]
-\caption{Orthogonal Matching Pursuit}
+\caption{Orthogonal-Matching-Pursuit}
 \label{alg:omp}
 \begin{algorithmic}[1]
 \REQUIRE $\vec{x} \in \mathbb{R}^m, \mat{D} \in \mathbb{R}^{m\times p}, L \in
