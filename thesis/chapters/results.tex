@@ -1,10 +1,10 @@
-\chapter{Experiements and Results}
+\chapter{Experiments and Results}
 %\section{Experiments}
 
-This chapter describes the following experiments and discussion of their
+This chapter describes the following experiments and discusses their
 results.
 \begin{itemize}
- \item Obtaining good learning parameter for large training sets and
+ \item Obtaining good learning parameters for large training sets and
 dictionaries.
  %\item Observations of structures of dictionary atoms from different
 %groups of images and block sizes.
@@ -17,16 +17,18 @@ and JPEG 2000 on natural images and sketches.
 
 \section{Training sets}
 \prettyref{sec:learnForTheTask} mentions that one of the key
-elements of the learning algorithms is the learning of specialization
+elements of learning algorithms is learning of specialized
 dictionaries. Task specific training data is a common way to solve the problem
-of finding the right dictionary. Here learning for the task comes into
-account. Such as de-noising or in-painting dictionaries directly learned from
-the initial signal that get restored. If the task gets bigger it sounds logical
-to increase the size of training data and take a bigger variety of signals to
-learn from.  We draw training samples from a database of 1,000,000 natural JPEG
-images collected from \url{flickr.com}. And we have a closer look at differences
-of learned atomss from a smaller specific set of sketch images in PNG format.
-(\prettyref{fig:database_images})
+of finding the right dictionary. 
+%Learning for the task comes into account. 
+For example dictionaries for de-noising or in-painting are directly learned from
+the images that get restored. If the task gets bigger it sounds logical
+to increase the size of training data and take a bigger variety of samples to
+learn from into account.  We draw training samples from a large database of
+1,000,000 natural JPEG images collected from \url{flickr.com}. 
+And have a closer look at differences of learned atoms from a smaller specific
+set of sketch images in PNG format (\prettyref{fig:database_images}).
+
 %via clustered training with a large image
 % These sets include sketches, still images of animations from Disney and
 % post-impressionistic images from Vincent van Gogh.  
@@ -51,7 +53,7 @@ of learned atomss from a smaller specific set of sketch images in PNG format.
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch3.jpg}}
 \hspace{5mm}
-\caption{example images from natural image and sketch training sets}
+\caption{example images of natural image and sketch training sets}
 \label{fig:database_images}
 \end{figure}
 
@@ -59,11 +61,10 @@ of learned atomss from a smaller specific set of sketch images in PNG format.
 Before we go further and present the experiments and results it is necessary to
 introduce some additional terms. Such as metrics to measure their performance.
 
-\paragraph{Mean squared error (MSE)} is an error measurement that
-describes the error between an given or measured reference signal $\vec{x}$
-and and the reconstruction(noisy approximation) $\vec{\tilde{x}}$ of it.
-Mathematically it is defined as the average of the squared error between two
-signals.
+\paragraph{Mean squared error (MSE)}  An error measurement that
+describes the error between a given or measured reference signal $\vec{x}$
+and the reconstruction $\vec{\tilde{x}}$ of it. Mathematically it is defined as
+the average of the squared error between two signals.
 %The mean squared error is defined as:
 \begin{equation*}
  MSE = \frac{1}{n} \sum_{i=0}^{n} \left( {\lVert x_i -
@@ -72,35 +73,36 @@ signals.
 %We primarily use it for testing dictionary learning convergence and as a
 %sub term for the measurement described in the next paragraph.
 
-\paragraph{Peak signal-to-noise ration (PSNR)} describes the ratio between the
+\paragraph{Peak signal-to-noise ratio (PSNR)} Describes the ratio between the
 noise affecting a signal and the maximum possible signal amplitude. It is
-expressed in a logarithmic decibel scale.
+expressed in a logarithmic decibel scale and undefined for zero
+noise.
 \begin{equation*}
  PSNR = 20 \cdot \log_{10} \left(\frac{MAX}{\sqrt{MSE}}\right)
 \end{equation*}
 Where $MAX$ is the maximum possible value of our signal. For an 8-bit
-image it would be 255. For a 32-bit normalized image it would be 1. And $MSE$ is
-the mean squared error between a reference signal and its reconstruction. The
-PSNR is undefined for zero noise.
+image it would be 255. For a 32-bit normalized image it would be 1.
+% $MSE$ is the mean squared error between a reference signal and its
+% reconstruction. 
 
 The PSNR is primarily used for comparison of the reconstruction quality of
 lossy compression algorithms. Typical values for a lossy reconstruction lie in
-a range between 30dB and
+a range between 30dB and 
 50dB.\footnote{\url{http://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio}}
 %e.g. relevant for de-noise
 
 \paragraph{Bits per pixel (bpp)} 
-For the comparison of compression ratio of images another well known practice is
-to measure the required \emph{bits per pixel} short bpp. The bbp are calculated
-by dividing the raw image data by the image's dimensions. For example an
-uncompressed RGB color image with 8-bit of color depth requires 24-bits per
-pixel, respectively a gray scale image with 8-bit for a single channel requires
-8-bits. While compression algorithms are able to encode multiple pixels with few
-coefficient leading to much lower bpp rates.
+For the comparison of compression ratios of images another well known practice
+is to measure the required \emph{bits per pixel} short bpp. The bbp are
+calculated by dividing size of the image data by the image's dimensions. For
+example an uncompressed RGB color image with 8-bit color depth requires
+$24bpp$, respectively a gray scale image with 8-bit for a single
+channel requires $8bpp$. Compression algorithms are able to encode
+multiple pixels with few coefficient leading to much lower bpp rates.
 Looking at other well known compression algorithms such as JPEG or
-JPEG 2000 a common ratio is about $\sim1.8$ bits-per-pixel for average
-quality compression(JPEG quality of 50) and $\sim1$ bit-per-pixel for lower
-compression.
+JPEG 2000 a common ratio is about $\sim1.8bpp$ for average
+quality compression (JPEG quality of 50) and less than $\sim1bpp$ for
+lower compression.
 
 %\Todo{optinal: example image?, lower bit rates, Lewicki estimate for sparse
 %coding}
@@ -108,18 +110,16 @@ compression.
 \paragraph{Test data}
 In addition to the introduced metrics it is common practice to use some image
 sets to compare test results of the different algorithms and parameter
-configurations. As the dictionaries are specificaly trained for
-reconstruction of the data in the training sets
-(\prettyref{fig:database_images}) it is mandatory to also use
-these image to test the reconstruction and
-compression quality. 
+configurations. As the dictionaries are specifically trained for
+reconstruction of data in the training sets
+(\prettyref{fig:database_images}). It is mandatory to also use
+these images to test the reconstruction and compression quality. 
 
 In addition to this we want to know how good the dictionaries can compress
-images outside of the database respectifly the training set. For
+images outside the database respectively the training set. For
 those comparisons we use a selection (\prettyref{fig:USC-SIPI}) from a
 well known set of standard test images from the \emph{USC-SIPI Image
-Database}\footnote{\url{http://sipi.usc.edu/database/}}
-(\prettyref{fig:USC-SIPI}). 
+Database}\footnote{\url{http://sipi.usc.edu/database/}}. 
 %Including pictures such as Lena, Mandrill and Peppers.
 \begin{figure}[H]
 \centering

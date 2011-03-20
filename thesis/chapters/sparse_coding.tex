@@ -7,9 +7,9 @@ The Cambridge Advanced Learner defines a code as
 ``... a system of numbers, letters or signals which is used to represent
 something in a shorter or more convenient form.''
 \end{quotation}
-A \emph{sparse code} is a vector with only a few non-zero coefficients
-which is used to represent another vector by linear combining only few atom
-vectors from a dictionary of many of them.
+A \emph{sparse code} is a vector with only few non-zero coefficients
+used to represent another vector by linear combining few atom vectors from a
+dictionary of many of them.
 
 The idea of sparse coding of image signals has its origin in neural science. 
 Research in this field found that the cells in the visual cortex, also known as
@@ -20,18 +20,17 @@ Field\cite{Olshausen1996} noticed that when adding a sparsity constraint to
 these learning algorithms they can regenerate those characteristic elements.
 %Following this discovery constraints were added to the least-squares problem.
 
-\newpage % aragraph{}
+\newpage 
 Consider $\mat{X} \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each
 column $i$ representing a signal described by a single vector $\vec{x}_{i}$ of
 signal length $m$. The dictionary $\mat{D}\in\mathbb{R}^{m \times p}$ is another
 matrix with $p$ columns where each column $j$ represents an atom signal
 $\vec{d}_j$ with the same dimension $m$ as a single signal $\vec{x}_{i}$ from
 $\mat{X}$. The number of atoms $p$ in the dictionary is higher then the
-dimension $m$ of the signals $p > m$ making the dictionary over-complete. The
-sparse vector $\vec{\alpha}$ consists of coefficients $\alpha_i$ that can
-describe a linear
-combination of only a few non-orthogonal atoms from $\mat{D}$ that are close to
-the signal $\vec{x}_i $ in $\mat{X}$. 
+dimension $m$ of the signals ($p > m$) making the dictionary
+matrix over-complete. The sparse vector $\vec{\alpha}$ consists of coefficients
+$\alpha_i$ that describe a linear combination of only a few non-orthogonal
+atoms from $\mat{D}$ that are close to the signal $\vec{x}_i$. 
 
 %Sparse coding is the 
 \begin{align*}
@@ -43,17 +42,16 @@ the signal $\vec{x}_i $ in $\mat{X}$.
 \end{pmatrix}}_{\textrm{sparse vector }}
 \end{align*}
 
-While signal $\vec{x}$ and dictionary $\mat{D}$ are known we have to solve an  
-under-determined linear system (\prettyref{eq:problem} to obtain the unknown
-$\vec{\alpha}$.
+When signal $\vec{x}$ and dictionary $\mat{D}$ are known we have to solve
+an linear system (Eqn. \ref{eq:problem}) to obtain an unknown
+sparse code $\vec{\alpha}$.
 \begin{equation}
  \vec{x} = \mat{D}\vec{\alpha}\label{eq:problem} 
 \end{equation}
-The problem is not well-posed because there is more than one
-solution to it. %Such a problem is called a ill-posed problem.
-But we only need one of them. We want to find the sparsest
-solution making the problem well-posed. This can be archived by keeping
-the coefficient vector $\vec{\alpha}$ sparse. 
+Because the dictionary is over-complete the linear system is under-determined.
+Making the problem ill-posed as there exists more than one solution. 
+But fortunately we only want the sparsest of them. 
+%This can be archived by keeping the coefficient vector $\vec{\alpha}$ sparse. 
 
 % \begin{figure}[h]
 % \centering
@@ -77,8 +75,8 @@ the coefficient vector $\vec{\alpha}$ sparse.
 
 
 \section{Regularization}
-A regularization adds additional information to a problem in order to solve an
-ill-posed problem or to prevent over-fitting.\footnote{\url{
+``A regularization adds additional information to a problem in order to solve an
+ill-posed problem or to prevent over-fitting.''\footnote{\url{
 http://en.wikipedia.org/wiki/Regularization_(mathematics)}}
 To find the sparsest solution the sparse coding approach adds such
 regularization to the the problem \prettyref{eq:problem}. 
@@ -91,8 +89,8 @@ regularization to the the problem \prettyref{eq:problem}.
 %\min_{\vec{\alpha}\in\mathbb{R}^{p}} \lVert \vec{x} - \mat{D}\vec{\alpha}
 %\rVert^{2}_{2}
 \end{equation}
-The regularization acts as a constraint to the structure of $\vec{\alpha}$. It
-should be choosen in a way which keeps the number of non-zero coefficient of
+Regularization acts as a constraint to the structure of $\vec{\alpha}$. It
+should be chosen in a way which keeps the number of non-zero coefficients of
 $\vec{\alpha}$ low. 
 This sparsity constraint can be achieved with the help of
 the $\ell_0$-norm. The $\ell_0$-norm is a pseudo-norm that virtually counts the
@@ -105,21 +103,21 @@ There is one significant problem in using $\ell_0$-norm. This particular
 regularization makes the initial problem \prettyref{eq:problem2} NP-hard. To get
 the ideal solution it is necessary to test every combination of atoms. But this
 does not imply that there is no way to efficiently find a solution that is good
-enough to keep $\alpha$ sparse. There exist several greedy algorithms that can
-solve the problem in a not perfect but good enough way. 
+enough to keep $\vec{\alpha}$ sparse. There exist several greedy algorithms that
+can solve the problem in a not perfect but good enough way. 
 
-Another regularization that can keep $\vec{\alpha}$ sparse is the use of the
+Another regularization that can keep $\vec{\alpha}$ sparse is the use of a
 $\ell_p$-norm.
 \begin{equation*}
 \lVert \vec{\alpha}\rVert_p = \sum_{i=1}^n\left(\lVert \alpha_i
 \lVert^p\right)^{1/p}
 \end{equation*}
-With either the $\ell_1$-norm ($p=1$) or $\ell_2$-norm ($p=2$) as a
-convex relaxation of the $\ell_0$-norm. Even though that the $\ell_1$-norm is
-not the same as the $\ell_0$ it can be demonstrated that the $\ell_1$-norm is
-equivalent to the $\ell_0$-norm in the effect of inducing sparsity. 
-\prettyref{fig:sparse} shows an example of regularization with two coefficients
-of $\vec{\alpha}$ and the $\ell_p$-norm with $p=1$ and $p=2$.
+Such as the $\ell_1$-norm or $\ell_2$-norm as a convex relaxation of
+the $\ell_0$-norm. Even though that the $\ell_1$-norm is not the same as the
+$\ell_0$ it can be demonstrated that the $\ell_1$-norm is equivalent to the
+$\ell_0$-norm in the effect of inducing sparsity. 
+\prettyref{fig:sparse} shows an example regularization with two coefficients
+of $\vec{\alpha}$ and the $\ell_1$-norm and $\ell_2$-norm.
 %\Todo{image/description of different regularizations}
 \begin{figure}[h]
 \centering
@@ -139,11 +137,11 @@ not necessarily produce sparsity.
 In the past 15 years several sparse coding algorithms have been proposed. Some
 that solve the initial $\ell_0$ regularized problem greedily, like
 the (Orthogonal)-Matching-Pursuit or FOCUSS and others which modified the
-problem to become convex. The algorithms solve the convex problem primary
+problem to become convex. The algorithms solving the convex problem primary
 derived from the numerical domain in the form of large linear system solvers
 with few optimization constraints. The most common of them are the
-Basis-Pursuit, Lasso and Ridge regression. The next two sections give a
-more in depth look on those algorithms. 
+Basis-Pursuit, Lasso and Ridge regression. The next two sections have a
+closer look at those algorithms. 
 
 %$\ell_2$ Method Of Frames
 
@@ -167,9 +165,9 @@ more in depth look on those algorithms.
 %present a selection of the most common algorithms to solve the initial problem
 %under a $\ell_0$ regularization.
 We now have a more in depth look at two very popular algorithms. 
-The matching-pursuit and its successor the orthogonal-matching-pursuit.
-Both use a greedy strategy to calculate the coefficient vector $\vec{\alpha}$ to
-find a solution to the following NP-hard problem by solving
+The Matching-Pursuit and its successor the Orthogonal-Matching-Pursuit.
+Both use a greedy strategy calculating the coefficient vector $\vec{\alpha}$ to
+find a solution to the following NP-hard problem
 \begin{equation*}
 \min_{\vec{\alpha}\in\mathbb{R}^{p}}   \lVert \vec{\alpha} \rVert_{0}   \textrm{
 s.t. }
@@ -186,15 +184,17 @@ respectively
 \label{sec:mp}
 The Matching-Pursuit was first presented in 1993 by Mallat and
 Zhang\cite{Mallat1993} on audio samples and later adapted to images by Mallat
-and Bergeaud in\cite{Mallat1995}.
-The algorithm starts with the coefficient vector $\alpha$ set
-to zero. Then finds the atom in the dictionary with the best reduction of the
-error. This is done by selecting the coefficient that has the maximum
-correlation with the current remaining error (residual). This step is repeated
-$L$ times or until the error $\epsilon$
-% $\lVert \vec{x} - \mat{D}\vec{\alpha} \rVert^{2}_{2}$ 
-for the current $\vec{\alpha}$ fullfills $\lVert \vec{x} - \mat{D}\vec{\alpha}
-\rVert^{2}_{2} = \lVert \vec{r} \rVert_2^2 \leq \epsilon$.
+and Bergeaud in 1995\cite{Mallat1995}.
+
+The algorithm starts with coefficient vector $\vec{\alpha}$ set
+to zero. Then updates the coefficient that leads to best reduction of the
+error $\lVert \vec{x} - \mat{D}\vec{\alpha} \rVert^{2}_{2}$. This is done by
+finding the atom $\vec{d}_i$ of the dictionary $\mat{D}$ with maximum absolute
+inner product with the current residual $\vec{r}$ and adding this inner product
+to $\vec{\alpha}$. This step is repeated $L$ times or until the remaining error
+fulfills $\lVert \vec{x} -
+\mat{D}\vec{\alpha}
+\rVert^{2}_{2} = \lVert \vec{r} \rVert_2^2$.
 %respectively the residual fulfills $\lVert \vec{r} \rVert_2 \leq \epsilon$.
 \prettyref{alg:mp} illustrates this procedure.
 \begin{algorithm}[h]
@@ -230,10 +230,10 @@ i \gets \argmax_{i=1,...,p} \lvert \left<\vec{d}_i,\vec{r}\right> \rvert
 The Orthogonal-Matching-Pursuit, an improved version of
 the Matching-Pursuit (\prettyref{sec:mp}), was first presented by Pati et al.
 in 1993\cite{Pati1993}. Rather than just updating the currently selected
-coefficient of $\vec{\alpha}$ \prettyref{eq:mp_update}. The algorithm
-re-evaluates
+coefficient of $\vec{\alpha}$ (Eqn. \ref{eq:mp_update}). The algorithm
+re-evaluates 
 all coefficients in the current set $A$ of active atoms $\vec{\alpha}_A$ by
-solving a full least-squares in every iteration (\prettyref{eq:omp_update}).
+solving a full least-squares in every iteration (Eqn. \ref{eq:omp_update}).
 This improves the quality of the solution\cite{Pati1993}. The
 Orthogonal-Matching-Pursuit gets its name from the fact that the residual
 $\vec{r}$ is orthogonal to the previously selected atoms in dictionary
@@ -319,17 +319,17 @@ algorithm known as \emph{least-angle regression (LAR)} presented by
 Efron et al.\cite{Efron2004} in 2004. 
 Coming from statistics regression is an analysis technique that
 finds the correlation between a depended variable and a set of
-independent variables. Applying this to our problem (\prettyref{eq:problem})
-then $\vec{\alpha}$ is the correlation between our depended variable $\vec{x}$
-and the independent variables $\vec{d}_i$ of $\max{D}$. 
+independent variables. Applying this to our problem (Eqn. \ref{eq:problem})
+then $\vec{\alpha}$ acts as correlation between our depended variable
+$\vec{x}$ and the independent variables $\vec{d}_i$ of $\mat{D}$. 
 
 
 \paragraph{Least-angle regression}
-The main idea of the least angle regression is to start with all coefficients
-of $\vec{\alpha}$ set to zero and the residual gets $\vec{r}=\vec{x}$. Then
-find the atom $\vec{d}_i$ of $\mat{D}$ with the maximum correlation
-with the residual $\argmax_i\mat{d}_i^T\vec{r}$ and move $\alpha_i$ 
-into the direction of the least-squares solution until a new atom
+The main idea of the least angle regression (\prettyref{alg:lars}) is
+to start with all coefficients of $\vec{\alpha}$ set to zero and the residual
+gets $\vec{r}=\vec{x}$. Then find the atom $\vec{d}_i$ of $\mat{D}$ with the
+maximum correlation with the residual $\argmax_i\mat{d}_i^T\vec{r}$ and move
+$\alpha_i$ into the direction of the least-squares solution until a new atom
 $\vec{d}_j$ has the same or higher correlation with the residual. Now move
 $\alpha_i$ and $\alpha_j$ into the joint direction of the
 least-squares solution until another atom has the same or higher correlation
@@ -346,8 +346,7 @@ selected.
 \paragraph{Lasso modification}
 The LAR algorithm can be easily modified to solve the Lasso. 
 The modification consists of removing an atom $\vec{d}_i$ from the active set
-when their coefficient $\alpha_i$ becomes zero. A pseudocode implementation can
-be found in \prettyref{alg:lars}.
+when their coefficient $\alpha_i$ becomes zero. 
 
 \paragraph{}
 We have to admit that the LARS-Lasso algorithm has some limitations concerning:
@@ -435,22 +434,22 @@ very popular application for sparse coding. Overlapping blocks of images are
 reconstructed and the results are averaged. Examples can be found in the work of
 Elad and Aharon\cite{Elad2006}.
 
-\paragraph{In-painting} is the process of filling missing parts of images with
-plausible image content. Mairal et al.\cite{mairal08sparse} use sparse coding
-for this task. Missing parts of a signal $\vec{x}$ imply missing rows in the
-linear system when solving $\vec{x} = \mat{D}\vec{\alpha}$ for $\vec{\alpha}$.
-Rows are removed from the dictionary $\mat{D}$ with the help of a weighting
-matrix $\mat{W}$ that sets the missing rows to zero.
+\paragraph{In-painting} That is the process of filling missing parts of images
+with plausible image content. Mairal et al.\cite{mairal08sparse} use sparse
+coding for this task. Missing parts of a signal $\vec{x}$ imply missing rows in
+the linear system when solving $\vec{x} = \mat{D}\vec{\alpha}$ for
+$\vec{\alpha}$. Rows are removed from the dictionary $\mat{D}$ with the help of
+a weighting matrix $\mat{W}$ that sets the missing rows to zero.
 \begin{equation*}
 \vec{x} = \mat{W}\mat{D}\vec{\alpha}\\
 \end{equation*}
 
+
 \paragraph{Compression} In 1999 Lewicki and Olshausen\cite{Lewicki1999} made
-first comparison of learned atoms, designed cosine and wavelets atoms
-leading to better compression ratio. In 2006 Murray\cite{Murray2006} made
-similar discoveries. But both did mainly theoretical comparison. No real
-entropy encoding was applied and no real world comparison with other
-algorithms were made.
+first positive compression attempts with sparse coding. In 2006
+Murray\cite{Murray2006} made similar positive discoveries. But both did mainly
+theoretical comparison. No real entropy encoding was applied and no real world
+comparison with other algorithms were made.
 
 A practical example of a more specific compression task is the work on
 facial image compression by Bryt and Elad\cite{Bryt2008}. They took a
@@ -458,7 +457,7 @@ collection of black and white facial images. The images were aligned and
 split into non-overlapping blocks. They used all images to learn
 dictionaries for each separate block. They applied a fixed quantization and
 entropy coding. Leading to better compression ratio than JPEG and JPEG 2000 for
-the facial images.
+  facial images.
 
 \paragraph{Inverse half-toning} Half-toning, as used in printing, is a process
 where a binary raster simulates continuous tone images. Small dots of different
@@ -468,16 +467,16 @@ from their half-tone sources.
 
 \paragraph{Joint sparsity} Similar patches should have similar sparse
 codes is the premise of the work by Marail et al.\cite{Mairal2009c}. Rather
-than only constraining a single signal $\vec{x}$ to sparsity codes groups of
-signals $\vec{x}$ with similar appearance and constraints a whole matrix of
-coefficients to be sparse. Similar work by Bengio et
-al. can be found in\cite{Bengio2009}.
-\Todo{optional: picture with distribution difference}
+than only constraining a single signal $\vec{x}$ to sparsity.
+The Algorithm codes groups of signals $\mat{X}$ with similar appearance and
+constraints a whole matrix of coefficients to be sparse. Similar work by Bengio
+et al. can be found in\cite{Bengio2009}.
+%\Todo{optional: picture with distribution difference}
 %\paragraph{Background subtraction}\cite{}
 %\paragraph{Sense sparse signals}\cite{Duarte2009}
 
-\paragraph{Super resolution} Sparse coding gets also used to increate detail and
-resolution of images. Examples for this can be found in
+\paragraph{Super resolution} Sparse coding can also be used to increase detail
+and resolution of images. Examples for this can be found in
 \cite{Wright2008,Yang2010,Yang2010}.
 
 

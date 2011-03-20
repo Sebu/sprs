@@ -63,7 +63,7 @@ machine learning algorithms.
 \emph{Principal component analysis (PCA)} can be used as an approach to find
 such dictionary atoms. As the principal components are orthogonal to each other,
 PCA can only find a number of atoms that is lower or equal to the
-dimension of the signal. When we want to use these atoms for sparse coding we
+dimension of the signal. When using these atoms for sparse coding we
 are limited to a small range of possible atoms.
 
 \paragraph{Redundancy} Unlike the PCA approach,
@@ -75,7 +75,8 @@ that multiple instance of the same atom are part of the dictionary but in
 form of additional atoms resembling a combination of other atoms from
 the dictionary. This can lead to less required atoms and more sparseness in the
 coefficient vector $\vec{\alpha}$. Now a single atom can achieve the same
-reconstruction as a former combination of several orthogonal basis elements.
+reconstruction as a former combination of several atoms generated from
+orthogonal basis elements.
 Nevertheless redundancy can also be applied to designed dictionaries. For
 example by adding rotated cosine atoms to a dictionary with a default
 configuration of DCT basis elements.
@@ -127,7 +128,8 @@ in 1999 the \emph{Method of optimal directions (MOD)} and recently the
 \subsubsection{K-SVD}
 \label{sec:k-svd}
 One of the most popular batch algorithms is the K-SVD presented by
-Aharon et al. in 2006\cite{Aharon2006}. The algorithm learns a dictionary
+Aharon et al. in 2006\cite{Aharon2006}. The \prettyref{alg:k-svd} learns a
+dictionary
 $\mat{D}$ from a set of training samples $\mat{X}$ by minimizing:
 \begin{equation*}
 \min_{\mat{D},\mat{A}} \lVert \mat{X} - \mat{D}\mat{A} \rVert^{2}_{F} \textrm{
@@ -153,7 +155,6 @@ Value Decomposition (SVD)}.
 %The name K-SVD comes from $k$ times application of SVD in the update process
 %(line \label{alg:k-svd_start} untill line \ref{alg:k-svd_end} in algorithm
 %\ref{alg:k-svd}).
-\prettyref{alg:k-svd} illustrates this procedure. 
 
 \begin{algorithm}[h]
 \caption{K-SVD}
@@ -199,8 +200,8 @@ algorithm.
 
 \subsubsection{Online dictionary learning}
 \label{sec:mairal}
-In 2009 Mairal et. al.\cite{Mairal2009} presented an online approach we will
-call \trainDL. The algorithm uses stochastic gradient descent to optimize
+In 2009 Mairal et. al.\cite{Mairal2009} presented an online approach we call
+\trainDL. The algorithm uses stochastic gradient descent to optimize
 $\mat{D}$ (\prettyref{eq:learn}) with the loss function: 
 \begin{equation*}
 \ell(x,D) \equiv \min_{\vec{\alpha}} \frac{1}{2}\lVert \vec{x} -
@@ -214,7 +215,8 @@ training samples $\mat{X}$ and starts with a dictionary $\mat{D}$ with random
 data or a random selection of elements from the training set. 
 
 In each iteration $t$ \prettyref{alg:trainDL} draws a random sample
-$\vec{x}_t$ from the training set $\mat{X}$ through a function $p(\vec{x})$.
+$\vec{x}_t$ from the training set $\mat{X}$ through a function
+$p(\mat{X})$.
 Then $\vec{x}_t$ gets sparse coded with $\mat{D}_{t-1}$ yilding
 $\vec{\alpha}_t$. In each iteration \prettyref{alg:update} updates the
 dictionary $\mat{D}$ with block-coordinate descent with $\mat{D}_{t-1}$ as warm
@@ -234,7 +236,7 @@ with new samples.
 \caption{ODL}
 \label{alg:trainDL}
 \begin{algorithmic}[1]
-\REQUIRE $\mat{X} \in \mathbb{R}^{m \times k},  p \left( \mat{X} \right),
+\REQUIRE $y \in \mathbb{R}^{m \times k},  p \left( \mat{X} \right),
 \lambda \in
 \mathbb{R}, \mat{D}_0 \in \mathbb{R}^{m \times p}, T \in \mathbb{N}$
 \STATE $\mat{A}_0 \in \mathbb{R}^{p \times p} \gets  0, \mat{B}_0 \in
@@ -338,10 +340,10 @@ pixel shaders. They also presented some experiments for unified epitomes for
 collections of images and possible application for larger sets of images. 
 
 \paragraph{Multi-scale dictionaries}
-Rather than encoding uniform segments of a bigger signal this technique
-encodes different sized blocks (a multiple of the default block size). The
-idea is that aligned smooth regions with low variance can be combined
-and encoded as one signal rather than with four smaller ones.\cite{Mairal2007}
+Rather than encoding uniform blocks of an image this technique
+codes different sized blocks (a multiple of the default block size). The
+idea is that aligned smooth regions with low variance can be combined into big
+blocks and coded with one rather than four sparse codes\cite{Mairal2007}.
 %\Todo{optinal: picture with different scales}
 
 \paragraph{Double sparsity}
@@ -352,9 +354,9 @@ the atoms of a bigger dictionary $\vec{D}$ with the help of a smaller
 dictionary $\vec{B}$ and a sparse matrix $\vec{A}$. Leading to a reconstruction
 of $\mat{D}=\mat{B}\mat{A}$. 
 
-\paragraph{Classification} of object can be achieved by learning
-individual dictionaries $(\mat{D}_{-},\mat{D}_{+})$ and for each group of
-signal $(\mat{S}_{-},\mat{S}_{+})$. A signal $\vec{x}$ can then be classified
+\paragraph{Classification} When learning dictionaries
+$(\mat{D}_{-},\mat{D}_{+})$ from individual groups of signal
+$(\mat{S}_{-},\mat{S}_{+})$. A signal $\vec{x}$ can be classified
 by $\min \left( \ell(\vec{x}\mat{D}_{-}),\ell(\vec{x}.\mat{D}_{+}) \right)$.
 Examples for sparse coding being used for classification tasks can be found in
 \cite{Grosse2007,Mairal2008,Mairal2008b,Bar2009}.

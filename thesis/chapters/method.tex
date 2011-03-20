@@ -17,7 +17,7 @@ the image into blocks and transformation of these into sample vectors.
 \paragraph{Spatial separation}
 We extract blocks of size $n \times n=m$ from the images. Typically dealing with
 block sizes of $n=8,..,20$. The blocks are extracted in a raster either with
-overlapping content or disjoint from each other. Figure \ref{fig:separation}
+overlapping content or disjoint from each other. \prettyref{fig:separation}
 illustrates this separation step. 
 %How the strategy can effect learning show our experiments.
 \begin{figure}[h]
@@ -30,8 +30,7 @@ illustrates this separation step.
 \subfloat[]{\includegraphics[scale =
 0.50]{images/segmentation1.jpg}}
 \caption[spatial separation]{spatial separation of (a) with (b) and without (c)
-overlapping}
-\label{fig:separation}
+overlapping}\label{fig:separation}
 \end{figure}
 
 \paragraph{Block transformation} As we are dealing with sets of natural
@@ -48,12 +47,12 @@ attention to correlation of the channels.
 %\Todo{add formula from paper} 
 Fortunately Mairal et al. also noticed that this problem vanishes with big
 dictionaries and large training sets as present in our experiments. So we use
-the concatenation of color channels. 
+the concatenation of color channels without a color constraint. 
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale = 0.21]{images/channel_concat.pdf}
-\label{fig:separation}
+%\includegraphics[scale = 0.21]{images/channel_concat.pdf}
+\label{fig:channel_concat}
 \end{figure}
 %\cite{mairal08sparse}
 
@@ -203,27 +202,27 @@ MapReduce.
 One strategy would be to use the mini-batch
 modification of the LARS-Lasso (\prettyref{sec:lars}). But rather
 than just coding a small batch of signals in one iteration of the training
-step (\prettyref{alg:trainDL}) we code one batch on each client of the cluster
-and merge all of them before applying (\prettyref{alg:update}). Keeping the
-dictionary in each iteration fixed for every batch coding client. The problem is
-that this modifications is only good at handling mini-batches in a range of one
-to thousands samples. Impractical for our desired size of millions of samples.
+step (\prettyref{alg:trainDL}) we could code batches in 
+a cluster and merge all of them before applying \prettyref{alg:update}. Keeping
+the dictionary in each iteration fixed for every batch coding client. The
+problem is that this modification is only good at handling mini-batches in a
+range of one to thousands samples. Impractical for our desired amount of
+millions of samples.
 
 Another strategy is to learn a set of smaller dictionaries $S =
-(\mat{D}_1, ..., \mat{D}_k)$ on disjoint sets of training samples and when
-the learning step ended, merge the dictionaries $\mat{D}_i$ into a bigger one
-$\mat{D}_{s}$. 
+(\mat{D}_1, ..., \mat{D}_k)$ on disjoint training sets. And subsequently merge
+the dictionaries $\mat{D}_i$ into a bigger one $\mat{D}_{s}$. 
 
-The merge process starts with an empty dictionary $\mat{D}_{s}$  and
+The merge process starts with an empty dictionary $\mat{D}_{s}$ and
 successively adds atoms from the dictionaries of the learning step to the new
-dictionary $\mat{D}_{s}$  unless the atom can be reconstructed with only few
-atoms (e.g., 2) of the current state of $\mat{D}_{s}$ . The drawback of this
-approach is fact that  each atom will be less correlated to whole training set.
-But this will happen anyway as we learn dictionaries from large sets of possibly
-very different samples. 
+dictionary $\mat{D}_{s}$. If the atom can be reconstructed with only a few
+atoms of the current dictionary $\mat{D}_{s}$. 
+The drawback of this approach is the fact that each atom will be less
+correlated with the whole training set. But this will happen anyway as we learn
+dictionaries from large sets of possibly very different samples. 
 
 \begin{algorithm}[H]
-\caption{Dictionaries merging}
+\caption{Dictionary merging}
 \label{alg:merging}
 \begin{algorithmic}[1]
 \REQUIRE $ S = (\mat{D}_1, ..., \mat{D}_k) \text{ set of dictionaries } \mat{D}
@@ -247,67 +246,70 @@ very different samples.
 
 \section{Application to image compression}
 \label{sec:compression}
-Experiment on sparse coding as a tool for compression have been done
-before\cite{Lewicki1999,Murray2006} but mainly in theory with learned
-dictionaries and generated generated dictionaries of wavelets bases. Leading to
-better density with learned dictionaries over designed. For comparison of
-compression quality only approximations for resulting bits-per-pixel were
-made. Real entropy encoding was only applied by Bryt et al.\cite{Bryt2008} in
-a very specific algorithm for facial compression. We add quantization and
-entropy encoding after the sparse coding step to develop a simple real world
-compression algorithm for sparse coding images.
-
 Todays lossy image compression algorithms are primary based on scientific
 findings about visual perception reaching far back in the 1970s.
-They consits of the following main steps:
+They consist of the following main steps:
 % in lossy image compression algorithms:
 \begin{itemize}
  \item lossy color space conversion
  \item sub-sampling and spatial separation
  \item transformation of image signals
- \item quantization to reduce of the number of non-zero coefficient 
- \item lossless entropy coding of the coefficient 
+ \item quantization to reduce the number of non-zero coefficients
+ \item lossless entropy encoding of the coefficients 
 \end{itemize}
 
+Experiments on sparse coding as a tool for image compression have been done
+before\cite{Lewicki1999,Murray2006}. Lewicki compared learned atoms and
+generated wavelet atoms. Leading to better results with learned dictionaries
+over designed. But entropy encoding was only estimated. 
+Real encoding was only applied by Bryt et al.\cite{Bryt2008} in
+a very specific algorithm for facial compression. We add quantization and
+entropy encoding after the sparse coding step to develop a simple real world
+compression algorithm for sparse coding images.
+
+
 \paragraph{Color conversion and sub-sampling} The human eye is good at sensing
-difference in brightness but lacks the ability exactly differentiate small
+difference in brightness but lacks the ability to exactly differentiate small
 changes in color. \emph{Chroma sub-sampling} takes advantage of this human flaw.
-First the image gets converted into the $YC_bC_r$ color space, which describes
-an image in a brightness (Y) and two color components (Cb and
-Cr). Then the visual more relevant brightness channel will be coded in
+First the image gets converted from $RGB$ into $YC_bC_r$ color space, which
+describes an image in a brightness ($Y$) and two color components ($C_b$ and
+$C_r$). Then the visual more relevant brightness channel will be coded in
 the full resolution while the color components can be sub-sampled with
-only minor loss in perceptual quality. This procedure is one key element of JPEG
+only minor loss in perceptual quality. This procedure is one key element in JPEG
 and JPEG 2000 image compression to reduce the number of coefficients for each
-color channel. But our atoms already capture color information. So we are
-skipping this step. %Splitting the image
+color channel. 
+But our atoms and samples take advantage of the correlation of the $RGB$ color
+channels (\prettyref{sec:signal_representation}). Conversion into $YC_bC_r$ and
+splitting the color channels will break the correlation benefit. So we are
+skipping this step.  
 
 \paragraph{Spatial separation and signal coding}
 The actual coding step of the prepared signals. The signal vectors $\vec{x}_i$
-of $\mat{X}$ consists of $n \times n$ non overlapping blocks from the image.
-With $n$ in the range of $n=8,..,16$. A similar block size and separation
-strategy as used in JPEG compression. After the signal separation we apply one
+of $\mat{X}$ consist of $n \times n$ non overlapping blocks from the image.
+With $n$ in the range $8,...,16$. Similar to the block size and separation
+strategy used in JPEG compression. After the signal separation we apply one
 of the sparse coding algorithms present in our framework to all blocks. This
 step is lossy due to the regularization of sparse coding to chose only a small
-number  of coefficients. Much less than the dimension of the signal. 
+number of coefficients. Much less than the dimension of the signal. 
 
-\paragraph{Quantization}
-Quantized is the process of reducing informations from continuous set to a
-discrete set. In the case of image compression from double precision to integer
-values. In our framework the resulting coefficient from the coding step get
-divided by a factor and rounded to the next integer.  
+\paragraph{Quantization}  The process of reducing information from a
+continuous set of values to a discrete set. In the case of image compression
+from double precision to integer values. In our framework the resulting
+coefficients from the coding step get divided by a factor and rounded to the
+next integer.  
 
 Quantization can either be applied by a fixed factor or by applying different 
 factors to each coefficient based on frequency of the basis element.
 
 JPEG quantization uses the fact that the human eye is not good at seeing
 differences in high frequency brightness variations. In the development
-process of the JPEG alogorithm. Each DCT coefficient was weighted by perceptual
-relevance and weights were stored in quantization matrix. 
+process of the JPEG algorithm each DCT coefficient was weighted by perceptual
+relevance and weights were stored in a quantization matrix. 
 This matrix can be applied to the coefficient after the DCT. 
 Afterwards each coefficient gets rounded and zero coefficients can be removed.
 
 We adopt the idea of a quantization matrix to our sparse coding approach and
-weight our element by their frequencies. Learning dictionaries with the
+weight our atoms by their frequencies. Learning dictionaries with the
 algorithm we present in \prettyref{sec:mairal} leads to a random distribution of
 atoms with yet unknown information of their structure and frequency. We analyse
 the dictionary atoms with a DFT and sort them by their frequencies.
@@ -317,32 +319,34 @@ in a simple linear way over the number of elements.
 \begin{figure}[h]
 \centering
 \includegraphics[width = 0.75\textwidth]{images/sorted.png}
-\caption{sorted learned dictionary and quantization weights}
+\caption{sorted atoms and quantization weights}
 \label{fig:sorted}
 \end{figure}
 
 \paragraph{Data encoding}
-Compression of the remaining coefficient after quantization is the next step
-of to reduce the amount of data that needs to be stored.
+Compression of the remaining coefficients after quantization is the next step
+to reduce the amount of data that needs to be stored.
 
 \begin{description}
- \item[Run-length encoding (RLE)] Is the process of encoding data in blocks of
-data value and corresponding run-length of data with the same value. 
+ \item[Run-length encoding (RLE)] Is the process of encoding repeated data as
+blocks of value and corresponding run-length. 
 For example the sequence {\bf dddddddbbbddddd} becomes {\bf7d3b5d}.
 The main requirement to work well is that the data consists of larger groups of
-the same
-data.
-  \item[Huffman coding] Is an algorithm that uses the knowledge about the
-entropy of elements of data. Elements that occur often in the data set are
-encoded with less bits. Leading in a table of elements and a corresponding
-symbol to represent this element and a block of symbols.
+the same data.
+  \item[Huffman coding] An algorithm that analyzes data and 
+and replaces elements that occur often in the data set with a shorter symbol.
+While 
+Leading in a set of symbols and table of . 
+% to represent this element and a block of symbols.
 \end{description}
 
-We apply something similar to RLE to the sparse matrices. We know that the
-majority of coefficient of the sparse matrices are zero. We code the sparse
-matrices as a series of distances between coefficients and the actual
-coefficients. We use the fact that it is more likely that the next value in our
-matrix is zero. Afterwards the remaining data gets huffman coded.
+We apply something similar to RLE to the sparse matrix. Knowing that the
+majority of coefficients in a sparse matrix are zero. They can be coded
+as a series of non-zero coefficients and the distances between them.
+%We use the fact that in a sparse matrix it is most likely that the entry
+%following a coefficient is zero. 
+Afterwards the remaining data gets Huffman coded.
+
 
 
 %In 1999 Lewicki et al.\cite{Lewicki1999} already made some on comparison 
@@ -359,7 +363,7 @@ signals and learning dictionaries, a command line interface (sparsecli) to the
 library, miscellaneous scripts for distribution of coding and learning jobs
 and a test suite.
 
-The whole sparse coding and training library is written in C++ and system with
+The whole sparse coding and training library is written in C++ with
 additional use of the OpenCV, Eigen and OpenMP libs. And QMake as the build
 system. 
 
@@ -374,10 +378,10 @@ in \emph{Open Computer Vision Library} is mainly used for
 image read and write operations, image conversion and DCT for the
 quantization matrix step. 
 
-OpenMP \footnote{\url{http://www.openmp.org/}} is a preprocessor
-based application programming interface (API) for C,C++ and Fortran that enables
-the user to distribute code blocks and loops to multiple CPU cores. In
-situations where it is applicable OpenMP is used to utilize multi-core CPUs. 
+OpenMP\footnote{\url{http://www.openmp.org/}} is a preprocessor
+based application programming interface (API) for C, C++ and Fortran that
+enables the user to distribute code blocks and loops to multiple CPU cores. If
+it is applicable OpenMP is used to utilize multi-core CPUs. 
 
 
 % \Todo{add diagram}
@@ -386,16 +390,18 @@ situations where it is applicable OpenMP is used to utilize multi-core CPUs.
 %Image block size, block selection strategy can be specified.
 
 \paragraph{Coding}
-The sparse coding step can be configured to use either the Batch-OMP and 
-set a limitation to the maximum number of coefficients or the LARS-Lasso 
-and set the regularization(\prettyref{eq:l1}) factor $\lambda$.
+The sparse coding step can be configured to use either the Batch-OMP 
+or the LARS-Lasso.
+%and 
+%set a limitation to the maximum number of coefficients or the
+%and set the regularization(\prettyref{eq:l1}) factor $\lambda$.
 The Batch-OMP implementation is based on the implementation
 of OMPBox by Ron
- Rubinstein\footnote{\url{http://www.cs.technion.ac.il/~ronrubin/}} with
+Rubinstein\footnote{\url{http://www.cs.technion.ac.il/~ronrubin/}} with
 technical modifications to fit into our
 framework. The LARS-Lasso C++ implementation is based on the Matlab
-implementation of\cite{Strand2005} and the original
-paper\cite{Efron2004} on the algorithm with some additional optimizations
+implementation by Strand\cite{Strand2005} and the original
+paper\cite{Efron2004} on the algorithm. With additional optimizations
 for coding of multiple signals in parallel. 
 
 \paragraph{Learning}
@@ -403,7 +409,7 @@ The dictionary learning step is a straight forward C++ implementation of the
 ODL algorithm from \prettyref{sec:mairal}. It is an
 implementation of the
 basic version of the algorithm with the mini-batch optimization applied.
-Batch-OMP and the LARS-Lasso coding method can be used for the coding part.
+Batch-OMP and LARS-Lasso can be used for coding part.
 Dictionary size and the number training signals for each iteration can be
 specified.
 
@@ -427,11 +433,11 @@ parameter & description \\
 \verb+--channels <n>+ &number \emph{n} of color channels (1 gray, 3 RGB) \\
 
 \verb+--resume+ & resume an interrupted learning process \\
-\verb+--merge <n>+ & merge dictionaries listed in \emph{file}  \\
+\verb+--merge <file>+ & merge dictionaries listed in \emph{file}  \\
 \verb+--input <file>+ & input \emph{file} for reconstruction \\
-\verb+--compress <file>+ & input \emph{file} for compression \\
-\verb+--uncompress <file>+ & input \emph{file} for uncompression \\
-\verb+--coeffs <n>+ & maximum of coefficients \emph{n} \\
+\verb+--compress <file>+ & \emph{file} to compress \\
+\verb+--uncompress <file>+ & \emph{file} to uncompress \\
+\verb+--coeffs <n>+ & maximum number of coefficients \emph{n} \\
 \verb+--error <n>+ & reconstruction or merge error \\
 \verb+--mode <n>+ & chose \emph{n} either 1 for LARS or 2 for OMP \\
 \hline
@@ -442,9 +448,10 @@ parameter & description \\
 \paragraph{Miscellaneous}
 Besides the actual coding software some other tools for
 additional tasks were used. Several bash and ruby scripts for workload
-distribution onto the clients, aggregation and evaluation of the results.
-Also he ImageMagick\footnote{\url{http://www.imagemagick.org/}} toolkit was used
-for image conversion into JPEG and JPEG 2000 and for some image comparison
+distribution onto the clients as well as aggregation and evaluation of the
+results. 
+Also the ImageMagick\footnote{\url{http://www.imagemagick.org/}} toolkit was
+used for image conversion into JPEG and JPEG 2000 and for some image comparison
 tasks.
 
 %\newpage
