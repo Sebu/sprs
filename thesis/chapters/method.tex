@@ -332,11 +332,11 @@ to reduce the amount of data that needs to be stored.
 blocks of value and corresponding run-length. 
 For example the sequence {\bf dddddddbbbddddd} becomes {\bf7d3b5d}.
 The main requirement to work well is that the data consists of larger groups of
-the same data.
-  \item[Huffman coding] An algorithm that analyzes data and 
-and replaces elements that occur often in the data set with a shorter symbol.
-While 
-Leading in a set of symbols and table of . 
+the same element.
+  \item[Huffman coding] The algorithm first analyzes the propability 
+distribution of data elements. And afterwards describes often occuring element
+with fewer bits than less often occuring elements. Leading in a set of
+bit codes and table of associations between codes and elements. 
 % to represent this element and a block of symbols.
 \end{description}
 

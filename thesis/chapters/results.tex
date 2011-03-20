@@ -139,31 +139,31 @@ Database}\footnote{\url{http://sipi.usc.edu/database/}}.
 \end{figure}
 
 \section{Hardware setup} 
-Computations are made on a cluster of 100 clients. Each 
+Computations are made on a cluster consisting of 100 clients. Each 
 configured with a AMD Athlon 64 X2 (2x2.6GHz) and 3GB RAM.
 The operating system running is Debian Linux with 32-bit kernel. 
 
 \section{Learning parameters}
 At first we need to find start parameters for the dictionary learning
-algorithm. To experiment with large set of different samples and big
+algorithm to experiment with large sets of different samples and big
 dictionaries. This involves the average number of learning
 coefficients, block size, sample selection strategy and mini-batch size.
 
-Mairal et al. already propose some learning parameters for their online
-learning algorithm. But as most other they only learn dictionaries with
-a small redundancy of up to four times and compact training sets with 100,000
+Mairal et al. already proposed some learning parameters for their online
+learning algorithm. But like most others they only learn dictionaries with
+a small redundancy of up to four and compact training sets with 100,000
 to 1,000,000 samples that get randomly evaluated until convergence of the
 dictionary.
 
 We want to find start settings for experiments with large sets of
-different samples with no reevaluation of the samples and dictionaries
-with much bigger redundancy of 10 to 50 times.
+different samples with no re-evaluation of samples and dictionaries
+with much bigger redundancy of 10 to 50.
 
-\paragraph{Coefficients}
+\subsection{Number of learning coefficients}
 An average of 10 learning coefficients is suggested as it produces enough
 sparseness and leads to good and fast convergence of the dictionaries.
 We test if this also applies to big numbers of samples and bigger
-dictionaries. We compare the reconstruction quality dependency on the average
+dictionaries. We compare the reconstruction quality depending on the average
 number of coefficients in the learning process. 
 %The following graphs show the avarage of a set of test images from the training
 %set. 
@@ -175,7 +175,6 @@ configuration.
 \centering
 \begin{tabular}{| c | c | c |}
 \hline
-\multicolumn{3}{|c|}{configuration}\\
 \hline
 dict. size & block size & batch size \\
 \hline
@@ -184,22 +183,20 @@ dict. size & block size & batch size \\
 \end{tabular}
 \end{table}
 
-\prettyref{fig:coeffsOMP} and \prettyref{fig:coeffsLasso} show the results for
-both algorithms.
 
 \newpage
 \begin{figure}[H]
 \centering
 \includegraphics[width =
 1.0\textwidth]{../tests/results/coeffsConvergOMP.pdf}
-\caption{reconstruction quality for different training coefficients (OMP)}
+\caption{reconstruction quality for different learning coefficients (OMP)}
 \label{fig:coeffsOMP}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width = 1.0\textwidth]{../tests/results/coeffsConverg.pdf}
-\caption{reconstruction quality for different training coefficients (LARS)}
+\caption{reconstruction quality for different learning coefficients (LARS)}
 \label{fig:coeffsLasso}
 \end{figure}
 
@@ -234,8 +231,14 @@ The first interesting observation is that both algorithms learn good
 dictionaries with only a few coefficients. But while the LARS-Lasso is very
 constant with different numbers of coefficients the quality of the OMP drops
 with increasing number of coefficients. 
-Unfortunately using only a few coefficients leads to the problems with big
-dictionaries. \prettyref{fig:dictSizeLassoBad} shows a learning process of
+
+
+
+\Todo{nach dict size verschieben?}
+Unfortunately using only a few coefficients leads to problems with big
+dictionaries. 
+
+To illustrate this \prettyref{fig:dictSizeLassoBad} shows a learning process of
 LARS-Lasso with about 4 learning coefficients.
 \begin{figure}[H]
 \centering
@@ -244,19 +247,22 @@ LARS-Lasso with about 4 learning coefficients.
 \label{fig:dictSizeLassoBad}
 \end{figure}
 Notice two things in this graph. First convergence is almost reached
-after 1,000,000 - 2,000,000 training samples. Second even the PSNR is a
-logarithmically scale increasing dictionary size reaches a maximum at
-about 2,400 atoms. 
+after 1,000,000 - 2,000,000 training samples. Second, even though the PSNR is a
+logarithmic scale, increasing the dictionary size reaches a maximum at
+about 2,400 atoms (3,200 is overlapping 2,400). 
 
-The problem is that both algorithms do not learn enough atoms with to few
-learning coefficients. Leaving a lot of the dictionary untouched. This can be
-addressed with increased number of learning coefficients. But making the OMP
-impractical for learning larger dictionaries.
-Because of this we concentrated further learning experiments on the LARS-Lasso
-with the suggested setting of 10 learning coefficients. 
+The problem is that both algorithms do not learn enough atoms with too few
+learning coefficients. Leaving a lot of the dictionary almost untouched. This
+can be addressed by increasing the number of learning coefficients.
 
+But renders OMP useless for learning larger dictionaries. Further learning
+experiments concentrate on the LARS-Lasso with the suggested setting of 10
+learning coefficients.
+
+\Todo{verschieben? zusammenhang nicht klar}
 We also notice that the LARS-Lasso produces dictionaries with better
 reconstruction quality than the OMP.
+
 
 % \begin{figure}[H]
 % \centering
@@ -267,15 +273,15 @@ reconstruction quality than the OMP.
 
 
 
-\paragraph{Block size}
-After the coefficients experiments we compare the reconstruction quality
-dependency on block size in the learning process of natural images. 
+\subsection{Block size}
+After experiments on coefficients we compare the reconstruction quality
+with different block sizes in the learning process for natural images. 
 
-\prettyref{fig:dict size} shows the results of a dictionary
-learning run with block sizes of $n=8,..,20$. The dictionary size for each run
-is two times the size of each signal $2m=2n^2$. Coefficients for learning and
-reconstruction are adjusted with an average of 2 coefficients for 16 pixels of
-the block.
+\prettyref{fig:blockSize} shows the results of dictionary
+learning runs with block sizes of $8,...,20$. 
+Each run a dictionary with redundancy of two. Coefficients for learning
+and reconstruction are adjusted with an average of 2 coefficients for 16 pixels
+of a block.
 
 \begin{figure}[h]
 \centering
@@ -290,29 +296,30 @@ The $8\times8$ block size has a significant better reconstruction quality.
 We start to understand why when we have a closer look at the structure of
 the atoms. 
 
-\paragraph{Structure}
+\subsection{Structure of atoms}
 For the training set from natural JPEG images we tend to learn four major types
-of elements (\prettyref{fig:8atoms}).
+of elements.
 The ODL algorithm learns atoms similar to combinations of DCT atoms
-((a) and (b)). Or similar to wavelet atoms ((c) and (d)).
+(\ref{fig:8atoms}a and  \ref{fig:8atoms}b) or similar to wavelet atoms
+(\ref{fig:8atoms}c and \ref{fig:8atoms}d).
 
-As our training sets consists of JPEG images it is likely that we actualy learn
-the block structure of the JPEG images. This strongly happens when using the
-extracting the $8\times 8$ blocks of the JPEG images as samples.
+As our training sets consist of JPEG images it is likely that we actually learn
+the block structure of JPEG images. This happens when extracting
+$8\times 8$ block samples from JPEG images.
 \prettyref{fig:16jpeg_atoms} shows the effect when extracting $16\times 16$
-blocks alligned to the JPEG block structure.
+blocks aligned to the JPEG block structure.
 
-When using overlapping samples extraction with no alignment to the JPEG blocks
-more wavelet like atoms show up for big block sizes (\prettyref{fig:16atoms})
+When extracting overlapping samples with no alignment to the JPEG
+blocks more wavelet like atoms show up for big block sizes
+(\prettyref{fig:16atoms})
 while the $8\times 8$ do not change significant. 
 
-While looking at this we want to know what structures show samples from other
-groups of images. We investigate some atoms of the sketch
-dictionary.
-The sketch atoms (\prettyref{fig:sketch_atoms}) look way different compared to
-the atoms from the natural image set. With a lot of wavelet like atoms. 
 
-We see that both dictionaries primarily capture the structure the underlining
+\Todo{wurst}
+Looking at atoms learned from sketches (\prettyref{fig:sketch_atoms})
+we primarily see line segments wavelet like atoms.
+
+Both dictionaries primarily capture the structure the underlining
 signal provides. 
 
 \begin{figure}[h]
@@ -351,24 +358,23 @@ signal provides.
 %natural image dictionary.
 
 \paragraph{Mini-batch size}
-For the small training sets Mairal et al. suggest mini-batch size of two to four
-times the size of the the dictionary. No significant observations were made
+For the small training sets Mairal et al. suggest mini-batch sizes of two to
+four times the size of the the dictionary. No significant observations were made
 and we stick to these sizes. 
 
 \clearpage
 
 \section{Dictionary size}
 With the right learning parameters to learn from large sets of
-different images we want to know how big we can make the dictionaries and
-still profit from them. And if reconstruction quality increases with
-dictionaries size and when convergence is reached. 
+different images we want to know if reconstruction quality increases with
+dictionaries size.
 
 The following configuration is used for the experiments. 
 \begin{table}[H]
 \centering
 \begin{tabular}{| c | c | c |}
 \hline
-\multicolumn{3}{|c|}{configuration}\\
+%\multicolumn{3}{|c|}{configuration}\\
 \hline
 coefficients & block size & batch size \\
 \hline
@@ -377,12 +383,12 @@ coefficients & block size & batch size \\
 \end{tabular}
 \end{table}
 
-\prettyref{fig:dictSizeGood} does show a different image than
+\prettyref{fig:dictSizeGood} shows a different image than
 \prettyref{fig:dictSizeLassoBad}. With the right learning parameters 
 we better learn bigger dictionaries. We learned dictionaries with up to 8,000
 elements and did not reach reconstruction maximum. But while quality increases
-with size computatinal complexity increases too. We want to make the learning
-step more idipendent of single machines. Beeing able to learn smaller parts of
+with size computational complexity increases too. We want to make the learning
+step more independent of single machines. Being able to learn smaller parts of
 big dictionaries or specific dictionaries.
 
 
@@ -405,8 +411,8 @@ big dictionaries or specific dictionaries.
 
 
 \paragraph{Clustering}
-We want to know if a dictionary merged from smaller dictionaries, learned in a
-cluster, can lead to similar quality as a big dictionary learned on its own.
+We want to know if a dictionary merged from smaller dictionaries learned in a
+cluster can lead to similar quality as a single big dictionary.
 
 Learning with an average of 10 coefficients and a single dictionary of 4,000
 elements are learned until convergence. And each of 10 clients in the cluster
@@ -414,6 +420,10 @@ learns a dictionary with 500 atoms from batches of 1,000 images.
 
 \prettyref{fig:coeffsConvergInc} shows reconstruction quality average for both
 dictionaries.
+
+We see that the merged dictionary can reconstruct images with equal quality
+as the big dictionary. 
+
 
 % \begin{table}[h]
 % \centering
@@ -435,35 +445,34 @@ dictionaries.
 \label{fig:coeffsConvergInc}
 \end{figure}
 
-We see that the merged dictionary can reconstruct images with equal quality
-as the big dictionary. And while convergence is not reaches yet we want to see
-what we can already acomplish with the current dictionaries.
 
+%And while machine limits prevent learning.
+%Yet we want to see what we can already accomplish with the current
+%dictionaries.
 
 \clearpage
 \section{Compression}
-Besides the ability of learned dictionaries 
-we use the simple compression algorithm from \prettyref{sec:compression}.
+%Besides the ability of learned dictionaries 
+We use the simple compression strategy from \prettyref{sec:compression}.
 and compare it to a collection of JPEG and JPEG 2000 compressed images with the
-same file size. Besides the raw pixel data, images formats usually contain a
+same file size. Besides the raw pixel data, image formats usually contain a
 certain amount of extra data from a file header and meta data. Fortunately we
 can ignore this for simplification as the header data is only a few bytes and
 large meta data was prevented during target compression. The selection of
-images is limited as currently the process of obtaining the right settings for
-the sparse coding compression are time consuming.
+images is limited by time consuming process of obtaining the right settings
+for the sparse coding compression.
 %and not being actual pixel data. 
 The objective is to investigate the compression quality of our algorithm and
-the dictionary and if the extra amount of index data is a big hit on the overall
-load.
+the dictionary. 
+% and if the extra amount of index data is a big hit on the overall load.
 
-One benefit of the learned dictionary approach that plays well in our
-hands is the ability to to learn and use specific dictionaries for each group of
-images. We test this by learning a dictionary from a set of sketch images and
-use it to compress sketches. A domain in which the JPEG compression performs
-bad. As discovered before the natural images like block sizes of $8\times 8$
-this is not necessarily true for the sketch images. They work fine with
-$16\times 16$ blocks and enable us to reduce the amount of blocks.
-\prettyref{fig:compressionDicts} shows the used dictionaries. 
+One benefit of the dictionary learning approach is the ability to learn and
+use specific dictionaries for each group of images. We test this by learning a
+dictionary from a set of sketch images and use it to compress sketches. A domain
+in which the JPEG compression performs bad. As discovered before the natural
+images like block sizes of $8\times 8$ this is not necessarily true for the
+sketch images. They work fine with $16\times 16$ blocks and enable us to reduce
+the amount of blocks.
 
 The natural dictionary (\prettyref{fig:naturalDict}) consists of 4,000 $8 \times
 8$ atoms merged from 100 sub dictionaries with 1,000 atoms. Each sub
@@ -472,7 +481,7 @@ training process was already reached after 400 images. Taking less than 5
 hours.
 
 The sketch dictionary (\prettyref{fig:sketchDict}) consists of 1,000
-$16\times 16$ atoms learned from 1,000 sketches.
+$16\times 16$ atoms learned from \Todo{?} sketches.
 
 \newpage
 \begin{figure}[H]
@@ -489,19 +498,43 @@ $16\times 16$ atoms learned from 1,000 sketches.
 
 \clearpage
 \subsection{Results}
-% Difference in the selection strategy.
-% Very noisy vs. smooth. 
-% How this different selection strategies affect the learning step will be
-% presented in the next section.
+
+ the results of the compression experiments.
+
+\begin{figure}[h]
+\centering
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
+\hspace{5mm}
+\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch3.jpg}}
+\hspace{5mm}
+\caption{example images of natural image and sketch training sets}
+\label{fig:database_images}
+\end{figure}
+
+\newpage
 \subsubsection{Natural images}
 
-For the short time available the results are promising. Compression of
+For the limited time available the results are promising. Compression of
 natural images can achieve similar quality as the JPEG algorithm
-\prettyref{tab:compression1} for high compression rates but do not reach the
+(\prettyref{tab:compression1}) for high compression rates but does not reach the
 JPEG 2000 quality. Compression coding was done with the OMP as it turned out to
 work better with the quantization step of our algorithm and requires less
 coefficients. Looking at a lower compression ratio the results are much worse
-than JPEG or JPEG2000. As the dictionaries have limited maximum reconstruction
+than JPEG or JPEG 2000 as the dictionaries have a limited maximum reconstruction
 quality.
 
 \begin{table}[h]
@@ -529,7 +562,7 @@ e & 0.66 & 28.2658 & 32.0171 & 32.7864 \\
 f & 1.53 & 24.6843  & 24.8492 & 26.2794 \\
 \hline
 \end{tabular}
-\caption{natural image compression results}
+\caption{PSNR of compressed images}
 \label{tab:compression1}.
 \end{table} 
 
@@ -550,15 +583,16 @@ f & 1.53 & 24.6843  & 24.8492 & 26.2794 \\
 % %\label{fig:database_images}
 % \end{figure}
 
-\clearpage
 \subsubsection{Sketches}
 The high compression ratio results get even better when looking at the sketch
-images (\prettyref{fig:sketches}). Our algorithm can surpasse the JPEG
+images (\prettyref{fig:sketches}). Our algorithm can surpass JPEG
 compression (\prettyref{tab:compression2}) for low bit rates.
-\prettyref{fig:magnified} show some magnified segments of image
-\ref{fig:sketch3} to ilustrate the reconstruction features. There are less
-artifacts than in the JPEG images. The line segment atoms from the dictionary
-show similarities to the wavelet based JPEG 2000 compression.
+\prettyref{fig:magnified} shows some magnified segments of image
+\ref{fig:sketch3} to illustrate the reconstruction features. There are less
+artifacts than in the JPEG images. 
+
+%The line segment atoms from the dictionary show similarities to the wavelet
+%based JPEG 2000 compression.
 
 
 \begin{table}[H]
@@ -578,7 +612,7 @@ c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 %c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 \hline
 \end{tabular}
-\caption{sketch compression results}
+\caption{PSNR of compressed sketch images}
 \label{tab:compression2}
 \end{table}
 % \begin{figure}[h]
