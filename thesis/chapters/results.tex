@@ -39,14 +39,14 @@ set of sketch images in PNG format (\prettyref{fig:database_images}).
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
-\hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
-\hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+% \hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
+% \hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
+% \hspace{5mm}
+% \subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
+% \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
 \hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
@@ -134,7 +134,7 @@ Database}\footnote{\url{http://sipi.usc.edu/database/}}.
 %\subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_06.jpg}}
 %\hspace{5mm}
 \subfloat{\includegraphics[width = 0.3\textwidth]{images/4_2_07.jpg}}
-\caption{test images from USC-SIPI Image Database}
+\caption{example images from USC-SIPI Image Database}
 \label{fig:USC-SIPI}
 \end{figure}
 
@@ -147,7 +147,7 @@ The operating system running is Debian Linux with 32-bit kernel.
 At first we need to find start parameters for the dictionary learning
 algorithm to experiment with large sets of different samples and big
 dictionaries. This involves the average number of learning
-coefficients, block size, sample selection strategy and mini-batch size.
+coefficients, block size and sample selection strategy.
 
 Mairal et al. already proposed some learning parameters for their online
 learning algorithm. But like most others they only learn dictionaries with
@@ -233,7 +233,6 @@ constant with different numbers of coefficients the quality of the OMP drops
 with increasing number of coefficients. 
 
 
-
 \Todo{nach dict size verschieben?}
 Unfortunately using only a few coefficients leads to problems with big
 dictionaries. 
@@ -243,7 +242,8 @@ LARS-Lasso with about 4 learning coefficients.
 \begin{figure}[H]
 \centering
 \includegraphics[width = 1.0\textwidth]{../tests/results/dictSizeLasso.pdf}
-\caption{reconstruction quality for different dictionary sizes (LARS)}
+\caption{Reconstruction quality for different dictionary sizes (LARS). 3,200 is
+overlapping 2,400.}
 \label{fig:dictSizeLassoBad}
 \end{figure}
 Notice two things in this graph. First convergence is almost reached
@@ -311,13 +311,11 @@ blocks aligned to the JPEG block structure.
 
 When extracting overlapping samples with no alignment to the JPEG
 blocks more wavelet like atoms show up for big block sizes
-(\prettyref{fig:16atoms})
-while the $8\times 8$ do not change significant. 
+(\prettyref{fig:16atoms}) while the $8\times 8$ atoms do not change
+significant. 
 
-
-\Todo{wurst}
-Looking at atoms learned from sketches (\prettyref{fig:sketch_atoms})
-we primarily see line segments wavelet like atoms.
+Having a closer Look at atoms learned from sketches we primarily see wavelet
+like line segments (\prettyref{fig:sketch_atoms}) atoms.
 
 Both dictionaries primarily capture the structure the underlining
 signal provides. 
@@ -357,10 +355,10 @@ signal provides.
 %The learning algorithm can only what the signal provide than the atom from the
 %natural image dictionary.
 
-\paragraph{Mini-batch size}
-For the small training sets Mairal et al. suggest mini-batch sizes of two to
-four times the size of the the dictionary. No significant observations were made
-and we stick to these sizes. 
+% \paragraph{Mini-batch size}
+% For the small training sets Mairal et al. suggest mini-batch sizes of two to
+% four times the size of the the dictionary. No significant observations were
+%made  and we stick to these sizes. 
 
 \clearpage
 
@@ -498,31 +496,32 @@ $16\times 16$ atoms learned from \Todo{?} sketches.
 
 \clearpage
 \subsection{Results}
-
- the results of the compression experiments.
+This section presents the results of compression experiments with images
+of \prettyref{fig:comp_images}.
 
 \begin{figure}[h]
 \centering
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28979823.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/29018694.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/28874882.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/28803842.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28894495.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/4_2_03.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/28952841.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/4_2_04.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/sketch1.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
+\subfloat[]{\includegraphics[width = 0.3\textwidth]{images/sketch2.jpg}}
 \hspace{5mm}
-\subfloat{\includegraphics[width = 0.3\textwidth]{images/sketch3.jpg}}
+\subfloat[]{\includegraphics[width =
+0.3\textwidth]{images/sketch3.jpg}\label{fig:sketch3}}
 \hspace{5mm}
-\caption{example images of natural image and sketch training sets}
-\label{fig:database_images}
+\caption{images for compression experiments}
+\label{fig:comp_images}
 \end{figure}
 
 \newpage
@@ -545,21 +544,21 @@ quality.
 \hline\hline
 Image & bpp & SPRS & JPEG & JPEG2000 \\
 \hline
-a & 1.12 & 31.2205 & 32.3289 & 36.6103 \\
+\ref{fig:comp_images}a & 1.12 & 31.2205 & 32.3289 & 36.6103 \\
 %a & 1.12 & 31.2205 & 42.7488 &  \\
 \hline
-b & 1.01 & 34.7735 & 35.0671 & 40.3299 \\
+\ref{fig:comp_images}b & 1.01 & 34.7735 & 35.0671 & 40.3299 \\
 %b & 1.01 & 34.7735 & 49.4725 & \\
 \hline
-c & 1.8  & 29.0597 & 27.2556 & 31.7412 \\
+\ref{fig:comp_images}c & 1.8  & 29.0597 & 27.2556 & 31.7412 \\
 %c & 1.8  & 34.5818 & 40.8959 &  \\
 \hline
-d & 0.74 & 35.0531 & 35.5104 & 39.4195 \\
+\ref{fig:comp_images}d & 0.74 & 35.0531 & 35.5104 & 39.4195 \\
 %d & 1.47  & 35.9499 & 42.3517 &  \\
 \hline
-e & 0.66 & 28.2658 & 32.0171 & 32.7864 \\
+\ref{fig:comp_images}e & 0.66 & 28.2658 & 32.0171 & 32.7864 \\
 \hline
-f & 1.53 & 24.6843  & 24.8492 & 26.2794 \\
+\ref{fig:comp_images}f & 1.53 & 24.6843  & 24.8492 & 26.2794 \\
 \hline
 \end{tabular}
 \caption{PSNR of compressed images}
@@ -585,9 +584,9 @@ f & 1.53 & 24.6843  & 24.8492 & 26.2794 \\
 
 \subsubsection{Sketches}
 The high compression ratio results get even better when looking at the sketch
-images (\prettyref{fig:sketches}). Our algorithm can surpass JPEG
+images. Our algorithm can surpass JPEG
 compression (\prettyref{tab:compression2}) for low bit rates.
-\prettyref{fig:magnified} shows some magnified segments of image
+\prettyref{fig:magnified} shows a magnified segment of image
 \ref{fig:sketch3} to illustrate the reconstruction features. There are less
 artifacts than in the JPEG images. 
 
@@ -602,13 +601,13 @@ artifacts than in the JPEG images.
 \hline\hline
 Image & bpp & SPRS & JPEG & JPEG2000 \\
 \hline
-a & 0.084 & 33.9594 & 28.9578 & 38.3258  \\
+\ref{fig:comp_images}g & 0.084 & 33.9594 & 28.9578 & 38.3258  \\
 %a & 0.084 & 33.9594 & 28.9578 & 38.3258  \\
 \hline
-b & 0.13 & 32.9002 & 34.5546 &  40.0159 \\
+\ref{fig:comp_images}h & 0.13 & 32.9002 & 34.5546 &  40.0159 \\
 %b & 0.13 & 32.9002 & 34.5546 &  40.0159 \\
 \hline
-c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
+\ref{fig:comp_images}i & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 %c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 \hline
 \end{tabular}
@@ -642,7 +641,7 @@ c & 0.08 & 32.5131 & 28.6558 & 36.3093  \\
 \hspace{5mm}
 \subfloat[JPEG2000]{\includegraphics[width =
 0.40\textwidth]{images/sketch_2000_1.png}}
-\caption{}
+\caption{Magnified segment of \ref{fig:sketch3}}
 \label{fig:magnified}
 \end{figure}
 
