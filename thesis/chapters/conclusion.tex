@@ -13,14 +13,13 @@ compression in certain situations.
 
 
 \section{Conclusion}
-The right regularization and the the right training data
-play a big role for learning the right dictionaries and gaining
-good reconstruction quality. 
+The right regularization and training data play a big role for learning 
+dictionaries with good reconstruction quality. 
 
-It turns out that that the $\ell_1$ regularization of LARS-Lasso has a selection
+It turns out that the $\ell_1$ regularization of the LARS-Lasso has a selection
 strategy which is very good at dictionary learning.
 While the $\ell_0$ regularization of the OMP, with its greedy nature, has a very
-aggressive selection strategy.  This very noisy selection strategy is less
+aggressive selection strategy. This very noisy selection strategy is less
 practical than LARS for the ODL learning step. Such as a high number of learning
 coefficients and bad initialization. 
 
@@ -29,8 +28,8 @@ Using big image sets for learning can lead to very universal dictionaries. If
 the images fit into the same category it is insignificant which images you
 chose. The results will not much differ. When extracting samples from JPEG
 images for learning keep in mind that we can only learn what the data provides.
-Samples from JPEG especially non-overlapping $8 \times 8$ blocks will help to
-learn DCT atoms.
+Samples from JPEG especially non-overlapping $8 \times 8$ blocks will learn DCT
+atoms.
 
 %or want to verify if it is a JPEG image.
 %Dictionaries to universal ... improved results to DCT .. but varying with field
@@ -50,12 +49,12 @@ dictionaries.
 When it comes to compression tasks the greedy OMP performs better
 than the LARS-Lasso. As it sheers for less coefficients. Sparse coding 
 compression algorithms can lead to similar compression quality as JPEG 
-for low bit rates. And they can surpasses it in certain situations. But
+for low bit rates. And they can surpass it in certain situations. But
 currently a lot of tweaking to the quantization step is required. 
 
 Besides that JPEG and JPEG 2000 are highly optimized lossy image compression
-algorithms. Years of research went into observation human vision. Especially the
-quantization and the entropy encoding step are highly optimized for specific
+algorithms. Years of research went into observation of human vision. Especially
+the quantization and the entropy encoding step are highly optimized for specific
 data. It is hard to compete with JPEG, the market leader in this field.  Even
 JPEG 2000, which leads to better results than JPEG especially in the area block
 artifacts, did not catch up with the success of JPEG. The reason lies in the
@@ -78,7 +77,7 @@ compression is one major topic to address in the future. Raw camera images or
 TIFF images are a possible source. 
 
 \subsection{Framework improvements}
-To make further and more flexible experiments. The framework needs be be
+To make further and more flexible experiments. The framework needs to be
 extended in terms of speed and new dictionary learning strategies.
 
 \paragraph{Speed}
@@ -93,13 +92,13 @@ A different clustering strategy is to learn smaller dictionaries from different
 sets of images or characteristics. Such as paintings, gray-scale sketches and
 smooth animation images. For example learning dictionaries for very specific
 classes of images can be used for classification tasks. Something that can come
-in handy when applying it to operations like search in large image databases.
+in handy when applying it to operations like searching in large image databases.
 
 
 \subsection{Compression improvements}
 \paragraph{Reducing block borders} The presented compression experiments
-take a very simple approach without taking correlation between adjacent
-blocks into account. This is similar to the JPEG block strategy. But other than
+uses a very simple approach without taking correlation between adjacent
+blocks into account. This is similar to the JPEG block strategy. But unlike
 JPEG basis transforms the learned atoms are not limited to locality in
 the frequency domain. Splitting images in high and low pass sub images and
 learning multi-scale dictionaries for each sub image could improve image
@@ -107,7 +106,7 @@ quality. The framework can be easily extended to learn and code different kinds
 of sub-images.
 
 \paragraph{Better entropy coding}
-The coding of the coefficients already works quiet well. But the coding of the
+The coding of the coefficients already works quite well. But the coding of the
 indices is currently limited as the sparse coding algorithm tends to select a
 lot of different atoms. A joint sparsity approach as mentioned in
 \prettyref{sec:sparse_related} could lead to less selected atoms and a better

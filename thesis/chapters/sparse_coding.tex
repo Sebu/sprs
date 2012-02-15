@@ -11,14 +11,14 @@ A \emph{sparse code} is a vector with only few non-zero coefficients
 used to represent another vector by linear combining few atom vectors from a
 dictionary of many of them.
 
-The idea of sparse coding of image signals has its origin in neural science. 
+The idea of sparse coding of image signals has
+its origin in neural science. 
 Research in this field found that the cells in the visual cortex, also known as
 \emph{V1}, have properties similar to those localized filtering of wavelets
 functions. Several approaches were made to create systems that resemble this
 phenomena but did not lead to the desired structures. In 1996 Olshausen and
 Field\cite{Olshausen1996} noticed that when adding a sparsity constraint to
 these learning algorithms they can regenerate those characteristic elements.
-%Following this discovery constraints were added to the least-squares problem.
 
 \newpage 
 Consider $\mat{X} \in \mathbb{R}^{m\times n}$  as a matrix with $n$ columns each
@@ -100,7 +100,7 @@ number of non-zero elements in the vector in the form of:
 0; i=1,...,n; \vec{\alpha}\in\mathbb{R}^n\} 
 \end{equation*}
 There is one significant problem in using $\ell_0$-norm. This particular
-regularization makes the initial problem \prettyref{eq:problem2} NP-hard. To get
+regularization makes the problem \prettyref{eq:problem2} NP-hard. To get
 the ideal solution it is necessary to test every combination of atoms. But this
 does not imply that there is no way to efficiently find a solution that is good
 enough to keep $\vec{\alpha}$ sparse. There exist several greedy algorithms that
@@ -187,10 +187,10 @@ Zhang\cite{Mallat1993} on audio samples and later adapted to images by Mallat
 and Bergeaud in 1995\cite{Mallat1995}.
 
 The algorithm starts with coefficient vector $\vec{\alpha}$ set
-to zero. Then updates the coefficient that leads to best reduction of the
+to zero. And then updates the coefficient that leads to best reduction of the
 error $\lVert \vec{x} - \mat{D}\vec{\alpha} \rVert^{2}_{2}$. This is done by
 finding the atom $\vec{d}_i$ of the dictionary $\mat{D}$ with maximum absolute
-inner product with the current residual $\vec{r}$ and adding this inner product
+inner product with the current residual $\vec{r}$ and adding the inner product
 to $\vec{\alpha}$. This step is repeated $L$ times or until the remaining error
 fulfills $\lVert \vec{x} -
 \mat{D}\vec{\alpha}
@@ -455,9 +455,9 @@ A practical example of a more specific compression task is the work on
 facial image compression by Bryt and Elad\cite{Bryt2008}. They took a
 collection of black and white facial images. The images were aligned and
 split into non-overlapping blocks. They used all images to learn
-dictionaries for each separate block. They applied a fixed quantization and
-entropy coding. Leading to better compression ratio than JPEG and JPEG 2000 for
-  facial images.
+dictionaries for each separate block and coded the images with these
+dictionaries. Then applied a fixed quantization and entropy coding. Leading to
+better compression ratio than JPEG and JPEG 2000 for facial images.
 
 \paragraph{Inverse half-toning} Half-toning, as used in printing, is a process
 where a binary raster simulates continuous tone images. Small dots of different

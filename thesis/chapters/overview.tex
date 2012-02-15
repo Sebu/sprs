@@ -17,7 +17,7 @@ approximates the signal $\vec{x}$ in a simplified sparse way.
 \begin{equation*}
 \vec{\tilde{x}} = f\left(\vec{x}\right)
 \end{equation*}
-We can split $f(vec{x})$ into a selection of elements from a large set of
+We can split $f(\vec{x})$ into a selection of elements from a large set of
 basis functions. In a sparse way, as the signal gets either represented with
 a small selection of basis functions or as a series of many basis
 functions where the majority of coefficients, that weight the function, are
@@ -96,8 +96,9 @@ An example for the usage of DCT is the coding of the $N\times N$ image blocks in
 the JPEG image compression algorithm.
 
 Other than the Fourier transform the DWT describes a signal as a series of
-filter functions called wavelets, which are not only localized in frequency
-(like the sinusoids of the Fourier transform) but also localized in time. 
+filter functions called wavelets, which are not only localized in the frequency
+domain (like the sinusoids of the Fourier transform) but also localized in
+time. 
 %Localized in frequency and time. 
 %(DWT) captures both frequency and location information. 
 % Property of the basis functions ...
@@ -105,7 +106,7 @@ filter functions called wavelets, which are not only localized in frequency
 For example this locality property is used in JPEG 2000 image compression to
 remove the block artifacts that occur in JPEG. 
 
-In the 80s the search for better transformation basis started to become a major
+In the 80s the search for better transformation basis started to play a major
 role in the field of signal representation. Leading to others such as Bandelets,
 Curvelets, Contourlets, Wedgelets among others.
 
@@ -113,7 +114,7 @@ Curvelets, Contourlets, Wedgelets among others.
 %\cite{Rubinstein2010}
 %\Todo{doppelt?}
 In the last two decades (see\cite{Olshausen1996,Mallat1993}) a concept emerged
-to interpret basis transforms as sets of discrete signal atoms in a dictionary
+to interpret basis transforms as a set of discrete signal atoms in a dictionary
 and the signals that they reconstruct as sparse linear combination of these
 atoms. The benefit of this approach is that you can decouple signal coding and
 dictionary design and split the whole process of signal analysis into two tasks.

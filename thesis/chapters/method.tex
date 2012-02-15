@@ -344,6 +344,8 @@ bit codes and table of associations between codes and elements.
 We apply something similar to RLE to the sparse matrix. Knowing that the
 majority of coefficients in a sparse matrix are zero. They can be coded
 as a series of non-zero coefficients and the distances between them.
+Resulting in one byte for the coefficient and 1-2 bytes for the index
+(depend on the size of the dictionary).
 %We use the fact that in a sparse matrix it is most likely that the entry
 %following a coefficient is zero. 
 Afterwards the remaining data gets Huffman coded.

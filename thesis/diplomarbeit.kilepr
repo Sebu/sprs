@@ -3,8 +3,8 @@ def_graphic_ext=eps
 img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
-kileversion=2.0.85
-lastDocument=chapters/conclusion.tex
+kileversion=2.1.0
+lastDocument=chapters/sparse_coding.tex
 masterDocument=thesis.tex
 name=diplomarbeit
 pkg_extIsRegExp=false
@@ -25,7 +25,7 @@ Mode=LaTeX
 ReadWrite=true
 
 [document-settings,item:chapters/abstract.tex]
-Bookmarks=42
+Bookmarks=41
 Encoding=UTF-8
 Highlighting=LaTeX
 Indentation Mode=
@@ -81,7 +81,7 @@ Mode=LaTeX
 ReadWrite=true
 
 [document-settings,item:chapters/results.tex]
-Bookmarks=
+Bookmarks=463
 Encoding=UTF-8
 Highlighting=LaTeX
 Indentation Mode=
@@ -140,20 +140,20 @@ order=5
 
 [item:chapters/abstract.tex]
 archive=true
-column=69
+column=40
 encoding=UTF-8
 highlight=LaTeX
-line=42
+line=28
 mode=LaTeX
 open=false
-order=3
+order=4
 
 [item:chapters/acknowledgements.tex]
 archive=true
-column=1
+column=56
 encoding=UTF-8
 highlight=LaTeX
-line=15
+line=9
 mode=LaTeX
 open=false
 order=-1
@@ -170,40 +170,40 @@ order=-1
 
 [item:chapters/conclusion.tex]
 archive=true
-column=0
+column=70
 encoding=UTF-8
 highlight=LaTeX
-line=71
+line=30
 mode=LaTeX
-open=true
-order=1
+open=false
+order=3
 
 [item:chapters/dictionaries.tex]
 archive=true
-column=0
+column=59
 encoding=UTF-8
 highlight=LaTeX
-line=346
+line=223
 mode=LaTeX
 open=false
 order=2
 
 [item:chapters/introduction.tex]
 archive=true
-column=6
-encoding=UTF-8
-highlight=LaTeX
-line=0
-mode=LaTeX
-open=false
-order=1
-
-[item:chapters/method.tex]
-archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=386
+line=254
+mode=LaTeX
+open=true
+order=0
+
+[item:chapters/method.tex]
+archive=true
+column=39
+encoding=UTF-8
+highlight=LaTeX
+line=347
 mode=LaTeX
 open=false
 order=1
@@ -213,40 +213,40 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=113
+line=201
 mode=LaTeX
-open=false
-order=2
+open=true
+order=3
 
 [item:chapters/results.tex]
 archive=true
-column=0
+column=37
 encoding=UTF-8
 highlight=LaTeX
-line=482
+line=404
 mode=LaTeX
-open=true
-order=0
+open=false
+order=2
 
 [item:chapters/sparse_coding.tex]
 archive=true
-column=11
+column=63
 encoding=UTF-8
 highlight=LaTeX
-line=467
+line=177
 mode=LaTeX
-open=false
-order=2
+open=true
+order=4
 
 [item:chapters/title.tex]
 archive=true
-column=0
+column=14
 encoding=UTF-8
 highlight=LaTeX
-line=36
+line=39
 mode=LaTeX
-open=false
-order=2
+open=true
+order=1
 
 [item:diplomarbeit.kilepr]
 archive=true
@@ -263,20 +263,20 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=34
+line=16
 mode=LaTeX
-open=false
-order=5
+open=true
+order=2
 
 [item:thesis.tex]
 archive=true
-column=1
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=32
+line=37
 mode=LaTeX
 open=false
-order=3
+order=0
 
 [item:todo.txt]
 archive=true
@@ -293,52 +293,52 @@ CursorColumn=11
 CursorLine=10
 
 [view-settings,view=0,item:chapters/abstract.tex]
-CursorColumn=69
-CursorLine=42
+CursorColumn=40
+CursorLine=28
 
 [view-settings,view=0,item:chapters/acknowledgements.tex]
-CursorColumn=1
-CursorLine=15
+CursorColumn=56
+CursorLine=9
 
 [view-settings,view=0,item:chapters/conclusion.tex]
-CursorColumn=0
-CursorLine=71
+CursorColumn=70
+CursorLine=30
 
 [view-settings,view=0,item:chapters/dictionaries.tex]
-CursorColumn=0
-CursorLine=346
+CursorColumn=59
+CursorLine=223
 
 [view-settings,view=0,item:chapters/introduction.tex]
-CursorColumn=6
-CursorLine=0
+CursorColumn=0
+CursorLine=254
 
 [view-settings,view=0,item:chapters/method.tex]
-CursorColumn=0
-CursorLine=386
+CursorColumn=39
+CursorLine=347
 
 [view-settings,view=0,item:chapters/overview.tex]
 CursorColumn=0
-CursorLine=113
+CursorLine=201
 
 [view-settings,view=0,item:chapters/results.tex]
-CursorColumn=0
-CursorLine=482
+CursorColumn=37
+CursorLine=404
 
 [view-settings,view=0,item:chapters/sparse_coding.tex]
-CursorColumn=11
-CursorLine=467
+CursorColumn=63
+CursorLine=177
 
 [view-settings,view=0,item:chapters/title.tex]
-CursorColumn=0
-CursorLine=36
+CursorColumn=14
+CursorLine=39
 
 [view-settings,view=0,item:header.tex]
 CursorColumn=0
-CursorLine=34
+CursorLine=16
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=1
-CursorLine=32
+CursorColumn=0
+CursorLine=37
 
 [view-settings,view=0,item:todo.txt]
 CursorColumn=0
